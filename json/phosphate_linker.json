@@ -1,0 +1,16 @@
+{
+    "pdb_properties": {
+        "Coordinates": "[[-0.657, 8.949, 2.141], [-0.05, 10.292, 2.0], [-1.892, 8.716, 1.359]]",
+        "Shape": "[3, 3]",
+        "Atoms": "[\"P\", \"OP1\", \"OP2\"]",
+        "Symbol": "[\"P\", \"O\", \"O\"]"
+    },
+    "Identity": [
+        "Phosphate",
+        "Linker"
+    ],
+    "Dihedrals": {
+        "dihedral_oxygen_OP1": 76.676,
+        "dihedral_oxygen_OP2": -155.039
+    }
+}
