@@ -70,15 +70,25 @@ class Nucleoside:
         with open(jsonfile, 'r') as jsonf:
             self.jason = json.load(jsonf)
 
-    #
-    # Create functions to calculate for dihedrals
-    def get_array(self):
-
-        return np.asarray(json.loads(self.jason['pdb_properties']['Coordinates']), dtype=float)
+        self.array =  np.asarray(json.loads(self.jason['pdb_properties']['Coordinates']), dtype=float)
 
 
+    def normalize_vector(self, vector):
+        # Retrieve the magnitude of the vector when normalized.
+        # Return the vector that has been normalized, so ... rework this piece of code
+
+        normVec = np.linalg.norm(self.array[0])
+        return vector / normVec
 
 class Desmos(Nucleoside):
     """  We can just simply pass this in here for now, since we essentially copy the parent class """
     pass
+
+
+
+
+
+
+
+
 

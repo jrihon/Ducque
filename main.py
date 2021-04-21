@@ -72,7 +72,8 @@ def main():
     if arguments.Daedalus:
         labyrinth.Architecture(arguments.Daedalus)
 
-print('Time spent: %.5f seconds.' % (time() - t1))
 # ---------------------------------------- S T A R T   T H E   S H O W ----------------------------------------
 if __name__ == '__main__':
     main()
+    
+    print('Time spent: %.5f seconds.' % (time() - t1))
