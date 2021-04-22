@@ -30,7 +30,7 @@ options.add_argument('--Daedalus',
         help='Ask the software what you want it to build')
 
 options.add_argument('--help', action='help',
-        help='The input should be a nucleic acid monomer structure, in the format of a pdb')
+        help='Input the duplex of interest with the " -- Daedalus " flag.')
 
 arguments = options.parse_args()
 
@@ -72,8 +72,7 @@ def main():
     if arguments.Daedalus:
         labyrinth.Architecture(arguments.Daedalus)
 
+    print('Time spent: %.5f seconds.' % (time() - t1))
 # ---------------------------------------- S T A R T   T H E   S H O W ----------------------------------------
 if __name__ == '__main__':
     main()
-    
-    print('Time spent: %.5f seconds.' % (time() - t1))
