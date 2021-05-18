@@ -71,16 +71,17 @@ def Architecture(nucleic_acid):
     # Move the linker to the correct location
     OP2_loc = labyrinth_func.position_linker(v0, single_vector, link)
 
-    check_vector = (nucleo.array[0] - OP2_loc[0]) * -1.0
-
-    check_position = labyrinth_func.praxeolitic_dihedralSINGLE([ nucleo.array[0], nucleo.array[1], nucleo.array[4] ], check_vector)
+    #check_vector = (nucleo.array[0] - OP2_loc[0]) * -1.0
+    #check_position = labyrinth_func.praxeolitic_dihedralSINGLE([ nucleo.array[0], nucleo.array[1], nucleo.array[4] ], check_vector)
 #---------------------------------------------- SO FAR SO GOOD  
+    # Get the phosphorus linker to the origin
+    p_to_origin = OP2_loc[0]
+    OP2_loc = OP2_loc - p_to_origin
     # The first index of the linker is the phosphorus
     p0 = OP2_loc[0]     # P
-    p1 = v0             # O5'
+    p1 = v0 - p_to_origin             # O5'
     # Create vector on which we will rotate on vector(O5' - P)
     O5P = (p1 - p0) * -1.0
-
     # Normalise O5P
     O5P /= np.linalg.norm(O5P)
 
@@ -102,37 +103,38 @@ def Architecture(nucleic_acid):
 
     # Calculate the dihedrals with the cone
     range_of_dihedrals = labyrinth_func.praxeolitic_dihedralRANGE([OP2_loc[0], nucleo.array[0], nucleo.array[1]], rotated_cone)
-    #DIHEDRAL TO FIT THE VECTOR ON
+    ## DIHEDRAL TO FIT THE VECTOR ON
     # interpolation
-    # I need P, O5', C5' to input. OP2 is the rotated vector
     y_interpolate = labyrinth_func.get_interpolated_dihedral(range_of_dihedrals, link.get_OP2_dihedral())
-    # generate
 
+    # generate
     single_vector = labyrinth_func.generate_rotate_single_vector(y_interpolate, _angleOPO, rot_matrix)
-    # Check if it's done correctly
+
+    # I need P, O5', C5' to input. OP2 is the rotated vector
     checkdihr = labyrinth_func.praxeolitic_dihedralSINGLE([OP2_loc[0], nucleo.array[0], nucleo.array[1]], single_vector)
     #printexit(checkdihr, link.get_OP2_dihedral())
 #-------------------------------------------------- rotate the phosphate group
     ## Rotate the phosphate to the single_vector
-    # Get the phosphorus linker to the origin
-    p_to_origin = OP2_loc[0]
-
     #print(np.degrees(np.arccos(np.dot(single_vector, (OP2_loc[0] - nucleo.array[0])*-1.0)))) ; exit()
-    OP2_loc -= p_to_origin
+    # Get the phosphorus linker to the origin
+    #p_to_origin = OP2_loc[0]
+    #OP2_loc -= p_to_origin
+
     # Define the vector that goes from P to OP2
     Phosp = OP2_loc[0]
     OP2 = OP2_loc[2]
     P_OP2 = (OP2 - Phosp)
     P_OP2 /= np.linalg.norm(P_OP2)
-
-#
-#    # Get rotMatrix and align my phosphate group - vector with the single vector; matrix rotation
-#    rM_phosphate = labyrinth_func.get_rM(single_vector, vector_to_rotate_from=P_OP2)
-#
-#    OP2_loc = labyrinth_func.rotate_single_vector(rM_phosphate, OP2_loc)
-#
-#
-#    # DONE
+    # Get rotMatrix and align my phosphate group - vector with the single vector; matrix rotation
+    rM_phosphate = labyrinth_func.get_rM(single_vector *1.0 , vector_to_rotate_from=P_OP2)
+    print(single_vector)
+    OP2_loc = labyrinth_func.rotate_single_vector(rM_phosphate, OP2_loc)
+    printexit(OP2_loc)
+    #printexit(np.linalg.norm(OP2_loc[2] - OP2_loc[0]))
+    OP2_loc = OP2_loc + p_to_origin
+    #print(np.linalg.norm(single_vector)) ; print(np.linalg.norm(OP2_loc[2] - OP2_loc[0]))
+    #printexit(np.degrees(np.arccos(np.dot(single_vector, (OP2_loc[0] - nucleo.array[0])*-1.0)))) ; exit()
+    # DONE
 
     labyrinth_func.create_PDB_from_matrix(np.vstack((OP2_loc, nucleo.array)), nucleo, link) 
 #    # Turn the segment to the correct dihedral
@@ -151,7 +153,7 @@ def Architecture(nucleic_acid):
 #    ax.scatter(0,0,0, color='black')
 #
 #    #rotated_vector
-#    ax.scatter(single_vector[0], single_vector[1], single_vector[2], color='orange')
+#    ax.scatter(single_vector[0], single_vector[1], single_vector[2], color='green')
 #    ax.scatter(nucleo.array[:,0], nucleo.array[:,1],nucleo.array[:,2], color='blue')
 #    ax.scatter(OP2_loc[:,0], OP2_loc[:,1], OP2_loc[:,2], color='orange')
 #
