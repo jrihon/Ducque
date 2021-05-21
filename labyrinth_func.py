@@ -2,6 +2,7 @@
 The functions that run the matrix rotations
 """
 import numpy as np
+import numpy.linalg as LA
 import json
 import sys
 import pandas as pd
@@ -25,12 +26,18 @@ class Nucleoside:
         # Retrieve the magnitude of the vector when normalized.
         # Return the vector that has been normalized, so ... rework this piece of code
 
-        normVec = np.linalg.norm(self.array[0])
+        normVec = LA.norm(self.array[0])
         return vector / normVec
+
+    def get_alpha(self):
+        return float(json.loads(self.jason['Dihedrals']['Backbone'])['alpha'])
 
     def get_beta(self):
         # because beta is still inside a the backbone dictionary, we need to load it again 
         return float(json.loads(self.jason['Dihedrals']['Backbone'])['beta'])
+
+    def get_zeta(self):
+        return float(json.loads(self.jason['Dihedrals']['Backbone'])['zeta'])
 
 
 class Desmos(Nucleoside):
@@ -56,6 +63,11 @@ class Desmos(Nucleoside):
         return float(self.jason['Dihedrals']['dihedral_oxygen_OP1'])
 
 # FUNCTIONS
+def return_normalized(vector):
+    """ returns a normalized vector """
+    return vector / LA.norm(vector)
+
+
 def generate_cone_vector(phi_angle):
     " Phi is the angle the vector makes with the Z-axis """
 
@@ -95,7 +107,7 @@ def get_direction_for_rM(from_vector, vector_to_rotate_onto):
     # Get the direction where vectorA rotates onto vectorB ; u = vectora X vectorb
     #       Let's normalize the direction
 
-    return np.cross(from_vector, vector_to_rotate_onto) / np.linalg.norm(np.cross(from_vector, vector_to_rotate_onto))
+    return np.cross(from_vector, vector_to_rotate_onto) / LA.norm(np.cross(from_vector, vector_to_rotate_onto))
 
 def get_angle_for_rM(from_vector, vector_to_rotate_onto):
 
@@ -132,7 +144,7 @@ def get_quaternion_custom_axis(vector_to_rotate_onto, vector_to_rotate_from, rot
     """ Generate quaternion for when you already have the axis of rotation"""
 
     # normalise the axis
-    axis = rotation_axis / np.linalg.norm(rotation_axis)                            # DIRECTION
+    axis = rotation_axis / LA.norm(rotation_axis)                            # DIRECTION
     # angle already in radians 
     theta = get_angle_for_rM(vector_to_rotate_from, vector_to_rotate_onto)       # ANGLE
 
@@ -203,7 +215,7 @@ def praxeolitic_dihedralRANGE(json_array, cone_vector):
     b2 = v3                 #O5-P
 
     # normalize b1 so that it does not influence magnitude of vector rejections that come next
-    b1 /= np.linalg.norm(b1)
+    b1 /= LA.norm(b1)
 
         # vector rejections
     # v = projection of b0 onto plane perpendicular to b1
@@ -237,7 +249,7 @@ def praxeolitic_dihedralSINGLE(json_array, single_vector):
     b2 = v3                 #O5-P
 
     # normalize b1 so that it does not influence magnitude of vector rejections that come next
-    b1 /= np.linalg.norm(b1)
+    b1 /= LA.norm(b1)
 
         # vector rejections
     # v = projection of b0 onto plane perpendicular to b1
