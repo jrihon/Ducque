@@ -30,7 +30,7 @@ def Architecture(nucleic_acid):
     # Parse dictionary for the correct linker segment
     link = labyrinth_func.Desmos(codex_acidum_nucleicum[nucleic_acid][1])
 
-
+    ## Make the required vectors and retrieve the data
     # Calculate the normal of C4'-C5'-O5' 
     v0 = nucleo.array[0] # O5'
     v1 = nucleo.array[1] # C5'
@@ -41,102 +41,166 @@ def Architecture(nucleic_acid):
 
     # angle of C5' - O5 ' - P in RADIANS
     _angleCOP = link.get_COP()
+
     # Generate the cone vector
-    cone_vector = labyrinth_func.generate_cone_vector(_angleCOP)
+    cone_vector1 = labyrinth_func.generate_cone_vector(_angleCOP)
 
     # Check if cone vector has the correct angles
     #labyrinth_func.check_phi_angle_of_vector(cone_vector)
 
+    ## ROTATE
     # Rotate towards a direction, with a certain angle. Invert the vector, to get the correct angle for the cones
     # The angle will then be between vector( O5' - C5') and vector( O5' - P), with the same starting point.
-    rot_matrix = labyrinth_func.get_rM(C5O5 * -1.0)
+    _quat1 = labyrinth_func.get_quaternion(C5O5 * -1.0)
 
     # Get the transformed cone of vectors
-    rotated_vector = labyrinth_func.rotate_cone_vector(rot_matrix, cone_vector)
+    rotated_vector1 = labyrinth_func.rotate_with_quaternion(_quat1, cone_vector1)
 
     # Check if all the vectors have been rotated correctly (OPTIONAL)
-    labyrinth_func.check_phi_angle_of_vector(rotated_vector, axis=C5O5 * -1.0)
+    labyrinth_func.check_phi_angle_of_vector(rotated_vector1, axis=C5O5 * -1.0)
 
     # Calculate dihedrals with the cone
-    range_of_dihedrals = labyrinth_func.praxeolitic_dihedralRANGE([nucleo.array[0], nucleo.array[1], nucleo.array[4]], rotated_vector)
-    # DIHEDRAL TO FIT THE VECTOR ON
+    range_of_dihedrals1 = labyrinth_func.praxeolitic_dihedralRANGE([nucleo.array[0], nucleo.array[1], nucleo.array[4]], rotated_vector1)
+
+    ## EXTRAPOLATE TO THE DIHEDRAL AND GENERATE THE NECESSARY VECTOR
     # interpolation
-    theta_interpolate = labyrinth_func.get_interpolated_dihedral(range_of_dihedrals, nucleo.get_beta())
+    theta_interpolate1 = labyrinth_func.get_interpolated_dihedral(range_of_dihedrals1, nucleo.get_beta())
     # generate
-    single_vector = labyrinth_func.generate_rotate_single_vector(theta_interpolate, _angleCOP, rot_matrix)
+    single_vector1 = labyrinth_func.generate_and_rotate_single_vector_QUAT(theta_interpolate1, _angleCOP, _quat1)
 
-    # Check it's dihedral is correct (OPTIONAL)
-    checkdihr = labyrinth_func.praxeolitic_dihedralSINGLE([nucleo.array[0], nucleo.array[1], nucleo.array[4]], single_vector)
+    #(OPTIONAL) Check it's dihedral is correct
+    #checkdihr = labyrinth_func.praxeolitic_dihedralSINGLE([nucleo.array[0], nucleo.array[1], nucleo.array[4]], single_vector1)
 
+    # POSITION THE LINKER TO THE LOCATION THE NEW VECTOR POINTS AT
     # Move the linker to the correct location
-    OP2_loc = labyrinth_func.position_linker(v0, single_vector, link)
+    OP2_loc = labyrinth_func.position_linker(v0, single_vector1, link)
 
     #check_vector = (nucleo.array[0] - OP2_loc[0]) * -1.0
     #check_position = labyrinth_func.praxeolitic_dihedralSINGLE([ nucleo.array[0], nucleo.array[1], nucleo.array[4] ], check_vector)
-#---------------------------------------------- SO FAR SO GOOD  
-    # Get the phosphorus linker to the origin
+#---------------------------------------------- SO FAR THE LINKER HAS BEEN POSITIONED, BUT IT NEEDS TO ROTATE  
+    # The distance from P to the origin of the xyz system
     p_to_origin = OP2_loc[0]
-    OP2_loc = OP2_loc - p_to_origin
-    # The first index of the linker is the phosphorus
-    p0 = OP2_loc[0]     # P
-    p1 = v0 - p_to_origin             # O5'
-    # Create vector on which we will rotate on vector(O5' - P)
-    O5P = (p1 - p0) * -1.0
+
+    # move the linker to the origin, by positioning the posphorus at [0,0,0]
+    OP2_origin = OP2_loc - p_to_origin
+    p0 = OP2_origin[0]                 # P atom, with start at origin
+    p1 = v0 - p_to_origin           # O5', with start at origin
+
+    # Create vector on which we will rotate on vector(O5' - P) (when doing * -1.0 ; if not then P - O5') 
+    O5P = (p1 - p0)
     # Normalise O5P
     O5P /= np.linalg.norm(O5P)
 
-    # get angle of O5' - P - OP2 in RADIANS
-    _angleOPO = link.get_OPO()
+    # get angle of O5' - P - OP2 in RADIANS from the linker.json
+    _angleOPO = link.get_OPO2()
 
     # Generate the cone vector, which gets generated around Z_axis
-    cone_vector = labyrinth_func.generate_cone_vector(_angleOPO)
-    labyrinth_func.check_phi_angle_of_vector(cone_vector)
+    cone_vector2 = labyrinth_func.generate_cone_vector(_angleOPO)
+    labyrinth_func.check_phi_angle_of_vector(cone_vector2)
 
     # Rotate the cone towards a certain angle
-    rot_matrix = labyrinth_func.get_rM(O5P * -1.0)
+    _quat2 = labyrinth_func.get_quaternion(O5P)
 
     # Get the transformed cone of vectors
-    rotated_cone = labyrinth_func.rotate_cone_vector(rot_matrix, cone_vector)
+    rotated_cone2 = labyrinth_func.rotate_with_quaternion(_quat2, cone_vector2)
 
     # Check if all vectors have been rotated correctly
-    labyrinth_func.check_phi_angle_of_vector(rotated_cone, axis=O5P * -1.0)
+    labyrinth_func.check_phi_angle_of_vector(rotated_cone2, axis=O5P)
 
     # Calculate the dihedrals with the cone
-    range_of_dihedrals = labyrinth_func.praxeolitic_dihedralRANGE([OP2_loc[0], nucleo.array[0], nucleo.array[1]], rotated_cone)
+    range_of_dihedrals2 = labyrinth_func.praxeolitic_dihedralRANGE([OP2_loc[0], nucleo.array[0], nucleo.array[1]], rotated_cone2)
     ## DIHEDRAL TO FIT THE VECTOR ON
     # interpolation
-    y_interpolate = labyrinth_func.get_interpolated_dihedral(range_of_dihedrals, link.get_OP2_dihedral())
+    theta_interpolate2 = labyrinth_func.get_interpolated_dihedral(range_of_dihedrals2, link.get_OP2_dihedral())
 
-    # generate
-    single_vector = labyrinth_func.generate_rotate_single_vector(y_interpolate, _angleOPO, rot_matrix)
+    # generate and position the vector correctly
+    single_vector2 = labyrinth_func.generate_and_rotate_single_vector_QUAT(theta_interpolate2, _angleOPO, _quat2)
 
     # I need P, O5', C5' to input. OP2 is the rotated vector
-    checkdihr = labyrinth_func.praxeolitic_dihedralSINGLE([OP2_loc[0], nucleo.array[0], nucleo.array[1]], single_vector)
+    checkdihr = labyrinth_func.praxeolitic_dihedralSINGLE([OP2_loc[0], nucleo.array[0], nucleo.array[1]], single_vector2)
     #printexit(checkdihr, link.get_OP2_dihedral())
-#-------------------------------------------------- rotate the phosphate group
+        #-------------------------------------------------- rotate the phosphate group
     ## Rotate the phosphate to the single_vector
-    #print(np.degrees(np.arccos(np.dot(single_vector, (OP2_loc[0] - nucleo.array[0])*-1.0)))) ; exit()
-    # Get the phosphorus linker to the origin
-    #p_to_origin = OP2_loc[0]
-    #OP2_loc -= p_to_origin
-
-    # Define the vector that goes from P to OP2
+    # Define the vector that goes from P to OP2 and normalize it
     Phosp = OP2_loc[0]
     OP2 = OP2_loc[2]
     P_OP2 = (OP2 - Phosp)
     P_OP2 /= np.linalg.norm(P_OP2)
-    # Get rotMatrix and align my phosphate group - vector with the single vector; matrix rotation
-    rM_phosphate = labyrinth_func.get_rM(single_vector *1.0 , vector_to_rotate_from=P_OP2)
-    print(single_vector)
-    OP2_loc = labyrinth_func.rotate_single_vector(rM_phosphate, OP2_loc)
-    printexit(OP2_loc)
-    #printexit(np.linalg.norm(OP2_loc[2] - OP2_loc[0]))
-    OP2_loc = OP2_loc + p_to_origin
-    #print(np.linalg.norm(single_vector)) ; print(np.linalg.norm(OP2_loc[2] - OP2_loc[0]))
-    #printexit(np.degrees(np.arccos(np.dot(single_vector, (OP2_loc[0] - nucleo.array[0])*-1.0)))) ; exit()
-    # DONE
 
-    labyrinth_func.create_PDB_from_matrix(np.vstack((OP2_loc, nucleo.array)), nucleo, link) 
+    # Get rotMatrix and align my phosphate group - vector with the single vector; matrix rotation
+    _quat_phosphate = labyrinth_func.get_quaternion(single_vector2 , vector_to_rotate_from=P_OP2)
+    #Rotate it
+    OP2_loc2 = labyrinth_func.rotate_with_quaternion(_quat_phosphate, OP2_origin)
+
+    # Move the rotated linker to the place of origin
+    OP2_loc2 = OP2_loc2 + p_to_origin
+    # DONE
+    #------------------------------ROTATE THE LINKER AGAIN, BUT ON THE AXIS OF P_OP2, to get P_OP1
+
+    ## Generate a cone vector that rotates on the axis of O5P again, but this time with the angle of P_OP1
+    # Get the linker to the origin and extract the values of interest
+    OP2_loc3 = OP2_loc2 - p_to_origin
+
+    # the P_O2 vector ( OP2 - P resulteert in P -> OP2 )
+    P_O2 = OP2_loc3[2] - OP2_loc3[0]
+    P_O2 /= np.linalg.norm(P_O2)
+    # the P_O1 vector
+    P_O1 = OP2_loc3[1] - OP2_loc3[0]
+    P_O1 /= np.linalg.norm(P_O1)
+    # Calculate angle between these two and you will get the angle of OP1_P_OP2. 
+    # The order here does not matter
+    # the angle is automatically in radians
+    angleLINKER = link.get_OPO1()
+    #angle between the two oxygens
+    #angleLINKER = np.arccos(np.dot(P_O1, P_O2)) * 180/np.pi
+
+    # generate cone vector
+    cone_vector3 = labyrinth_func.generate_cone_vector(angleLINKER)
+
+    # generate the quaternion
+    _quat3 = labyrinth_func.get_quaternion(O5P)
+    #_quat3 = labyrinth_func.get_quaternion(P_O2)
+
+    # Rotate the cone vector on top of P_O2
+    rotated_cone3 = labyrinth_func.rotate_with_quaternion(_quat3, cone_vector3)
+    #labyrinth_func.check_phi_angle_of_vector(rotated_cone3, axis=O5P)
+
+    ## Interpolate the correct theta value of the dihedral we want
+    # Calculate the dihedrals with the cone, here is P - O5' - C5' and then all the possible OP1 oxygens
+    range_of_dihedrals3 = labyrinth_func.praxeolitic_dihedralRANGE([OP2_loc[0], nucleo.array[0], nucleo.array[1]], rotated_cone3)
+
+    # interpolation
+    theta_interpolate3 = labyrinth_func.get_interpolated_dihedral(range_of_dihedrals3, link.get_OP1_dihedral())
+
+    # generate and position the vector correctly
+    single_vector3 = labyrinth_func.generate_and_rotate_single_vector_QUAT(theta_interpolate3, angleLINKER, _quat3)
+
+    # I need P, O5', C5' to input. OP2 is the rotated vector
+    #checkdihr = labyrinth_func.praxeolitic_dihedralSINGLE([OP2_loc[0], nucleo.array[0], nucleo.array[1]], single_vector3)
+    #checkangle = labyrinth_func.get_angle_for_rM(single_vector3, O5P) * (180/np.pi)
+    #printexit(checkangle, link.get_OPO1() * (180/np.pi))
+    #printexit(checkdihr, link.get_OP1_dihedral())
+    #------------ Now that we have the vector of interest, we rotate OP_1 onto it
+
+    # generate quaternion
+    #_quat4 = labyrinth_func.get_quaternion(single_vector3, P_O1)
+    _quat4 = labyrinth_func.get_quaternion_custom_axis(single_vector3, P_O1, P_O2 * -1.0)
+
+    # rotate the vector
+    OP_final = labyrinth_func.rotate_with_quaternion(_quat4, OP2_loc3)
+    # Bring OP_final to the location of the phosphorus
+    OP_final = OP_final + p_to_origin
+
+
+######################### LINKER POSITIONED ###############################################
+
+
+######################### POSITION THE NEXT NUCLEOTIDE ####################################
+
+
+
+
+    labyrinth_func.create_PDB_from_matrix(np.vstack((OP_final, nucleo.array)), nucleo, link)
 #    # Turn the segment to the correct dihedral
 #    fig = plt.figure()
 #    ax = fig.add_subplot(111, projection='3d')

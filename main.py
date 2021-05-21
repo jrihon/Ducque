@@ -13,7 +13,7 @@ Project to generate and customize DNA, RNA, XNA duplex molecules
 Designed and written by Doctorandus Rihon Jérôme.\n
 ______________________________________________________________________
 """
-t1 = time()
+t0 = time()
 # ---------------------------------------- P A R S E  A R G U M E N T S ----------------------------------------
 options = argparse.ArgumentParser(description=explanation,
                                   add_help=False,
@@ -72,7 +72,7 @@ def main():
     if arguments.Daedalus:
         labyrinth.Architecture(arguments.Daedalus)
 
-    print('Time spent: %.5f seconds.' % (time() - t1))
+    print('Time spent: %.5f seconds.' % (time() - t0))
 # ---------------------------------------- S T A R T   T H E   S H O W ----------------------------------------
 if __name__ == '__main__':
     main()

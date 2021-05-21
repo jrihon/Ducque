@@ -1,11 +1,13 @@
 """
-
+The functions that run the matrix rotations
 """
 import numpy as np
 import json
 import sys
 import pandas as pd
+from scipy.spatial.transform import Rotation as R
 
+import labyrinth_func_tools as LFT
 
 # CLASSES
 class Nucleoside:
@@ -41,12 +43,17 @@ class Desmos(Nucleoside):
     def get_P(self):
         return self.array[0]
 
-    def get_OPO(self):
+    def get_OPO2(self):
         return float(self.jason['Angles']['O5_P_OP2']) * (np.pi / 180)
+
+    def get_OPO1(self):
+        return float(self.jason['Angles']['O5_P_OP1']) * (np.pi / 180)
 
     def get_OP2_dihedral(self):
         return float(self.jason['Dihedrals']['dihedral_oxygen_OP2'])
 
+    def get_OP1_dihedral(self):
+        return float(self.jason['Dihedrals']['dihedral_oxygen_OP1'])
 
 # FUNCTIONS
 def generate_cone_vector(phi_angle):
@@ -68,7 +75,8 @@ def generate_cone_vector(phi_angle):
                       rho * np.cos(phi)]
                     ).T
 
-def generate_rotate_single_vector(interpolated_theta_angle, phi, rotation_matrix):
+
+def generate_and_rotate_single_vector_QUAT(interpolated_theta_angle, phi, quaternion):
 
     ### PHI NEEDS TO BE IN RADIANS
     single_vector = np.array([ 1.0 * np.cos(interpolated_theta_angle) * np.sin(phi),
@@ -76,7 +84,7 @@ def generate_rotate_single_vector(interpolated_theta_angle, phi, rotation_matrix
                                1.0 * np.cos(phi)]
                             ).T
 
-    rotated_vector = np.dot(rotation_matrix, single_vector)
+    rotated_vector = quaternion.apply(single_vector)
 
     return rotated_vector
 
@@ -94,55 +102,65 @@ def get_angle_for_rM(from_vector, vector_to_rotate_onto):
     # The scalar product (dot product) to get the cosine angle. Here we do the arccos, the get the angle immediately.
     return np.arccos(np.dot(from_vector, vector_to_rotate_onto))
 
-def get_rM(vector_to_rotate_onto, vector_to_rotate_from=np.array([0,0,1])):
+
+def get_quaternion(vector_to_rotate_onto, vector_to_rotate_from=np.array([0,0,1])):
     """
-    Find the rotation matrix (rM) associated with counterclockwise rotation
-    about the given axis by theta radians.
-    Credit: http://stackoverflow.com/users/190597/unutbu
+    Quaternion mathematics using the scipy.spatial.transform.Rotation library
 
-    Args:
-        axis (list): rotation axis of the form [x, y, z]
-        theta (float): rotational angle in radians
+    Create the quaternion that is associated with the angle and axis of rotation
 
-    Returns:
-        array. Rotation matrix.
+    Apply it to the vector you want to rotate
+
     """
-
-    # To rotate a matrix, we make a dot product with the rotation matrix and the vector we want to move.
-    #       The results is the rotated matrix. 
-
-    # The cone's axis is vector_to_rotate_from
-    # np.array([0, 0, 1])
-
+    # axis has been normalised
     axis = get_direction_for_rM(vector_to_rotate_from, vector_to_rotate_onto)      # DIRECTION
+
+    # angle already in radians 
     theta = get_angle_for_rM(vector_to_rotate_from, vector_to_rotate_onto)         # ANGLE
 
-    axis = axis/np.sqrt(np.dot(axis, axis))
-    a = np.cos(theta/2.0)
-    b, c, d = -axis*np.sin(theta/2.0)
-    aa, bb, cc, dd = a*a, b*b, c*c, d*d
-    bc, ad, ac, ab, bd, cd = b*c, a*d, a*c, a*b, b*d, c*d
-    return np.array([[aa+bb-cc-dd, 2*(bc+ad), 2*(bd-ac)],
-                     [2*(bc-ad), aa+cc-bb-dd, 2*(cd+ab)],
-                     [2*(bd+ac), 2*(cd-ab), aa+dd-bb-cc]])
+    # Create the quaternion
+    qx = axis[0] * np.sin(theta/2)
+    qy = axis[1] * np.sin(theta/2)
+    qz = axis[2] * np.sin(theta/2)
+    qw = np.cos(theta/2)
+
+    quaternion = R.from_quat([qx, qy, qz, qw])
+
+    return quaternion
+
+def get_quaternion_custom_axis(vector_to_rotate_onto, vector_to_rotate_from, rotation_axis):
+    """ Generate quaternion for when you already have the axis of rotation"""
+
+    # normalise the axis
+    axis = rotation_axis / np.linalg.norm(rotation_axis)                            # DIRECTION
+    # angle already in radians 
+    theta = get_angle_for_rM(vector_to_rotate_from, vector_to_rotate_onto)       # ANGLE
+
+    # Create the quaternion
+    qx = axis[0] * np.sin(theta/2)
+    qy = axis[1] * np.sin(theta/2)
+    qz = axis[2] * np.sin(theta/2)
+    qw = np.cos(theta/2)
+
+    quaternion = R.from_quat([qx, qy, qz, qw])
+
+    return quaternion
 
 
-def rotate_cone_vector(rotation_matrix, cone_vector):
-    # Create empty vector
-    rotated_cone = np.empty(shape=(cone_vector.shape[0], cone_vector.shape[1]))
-    for i in range(cone_vector.shape[0]):
-        rotated_cone[i] = np.dot(rotation_matrix, cone_vector[i])
+def rotate_with_quaternion(quaternion, vector):
+    """ Vector rotation through quaternion mathematics"""
 
-    return rotated_cone
-
-
-def rotate_single_vector(rotation_matrix, atoms):
-    # rotate a single 
-    return np.dot(rotation_matrix, atoms)
+    return quaternion.apply(vector)
 
 
 def check_phi_angle_of_vector(vectors, axis = np.array([0,0,1])):
     """ The dotproduct determines the angle of the vector with a given axis/vector """
+
+    ### to check of the angle is correct, you should introduce an if statement
+    #   in the labyrinth code so that if the cone vector is not placed correctly
+    #   that you just invert the vector you place it on (so vector * -1.0)
+    ###
+
 
     # if a vector is given and it is not k^-hat
     if list(axis) != [0,0,1]:
@@ -242,6 +260,7 @@ def interpolate_dihedrals(tuple_dihr, angle_dihr):
     """
     # tuple_dihr = ( (rad1, degrees1), (rad2, degrees2) )
     # the y's are the theta angles, indexed by the keys of the dictionary being parsed 
+    #print(tuple_dihr)
     y2 = tuple_dihr[0][0]           # radians in the cone generator function after dihedral of interest
     y1 = tuple_dihr[1][0]           # radians in the cone generator functionbefore dihedral of interest
     x2 = tuple_dihr[0][1]           # value of degrees in the cone generator function after ..
@@ -254,54 +273,91 @@ def interpolate_dihedrals(tuple_dihr, angle_dihr):
 def get_interpolated_dihedral(ls_dihedrals, dihr_of_interest):
 
     #dihr_of_interest = -161.00
-    # First determine if the list is ascending or descending, by going over the most true and false in a list
-
-    # print(ls_dihedrals) ; print(dihr_of_interest)
-
+    # Check the values of the range of dihedrals and the value of interest
+    print(ls_dihedrals) ; print(dihr_of_interest)
 
     # Generate an array of theta values like when we generate them
     theta = np.linspace(0, 2*np.pi, num=18, endpoint=False)
 
-    # LIST IS DESCENDING, like the trial-set now
+    # Determine if val(ls_dihedrals) is ascending or descending
+    slope = LFT.check_slope_of_array(ls_dihedrals)
 
-    ## Let's check the difference in between ls_dihedrals[i] and 180 or -180 is less than 20
-    # if the value is close to 180
-    for i in range(len(ls_dihedrals)):
+    if slope == "DESCENDING":
+        ## Let's check the difference in between ls_dihedrals[i] and 180 or -180 is less than 20
+        for i in range(len(ls_dihedrals)):
 
-        # if the value[i] is close to 180, check if the value is then between value[i] and 
-        if 180.0 - ls_dihedrals[i] <= 20.0:
-            if ls_dihedrals[i] <= dihr_of_interest <= 180.0:
-                lowerRAD = theta[i]
+            # if the value[i] is close to 180, check if the value is less than 20 
+            if 180.0 - ls_dihedrals[i] <= 20.0:
+                if ls_dihedrals[i] <= dihr_of_interest <= 180.0:
+                    lowerRAD = theta[i]
 
-                # upperbound is difference between i en 180, converted to radians and added to lowerbound
-                upperRAD = theta[i] - ((180.0 - ls_dihedrals[i]) * (np.pi/ 180.0))
-                dihr_boundaries = ((lowerRAD, ls_dihedrals[i]), (upperRAD, 180.0))
+                    # upperbound is difference between i en 180, converted to radians and added to lowerbound
+                    upperRAD = theta[i] - ((180.0 - ls_dihedrals[i]) * (np.pi/ 180.0))
+                    dihr_boundaries = ((lowerRAD, ls_dihedrals[i]), (upperRAD, 180.0))
+                    return interpolate_dihedrals(dihr_boundaries, dihr_of_interest)
+
+            # if the value[i] is close to -180, the difference is less than -340 (-180 + -180 = -360)
+            if -180.0 + ls_dihedrals[i] <= -340.0:
+                if  -180.0 <= dihr_of_interest <= ls_dihedrals[i]:
+                    lowerRAD = theta[i]
+
+                    # upperbound is difference between i and -180, convertedto radians and added to lowerbound
+                    upperRAD = theta[i] - ((-180 - ls_dihedrals[i]) * (np.pi/180.0))
+                    dihr_boundaries = ((lowerRAD, ls_dihedrals[i]), (upperRAD, -180.0))
+                    return interpolate_dihedrals(dihr_boundaries, dihr_of_interest)
+
+            # if it's the last index, compare between last and first index, to make it circular
+            if i == (len(ls_dihedrals) - 1):
+                if ls_dihedrals[i] <= dihr_of_interest <= ls_dihedrals[0]:
+                    dihr_boundaries = ((theta[i], ls_dihedrals[i]), (theta[0], ls_dihedrals[0]))
+
+                    return interpolate_dihedrals(dihr_boundaries, dihr_of_interest)
+
+            # if it's not last index, just carry on as usual
+            if ls_dihedrals[i] >= dihr_of_interest >= ls_dihedrals[i+1]:
+                dihr_boundaries = ((theta[i], ls_dihedrals[i]), (theta[i+1], ls_dihedrals[i+1]))
+                #print(dihr_boundaries)
+
                 return interpolate_dihedrals(dihr_boundaries, dihr_of_interest)
 
-        # if the value[i] is close to -180
-        if -180.0 + ls_dihedrals[i] <= -340.0:
-            if  -180.0 <= dihr_of_interest <= ls_dihedrals[i]:
-                lowerRAD = theta[i]
+    if slope == "ASCENDING":
+        for i in range(len(ls_dihedrals)):
 
-                # upperbound is difference between i and -180, convertedto radians and added to lowerbound
-                upperRAD = theta[i] - ((-180 - ls_dihedrals[i]) * (np.pi/180.0))
-                dihr_boundaries = ((lowerRAD, ls_dihedrals[i]), (upperRAD, -180.0))
+            # if the value[i] is close to 180, check if the value is then between value[i] and 
+            if 180 - ls_dihedrals[i] <= 20:
+                if ls_dihedrals[i] <= dihr_of_interest <= 180:
+                    lowerRAD = theta[i]
+
+                    # upperbound is diff between i and 180, converted to radians and added to lowerbound
+                    upperRAD = theta[i] - ((180.0 - ls_dihedrals[i]) * (np.pi/ 180.0))
+                    dihr_boundaries = ((lowerRAD, ls_dihedrals[i]), (upperRAD, 180.0))
+                    return interpolate_dihedrals(dihr_boundaries, dihr_of_interest)
+
+            # if the value[i] is close to -180, the difference is less than -340 (-180 + -180 = -360)
+            if -180.0 + ls_dihedrals[i] <= -340.0:
+                if  -180.0 <= dihr_of_interest <= ls_dihedrals[i]:
+                    lowerRAD = theta[i]
+
+                    # upperbound is difference between i and -180, convertedto radians and added to lowerbound
+                    upperRAD = theta[i] - ((-180 - ls_dihedrals[i]) * (np.pi/180.0))
+                    dihr_boundaries = ((lowerRAD, ls_dihedrals[i]), (upperRAD, -180.0))
+                    return interpolate_dihedrals(dihr_boundaries, dihr_of_interest)
+
+            # if it's the last index, compare between last and first index, to make it circular
+            # NB: THIS DIFFERS FROM THE FOR LOOP ABOVE, WE GO IN THE OPPOSITE DIRECTION
+            if i == (len(ls_dihedrals) - 1):
+                if ls_dihedrals[0] <= dihr_of_interest <= ls_dihedrals[i]:
+                    dihr_boundaries = ((theta[i], ls_dihedrals[i]), (theta[0], ls_dihedrals[0]))
+
+                    return interpolate_dihedrals(dihr_boundaries, dihr_of_interest)
+
+            # if it's not last index, just carry on as usual
+            # NB: THIS DIFFERS FROM THE FOR LOOP ABOVE, WE GO IN THE OPPOSITE DIRECTION
+            if ls_dihedrals[i] <= dihr_of_interest <= ls_dihedrals[i+1]:
+                dihr_boundaries = ((theta[i], ls_dihedrals[i]), (theta[i+1], ls_dihedrals[i+1]))
+                #print(dihr_boundaries)
+
                 return interpolate_dihedrals(dihr_boundaries, dihr_of_interest)
-
-        # Create dictionary to assume values of boundaries and the calculated angle
-        #   If it's the last index, compare between last and first index
-        if i == (len(ls_dihedrals) - 1):
-            if ls_dihedrals[i] <= dihr_of_interest <= ls_dihedrals[0]:
-                dihr_boundaries = ((theta[i], ls_dihedrals[i]), (theta[0], ls_dihedrals[i]))
-
-                return interpolate_dihedrals(dihr_boundaries, dihr_of_interest)
-
-        # If it's not last index, just carry on as usual
-        if ls_dihedrals[i] >= dihr_of_interest >= ls_dihedrals[i+1]:
-            dihr_boundaries = ((theta[i], ls_dihedrals[i]), (theta[i+1], ls_dihedrals[i+1]))
-            #print(dihr_boundaries)
-
-            return interpolate_dihedrals(dihr_boundaries, dihr_of_interest)
 
 
 def position_linker(O5_nucleoAtom, P_vector, linker):
@@ -343,3 +399,63 @@ def create_PDB_from_matrix(matrix, nucleoside, linker):
             split_line = [ row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13] ]
             pdb.write('%-6s%5s%5s%s%s%2s%5s   %8s%8s%8s%6s%6s%4s      %2s\n' % tuple(split_line))
         pdb.write('END')
+
+##---------------------------- EULER ANGLE ROTATION MATRIX, NOT USED ANYMORE ----------------##
+#def generate_and_rotate_single_vector_EULER(interpolated_theta_angle, phi, rotation_matrix):
+#
+#    ### PHI NEEDS TO BE IN RADIANS
+#    single_vector = np.array([ 1.0 * np.cos(interpolated_theta_angle) * np.sin(phi),
+#                               1.0 * np.sin(interpolated_theta_angle) * np.sin(phi),
+#                               1.0 * np.cos(phi)]
+#                            ).T
+#
+#    rotated_vector = np.dot(rotation_matrix, single_vector)
+#
+#    return rotated_vector
+#
+#def get_rM(vector_to_rotate_onto, vector_to_rotate_from=np.array([0,0,1])):
+#    """
+#    EULER ANGLES
+#    Find the rotation matrix (rM) associated with counterclockwise rotation
+#    about the given axis by theta radians.
+#    Credit: http://stackoverflow.com/users/190597/unutbu
+#
+#    Args:
+#        axis (list): rotation axis of the form [x, y, z]
+#        theta (float): rotational angle in radians
+#
+#    Returns:
+#        array. Rotation matrix.
+#    """
+#
+#    # To rotate a matrix, we make a dot product with the rotation matrix and the vector we want to move.
+#    #       The results is the rotated matrix. 
+#
+#    # The cone's axis is vector_to_rotate_from
+#    # np.array([0, 0, 1])
+#
+#    axis = get_direction_for_rM(vector_to_rotate_from, vector_to_rotate_onto)      # DIRECTION
+#    theta = get_angle_for_rM(vector_to_rotate_from, vector_to_rotate_onto)         # ANGLE
+#
+#    axis = axis/np.sqrt(np.dot(axis, axis))
+#    a = np.cos(theta/2.0)
+#    b, c, d = -axis*np.sin(theta/2.0)
+#    aa, bb, cc, dd = a*a, b*b, c*c, d*d
+#    bc, ad, ac, ab, bd, cd = b*c, a*d, a*c, a*b, b*d, c*d
+#    return np.array([[aa+bb-cc-dd, 2*(bc+ad), 2*(bd-ac)],
+#                     [2*(bc-ad), aa+cc-bb-dd, 2*(cd+ab)],
+#                     [2*(bd+ac), 2*(cd-ab), aa+dd-bb-cc]])
+#
+#
+#def rotate_cone_vector(rotation_matrix, cone_vector):
+#    # Create empty vector
+#    rotated_cone = np.empty(shape=(cone_vector.shape[0], cone_vector.shape[1]))
+#    for i in range(cone_vector.shape[0]):
+#        rotated_cone[i] = np.dot(rotation_matrix, cone_vector[i])
+#
+#    return rotated_cone
+#
+#
+#def rotate_single_vector(rotation_matrix, atoms):
+#    # rotate a single 
+#    return np.dot(rotation_matrix, atoms)

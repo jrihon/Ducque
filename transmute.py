@@ -82,7 +82,7 @@ def linker_to_json(pdb_file):
     pdb_properties = {}
     # dihedrals of the phosphate ( C5', O5' , P , OP1)
     dihedrals = {'dihedral_oxygen_OP1': 76.676, 'dihedral_oxygen_OP2': -155.039}
-    angles = {'C5_O5_P' : 118.958, 'O5_P_OP' : 109.766, 'O5_P_O3' : 101.415}
+    angles = {'C5_O5_P' : 118.958, 'O5_P_OP2' : 109.766, 'O5_P_OP1' : 109.746, 'O5_P_O3' : 101.415}
     Identity = ['Phosphate','Linker']
 
     # Create instance

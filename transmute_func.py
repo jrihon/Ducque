@@ -136,7 +136,7 @@ class TransmuteToJson:
 
 
     def write_element_symbol(self):
-        
+
         # Get it to a list 
         atomlist = self.pdb_dataframe['ElementSymbol'].tolist()
         return  list(map(lambda x: x.strip(), atomlist))
