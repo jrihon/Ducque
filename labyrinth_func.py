@@ -392,7 +392,7 @@ def create_PDB_from_matrix(matrix, nucleoside, linker):
     df = pd.DataFrame()
 
     df['RecName'] = ['ATOM' for x in range(matrix.shape[0])]
-    df['AtomNum'] = [ x for x in range(matrix.shape[0]) ]
+    df['AtomNum'] = np.arange(start=1, stop=matrix.shape[0]+1)
     df['AtomName'] = json.loads(linker.jason['pdb_properties']['Atoms']) + json.loads(nucleoside.jason['pdb_properties']['Atoms'])
     df['AltLoc'] = ' '
     df['ResName'] = 'POS'     # This is temporary, just to see what the results are
