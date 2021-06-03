@@ -1,19 +1,21 @@
+import numpy as np
+import pandas as pd
+import numpy.linalg as LA
+from scipy.spatial.transform import Rotation as R
+
+import json, sys
+from typing import Tuple
+
+import labyrinth_func_tools as LFT
+
 """
 The functions that run the matrix rotations
 """
-import numpy as np
-import numpy.linalg as LA
-import json
-import sys
-import pandas as pd
-from scipy.spatial.transform import Rotation as R
-
-import labyrinth_func_tools as LFT
 
 # CLASSES
 class Nucleoside:
 
-    def __init__(self,jsonfile):
+    def __init__(self, jsonfile):
         self.splitted = jsonfile.split('.')[0]
 
         with open(jsonfile, 'r') as jsonf:
@@ -22,62 +24,64 @@ class Nucleoside:
         self.array =  np.asarray(json.loads(self.jason['pdb_properties']['Coordinates']), dtype=float)
 
 
-    def normalize_vector(self, vector):
+    def normalize_vector(self, vector : np.array) -> np.array :
         # Retrieve the magnitude of the vector when normalized.
         # Return the vector that has been normalized, so ... rework this piece of code
 
         normVec = LA.norm(self.array[0])
         return vector / normVec
 
-    def get_alpha(self):
+    def get_alpha(self) -> float:
         return float(json.loads(self.jason['Dihedrals']['Backbone'])['alpha'])
 
-    def get_beta(self):
+    def get_beta(self) -> float:
         # because beta is still inside a the backbone dictionary, we need to load it again 
         return float(json.loads(self.jason['Dihedrals']['Backbone'])['beta'])
 
-    def get_zeta(self):
+    def get_zeta(self) -> float:
         return float(json.loads(self.jason['Dihedrals']['Backbone'])['zeta'])
 
 
 class Desmos(Nucleoside):
     """  We can just simply pass this in here for now, since we essentially copy the parent class """
 
-    def get_COP(self):
+    def get_COP(self) -> float:
         # since the angles are inside the angles dictionary, we don't need to load string again
         return float(self.jason['Angles']['C5_O5_P']) * (np.pi / 180)
 
-    def get_P(self):
+    def get_P(self) -> float:
         return self.array[0]
 
-    def get_OPO2(self):
+    def get_OPO2(self) -> float:
         return float(self.jason['Angles']['O5_P_OP2']) * (np.pi / 180)
 
-    def get_OPO1(self):
+    def get_OPO1(self) -> float:
         return float(self.jason['Angles']['O5_P_OP1']) * (np.pi / 180)
 
-    def get_OP2_dihedral(self):
+    def get_O3PO5(self) -> float:
+        return float(self.jason['Angles']['O5_P_O3']) * (np.pi / 180)
+
+    def get_OP2_dihedral(self) -> float:
         return float(self.jason['Dihedrals']['dihedral_oxygen_OP2'])
 
-    def get_OP1_dihedral(self):
+    def get_OP1_dihedral(self) -> float:
         return float(self.jason['Dihedrals']['dihedral_oxygen_OP1'])
 
 # FUNCTIONS
-def return_normalized(vector):
+def return_normalized(vector : np.ndarray) -> np.ndarray:
     """ returns a normalized vector """
     return vector / LA.norm(vector)
 
 
-def generate_cone_vector(phi_angle):
-    " Phi is the angle the vector makes with the Z-axis """
+def generate_cone_vector(phi_angle : float) -> np.ndarray:
+    """ Phi is the angle the vector makes with the Z-axis
 
-    """
     Graphing Spherical Coordinates in GeoGebra 3D (Part 2): A Cone about z-axis
     https://www.youtube.com/watch?v=Wl3Z3AqfI6c
 
     Generating uniform unit random vectors in R^n
-    """
-    ### PHI_ANGLE NEEDS TO BE IN RADIANS
+    phi needs to be in RADIANS """
+
     rho = np.full(18, 1)
     theta = np.linspace(0, 2*np.pi, num=18, endpoint=False)
     phi = np.full(18, phi_angle)
@@ -88,9 +92,11 @@ def generate_cone_vector(phi_angle):
                     ).T
 
 
-def generate_and_rotate_single_vector_QUAT(interpolated_theta_angle, phi, quaternion):
+def generate_and_rotate_single_vector_QUAT(interpolated_theta_angle : float, phi : float, quaternion) -> np.ndarray:
+    """ Generate a single vector with the correct angle.
+        Then rotate said angle to the correct orientation using the previously used quaternion.
+        As always, phi needs to be in RADIANS"""
 
-    ### PHI NEEDS TO BE IN RADIANS
     single_vector = np.array([ 1.0 * np.cos(interpolated_theta_angle) * np.sin(phi),
                                1.0 * np.sin(interpolated_theta_angle) * np.sin(phi),
                                1.0 * np.cos(phi)]
@@ -101,21 +107,20 @@ def generate_and_rotate_single_vector_QUAT(interpolated_theta_angle, phi, quater
     return rotated_vector
 
 
-def get_direction_for_rM(from_vector, vector_to_rotate_onto):
-
-    # cross product with the cone's axis to get the direction of the rotation axis
-    # Get the direction where vectorA rotates onto vectorB ; u = vectora X vectorb
-    #       Let's normalize the direction
+def get_direction_for_rM(from_vector : np.ndarray, vector_to_rotate_onto : np.ndarray) -> np.ndarray:
+    """ cross product with the cone's axis to get the direction of the rotation axis
+        Get the direction where vectorA rotates onto vectorB ; u = vectora X vectorb
+        Let's normalize the direction """
 
     return np.cross(from_vector, vector_to_rotate_onto) / LA.norm(np.cross(from_vector, vector_to_rotate_onto))
 
-def get_angle_for_rM(from_vector, vector_to_rotate_onto):
-
-    # The scalar product (dot product) to get the cosine angle. Here we do the arccos, the get the angle immediately.
+def get_angle_for_rM(from_vector : np.ndarray, vector_to_rotate_onto : np.ndarray) -> float:
+    """The scalar product (dot product) to get the cosine angle.
+        Here we do the arccos, the get the angle immediately. """
     return np.arccos(np.dot(from_vector, vector_to_rotate_onto))
 
 
-def get_quaternion(vector_to_rotate_onto, vector_to_rotate_from=np.array([0,0,1])):
+def get_quaternion(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : np.array = np.array([0,0,1] )):
     """
     Quaternion mathematics using the scipy.spatial.transform.Rotation library
 
@@ -140,7 +145,7 @@ def get_quaternion(vector_to_rotate_onto, vector_to_rotate_from=np.array([0,0,1]
 
     return quaternion
 
-def get_quaternion_custom_axis(vector_to_rotate_onto, vector_to_rotate_from, rotation_axis):
+def get_quaternion_custom_axis(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : np.ndarray, rotation_axis : np.ndarray):
     """ Generate quaternion for when you already have the axis of rotation"""
 
     # normalise the axis
@@ -159,13 +164,13 @@ def get_quaternion_custom_axis(vector_to_rotate_onto, vector_to_rotate_from, rot
     return quaternion
 
 
-def rotate_with_quaternion(quaternion, vector):
+def rotate_with_quaternion(quaternion, vector : np.ndarray) -> np.ndarray:
     """ Vector rotation through quaternion mathematics"""
 
     return quaternion.apply(vector)
 
 
-def check_phi_angle_of_vector(vectors, axis = np.array([0,0,1])):
+def check_phi_angle_of_vector(vectors : np.ndarray, axis : np.array = np.array([0,0,1])) -> None:
     """ The dotproduct determines the angle of the vector with a given axis/vector """
 
     ### to check of the angle is correct, you should introduce an if statement
@@ -199,7 +204,7 @@ def check_phi_angle_of_vector(vectors, axis = np.array([0,0,1])):
         sys.exit(0)
 
 
-def praxeolitic_dihedralRANGE(json_array, cone_vector):
+def praxeolitic_dihedralRANGE(json_array : np.ndarray, cone_vector : np.ndarray) -> np.ndarray :
 
     """
     https://stackoverflow.com/questions/20305272/dihedral-torsion-angle-from-four-points-in-cartesian-coordinates-in-python
@@ -237,7 +242,7 @@ def praxeolitic_dihedralRANGE(json_array, cone_vector):
     return dihedrals
 
 
-def praxeolitic_dihedralSINGLE(json_array, single_vector):
+def praxeolitic_dihedralSINGLE(json_array : np.ndarray, single_vector : np.ndarray) -> np.ndarray:
 
     v2 = json_array[0] # O5'
     v1 = json_array[1] # C5'
@@ -266,7 +271,7 @@ def praxeolitic_dihedralSINGLE(json_array, single_vector):
     return np.degrees(np.arctan2(y, x))
 
 
-def interpolate_dihedrals(tuple_dihr, angle_dihr):
+def interpolate_dihedrals(tuple_dihr : Tuple[Tuple[float, float], Tuple[float, float]], angle_dihr : float) -> float:
     """
     y = y1 + [ (x - x1) / (x2 - x1) * (y2 - y1) ]
     """
@@ -282,11 +287,22 @@ def interpolate_dihedrals(tuple_dihr, angle_dihr):
     return y1 + ( (x - x1) / (x2 - x1) * (y2 - y1) )
 
 
-def get_interpolated_dihedral(ls_dihedrals, dihr_of_interest):
+def get_interpolated_dihedral(ls_dihedrals : np.ndarray, dihr_of_interest : float) -> float :
+    """
+    This function is well important!
+    Receives the dihedrals calculated when using dihedralRANGE(), where we calculate the angle
+        between three atoms and the cone of vectors, which represent the atom of interest.
+    Then we use the value we know is the correct dihedral angle and we check which in between
+        which vectors the value of interest is.
+    We then use the index of the two vectors and retrieve the theta angle, because we rotated the cone 
+        in a certain way, but the order still matters. Theta is used to generate the cone vector
+        With the two theta values in place, we interpolate between the theta and the calculated dihedral angles.
+        The returned value theta is the exact theta angle we need to use in order to generate
+            the single_vector that already has the correct phi angle.
+    """
 
-    #dihr_of_interest = -161.00
     # Check the values of the range of dihedrals and the value of interest
-    print(ls_dihedrals) ; print(dihr_of_interest)
+    #print(ls_dihedrals) ; print(dihr_of_interest)
 
     # Generate an array of theta values like when we generate them
     theta = np.linspace(0, 2*np.pi, num=18, endpoint=False)
@@ -372,7 +388,7 @@ def get_interpolated_dihedral(ls_dihedrals, dihr_of_interest):
                 return interpolate_dihedrals(dihr_boundaries, dihr_of_interest)
 
 
-def position_linker(O5_nucleoAtom, P_vector, linker):
+def position_linker(O5_nucleoAtom : np.array, P_vector : np.array, linker : np.ndarray) -> np.ndarray:
     """ Get the translation vector of the linker and then move.
     Returns the position at which we move the linker segment to.
     """
@@ -386,14 +402,18 @@ def position_linker(O5_nucleoAtom, P_vector, linker):
     return p_move_to + linker.array
 
 
+def resultant_vector_addition(array_of_molecules : np.ndarray, distance_to_loc : np.array) -> np.ndarray:
+    """ Move the array of vectors from the origin to the place you want to have it"""
+    return array_of_molecules + distance_to_loc
 
-def create_PDB_from_matrix(matrix, nucleoside, linker):
+
+def create_PDB_from_matrix(matrix : np.ndarray, nucleoside : np.ndarray, linker : np.ndarray) -> None:
 
     df = pd.DataFrame()
 
     df['RecName'] = ['ATOM' for x in range(matrix.shape[0])]
-    df['AtomNum'] = np.arange(start=1, stop=matrix.shape[0]+1)
-    df['AtomName'] = json.loads(linker.jason['pdb_properties']['Atoms']) + json.loads(nucleoside.jason['pdb_properties']['Atoms'])
+    df['AtomNum'] = np.arange(start=1, stop=matrix.shape[0] + 1)
+    df['AtomName'] = json.loads(nucleoside.jason['pdb_properties']['Atoms']) + json.loads(linker.jason['pdb_properties']['Atoms']) + json.loads(nucleoside.jason['pdb_properties']['Atoms'])
     df['AltLoc'] = ' '
     df['ResName'] = 'POS'     # This is temporary, just to see what the results are
     df['Chain'] = 'A'
@@ -404,7 +424,7 @@ def create_PDB_from_matrix(matrix, nucleoside, linker):
     df['Occupancy'] = '1.00'
     df['Temp'] = '0.00'
     df['SegmentID'] = str('   ')
-    df['ElementSymbol'] = ['P', 'O', 'O'] + json.loads(nucleoside.jason['pdb_properties']['Symbol']) 
+    df['ElementSymbol'] = json.loads(nucleoside.jason['pdb_properties']['Symbol']) + ['P', 'O', 'O'] + json.loads(nucleoside.jason['pdb_properties']['Symbol'])
 
     with open('testing_daedalus.pdb' ,'w') as pdb:
         for index, row in df.iterrows():

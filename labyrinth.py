@@ -1,9 +1,6 @@
+import sys, os, json
 import numpy as np
-import json
-import sys
-import os
 import labyrinth_func as LabF
-from matplotlib import pyplot as plt
 
 
 """ Create dictionary of the filename and their molecule code """
@@ -34,10 +31,8 @@ def Architecture(nucleic_acid):
     # Calculate the normal of C4'-C5'-O5' 
     v0 = nucleo.array[0] # O5'
     v1 = nucleo.array[1] # C5'
-    C5O5 = (v1 - v0) * -1.0        # I-hat , where origin is equal to v1
-
     # Get vector of normalized magnitude 
-    C5O5 = C5O5 / np.linalg.norm(C5O5)
+    C5O5 = LabF.return_normalized((v1 - v0) * -1.0)
 
     # angle of C5' - O5 ' - P in RADIANS
     _angleCOP = link.get_COP()
@@ -87,9 +82,7 @@ def Architecture(nucleic_acid):
     p1 = v0 - p_to_origin           # O5', with start at origin
 
     # Create vector on which we will rotate on vector(O5' - P) (when doing * -1.0 ; if not then P - O5') 
-    O5P = (p1 - p0)
-    # Normalise O5P
-    O5P /= np.linalg.norm(O5P)
+    O5P = LabF.return_normalized(p1 - p0)
 
     # get angle of O5' - P - OP2 in RADIANS from the linker.json
     _angleOPO = link.get_OPO2()
@@ -124,8 +117,7 @@ def Architecture(nucleic_acid):
     # Define the vector that goes from P to OP2 and normalize it
     Phosp = OP2_loc[0]
     OP2 = OP2_loc[2]
-    P_OP2 = (OP2 - Phosp)
-    P_OP2 /= np.linalg.norm(P_OP2)
+    P_OP2 = LabF.return_normalized(OP2 - Phosp)
 
     # Get rotMatrix and align my phosphate group - vector with the single vector; matrix rotation
     _quat_phosphate = LabF.get_quaternion(single_vector2 , vector_to_rotate_from=P_OP2)
@@ -142,24 +134,17 @@ def Architecture(nucleic_acid):
     OP2_loc3 = OP2_loc2 - p_to_origin
 
     # the P_O2 vector ( OP2 - P resulteert in P -> OP2 )
-    P_O2 = OP2_loc3[2] - OP2_loc3[0]
-    P_O2 /= np.linalg.norm(P_O2)
+    P_O2 = LabF.return_normalized(OP2_loc3[2] - OP2_loc3[0])
     # the P_O1 vector
-    P_O1 = OP2_loc3[1] - OP2_loc3[0]
-    P_O1 /= np.linalg.norm(P_O1)
-    # Calculate angle between these two and you will get the angle of OP1_P_OP2. 
-    # The order here does not matter
-    # the angle is automatically in radians
+    P_O1 = LabF.return_normalized(OP2_loc3[1] - OP2_loc3[0])
+    # Get angle
     angleLINKER = link.get_OPO1()
-    #angle between the two oxygens
-    #angleLINKER = np.arccos(np.dot(P_O1, P_O2)) * 180/np.pi
 
     # generate cone vector
     cone_vector3 = LabF.generate_cone_vector(angleLINKER)
 
     # generate the quaternion
     _quat3 = LabF.get_quaternion(O5P)
-    #_quat3 = LabF.get_quaternion(P_O2)
 
     # Rotate the cone vector on top of P_O2
     rotated_cone3 = LabF.rotate_with_quaternion(_quat3, cone_vector3)
@@ -180,10 +165,10 @@ def Architecture(nucleic_acid):
     #checkangle = LabF.get_angle_for_rM(single_vector3, O5P) * (180/np.pi)
     #printexit(checkangle, link.get_OPO1() * (180/np.pi))
     #printexit(checkdihr, link.get_OP1_dihedral())
+
     #------------ Now that we have the vector of interest, we rotate OP_1 onto it
 
     # generate quaternion
-    #_quat4 = LabF.get_quaternion(single_vector3, P_O1)
     _quat4 = LabF.get_quaternion_custom_axis(single_vector3, P_O1, P_O2 * -1.0)
 
     # rotate the vector
@@ -196,36 +181,67 @@ def Architecture(nucleic_acid):
 
 
 ######################### POSITION THE NEXT NUCLEOTIDE ####################################
+# Start with a the stacked array, that makes it easier
+    nucleotide = np.vstack((OP_final, nucleo.array))
+
+    # import the next nucleoside
+    nextnuc = LabF.Nucleoside(codex_acidum_nucleicum[nucleic_acid][0])
+
+#--------------- We start with creating the position for the O3'
+    # We create the two vectors, of the three, that make up the dihedral. Then we generate a set of vectors and look for the third vector.
+    C5O5_sec = LabF.return_normalized(nucleotide[3] - nucleotide[4])      # O5 - C5 makes this
+    O5P_sec = LabF.return_normalized(nucleotide[0] - nucleotide[3])       # P - O5' makes this direction
+
+    # We need the angle
+    _angleO3PO5 = link.get_O3PO5()
+
+    # We need the dihedral angle of interest
+    dihr_alpha = nextnuc.get_alpha()
+
+    # We need the dihedral angle, so we start off by generating a cone
+    cone_vector_next1 = LabF.generate_cone_vector(_angleO3PO5)
+
+    # Rotate the cone onto the vector of interest. We invert to get the angle between O5' - P - O3'
+    _quat_next1 = LabF.get_quaternion(O5P_sec * -1.0)
+
+    # Turn the cone_vector
+    rotated_cone_next1 = LabF.rotate_with_quaternion(_quat_next1, cone_vector_next1)
+
+    # Calculate the set of dihedral angles. Input the vectors in the reverse direction.
+    # if ( C5' - O5' - P - O3'), then ([P, O5', C5'], conevector O3')
+    range_of_dihedrals_next1 = LabF.praxeolitic_dihedralRANGE([nucleotide[0], nucleotide[3], nucleotide[4]], rotated_cone_next1)
+
+    # Get the interpolated dihedral angle
+    theta_interpolate_next1 = LabF.get_interpolated_dihedral(range_of_dihedrals_next1, dihr_alpha)
+
+    # generate and position the vector correctly
+    single_vector3 = LabF.generate_and_rotate_single_vector_QUAT(theta_interpolate_next1, _angleO3PO5, _quat_next1)
+
+    #------------------- Ok... now we have the vector
+    #   We create the vector P -> 03' and turn this vector onto single_vector3
+    #   Then, we we turn the entire nextnuc on top of this vector
+
+    # add single_vector3 to the end of phosphate linker, so that we position the location of O3'
+    P_O3 = LabF.resultant_vector_addition(LabF.return_normalized(single_vector3) * 1.6, nucleotide[0])
+
+    # Get distance from nextnuc O3' to the position defined as O3'
+    nextnuc_distance = P_O3 - nextnuc.array[28]
+    # Get the distance from the P_O3 now and add it to nextnuc_origin
+    #   which will move the entire molecule(nextnuc) to the position of O3'
+    nextnuc_loc = LabF.resultant_vector_addition(nextnuc.array, nextnuc_distance)
+
+    #### DONE
+
+    # OK, NOW WE GO FOR THE ZETA DIHEDRAL
 
 
 
 
-    LabF.create_PDB_from_matrix(np.vstack((OP_final, nucleo.array)), nucleo, link)
-#    # Turn the segment to the correct dihedral
-#    fig = plt.figure()
-#    ax = fig.add_subplot(111, projection='3d')
-#
-#    # vector of interest
-#    #ax.scatter(C5O5[0], C5O5[1], C5O5[2], color='gray')
-#    #rotated cone
-#    #ax.scatter(rotated_vector[:,0], rotated_vector[:,1], rotated_vector[:,2], color='green', alpha=0.5)
-#
-#    #original cone
-#    #ax.scatter(cone_vector[:,0], cone_vector[:,1], cone_vector[:,2], color='r', alpha=0.5)
-#
-#    #origin
-#    ax.scatter(0,0,0, color='black')
-#
-#    #rotated_vector
-#    ax.scatter(single_vector[0], single_vector[1], single_vector[2], color='green')
-#    ax.scatter(nucleo.array[:,0], nucleo.array[:,1],nucleo.array[:,2], color='blue')
-#    ax.scatter(OP2_loc[:,0], OP2_loc[:,1], OP2_loc[:,2], color='orange')
-#
-##    ax.set_zlim(-2,2)
-##    ax.set_xlim(-2,2)
-##    ax.set_ylim(-2,2)
-#    ax.set_xlabel('x_axis')
-#    ax.set_ylabel('y_axis')
-#    ax.set_zlabel('z_axis')
 
-#    plt.show()
+
+######################### CREATE THE PDB THAT GOES WITH ARRAY INPUTTED ####################
+    stacked_array = (nextnuc_loc, OP_final, nucleo.array)
+    LabF.create_PDB_from_matrix(np.vstack(stacked_array), nucleo, link)
+
+
+########################                    FINAL                    ###################### 

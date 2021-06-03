@@ -1,10 +1,10 @@
 """
 The python file that organises the labyrinth_func.py better
 """
+import numpy as np
 
 
-
-def check_slope_of_array(arr):
+def check_slope_of_array(arr : np.array) -> str:
     """ In labyrinth_func.py there is a function that retrieves the interpolated dihedral angle
     But it works on whether or not the list is ascending or descending
     That's what we need to figure out here now and return this """
