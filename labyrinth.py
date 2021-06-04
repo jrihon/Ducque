@@ -189,8 +189,8 @@ def Architecture(nucleic_acid):
 
 #--------------- We start with creating the position for the O3'
     # We create the two vectors, of the three, that make up the dihedral. Then we generate a set of vectors and look for the third vector.
-    C5O5_sec = LabF.return_normalized(nucleotide[3] - nucleotide[4])      # O5 - C5 makes this
-    O5P_sec = LabF.return_normalized(nucleotide[0] - nucleotide[3])       # P - O5' makes this direction
+    C5O5_sec = LabF.return_normalized(nucleotide[3] - nucleotide[4])      # O5' - C5' makes C5' -> O5' direction
+    O5P_sec = LabF.return_normalized(nucleotide[0] - nucleotide[3])       # P - O5' makes O5' -> P direction
 
     # We need the angle
     _angleO3PO5 = link.get_O3PO5()
@@ -223,7 +223,6 @@ def Architecture(nucleic_acid):
 
     # add single_vector3 to the end of phosphate linker, so that we position the location of O3'
     P_O3 = LabF.resultant_vector_addition(LabF.return_normalized(single_vector3) * 1.6, nucleotide[0])
-
     # Get distance from nextnuc O3' to the position defined as O3'
     nextnuc_distance = P_O3 - nextnuc.array[28]
     # Get the distance from the P_O3 now and add it to nextnuc_origin
@@ -232,9 +231,75 @@ def Architecture(nucleic_acid):
 
     #### DONE
 
-    # OK, NOW WE GO FOR THE ZETA DIHEDRAL
+#### OK, NOW WE GO FOR THE ZETA DIHEDRAL
+        # O5', P, O3', C3' are what the zeta dihedral consists of
+    O5_P3 = LabF.return_normalized(nucleotide[0] - nucleotide[3])       # P - O5' gets the direction of O5' -> P                    
+    P_O33 = LabF.return_normalized(P_O3 - nucleotide[0])                # O3' - P gets the direction of P -> O3'
+        # Get zeta dihedral value
+    zeta_dihr = nucleo.get_zeta()
+        # Get angle P_O3'_C3'
+    P_O3_C3 = 119.032 * (np.pi / 180)
+        # generate cone
+    cone_vector_next2 = LabF.generate_cone_vector(P_O3_C3)
+        # Get quaternion
+    _quat_next2 = LabF.get_quaternion(P_O33 * -1.0)
+        # Turn cone
+    rotated_cone_next2 = LabF.rotate_with_quaternion(_quat_next2, cone_vector_next2)
+        # interpolate dihedral. Zeta is O5' - P - O3' - C3', then [O3', P, O5']
+    range_of_dihedrals_next2 = LabF.praxeolitic_dihedralRANGE([P_O3, nucleotide[0],nucleotide[3]] , rotated_cone_next2)
+        # Get the interpolated dihedral angle
+    theta_interpolate_next2 = LabF.get_interpolated_dihedral(range_of_dihedrals_next2, zeta_dihr)
+        #LabF.check_phi_angle_of_vector(rotated_cone_next2, P_O33 * -1.0)
+    single_vector4 = LabF.generate_and_rotate_single_vector_QUAT(theta_interpolate_next2, P_O3_C3, _quat_next2)
 
+    # We have our vector, which is O3' -> C3', so now we rotate the the nextnuc onto it
+    # Get nextnuc's O3' atom to be in origin
+    dist_to_OG = nextnuc_loc[28]
+    nextnuc_locAtOG = LabF.move_vector_to_origin(nextnuc_loc, dist_to_OG)
 
+    # Rotate nextnuc_locAtOg onto the single_vector4
+    O3_C3 = LabF.return_normalized(nextnuc_locAtOG[23] - nextnuc_locAtOG[28])          # C3' - O3' gets the direction of O3' -> C3'
+    _quat_zeta = LabF.get_quaternion(single_vector4, O3_C3)
+
+    # Rotate nextnuc and move it into place
+    nextnuc_loc = LabF.rotate_with_quaternion(_quat_zeta, nextnuc_locAtOG)
+    nextnuc_loc = nextnuc_loc + dist_to_OG
+
+### OK, NOW WE GO FOR THE EPSILON DIHEDRAL
+    P_O34 = LabF.return_normalized(nextnuc_loc[28] - nucleotide[0])            # O3' - P returns a vector P -> O3' 
+    O3_C34 = LabF.return_normalized(nextnuc_loc[23] - nextnuc_loc[28])           # C3' - O3' returns a vector O3' -> C3'
+        #get epsilon dihedral
+    epsilon_dihr = nucleo.get_epsilon()
+    print(epsilon_dihr)
+        #get angle O3' - C3' - C4'
+    O3_C3_C4 = 111.919 * (np.pi/180)
+    increment_dihedral = 1 * (np.pi/180)
+        #generate cone
+    cone_vector_next3 = LabF.generate_cone_vector(O3_C3_C4)
+        # get quaternion
+    _quat_next3 = LabF.get_quaternion(O3_C34 * -1.0)
+        # Turn cone
+    rotated_cone_next3 = LabF.rotate_with_quaternion(_quat_next3, cone_vector_next3)
+        # generate range of dihedral. Epsilon is P - O3' - C3' - C4', se reverse it [C3', O3', P]
+    range_of_dihedrals_next3 = LabF.praxeolitic_dihedralRANGE([nextnuc_loc[23], nextnuc_loc[28], nucleotide[0]], rotated_cone_next3)
+        # interpolate said range of dihedrals
+    theta_interpolate_next3 = LabF.get_interpolated_dihedral(range_of_dihedrals_next3, epsilon_dihr)
+        # generate single vector
+    single_vector_next3 = LabF.generate_and_rotate_single_vector_QUAT(theta_interpolate_next3, O3_C3_C4, _quat_next3)
+        #LabF.check_phi_angle_of_vector(rotated_cone_next3, O3_C34 * -1.0)
+
+    ## now that we have the vector, rotate the nucleoside appropriately.
+    # get C3' to the origin
+    C3_from_OG = nextnuc_loc[23]
+    nuc_at_OG = LabF.move_vector_to_origin(nextnuc_loc, C3_from_OG)
+    nuc_vector_C3C4 = LabF.return_normalized(nuc_at_OG[4] - nuc_at_OG[23])              # C4' - C3' gives C3' -> C4'
+    axis_of_rot = LabF.return_normalized(nuc_at_OG[28] - nuc_at_OG[23]) * -1.0                # needs to be in C3' -> O3'
+    # We need to rotate around the direction of the vector C3' -> O3' (where we do O3_C34 * -1.0)
+    _quat_next4 = LabF.get_quaternion_custom_axis(single_vector_next3, nuc_vector_C3C4, axis_of_rot)
+
+    # turn the nucleoside and then put it back
+    rotated_nucatOG = LabF.rotate_with_quaternion(_quat_next4, nuc_at_OG)
+    nextnuc_loc = rotated_nucatOG + C3_from_OG
 
 
 

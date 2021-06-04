@@ -41,6 +41,9 @@ class Nucleoside:
     def get_zeta(self) -> float:
         return float(json.loads(self.jason['Dihedrals']['Backbone'])['zeta'])
 
+    def get_epsilon(self) -> float:
+        return float(json.loads(self.jason['Dihedrals']['Backbone'])['epsilon'])
+
 
 class Desmos(Nucleoside):
     """  We can just simply pass this in here for now, since we essentially copy the parent class """
@@ -274,10 +277,15 @@ def praxeolitic_dihedralSINGLE(json_array : np.ndarray, single_vector : np.ndarr
 def interpolate_dihedrals(tuple_dihr : Tuple[Tuple[float, float], Tuple[float, float]], angle_dihr : float) -> float:
     """
     y = y1 + [ (x - x1) / (x2 - x1) * (y2 - y1) ]
+
+    tuple_dihr = ( (rad1, degrees1), (rad2, degrees2) )
+
+    The y's are the theta angles, indexed by the keys of the dictionary being parsed
     """
-    # tuple_dihr = ( (rad1, degrees1), (rad2, degrees2) )
-    # the y's are the theta angles, indexed by the keys of the dictionary being parsed 
-    #print(tuple_dihr)
+    # Print out the tuple dihedral and the angle. Just to see how it comes out
+    #print(tuple_dihr, angle_dihr)
+
+    # Calculate the interpolated angle
     y2 = tuple_dihr[0][0]           # radians in the cone generator function after dihedral of interest
     y1 = tuple_dihr[1][0]           # radians in the cone generator functionbefore dihedral of interest
     x2 = tuple_dihr[0][1]           # value of degrees in the cone generator function after ..
@@ -294,7 +302,7 @@ def get_interpolated_dihedral(ls_dihedrals : np.ndarray, dihr_of_interest : floa
         between three atoms and the cone of vectors, which represent the atom of interest.
     Then we use the value we know is the correct dihedral angle and we check which in between
         which vectors the value of interest is.
-    We then use the index of the two vectors and retrieve the theta angle, because we rotated the cone 
+    We then use the index of the two vectors and retrieve the theta angle, because we rotated the cone
         in a certain way, but the order still matters. Theta is used to generate the cone vector
         With the two theta values in place, we interpolate between the theta and the calculated dihedral angles.
         The returned value theta is the exact theta angle we need to use in order to generate
@@ -405,6 +413,10 @@ def position_linker(O5_nucleoAtom : np.array, P_vector : np.array, linker : np.n
 def resultant_vector_addition(array_of_molecules : np.ndarray, distance_to_loc : np.array) -> np.ndarray:
     """ Move the array of vectors from the origin to the place you want to have it"""
     return array_of_molecules + distance_to_loc
+
+def move_vector_to_origin(array_of_molecules : np.array, distance_to_origin : np.array) -> np.ndarray:
+    """ Move the vector to the origin by the distance of a specific atom to that origin """
+    return array_of_molecules - distance_to_origin
 
 
 def create_PDB_from_matrix(matrix : np.ndarray, nucleoside : np.ndarray, linker : np.ndarray) -> None:
