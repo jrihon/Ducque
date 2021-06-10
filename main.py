@@ -26,7 +26,7 @@ options.add_argument('--pdb',
 options.add_argument('--json',
                      help='Input the json of the nucleic you want to convert to pdb')
 
-options.add_argument('--Daedalus',
+options.add_argument('--Daedalus', type=argparse.FileType("r"),
         help='Ask the software what you want it to build')
 
 options.add_argument('--help', action='help',
@@ -37,6 +37,10 @@ arguments = options.parse_args()
 if len(sys.argv) == 1:
     options.print_help()
     sys.exit(0)
+else:
+    if arguments.Daedalus:
+        # Read the input file and create a list object of the sequence. Removes any whitespace.
+        fileDaedalus = list(map(lambda x: x.strip(), arguments.Daedalus.readline().strip("\n").split(",")))
 
 try:
     if arguments.pdb and arguments.json:
@@ -70,7 +74,7 @@ def main():
         sys.exit(0)
 
     if arguments.Daedalus:
-        labyrinth.Architecture(arguments.Daedalus)
+        labyrinth.Architecture(fileDaedalus)
 
     print('Time spent: %.5f seconds.' % (time() - t0))
 # ---------------------------------------- S T A R T   T H E   S H O W ----------------------------------------

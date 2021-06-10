@@ -24,9 +24,11 @@ def printexit(*arg):
     sys.exit(0)
 
 
-def Architecture(nucleic_acid):
+def Architecture(nucleic_acid_list):
 
     ## PARSE DATA FROM JSON
+    nucleic_acid = nucleic_acid_list[0]
+
     # Parse dictionary for the correct filename; input(DT) - output(dna_thymidine.json)
     nucleo = LabF.Nucleoside(codex_acidum_nucleicum[nucleic_acid][0])
 
@@ -107,7 +109,10 @@ def Architecture(nucleic_acid):
     nucleotide = np.vstack((link, nucleo.array))
 
     # import the next nucleoside
-    nextnuc = LabF.Nucleoside(codex_acidum_nucleicum[nucleic_acid][0])
+    nextnuc_acid = nucleic_acid_list[1]
+
+    # Parse dictionary for the correct filename; input(DT) - output(dna_thymidine.json)
+    nextnuc = LabF.Nucleoside(codex_acidum_nucleicum[nextnuc_acid][0])
 
 #### We position the nextnuc by the position of O3' and then rotate it correctly by the zeta dihedral
 
@@ -149,7 +154,7 @@ def Architecture(nucleic_acid):
     nextnuc_loc = LFT1.rotate_with_quaternion(quaternion_zeta, nextnuc_loc_tmp)
     nextnuc_loc = nextnuc_loc + distance_to_origin
 
-#------------ Roate nextnuc correctly along epsilon
+#------------ Rotate nextnuc correctly along epsilon
     # P(v3) - O3'(v6) - C3'(v7) - C2' dihedral
 
     # override the current C3' vector, since we changed its location
@@ -180,7 +185,7 @@ def Architecture(nucleic_acid):
 
 ######################### CREATE THE PDB THAT GOES WITH ARRAY INPUTTED ####################
     stacked_array = (nextnuc_loc, link, nucleo.array)
-    LFT1.create_PDB_from_matrix(np.vstack(stacked_array), nucleo, linker)
+    LabF.create_PDB_from_matrix(np.vstack(stacked_array), nucleic_acid_list)
 
 
 ########################                    FINAL                    ###################### 

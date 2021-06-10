@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 import numpy.linalg as LA
 from scipy.spatial.transform import Rotation as R
 
@@ -364,32 +363,6 @@ def move_vector_to_origin(array_of_molecules : np.array, distance_to_origin : np
     """ Move the vector to the origin by the distance of a specific atom to that origin """
     return array_of_molecules - distance_to_origin
 
-
-def create_PDB_from_matrix(matrix : np.ndarray, nucleoside : np.ndarray, linker : np.ndarray) -> None:
-    print("Writing to pdb ...")
-
-    df = pd.DataFrame()
-
-    df['RecName'] = ['ATOM' for x in range(matrix.shape[0])]
-    df['AtomNum'] = np.arange(start=1, stop=matrix.shape[0] + 1)
-    df['AtomName'] = json.loads(nucleoside.jason['pdb_properties']['Atoms']) + json.loads(linker.jason['pdb_properties']['Atoms']) + json.loads(nucleoside.jason['pdb_properties']['Atoms'])
-    df['AltLoc'] = ' '
-    df['ResName'] = 'POS'     # This is temporary, just to see what the results are
-    df['Chain'] = 'A'
-    df['Sequence'] = str(1)
-    df['X_coord'] = list(map(lambda x: '{:.3f}'.format(x), matrix[:,0]))
-    df['Y_coord'] = list(map(lambda x: '{:.3f}'.format(x), matrix[:,1]))
-    df['Z_coord'] = list(map(lambda x: '{:.3f}'.format(x), matrix[:,2]))
-    df['Occupancy'] = '1.00'
-    df['Temp'] = '0.00'
-    df['SegmentID'] = str('   ')
-    df['ElementSymbol'] = json.loads(nucleoside.jason['pdb_properties']['Symbol']) + ['P', 'O', 'O'] + json.loads(nucleoside.jason['pdb_properties']['Symbol'])
-
-    with open('testing_daedalus.pdb' ,'w') as pdb:
-        for index, row in df.iterrows():
-            split_line = [ row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13] ]
-            pdb.write('%-6s%5s%5s%s%s%2s%5s   %8s%8s%8s%6s%6s%4s      %2s\n' % tuple(split_line))
-        pdb.write('END')
 
 ##---------------------------- EULER ANGLE ROTATION MATRIX, NOT USED ANYMORE ----------------##
 #def generate_and_rotate_single_vector_EULER(interpolated_theta_angle, phi, rotation_matrix):

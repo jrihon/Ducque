@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import json, sys
 
 import labyrinth_func_tools1 as LFT1
@@ -13,11 +14,11 @@ The functions that run the matrix rotations
 class Nucleoside:
 
     def __init__(self, jsonfile):
-        self.splitted = jsonfile.split(".")[0]
 
         with open(jsonfile, "r") as jsonf:
             self.jason = json.load(jsonf)
 
+        self.splitted = jsonfile.split(".")[0]
         self.array =  np.asarray(json.loads(self.jason["pdb_properties"]["Coordinates"]), dtype=float)
         self.atom_list = json.loads(self.jason["pdb_properties"]["Atoms"])
 
@@ -96,5 +97,34 @@ def generate_vector_of_interest(angle : float, dihedral : float, atom_array : np
     return single_vector
 
 
+def create_PDB_from_matrix(matrix : np.ndarray, list_of_sequence : list) -> None:
+    print("Writing to pdb ...")
 
+    # Parse From json
+    #   -AtomName : CHECK
+    #   -Sequence should be deduced from the shape of the nucleoside and the linker : CHECK
+    #   -Residue name, but can't be arsedi : CHECK
+    #   - Elementsymbol parsed the sane way that AtomName will be parsed : CHECK
+    df = pd.DataFrame()
+
+    df['RecName'] = ['ATOM' for x in range(matrix.shape[0])]
+    df['AtomNum'] = np.arange(start=1, stop=matrix.shape[0] + 1)
+    df['AtomName'] = LFT2.pdb_AtomNames_or_ElementSymbol(list_of_sequence, "Atoms")
+    df['AltLoc'] = ' '
+    df['ResName'] = LFT2.pdb_Residuename(list_of_sequence)
+    df['Chain'] = 'A'
+    df['Sequence'] = LFT2.pdb_Sequence(list_of_sequence)
+    df['X_coord'] = list(map(lambda x: '{:.3f}'.format(x), matrix[:,0]))
+    df['Y_coord'] = list(map(lambda x: '{:.3f}'.format(x), matrix[:,1]))
+    df['Z_coord'] = list(map(lambda x: '{:.3f}'.format(x), matrix[:,2]))
+    df['Occupancy'] = '1.00'
+    df['Temp'] = '0.00'
+    df['SegmentID'] = str('   ')
+    df['ElementSymbol'] = LFT2.pdb_AtomNames_or_ElementSymbol(list_of_sequence, "Symbol")
+
+    with open('testing_daedalus.pdb' ,'w') as pdb:
+        for index, row in df.iterrows():
+            split_line = [ row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13] ]
+            pdb.write('%-6s%5s%5s%s%s%3s%5s  %8s%8s%8s%6s%6s%4s      %2s\n' % tuple(split_line))
+        pdb.write('END')
 
