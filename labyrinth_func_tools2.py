@@ -43,11 +43,26 @@ def pdb_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : str) ->
     """ Loads in the atom names from the json files
     The identifier is either the string "Atoms" or the string "ElementSymbol", which will parse the list of interest """
 
+    # reverse the sequence of the list, because we build to sequence from the bottom up
+    list_of_sequence.reverse()
+
+    # Initialise an empty list
     atom_list = []
 
     for i in range(len(list_of_sequence)):
 
-        # If it is the last nucleotide in the sequence
+        # If it is the first in the nucleotide sequence, meaning the last in the nucleotide sequence
+        if i == 0:
+            buildingblock = list_of_sequence[i]
+            # Make json object of nucleoside
+            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            with open(nucleoside, "r") as nuc:
+                nucleoside = json.load(nuc)
+
+            tmp_atomlist = json.loads(nucleoside["pdb_properties"][identifier])
+            atom_list = atom_list + tmp_atomlist
+
+        # If it is the last in the reversed sequence, meaning the first nucleotide
         if (i + 1) == len(list_of_sequence):
             buildingblock = list_of_sequence[i]
 
@@ -56,32 +71,41 @@ def pdb_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : str) ->
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
-            tmp_atomlist = json.loads(nucleoside["pdb_properties"][identifier])
-            atom_list = tmp_atomlist + atom_list
+            # Make json object of linker
+            linker = labyrinth.codex_acidum_nucleicum[buildingblock][1]
+            with open(linker, "r") as lnk:
+                linker = json.load(lnk)
 
-            # Return the output of the atom_list, as this is the last nucleotide in the sequence
+            tmp_atomlist = json.loads(linker["pdb_properties"][identifier]) + json.loads(nucleoside["pdb_properties"][identifier])
+
+            atom_list = atom_list + tmp_atomlist
+
             return atom_list
 
-        # since this is not the last one, just carry on as usual
-        buildingblock = list_of_sequence[i]
+        if (i + 1) == len(list_of_sequence):
+            # since this is not the last one, just carry on as usual
+            buildingblock = list_of_sequence[i]
 
-        # Make json object of nucleoside
-        nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
-        with open(nucleoside, "r") as nuc:
-            nucleoside = json.load(nuc)
+            # Make json object of nucleoside
+            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            with open(nucleoside, "r") as nuc:
+                nucleoside = json.load(nuc)
 
-        # Make json object of linker
-        linker = labyrinth.codex_acidum_nucleicum[buildingblock][1]
-        with open(linker, "r") as lnk:
-            linker = json.load(lnk)
+            # Make json object of linker
+            linker = labyrinth.codex_acidum_nucleicum[buildingblock][1]
+            with open(linker, "r") as lnk:
+                linker = json.load(lnk)
 
-        tmp_atomlist = json.loads(linker["pdb_properties"][identifier]) + json.loads(nucleoside["pdb_properties"][identifier])
+            tmp_atomlist = json.loads(linker["pdb_properties"][identifier]) + json.loads(nucleoside["pdb_properties"][identifier])
 
-        atom_list = tmp_atomlist + atom_list
+            atom_list = atom_list + tmp_atomlist
 
 
 def pdb_Sequence(list_of_sequence : list) -> np.array :
     """ Determines the number in the sequence of the nucleotides in the strands based off on the shape of their array  """
+
+    # reverse the sequence of the list, because we build to sequence from the bottom up
+    list_of_sequence.reverse()
 
     # Initialise an empty array
     sequence_array = np.array([], dtype=int)
@@ -91,8 +115,8 @@ def pdb_Sequence(list_of_sequence : list) -> np.array :
 
     for i in range(len(list_of_sequence)):
 
-        # If it is the last nucleotide in the sequence
-        if (i + 1) == len(list_of_sequence):
+        # If it is the first in the nucleotide sequence, meaning the last in the nucleotide sequence
+        if i == 0:
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
@@ -103,40 +127,66 @@ def pdb_Sequence(list_of_sequence : list) -> np.array :
             nuc_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0]
             tmp_seqarray = np.full(nuc_shape, seq_count, dtype=int)
 
-            sequence_array = np.concatenate((tmp_seqarray, sequence_array), axis=None)
+            seq_count += 1
+
+            sequence_array = np.concatenate((sequence_array, tmp_seqarray), axis=None)
+
+        # If it is the last in the reversed sequence, meaning the first nucleotide
+        if (i + 1) == len(list_of_sequence):
+            buildingblock = list_of_sequence[i]
+
+            # Make json object of nucleoside
+            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            with open(nucleoside, "r") as nuc:
+                nucleoside = json.load(nuc)
+
+            # Make json object of linker
+            linker = labyrinth.codex_acidum_nucleicum[buildingblock][1]
+            with open(linker, "r") as lnk:
+                linker = json.load(lnk)
+
+            nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0]
+            tmp_seqarray = np.full(nucleotide_shape, seq_count, dtype=int)
+
+            sequence_array = np.concatenate((sequence_array, tmp_seqarray), axis=None)
 
             # Return the output of the atom_list, as this is the last nucleotide in the sequence
             return sequence_array
 
-        # since this is not the last one, just carry on as usual
-        buildingblock = list_of_sequence[i]
+        # since this is not the last one or the first one, just carry on as usual
+        if not i == 0 and not (i+1) == len(list_of_sequence):
+            buildingblock = list_of_sequence[i]
 
-        # Make json object of nucleoside
-        nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
-        with open(nucleoside, "r") as nuc:
-            nucleoside = json.load(nuc)
+            # Make json object of nucleoside
+            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            with open(nucleoside, "r") as nuc:
+                nucleoside = json.load(nuc)
 
-        # Make json object of linker
-        linker = labyrinth.codex_acidum_nucleicum[buildingblock][1]
-        with open(linker, "r") as lnk:
-            linker = json.load(lnk)
+            # Make json object of linker
+            linker = labyrinth.codex_acidum_nucleicum[buildingblock][1]
+            with open(linker, "r") as lnk:
+                linker = json.load(lnk)
 
-        nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0]
-        tmp_seqarray = np.full(nucleotide_shape, seq_count, dtype=int)
+            nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0]
+            tmp_seqarray = np.full(nucleotide_shape, seq_count, dtype=int)
 
-        seq_count += 1
+            seq_count += 1
 
-        sequence_array = np.concatenate((tmp_seqarray, sequence_array), axis=None)
+            sequence_array = np.concatenate((sequence_array, tmp_seqarray), axis=None)
+
 
 def pdb_Residuename(list_of_sequence : list) -> list:
+
+    # reverse the sequence of the list, because we build to sequence from the bottom up
+    list_of_sequence.reverse()
 
     # Initialise an empty array
     resname_list = []
 
     for i in range(len(list_of_sequence)):
 
-        # If it is the last nucleotide in the sequence
-        if (i + 1) == len(list_of_sequence):
+        # If it is the first in the nucleotide sequence, meaning the last in the nucleotide sequence
+        if i == 0:
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
@@ -148,27 +198,48 @@ def pdb_Residuename(list_of_sequence : list) -> list:
             ID = json.loads(nucleoside["Identity"])[2]
 
             tmp_resname = [ID for i in range(nuc_shape)]
-            resname_list = tmp_resname + resname_list
+            resname_list = resname_list + tmp_resname
 
+        # If it is the last nucleotide in the sequence
+        if (i + 1) == len(list_of_sequence):
+            buildingblock = list_of_sequence[i]
+
+            # Make json object of nucleoside
+            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            with open(nucleoside, "r") as nuc:
+                nucleoside = json.load(nuc)
+
+            # Make json object of linker
+            linker = labyrinth.codex_acidum_nucleicum[buildingblock][1]
+            with open(linker, "r") as lnk:
+                linker = json.load(lnk)
+
+            nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0]
+            ID = json.loads(nucleoside["Identity"])[2]
+
+            tmp_resname = [ID for i in range(nucleotide_shape)]
+            resname_list = resname_list + tmp_resname
             # Return the output of the atom_list, as this is the last nucleotide in the sequence
             return resname_list
 
-        # since this is not the last one, just carry on as usual
-        buildingblock = list_of_sequence[i]
 
-        # Make json object of nucleoside
-        nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
-        with open(nucleoside, "r") as nuc:
-            nucleoside = json.load(nuc)
+        # since this is not the last one or the first one, just carry on as usual
+        if not i == 0 and not (i+1) == len(list_of_sequence):
+            buildingblock = list_of_sequence[i]
 
-        # Make json object of linker
-        linker = labyrinth.codex_acidum_nucleicum[buildingblock][1]
-        with open(linker, "r") as lnk:
-            linker = json.load(lnk)
+            # Make json object of nucleoside
+            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            with open(nucleoside, "r") as nuc:
+                nucleoside = json.load(nuc)
 
-        nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0]
-        ID = json.loads(nucleoside["Identity"])[2]
+            # Make json object of linker
+            linker = labyrinth.codex_acidum_nucleicum[buildingblock][1]
+            with open(linker, "r") as lnk:
+                linker = json.load(lnk)
 
-        tmp_resname = [ID for i in range(nucleotide_shape)]
-        resname_list = tmp_resname + resname_list
+            nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0]
+            ID = json.loads(nucleoside["Identity"])[2]
+
+            tmp_resname = [ID for i in range(nucleotide_shape)]
+            resname_list = resname_list + tmp_resname
 
