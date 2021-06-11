@@ -340,18 +340,20 @@ def get_interpolated_dihedral(ls_dihedrals : np.ndarray, dihr_of_interest : floa
                 return interpolate_dihedrals(dihr_boundaries, dihr_of_interest)
 
 
-def position_linker(O5_nucleoAtom : np.array, P_vector : np.array, linker : np.ndarray) -> np.ndarray:
-    """ Get the translation vector of the linker and then move.
-    Returns the position at which we move the linker segment to.
+def position_phosphate(atom_to_attach : np.array, P_vector : np.array, linker : np.ndarray) -> np.ndarray:
+    """ atom_to_attach : the vector of the atom to which we add the P_vector to,
+        to calculate the position of the phosphorus in the phosphate linker.
+        P_vector : vector that was calculated for and defines the position of where the linker should be (loc of phosphorus atom).
     """
-    # Stretch the normalized vector; get the position of the P_atom
-    p_position = O5_nucleoAtom + (P_vector * 1.6)
+    # Stretch the normalized vector by 1.6 (distance in aengstrom from O -> P); get the position of the P_atom
+    P_loc = atom_to_attach + (P_vector * 1.6)
 
     #Get the distance required to move the linker to the P_atom position
-    p_move_to = p_position - linker.get_P()
+    # Since we use this to only position the phosphate, we can safely hardcode the index of the vector in the array
+    p_move_to = P_loc - linker[0]
 
     # move the entire linker to the P_atom position
-    return p_move_to + linker.array
+    return p_move_to + linker
 
 
 def move_vector_to_loc(array_of_molecules : np.ndarray, distance_to_loc : np.array) -> np.ndarray:
