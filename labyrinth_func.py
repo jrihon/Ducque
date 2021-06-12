@@ -194,80 +194,81 @@ def position_next_nucleotide(next_nucleoside, prev_nucleoside, prev_linker, lead
 
     shape_linker = prev_linker.get_shape()
     id_v1 = LFT2.retrieve_atom_index(prev_nucleoside, "O5'") + shape_linker
-    v1 = leading_strand[id_O5]
+    v1 = leading_strand[id_v1]
 
     id_v0 = LFT2.retrieve_atom_index(prev_nucleoside, "C5'") + shape_linker
-    v0 = leading_strand[id_C5]
+    v0 = leading_strand[id_v0]
 
-    id_v2 = LFT2.retrieve_atom_index(prev_linker,"P")]
+    id_v2 = LFT2.retrieve_atom_index(prev_linker,"P")
     v2 = leading_strand[id_v2]
 
     # We position the nextnuc by the position of O3'
-    single_vector1 = LabF.generate_vector_of_interest(prev_linker.get_O3PO5(), next_nucleoside.get_alpha(), [v2, v1, v0])
+    single_vector1 = generate_vector_of_interest(prev_linker.get_O3PO5(), next_nucleoside.get_alpha(), [v2, v1, v0])
 
-    # Add single_vector4 to , so that we define the location of O3'
+    # Add single_vector1 to , so that we define the location of O3'
     # Multiply the normalised vector by 1.6, since 1.6 aengstrom is the distance P -> O3'
     v3 = LFT1.move_vector_to_loc(LFT1.return_normalized(single_vector1) * 1.6, v2)
 
-    # Retrieve the vector of the newly created v3 and bring the next_nucleoside from v3_old to v3
-    id_O3 = LFT2.retrieve_atom_index(next_nucleoside, "O3'")
-    # Get distance from nextnuc O3' to the position defined as O3'
-    O3_distance_from_origin = nextnuc.array[id_O3]
-    nextnuc_distance = v6 - O3_distance_from_origin
-    # Get the distance from the P_O3 now and add it to nextnuc_origin
-    #   which will move the entire molecule(nextnuc) to the position of O3'
-    nextnuc_loc = LFT1.move_vector_to_loc(nextnuc.array, nextnuc_distance)
+    ## Retrieve the vector of the newly created v3 and bring the next_nucleoside from v3_old to v3
+    # Get vector of v3_old
+    id_v3 = LFT2.retrieve_atom_index(next_nucleoside, "O3'")
+    # Get distance from next_nucleoside O3' (v3_old) to the position defined as O3' (v3)
+    v3_old = next_nucleoside.array[id_v3]
+    distance_v3_v3_old = v3 - v3_old
+    # Get the distance from the P -> O3' now and add it to nextnuc_origin which will move the entire molecule(nextnuc) to the position of O3'
+    next_nucleoside_loc = LFT1.move_vector_to_loc(next_nucleoside.array, distance_v3_v3_old)
 
-    #------------ Rotate nextnuc correctly along zeta
-    # O5' (v2), P (v3), O3' (v6), C3'
+    ## Now, we define the next dihedral and find the atom. This is likely to be zeta, so we rotate over zeta afterwards
+    # O5' (v1), P (v2), O3' (v3), C3'
     P_O3_C3 = 119.032 * (np.pi / 180)
-    zeta_dihr = nucleoside.get_zeta()
+    zeta_dihr = next_nucleoside.get_zeta()
 
-    v2 = nucleotide[LFT2.retrieve_atom_index(nucleoside, "O5'") + linker.get_shape()]
-    single_vector5 = LabF.generate_vector_of_interest(P_O3_C3, zeta_dihr, [v6, v_P, d2])
+    single_vector2 = generate_vector_of_interest(P_O3_C3, zeta_dihr, [v3, v2, v1])
 
-    # We have our vector, which is O3' -> C3', so now we rotate the the nextnuc onto it
+    # We have our vector, which is O3' -> C3', so now we rotate next_nucleoside onto single_vector2
+    id_v4 = LFT2.retrieve_atom_index(next_nucleoside, "C3'")
+    v4 = next_nucleoside_loc[id_v4]
+    p4 = LFT1.return_normalized(v4 - v3)                                                    # C3' - O3' gets the direction of O3' -> C3'
+    quaternion_zeta = LFT1.get_quaternion(single_vector2, p4)
+
+    # Move next_nucleoside to the origin, rotate it and move it back into place
     # Get nextnuc's O3' atom to be in origin
-    distance_to_origin = nextnuc_loc[id_O3]
-    nextnuc_loc_tmp = LFT1.move_vector_to_origin(nextnuc_loc, distance_to_origin)
+    distance_to_origin = next_nucleoside_loc[id_v3]
 
-    # rotate the vector O3' -> C3' onto single_vector5
-    id_C3 = LFT2.retrieve_atom_index(nextnuc, "C3'")
-    v7 = nextnuc_loc[id_C3]
-    O3_C3 = LFT1.return_normalized(v7 - v6)          # C3' - O3' gets the direction of O3' -> C3'
-    quaternion_zeta = LFT1.get_quaternion(single_vector5, O3_C3)
+    next_nucleoside_originloc = LFT1.move_vector_to_origin(next_nucleoside_loc, distance_to_origin)
+    next_nucleoside_originloc = LFT1.rotate_with_quaternion(quaternion_zeta, next_nucleoside_originloc)
+    next_nucleoside_loc = LFT1.move_vector_to_loc(next_nucleoside_originloc, distance_to_origin)
 
-    # Rotate nextnuc and move it into place
-    nextnuc_loc = LFT1.rotate_with_quaternion(quaternion_zeta, nextnuc_loc_tmp)
-    nextnuc_loc = nextnuc_loc + distance_to_origin
+    ## Now, we define the next dihedral and find the atom. This is likely to be epsilon, so we find C4' position and then rotate around epsilon.
+    # P(v2) - O3'(v3) - C3'(v4) - C4' dihedral
 
-    #------------ Rotate nextnuc correctly along epsilon
-    # P(v3) - O3'(v6) - C3'(v7) - C2' dihedral
-
-    # override the current C3' vector, since we changed its location
-    v7 = nextnuc_loc[id_C3]
-
-    # Get epsilon dihedral
-    epsilon_dihr = nucleoside.get_epsilon()
-    # Get angle O3' - C3' - C4'
+    # Get epsilon dihedral and get angle O3' - C3' - C4'
+    epsilon_dihr = next_nucleoside.get_epsilon()
     O3_C3_C4 = 111.919 * (np.pi/180)
 
-    single_vector6 = LabF.generate_vector_of_interest(O3_C3_C4, epsilon_dihr, [v7, v6, v_P])
+    # override the current C3' vector, since we changed its location, and generate a vector
+    v4 = next_nucleoside_loc[id_v4]
+    single_vector3 = generate_vector_of_interest(O3_C3_C4, epsilon_dihr, [v4, v3, v2])
 
-    ## now that we have the vector, rotate the nucleoside appropriately.
+    # now that we have the vector, rotate the nucleoside appropriately, around epsilon presumably
     # get C3' and use it as the distance of the atom of interest to the origin
-    C3_vector = nextnuc_loc[id_C3]
-    # get C4'
-    C4_vector = nextnuc_loc[LFT2.retrieve_atom_index(nextnuc, "C4'")]
-    nuc_at_OG = LFT1.move_vector_to_origin(nextnuc_loc, C3_vector)
-    nuc_vector_C3C4 = LFT1.return_normalized(C4_vector - C3_vector)                 # C4' - C3' gives C3' -> C4'
+    id_v5 = LFT2.retrieve_atom_index(next_nucleoside, "C4'") # Get C4'
+    v5 = next_nucleoside_loc[id_v5]
+    distance_to_origin = next_nucleoside_loc[id_v4]
 
-    O3_C3 = LFT1.return_normalized(nuc_at_OG[id_C3] - nuc_at_OG[id_O3])             # needs to be in O3' -> C3' for some reason
+    next_nucleoside_originloc = LFT1.move_vector_to_origin(next_nucleoside_loc, distance_to_origin)
+    # the current distance_to_origin variable is the same as the C3' vector of the next_nucleoside.array
+    p5 = LFT1.return_normalized(v5 - distance_to_origin)                           # C4' - C3' gives C3' -> C4'
+
+    # Direction axis over which we rotate
+    rot_axis_O3_C3 = LFT1.return_normalized(v4 - v3)                                                     # needs to be in O3' -> C3' for some reason
 
     # We need to rotate around the direction of the vector O3' -> C3'
-    quaternion_epsilon = LFT1.get_quaternion_custom_axis(single_vector6, nuc_vector_C3C4,rotation_axis = O3_C3)
-    rotated_nucatOG = LFT1.rotate_with_quaternion(quaternion_epsilon, nuc_at_OG)
-    nextnuc_loc = rotated_nucatOG + C3_vector
+    quaternion_epsilon = LFT1.get_quaternion_custom_axis(single_vector3, p5, rotation_axis = rot_axis_O3_C3)
+    next_nucleoside_originloc = LFT1.rotate_with_quaternion(quaternion_epsilon, next_nucleoside_originloc)
+    next_nucleoside_loc = next_nucleoside_originloc + distance_to_origin
+
+    return next_nucleoside_loc
 
 
 def create_PDB_from_matrix(matrix : np.ndarray, list_of_sequence : list) -> None:
