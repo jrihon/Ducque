@@ -114,25 +114,6 @@ def apply_subsequent_rotation(quaternion : np.array, nucleoside_array : np.ndarr
     return nucleoside_array
 
 
-def get_quaternion_custom_axis(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : np.ndarray, rotation_axis : np.ndarray):
-    """ Generate quaternion for when you already have the axis of rotation"""
-
-    # normalise the axis
-    axis = rotation_axis / LA.norm(rotation_axis)                            # DIRECTION
-    # angle already in radians 
-    theta = get_angle_for_rM(vector_to_rotate_from, vector_to_rotate_onto)       # ANGLE
-
-    # Create the quaternion
-    qx = axis[0] * np.sin(theta/2)
-    qy = axis[1] * np.sin(theta/2)
-    qz = axis[2] * np.sin(theta/2)
-    qw = np.cos(theta/2)
-
-    quaternion = R.from_quat([qx, qy, qz, qw])
-
-    return quaternion
-
-
 def rotate_with_quaternion(quaternion, vector : np.ndarray) -> np.ndarray:
     """ Vector rotation through quaternion mathematics"""
 
@@ -391,6 +372,23 @@ def move_vector_to_origin(array_of_molecules : np.array, distance_to_origin : np
 
 
 ##---------------------------- EULER ANGLE ROTATION MATRIX, NOT USED ANYMORE ----------------##
+#def get_quaternion_custom_axis(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : np.ndarray, rotation_axis : np.ndarray):
+#    """ Generate quaternion for when you already have the axis of rotation"""
+#
+#    # normalise the axis
+#    axis = rotation_axis / LA.norm(rotation_axis)                            # DIRECTION
+#    # angle already in radians 
+#    theta = get_angle_for_rM(vector_to_rotate_from, vector_to_rotate_onto)       # ANGLE
+#
+#    # Create the quaternion
+#    qx = axis[0] * np.sin(theta/2)
+#    qy = axis[1] * np.sin(theta/2)
+#    qz = axis[2] * np.sin(theta/2)
+#    qw = np.cos(theta/2)
+#
+#    quaternion = R.from_quat([qx, qy, qz, qw])
+#
+#    return quaternion
 #def generate_and_rotate_single_vector_EULER(interpolated_theta_angle, phi, rotation_matrix):
 #
 #    ### PHI NEEDS TO BE IN RADIANS
