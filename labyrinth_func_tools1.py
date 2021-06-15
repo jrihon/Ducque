@@ -90,6 +90,30 @@ def get_quaternion(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : n
     return quaternion
 
 
+def apply_subsequent_rotation(quaternion : np.array, nucleoside_array : np.ndarray, index_of_vectors : list) -> np.ndarray :
+    """ This functions applies a second rotation to the nucleoside. The problem here is that we cannot use a custom axis, since direction axises are always perpendicular to the two vectors.
+        This is why we rotate the array as usual. But we only override the vectors that we actually want to rotate.
+        This way, we effectively rotate over a certain bond, but the mathematical part just did a copy-paste of the vectors we really want
+        index_of_vectors : the vectors (or the atoms) that we do not want to have rotated. These will be cut out the list of indices.
+        """
+    # Get size of the array, then make a list of the range of indices to emulate the indices of the array we calculate with
+    size_of_array = nucleoside_array.shape[0]
+    list_of_indices = [i for i in range(size_of_array)]
+
+    # Remove index of the vectors of array that we do not want to rotate, so we do not override them later in this function
+    for index in index_of_vectors:
+        list_of_indices.remove(index)
+
+    # apply rotation
+    tmp_rotated_vector = quaternion.apply(nucleoside_array)
+
+    # Override the vectors into the nucleoside_array, ofcourse already having ommited the vectors you do not want to override
+    for i in list_of_indices:
+        nucleoside_array[i] = tmp_rotated_vector[i]
+
+    return nucleoside_array
+
+
 def get_quaternion_custom_axis(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : np.ndarray, rotation_axis : np.ndarray):
     """ Generate quaternion for when you already have the axis of rotation"""
 
@@ -188,16 +212,16 @@ def dihedral_array(atoms_in_dihr : np.ndarray, cone_vector : np.ndarray) -> np.n
     return dihedrals
 
 
-def dihedral_single(atoms_in_dihrjson_array : np.ndarray, single_vector : np.ndarray) -> np.ndarray:
+def dihedral_single(first : float, second : float, third : float, fourth : float) -> float:
 
-    v2 = atoms_in_dihr[0] # O5'
-    v1 = atoms_in_dihr[1] # C5'
-    v0 = atoms_in_dihr[2] # C4'
-    v3 = single_vector # Supposed P
+    v2 = third              # O5'
+    v1 = second             # C5'
+    v0 = first              # C4'
+    v3 = fourth             # Supposed P
 
-    b0 = -1.0 * (v1 - v0)   #C4-C5 
-    b1 = v2 - v1            #C5-O5
-    b2 = v3                 #O5-P
+    b0 = (v1 - v0) * -1.0            # C4' - C5' 
+    b1 = v2 - v1            # C5' - O5'
+    b2 = v3 - v2            # O5' - P
 
     # normalize b1 so that it does not influence magnitude of vector rejections that come next
     b1 /= LA.norm(b1)
@@ -288,8 +312,8 @@ def get_interpolated_dihedral(ls_dihedrals : np.ndarray, dihr_of_interest : floa
 
             # if it's the last index, compare between last and first index, to make it circular
             if i == (len(ls_dihedrals) - 1):
-                if ls_dihedrals[i] <= dihr_of_interest <= ls_dihedrals[0]:
-                    dihr_boundaries = ((theta[i], ls_dihedrals[i]), (theta[0], ls_dihedrals[0]))
+                if ls_dihedrals[i] >= dihr_of_interest >= ls_dihedrals[0]:
+                    dihr_boundaries = ((theta[i], ls_dihedrals[i]), (2 * np.pi, ls_dihedrals[0]))
 
                     return interpolate_dihedrals(dihr_boundaries, dihr_of_interest)
 
@@ -327,7 +351,7 @@ def get_interpolated_dihedral(ls_dihedrals : np.ndarray, dihr_of_interest : floa
             # NB: THIS DIFFERS FROM THE FOR LOOP ABOVE, WE GO IN THE OPPOSITE DIRECTION
             if i == (len(ls_dihedrals) - 1):
                 if ls_dihedrals[0] <= dihr_of_interest <= ls_dihedrals[i]:
-                    dihr_boundaries = ((theta[i], ls_dihedrals[i]), (theta[0], ls_dihedrals[0]))
+                    dihr_boundaries = ((theta[i], ls_dihedrals[i]), (2 * np.pi, ls_dihedrals[0]))
 
                     return interpolate_dihedrals(dihr_boundaries, dihr_of_interest)
 

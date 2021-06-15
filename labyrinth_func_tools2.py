@@ -44,7 +44,8 @@ def pdb_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : str) ->
     The identifier is either the string "Atoms" or the string "ElementSymbol", which will parse the list of interest """
 
     # reverse the sequence of the list, because we build to sequence from the bottom up
-    list_of_sequence.reverse()
+    # EDIT : This has already been done
+    #list_of_sequence.reverse()
 
     # Initialise an empty list
     atom_list = []
@@ -82,7 +83,7 @@ def pdb_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : str) ->
 
             return atom_list
 
-        if (i + 1) == len(list_of_sequence):
+        if not i == 0 and not (i+1) == len(list_of_sequence):
             # since this is not the last one, just carry on as usual
             buildingblock = list_of_sequence[i]
 
@@ -105,7 +106,8 @@ def pdb_Sequence(list_of_sequence : list) -> np.array :
     """ Determines the number in the sequence of the nucleotides in the strands based off on the shape of their array  """
 
     # reverse the sequence of the list, because we build to sequence from the bottom up
-    list_of_sequence.reverse()
+    # EDIT : This has already been done
+    #list_of_sequence.reverse()
 
     # Initialise an empty array
     sequence_array = np.array([], dtype=int)
@@ -178,7 +180,8 @@ def pdb_Sequence(list_of_sequence : list) -> np.array :
 def pdb_Residuename(list_of_sequence : list) -> list:
 
     # reverse the sequence of the list, because we build to sequence from the bottom up
-    list_of_sequence.reverse()
+    # EDIT : This has already been done
+    #list_of_sequence.reverse()
 
     # Initialise an empty array
     resname_list = []
