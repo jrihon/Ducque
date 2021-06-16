@@ -1,18 +1,18 @@
 import pandas as pd
 import numpy as np
-#import pytraj as ptj
 import json
 
+import transmute_func_tools
 
 class TransmuteToJson:
 
     def __init__(self, pdbfile):
-        """
-        Initialise a dataframe 
-        """
+        """ Initialise the object and create object properties"""
         self.splitted = pdbfile.split('.')[0]
         self.pdb_dataframe = pd.DataFrame()
         self.filename = self.splitted + '.pdb'
+        self.array = np.array([])
+
 
     def pdb_to_dataframe(self):
         """
@@ -37,11 +37,10 @@ class TransmuteToJson:
         Charge:           line 79 - 80
         """
         # Start new lists to append it all
-        # Initialize lists as a 
         AtomName, ResName, Xcoord, Ycoord, Zcoord, ElementSym = ([] for i in range(6))
 
-        _readFile = self.splitted + '.pdb'
-        with open(_readFile) as pdbfile:
+        # Read the file and fill out the dataframe
+        with open(self.filename_readFile) as pdbfile:
             for line in pdbfile:
                 if line[:4] == 'ATOM' or line[:6] == 'HETATM':
 
@@ -70,130 +69,136 @@ class TransmuteToJson:
             self.pdb_dataframe['Z_Coord'] = Zcoord
             self.pdb_dataframe['ElementSymbol'] = ElementSym
 
-
-    def write_matrix(self):
-
-        # Get array
-        Xarray = self.pdb_dataframe['X_Coord']
-        Yarray = self.pdb_dataframe['Y_Coord']
-        Zarray = self.pdb_dataframe['Z_Coord']
-
-        # Transpose the arraym so it can get properly shaped
-        coord_array = np.array([Xarray, Yarray, Zarray], dtype=float).T
-        coord_list = np.ndarray.tolist(coord_array)
-
-        # Get array shape
-        array_shape = coord_array.shape
-
-        # Return the values 
-        return coord_list, array_shape
+            # Add the array as a property, to make it easier later on
+            self.array = np.array([Xcoord, Ycoord, Zcoord], dtype=float).T
 
 
-    def write_ID(self):
-        # Get the name of the residue
-        return self.pdb_dataframe['ResName'][0].strip()
+    def get_matrix(self) -> list:
+        """ Create a list of the array of coordinates respectively."""
+        return np.ndarray.tolist(self.array)
 
 
-    def write_atoms(self):
+    def get_shape_array(self) -> list:
+        """ Get the shape of the array, but in a list """
+        return [self.array.shape[0], self.array.shape[1]]
 
-        # Get it to a list
+
+    def get_atoms(self) -> list:
+        """ Get atom names to a list, also strip any remaining whitespace in all the strings in the list."""
         atomlist = self.pdb_dataframe['AtomName'].tolist()
-
         return  list(map(lambda x: x.strip(), atomlist))
 
 
-    def write_backbone_dihedrals(self):
+    def get_element_symbol(self):
+        """ Get element symbol to a list, also strip any remaining whitespace in all the strings in the list."""
+        elementlist = self.pdb_dataframe['ElementSymbol'].tolist()
+        return  list(map(lambda x: x.strip(), elementlist))
+
+
+    def get_ID(self) -> str:
+        """ Get the name of the residue, also strip any remaining whitespace in all the strings in the list. """
+        return self.pdb_dataframe['ResName'][0].strip()
+
+
+    def get_full_name(identifier : str) -> str:
+        """ Get the full name of the nucleic acid chemistry we want to convert to a json """
+        return transmute_func_tools.identity_dict[identifier]
+
+
+    def get_base(self) -> str:
+        """ Get the base that corresponds with this nucleic acid. Take the last character of the string Residue Name and
+            look for it in the dictionary """
+        name_id = self.pdb_dataframe['ResName'][0]
+        base = name_id[-1].upper()
+
+        return transmute_func_tools.base_dict[base]
+
+
+    def get_dihedrals(self, identifier : str) -> dict:
         # for alpha and zeta, we need to include the the atoms of the adjacent atoms
         # backbone_angles = ["P1", "O5'", "C5'", "C4'", "C3'", "O3'", "P2"]
         # we set the alpha and zeta angles fixed for now, since the atoms are \
                 # not part of the nucleic acid residue
-        backbone_dihedrals = ['beta', 'gamma', 'delta', 'epsilon']
+        dihedrals_of_interest = ["beta", "gamma", "delta", "epsilon", "chi"]
 
-        # Load the molecule
-#        mol_nucleicacid = ptj.load(self.filename)
         # Initialise dictionary
-        backbone_dict = {}
-        backbone_dict['alpha'] = -39.202
-#        for i in range(len(backbone_dihedrals)):
-#            # Create atom mask suitable for pytraj to read it in
-#            atom_mask = list(map(lambda x: '@' + x, [ BA[i], BA[i + 1], BA[i + 2], BA[i + 3] ]))
-#            atom_mask = ', '.join(atom_mask)
+        dihedral_dict = {}
+        dihedral_dict["alpha"] = -39.202
+        dihedral_dict["beta"] = pass
+        dihedral_dict["gamma"] = pass
+        dihedral_dict["delta"] = pass
+        dihedral_dict["epsilon"] = pass
+        dihedral_dict["zeta"] = -98.887
+
+        dihedral_dict["chi"] = pass
+
+        return dihedral_dict
+
+    def get_angles(self, identifier : str) -> dict:
+
+        # Initialise dictionary
+        angle_dict = {}
+
+
+        return angle_dict
+
+
+    def get_file_name(self, identifier : str) -> str:
+        """ Create the name of the file based on the identifier of the nucleic acid chemistry and its corresponding base """
+        name_of_base = self.get_base()
+
+##---------------------------- FUNCTIONS THAT ARE NOT IN USE ANYMORE ----------------------------##
+#class TransmuteToPDB:
 #
-#            # Calculate dihedral angle and extract and append immediately to the dictionary
-#            _key = backbone_dihedrals[i]
-#            _dihedr = ptj.dihedral(traj=mol_nucleicacid, mask=atom_mask)
-#            
-#            backbone_dict[_key] = round(_dihedr[0], 3)
+#    def __init__(self, jsonfile):
+#
+#        self.splitted = jsonfile.split('.')[0]
+#        self.pdb_dataframe = pd.DataFrame()
+#        self.filename = self.splitted + '.json'
+#
+#        with open(self.filename) as jason:
+#            self.jason = json.load(jason)
 #
 #
-        backbone_dict['beta'] = -151.431
-        backbone_dict['gamma'] = 30.929
-        backbone_dict['delta'] = 156.517
-        backbone_dict['epsilon'] = 159.171
-
-        backbone_dict['zeta'] = -98.887
-        return backbone_dict
-
-
-    def write_element_symbol(self):
-
-        # Get it to a list 
-        atomlist = self.pdb_dataframe['ElementSymbol'].tolist()
-        return  list(map(lambda x: x.strip(), atomlist))
-
-
-
-class TransmuteToPDB:
-
-    def __init__(self, jsonfile):
-
-        self.splitted = jsonfile.split('.')[0]
-        self.pdb_dataframe = pd.DataFrame()
-        self.filename = self.splitted + '.json'
-
-        with open(self.filename) as jason:
-            self.jason = json.load(jason)
-
-
-    def get_recordName(self):
-
-        length_array = json.loads(self.jason['pdb_properties']['Shape'])[0]
-        return ['ATOM' for x in range(length_array)]
-
-
-    def get_coord_array(self):
-
-        # Since the dimensions are preserved, we don't need to worry about the shape of the array
-        return np.asarray(json.loads(self.jason['pdb_properties']['Coordinates']), dtype=float)
-
-
-    def get_ID(self):
-
-        return json.loads(self.jason['Identity'])[2]
-
-
-    def get_atoms(self):
-
-        return json.loads(self.jason['pdb_properties']['Atoms'])
-
-
-    def get_sequence(self):
-
-        length_sequence = json.loads(self.jason['pdb_properties']['Shape'])[0]
-        return [x for x in range(1, length_sequence + 1)]
-
-
-    def get_symbol(self):
-
-        return json.loads(self.jason['pdb_properties']['Symbol'])
-
-
-    def write_pdb(self):
-        with open(self.splitted + '.pdb' ,'w') as pdb:
-            for index, row in self.pdb_dataframe.iterrows():
-                split_line = [ row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13] ]
-                pdb.write('%-6s%5s%5s%s%s%2s%5s   %8s%8s%8s%6s%6s%4s      %2s\n' % tuple(split_line))
-
-            pdb.write('END')
-
-## just \n ##
+#    def get_recordName(self):
+#
+#        length_array = json.loads(self.jason['pdb_properties']['Shape'])[0]
+#        return ['ATOM' for x in range(length_array)]
+#
+#
+#    def get_coord_array(self):
+#
+#        # Since the dimensions are preserved, we don't need to worry about the shape of the array
+#        return np.asarray(json.loads(self.jason['pdb_properties']['Coordinates']), dtype=float)
+#
+#
+#    def get_ID(self):
+#
+#        return json.loads(self.jason['Identity'])[2]
+#
+#
+#    def get_atoms(self):
+#
+#        return json.loads(self.jason['pdb_properties']['Atoms'])
+#
+#
+#    def get_sequence(self):
+#
+#        length_sequence = json.loads(self.jason['pdb_properties']['Shape'])[0]
+#        return [x for x in range(1, length_sequence + 1)]
+#
+#
+#    def get_symbol(self):
+#
+#        return json.loads(self.jason['pdb_properties']['Symbol'])
+#
+#
+#    def write_pdb(self):
+#        with open(self.splitted + '.pdb' ,'w') as pdb:
+#            for index, row in self.pdb_dataframe.iterrows():
+#                split_line = [ row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13] ]
+#                pdb.write('%-6s%5s%5s%s%s%2s%5s   %8s%8s%8s%6s%6s%4s      %2s\n' % tuple(split_line))
+#
+#            pdb.write('END')
+#
+### just \n ##

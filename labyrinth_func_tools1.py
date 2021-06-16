@@ -35,21 +35,6 @@ def generate_cone_vector(phi_angle : float) -> np.ndarray:
                     ).T
 
 
-def generate_and_rotate_single_vector_QUAT(interpolated_theta_angle : float, phi : float, quaternion) -> np.ndarray:
-    """ Generate a single vector with the correct angle.
-        Then rotate said angle to the correct orientation using the previously used quaternion.
-        As always, phi needs to be in RADIANS"""
-
-    single_vector = np.array([ 1.0 * np.cos(interpolated_theta_angle) * np.sin(phi),
-                               1.0 * np.sin(interpolated_theta_angle) * np.sin(phi),
-                               1.0 * np.cos(phi)]
-                            ).T
-
-    rotated_vector = quaternion.apply(single_vector)
-
-    return rotated_vector
-
-
 def get_direction_for_rM(from_vector : np.ndarray, vector_to_rotate_onto : np.ndarray) -> np.ndarray:
     """ cross product with the cone's axis to get the direction of the rotation axis
         Get the direction where vectorA rotates onto vectorB ; u = vectora X vectorb
@@ -78,6 +63,7 @@ def get_quaternion(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : n
 
     # angle already in radians 
     theta = get_angle_for_rM(vector_to_rotate_from, vector_to_rotate_onto)         # ANGLE
+    print(theta)
 
     # Create the quaternion
     qx = axis[0] * np.sin(theta/2)
@@ -120,8 +106,24 @@ def rotate_with_quaternion(quaternion, vector : np.ndarray) -> np.ndarray:
     return quaternion.apply(vector)
 
 
+def generate_and_rotate_single_vector_QUAT(interpolated_theta_angle : float, phi : float, quaternion) -> np.ndarray:
+    """ Generate a single vector with the correct angle.
+        Then rotate said angle to the correct orientation using the previously used quaternion.
+        As always, phi needs to be in RADIANS"""
+
+    single_vector = np.array([ 1.0 * np.cos(interpolated_theta_angle) * np.sin(phi),
+                               1.0 * np.sin(interpolated_theta_angle) * np.sin(phi),
+                               1.0 * np.cos(phi)]
+                            ).T
+
+    rotated_vector = quaternion.apply(single_vector)
+
+    return rotated_vector
+
+
 def check_phi_angle_of_vector(vectors : np.ndarray, axis : np.array = np.array([0,0,1])) -> None:
-    """ The dotproduct determines the angle of the vector with a given axis/vector """
+    """ The dotproduct determines the angle of the vector with a given axis/vector.
+    This function is mainly for debugging purposes and has no value for building duplexes."""
 
     ### to check of the angle is correct, you should introduce an if statement
     #   in the labyrinth code so that if the cone vector is not placed correctly
@@ -371,7 +373,7 @@ def move_vector_to_origin(array_of_molecules : np.array, distance_to_origin : np
     return array_of_molecules - distance_to_origin
 
 
-##---------------------------- EULER ANGLE ROTATION MATRIX, NOT USED ANYMORE ----------------##
+##---------------------------- FUNCTIONS THAT ARE NOT IN USE ANYMORE ----------------------------##
 #def get_quaternion_custom_axis(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : np.ndarray, rotation_axis : np.ndarray):
 #    """ Generate quaternion for when you already have the axis of rotation"""
 #
@@ -389,6 +391,8 @@ def move_vector_to_origin(array_of_molecules : np.array, distance_to_origin : np
 #    quaternion = R.from_quat([qx, qy, qz, qw])
 #
 #    return quaternion
+#
+#
 #def generate_and_rotate_single_vector_EULER(interpolated_theta_angle, phi, rotation_matrix):
 #
 #    ### PHI NEEDS TO BE IN RADIANS
@@ -400,6 +404,7 @@ def move_vector_to_origin(array_of_molecules : np.array, distance_to_origin : np
 #    rotated_vector = np.dot(rotation_matrix, single_vector)
 #
 #    return rotated_vector
+#
 #
 #def get_rM(vector_to_rotate_onto, vector_to_rotate_from=np.array([0,0,1])):
 #    """
@@ -447,3 +452,5 @@ def move_vector_to_origin(array_of_molecules : np.array, distance_to_origin : np
 #def rotate_single_vector(rotation_matrix, atoms):
 #    # rotate a single 
 #    return np.dot(rotation_matrix, atoms)
+#
+#

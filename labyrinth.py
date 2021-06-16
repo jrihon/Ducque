@@ -1,17 +1,15 @@
 import sys, os, json
 import numpy as np
 
-from scipy.spatial.transform import Rotation as R
+#from scipy.spatial.transform import Rotation as R
 import labyrinth_func as LabF
-import labyrinth_func_tools1 as LFT1
-import labyrinth_func_tools2 as LFT2
 
 """ Create dictionary of the filename and their molecule code """
 
 codex_acidum_nucleicum = {
 'dT': ['json/dna_thymidine.json', 'json/phosphate_linker.json'],
 'dA': ['json/dna_adenosine.json', 'json/phosphate_linker.json'],
-'dC': ['json/dna_cytosine.json', 'json/phosphate_linker.json'],
+'dC': ['json/dna_cytidine.json', 'json/phosphate_linker.json'],
 'dG': ['json/dna_guanosine.json', 'json/phosphate_linker.json'],
 }
 
@@ -25,7 +23,8 @@ def Architecture(nucleic_acid_list):
 
     # Parse dictionary for the correct filename; input(DT) - output(dna_thymidine.json)
     nucleoside = LabF.Nucleoside(codex_acidum_nucleicum[nucleic_acid][0])
-    nucleoside.array = LFT1.rotate_with_quaternion(R.from_quat([0, 0, np.sin(0.8), np.cos(0.8)]), nucleoside.array)
+#    test_angle = 0.094 * np.pi
+#    nucleoside.array = LFT1.rotate_with_quaternion(R.from_quat([0, 0, np.sin(test_angle/2), np.cos(test_angle/2)]), nucleoside.array)
     # Parse dictionary for the correct linker segment
     linker = LabF.Desmos(codex_acidum_nucleicum[nucleic_acid][1])
 
@@ -39,6 +38,8 @@ def Architecture(nucleic_acid_list):
         nextnuc_acid = nucleic_acid_list[NA]
         nextnuc = LabF.Nucleoside(codex_acidum_nucleicum[nextnuc_acid][0])
         nextlink = LabF.Desmos(codex_acidum_nucleicum[nextnuc_acid][1])
+
+#        nextnuc.array = LFT1.rotate_with_quaternion(R.from_quat([0, 0, np.sin(test_angle/2), np.cos(test_angle/2)]), nucleoside.array)
 
         # Parse the dictionary for the previous nucleotide, to append the next nucleotide onto.
         # Parse the correct nucleoside and linker and create them as objects

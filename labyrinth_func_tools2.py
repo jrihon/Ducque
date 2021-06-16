@@ -7,7 +7,7 @@ import json
 import labyrinth
 
 def check_slope_of_array(arr : np.array) -> str:
-    """ In labyrinth_func.py there is a function that retrieves the interpolated dihedral angle
+    """ In labyrinth_func_tools1.py there is a function that retrieves the interpolated dihedral angle
     But it works on whether or not the list is ascending or descending
     That's what we need to figure out here now and return this """
 
