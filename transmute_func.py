@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import json
 
-import transmute_func_tools
+import transmute_func_tools as TFT
 
 class TransmuteToJson:
 
@@ -69,9 +69,11 @@ class TransmuteToJson:
             self.pdb_dataframe['Z_Coord'] = Zcoord
             self.pdb_dataframe['ElementSymbol'] = ElementSym
 
-            # Add the array as a property, to make it easier later on
+            # Add the array as an attribute
             self.array = np.array([Xcoord, Ycoord, Zcoord], dtype=float).T
 
+            # Add the atom name list as an attribute
+            self.atom_list = list(map(lambda x : x.strip(), AtomName))
 
     def get_matrix(self) -> list:
         """ Create a list of the array of coordinates respectively."""
@@ -102,7 +104,7 @@ class TransmuteToJson:
 
     def get_full_name(identifier : str) -> str:
         """ Get the full name of the nucleic acid chemistry we want to convert to a json """
-        return transmute_func_tools.identity_dict[identifier]
+        return TFT.identity_dict[identifier]
 
 
     def get_base(self) -> str:
@@ -111,41 +113,68 @@ class TransmuteToJson:
         name_id = self.pdb_dataframe['ResName'][0]
         base = name_id[-1].upper()
 
-        return transmute_func_tools.base_dict[base]
+        return TFT.base_dict[base]
 
 
-    def get_dihedrals(self, identifier : str) -> dict:
+    def get_dihedrals(self, identifier : str, base : str) -> dict:
         # for alpha and zeta, we need to include the the atoms of the adjacent atoms
         # backbone_angles = ["P1", "O5'", "C5'", "C4'", "C3'", "O3'", "P2"]
         # we set the alpha and zeta angles fixed for now, since the atoms are \
                 # not part of the nucleic acid residue
         dihedrals_of_interest = ["beta", "gamma", "delta", "epsilon", "chi"]
 
+        # Check which type of base this is
+        base_type = TFT.get_base_type(base)
+
+        # Parse the nucleic acid chemistry
+        identity = TFT.dihedral_dict[identifier]
+
         # Initialise dictionary
-        dihedral_dict = {}
-        dihedral_dict["alpha"] = -39.202
-        dihedral_dict["beta"] = pass
-        dihedral_dict["gamma"] = pass
-        dihedral_dict["delta"] = pass
-        dihedral_dict["epsilon"] = pass
-        dihedral_dict["zeta"] = -98.887
+        set_of_dihedrals = {}
 
-        dihedral_dict["chi"] = pass
+        set_of_dihedrals["alpha"] = -39.202
+        set_of_dihedrals["beta"] = pass
+        set_of_dihedrals["gamma"] = pass
+        set_of_dihedrals["delta"] = pass
+        set_of_dihedrals["epsilon"] = pass
+        set_of_dihedrals["zeta"] = -98.887
 
-        return dihedral_dict
+        # Parse from the dihedral_dict which atoms are required to calculate the chi dihedral
+        chi_atoms = TFT.dihedral_dict[base][base_type]
+        chi_indices = TFT.get_indices_of_atoms(chi_atoms, self.atom_list)
+        set_of_dihedrals["chi"] = pass
+
+        return set_of_dihedrals
 
     def get_angles(self, identifier : str) -> dict:
 
         # Initialise dictionary
-        angle_dict = {}
+        set_of_angles = {}
 
+        set_of_angles["alpha"] = pass
+        set_of_angles["beta"] = pass
+        set_of_angles["gamma"] = pass
+        set_of_angles["delta"] = pass
+        set_of_angles["epsilon"] = pass
+        set_of_angles["zeta"] = pass
 
-        return angle_dict
+        # Parse from the angle_dict which atoms are required to calculate the chi dihedral
+        chi_atoms = TFT.angle_dict[base][base_type]
+        chi_indices = TFT.get_indices_of_atoms(chi_atoms, self.atom_list)
+
+        set_of_angles["chi"] = pass
+
+        return set_of_angles
 
 
     def get_file_name(self, identifier : str) -> str:
         """ Create the name of the file based on the identifier of the nucleic acid chemistry and its corresponding base """
-        name_of_base = self.get_base()
+        name_of_chemistry = identifier.lower()
+
+        name_of_base = self.get_base().lower()
+
+        return name_of_chemistry + "_" + name_of_base
+
 
 ##---------------------------- FUNCTIONS THAT ARE NOT IN USE ANYMORE ----------------------------##
 #class TransmuteToPDB:

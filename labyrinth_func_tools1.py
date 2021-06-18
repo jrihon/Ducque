@@ -6,10 +6,7 @@ from typing import Tuple
 import json
 import labyrinth_func_tools2 as LFT2
 
-"""
-labyrinth_func_tools1 contains all the mathematical functions required, in python, to calculate for the rotations.
-"""
-# FUNCTIONS
+"""     labyrinth_func_tools1 contains all the mathematical functions required, in python, to calculate for the rotations.  """
 
 def return_normalized(vector : np.ndarray) -> np.ndarray:
     """ returns a normalized vector """
@@ -18,38 +15,38 @@ def return_normalized(vector : np.ndarray) -> np.ndarray:
 
 def generate_cone_vector(phi_angle : float) -> np.ndarray:
     """ Phi is the angle the vector makes with the Z-axis
+        Graphing Spherical Coordinates in GeoGebra 3D (Part 2): A Cone about z-axis
+            https://www.youtube.com/watch?v=Wl3Z3AqfI6c
 
-    Graphing Spherical Coordinates in GeoGebra 3D (Part 2): A Cone about z-axis
-    https://www.youtube.com/watch?v=Wl3Z3AqfI6c
+        Generating uniform unit random vectors in R^n
+        Prompted phi in rad.
+        conical vector = array[ones] * array[theta] * array[phi]    """
 
-    Generating uniform unit random vectors in R^n
-    phi needs to be in RADIANS """
-
-    rho = np.full(18, 1)
     theta = np.linspace(0, 2*np.pi, num=18, endpoint=False)
     phi = np.full(18, phi_angle)
 
-    return np.array([ rho * np.cos(theta) * np.sin(phi),
-                      rho * np.sin(theta) * np.sin(phi),
-                      rho * np.cos(phi)]
+    return np.array([ np.cos(theta) * np.sin(phi),
+                      np.sin(theta) * np.sin(phi),
+                      np.cos(phi)]
                     ).T
 
 
-def get_direction_for_rM(from_vector : np.ndarray, vector_to_rotate_onto : np.ndarray) -> np.ndarray:
+def get_direction_of_rotation(from_vector : np.ndarray, vector_to_rotate_onto : np.ndarray) -> np.ndarray:
     """ cross product with the cone's axis to get the direction of the rotation axis
         Get the direction where vectorA rotates onto vectorB ; u = vectora X vectorb
         Let's normalize the direction """
 
-    return np.cross(from_vector, vector_to_rotate_onto) / LA.norm(np.cross(from_vector, vector_to_rotate_onto))
+    cross_product = np.cross(from_vector, vector_to_rotate_onto)
+    return cross_product / LA.norm(cross_product)
 
 
-def get_angle_for_rM(from_vector : np.ndarray, vector_to_rotate_onto : np.ndarray) -> float:
+def get_angle_of_rotation(from_vector : np.ndarray, vector_to_rotate_onto : np.ndarray) -> float:
     """The scalar product (dot product) to get the cosine angle.
         Here we do the arccos, the get the angle immediately. """
     return np.arccos(np.dot(from_vector, vector_to_rotate_onto))
 
 
-def get_quaternion(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : np.array = np.array([0,0,1] )):
+def get_quaternion(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : np.array = np.array([0,0,1])) -> np.array:
     """
     Quaternion mathematics using the scipy.spatial.transform.Rotation library
 
@@ -59,11 +56,10 @@ def get_quaternion(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : n
 
     """
     # axis has been normalised
-    axis = get_direction_for_rM(vector_to_rotate_from, vector_to_rotate_onto)      # DIRECTION
+    axis = get_direction_of_rotation(vector_to_rotate_from, vector_to_rotate_onto)      # DIRECTION
 
     # angle already in radians 
-    theta = get_angle_for_rM(vector_to_rotate_from, vector_to_rotate_onto)         # ANGLE
-    print(theta)
+    theta = get_angle_of_rotation(vector_to_rotate_from, vector_to_rotate_onto)         # ANGLE
 
     # Create the quaternion
     qx = axis[0] * np.sin(theta/2)
@@ -76,7 +72,39 @@ def get_quaternion(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : n
     return quaternion
 
 
-def apply_subsequent_rotation(quaternion : np.array, nucleoside_array : np.ndarray, index_of_vectors : list) -> np.ndarray :
+def get_normal_vector_of_plane(v_first : np.ndarray, v_second : np.ndarray) -> np.ndarray:
+    """ Retrieve the normal of a plane, by taking the cross product of two vectors.
+        Let's normalize this vector as well. """
+    v_first = return_normalized(v_first)
+    v_second = return_normalized(v_second)
+    cross_product = np.cross(v_first, v_second)
+
+    return cross_product / LA.norm(cross_product)
+
+
+def rotate_with_quaternion(quaternion, vector : np.ndarray) -> np.ndarray:
+    """ Vector rotation through quaternion mathematics"""
+
+    return quaternion.apply(vector)
+
+
+def generate_and_rotate_single_vector(interpolated_theta_angle : float, phi : float, quaternion) -> np.ndarray:
+    """ Generate a single vector with the correct angle.
+        Then rotate said angle to the correct orientation using the previously used quaternion.
+        As always, phi needs to be in RADIANS
+        vector = r* theta * phi     """
+
+    single_vector = np.array([ np.cos(interpolated_theta_angle) * np.sin(phi),
+                               np.sin(interpolated_theta_angle) * np.sin(phi),
+                               np.cos(phi)]
+                            ).T
+
+    rotated_vector = quaternion.apply(single_vector)
+
+    return rotated_vector
+
+
+def apply_rotation_of_planes(quaternion : np.array, nucleoside_array : np.ndarray, index_of_vectors : list) -> np.ndarray :
     """ This functions applies a second rotation to the nucleoside. The problem here is that we cannot use a custom axis, since direction axises are always perpendicular to the two vectors.
         This is why we rotate the array as usual. But we only override the vectors that we actually want to rotate.
         This way, we effectively rotate over a certain bond, but the mathematical part just did a copy-paste of the vectors we really want
@@ -100,68 +128,10 @@ def apply_subsequent_rotation(quaternion : np.array, nucleoside_array : np.ndarr
     return nucleoside_array
 
 
-def rotate_with_quaternion(quaternion, vector : np.ndarray) -> np.ndarray:
-    """ Vector rotation through quaternion mathematics"""
-
-    return quaternion.apply(vector)
-
-
-def generate_and_rotate_single_vector_QUAT(interpolated_theta_angle : float, phi : float, quaternion) -> np.ndarray:
-    """ Generate a single vector with the correct angle.
-        Then rotate said angle to the correct orientation using the previously used quaternion.
-        As always, phi needs to be in RADIANS"""
-
-    single_vector = np.array([ 1.0 * np.cos(interpolated_theta_angle) * np.sin(phi),
-                               1.0 * np.sin(interpolated_theta_angle) * np.sin(phi),
-                               1.0 * np.cos(phi)]
-                            ).T
-
-    rotated_vector = quaternion.apply(single_vector)
-
-    return rotated_vector
-
-
-def check_phi_angle_of_vector(vectors : np.ndarray, axis : np.array = np.array([0,0,1])) -> None:
-    """ The dotproduct determines the angle of the vector with a given axis/vector.
-    This function is mainly for debugging purposes and has no value for building duplexes."""
-
-    ### to check of the angle is correct, you should introduce an if statement
-    #   in the labyrinth code so that if the cone vector is not placed correctly
-    #   that you just invert the vector you place it on (so vector * -1.0)
-    ###
-
-
-    # if a vector is given and it is not k^-hat
-    if list(axis) != [0,0,1]:
-        arr = np.empty(shape=(vectors.shape[0]))
-
-        for i in range(vectors.shape[0]):
-            arr[i] = np.arccos(np.dot(vectors[i], axis))
-
-        #print(np.degrees(arr))
-        arr = np.around(arr, decimals=10)                   # Round of values at the end to avoid errors on equality at the 17th decimal place
-        if list(arr).count(arr[0]) != len(arr):
-            print('Not all cone angles are correctly generated')
-            sys.exit(0)
-
-        return
-
-    # If no vector is given, default to k^-hat; Z_axis)
-    arr = np.arccos(np.dot(vectors, axis))
-    #print(np.degrees(arr))
-    arr = np.around(arr, decimals=10)
-    if not list(arr).count(arr[0]) == len(arr):
-
-        print('Not all cone angles are correctly generated')
-        sys.exit(0)
-
-
 def dihedral_array(atoms_in_dihr : np.ndarray, cone_vector : np.ndarray) -> np.ndarray :
-
-    """
-    https://stackoverflow.com/questions/20305272/dihedral-torsion-angle-from-four-points-in-cartesian-coordinates-in-python
-    Praxeolitic dihedral calculation. as of now, the most efficient way to calculate for a dihedral angle.
-    """
+    """ https://stackoverflow.com/questions/20305272/dihedral-torsion-angle-from-four-points-in-cartesian-coordinates-in-python
+    Praxeolitic dihedral calculation. as of now, the most efficient way to calculate for a dihedral angle.  """
+    # Example dihedral : C4' - C5' - O5' - P
 
     v2 = atoms_in_dihr[0] # O5'
     v1 = atoms_in_dihr[1] # C5'
@@ -173,9 +143,9 @@ def dihedral_array(atoms_in_dihr : np.ndarray, cone_vector : np.ndarray) -> np.n
     b2 = v3                 #O5-P
 
     # normalize b1 so that it does not influence magnitude of vector rejections that come next
-    b1 /= LA.norm(b1)
+    b1 = return_normalized(b1)
 
-        # vector rejections
+    ## vector rejections
     # v = projection of b0 onto plane perpendicular to b1
     #   = b0 minus component that aligns with b1
     # w = projection of b2 onto plane perpendicular to b1
@@ -196,20 +166,23 @@ def dihedral_array(atoms_in_dihr : np.ndarray, cone_vector : np.ndarray) -> np.n
 
 
 def dihedral_single(first : float, second : float, third : float, fourth : float) -> float:
+    """ https://stackoverflow.com/questions/20305272/dihedral-torsion-angle-from-four-points-in-cartesian-coordinates-in-python
+    Praxeolitic dihedral calculation. as of now, the most efficient way to calculate for a dihedral angle.  """
+    # Example dihedral : C4' - C5' - O5' - P
 
     v2 = third              # O5'
     v1 = second             # C5'
     v0 = first              # C4'
     v3 = fourth             # Supposed P
 
-    b0 = (v1 - v0) * -1.0            # C4' - C5' 
+    b0 = (v1 - v0) * -1.0   # C4' - C5' 
     b1 = v2 - v1            # C5' - O5'
     b2 = v3 - v2            # O5' - P
 
     # normalize b1 so that it does not influence magnitude of vector rejections that come next
-    b1 /= LA.norm(b1)
+    b1 = return_normalized(b1)
 
-        # vector rejections
+    ## vector rejections
     # v = projection of b0 onto plane perpendicular to b1
     #   = b0 minus component that aligns with b1
     # w = projection of b2 onto plane perpendicular to b1
@@ -226,13 +199,11 @@ def dihedral_single(first : float, second : float, third : float, fourth : float
 
 
 def interpolate_dihedrals(tuple_dihr : Tuple[Tuple[float, float], Tuple[float, float]], angle_dihr : float) -> float:
-    """
-    y = y1 + [ (x - x1) / (x2 - x1) * (y2 - y1) ]
+    """     y = y1 + [ (x - x1) / (x2 - x1) * (y2 - y1) ]
 
     tuple_dihr = ( (rad1, degrees1), (rad2, degrees2) )
 
-    The y's are the theta angles, indexed by the keys of the dictionary being parsed
-    """
+    The y's are the theta angles, indexed by the keys of the dictionary being parsed.    """
     # Print out the tuple dihedral and the angle. Just to see how it comes out
     #print(tuple_dihr, angle_dihr)
 
@@ -372,6 +343,39 @@ def move_vector_to_origin(array_of_molecules : np.array, distance_to_origin : np
     """ Move the vector to the origin by the distance of a specific atom to that origin """
     return array_of_molecules - distance_to_origin
 
+
+def check_phi_angle_of_vector(vectors : np.ndarray, axis : np.array = np.array([0,0,1])) -> None:
+    """ The dotproduct determines the angle of the vector with a given axis/vector.
+    This function is mainly for debugging purposes and has no value for building duplexes.
+
+    If the angle is not what you expected it would be, try inverting the direction of one of the vectors.
+
+    EDIT : This process has been automated and this function is redudant, but I found it useful when I learned about linear algebra
+        to see where I was going wrong so it STAYS!"""
+
+    # if a vector is given and it is not k^-hat
+    if list(axis) != [0,0,1]:
+        arr = np.empty(shape=(vectors.shape[0]))
+
+        for i in range(vectors.shape[0]):
+            arr[i] = np.arccos(np.dot(vectors[i], axis))
+
+        #print(np.degrees(arr))
+        arr = np.around(arr, decimals=10)                   # Round of values at the end to avoid errors on equality at the 17th decimal place
+        if list(arr).count(arr[0]) != len(arr):
+            print('Not all cone angles are correctly generated')
+            sys.exit(0)
+
+        return
+
+    # If no vector is given, default to k^-hat; Z_axis)
+    arr = np.arccos(np.dot(vectors, axis))
+    #print(np.degrees(arr))
+    arr = np.around(arr, decimals=10)
+    if not list(arr).count(arr[0]) == len(arr):
+
+        print('Not all cone angles are correctly generated')
+        sys.exit(0)
 
 ##---------------------------- FUNCTIONS THAT ARE NOT IN USE ANYMORE ----------------------------##
 #def get_quaternion_custom_axis(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : np.ndarray, rotation_axis : np.ndarray):

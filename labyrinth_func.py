@@ -20,42 +20,29 @@ class Nucleoside:
         with open(jsonfile, "r") as jsonf:
             self.jason = json.load(jsonf)
 
-        self.splitted = jsonfile.split(".")[0]
         self.array =  np.asarray(json.loads(self.jason["pdb_properties"]["Coordinates"]), dtype=float)
         self.atom_list = json.loads(self.jason["pdb_properties"]["Atoms"])
 
+    # One method that makes it easy to call the prompted dihedrals of the nucleoside.
+    # because the dihedral is still inside a the backbone dictionary, we need to load the string (json.loads) again
+    def get_dihedral(self, dihedral : str) -> float:
+        return float(json.loads(self.jason["Dihedrals"]["Backbone"])[dihedral])
 
-    # because the dihedral is still inside a the backbone dictionary, we need to load the string (json.loads) again 
-    def get_alpha(self) -> float:
-        return float(json.loads(self.jason["Dihedrals"]["Backbone"])["alpha"])
-
-    def get_beta(self) -> float:
-        return float(json.loads(self.jason["Dihedrals"]["Backbone"])["beta"])
-
-    def get_gamma(self) -> float:
-        return float(json.loads(self.jason["Dihedrals"]["Backbone"])["gamma"])
-
-    def get_delta(self) -> float:
-        return float(json.loads(self.jason["Dihedrals"]["Backbone"])["delta"])
-
-    def get_epsilon(self) -> float:
-        return float(json.loads(self.jason["Dihedrals"]["Backbone"])["epsilon"])
-
-    def get_zeta(self) -> float:
-        return float(json.loads(self.jason["Dihedrals"]["Backbone"])["zeta"])
-
+    def get_angle(self, angle : str) -> float:
+        return float(json.loads(self.jason["Dihedrals"]["Backbone"])[angle]) * (np.pi/180)
 
 
 class Desmos(Nucleoside):
     """  We can just simply pass this in here for now, since we essentially copy the parent class """
 
-    def get_COP(self) -> float:
-        # since the angles are inside the angles dictionary, we don"t need to load string again
-        return float(self.jason["Angles"]["C5_O5_P"]) * (np.pi / 180)
-
     def get_shape(self) -> int:
         # returns the size of the linker shape, but only the first value
         return int(json.loads(self.jason["pdb_properties"]["Shape"])[0])
+
+
+    def get_COP(self) -> float:
+        # since the angles are inside the angles dictionary, we don"t need to load string again
+        return float(self.jason["Angles"]["C5_O5_P"]) * (np.pi / 180)
 
     def get_OPO2(self) -> float:
         return float(self.jason["Angles"]["O5_P_OP2"]) * (np.pi / 180)
@@ -79,7 +66,6 @@ def generate_vector_of_interest(angle : float, dihedral : float, atom_array : np
     The atom_array contains the three first atoms in the sequence that make up the dihedral.
     Example = if the sequence of a dihedral is C4' - C5' - O5' - P (beta backbone), then the atom_array is [O5', C5', C4']
     """
-    #print(1)
     # Get the vector to rotate the cone vector onto. This is done on the middle two atoms of the sequence
     # Example : [O5'] minus (-) [C5'] results in a vector that goes [C5' -> O5']
     p0 = LFT1.return_normalized(atom_array[0] - atom_array[1])
@@ -102,7 +88,7 @@ def generate_vector_of_interest(angle : float, dihedral : float, atom_array : np
     theta_interpolate = LFT1.get_interpolated_dihedral(range_of_dihedrals, dihedral)
 
     # Generate the correct vector of interest
-    single_vector = LFT1.generate_and_rotate_single_vector_QUAT(theta_interpolate, angle, quaternion)
+    single_vector = LFT1.generate_and_rotate_single_vector(theta_interpolate, angle, quaternion)
 
     return single_vector
 
@@ -116,64 +102,66 @@ def position_phosphate_linker(nucleoside, nucl_array : np.ndarray, linker) -> np
     nucleoside is a json object
     linker is a json object
     """
+    # Atom parsing list : last ones of the nucleoside and the ones needed from the linker
+    ATP = ["C4'", "C5'", "O5'", "P", "OP2", "OP1"]
+
     # Retrieve the vectors of the atoms that make up the dihedral you research
     # Dihedral C4' - C5' - O5' - P
-    id_O5 = LFT2.retrieve_atom_index(nucleoside, "O5'")
-    v2 = nucl_array[id_O5]
+    id_v0 = LFT2.retrieve_atom_index(nucleoside, ATP[0])
+    v0 = nucl_array[id_v0]
 
-    id_C5 = LFT2.retrieve_atom_index(nucleoside, "C5'")
-    v1 = nucl_array[id_C5]
+    id_v1 = LFT2.retrieve_atom_index(nucleoside, ATP[1])
+    v1 = nucl_array[id_v1]
 
-    id_C4 = LFT2.retrieve_atom_index(nucleoside, "C4'")
-    v0 = nucl_array[id_C4]
+    id_v2 = LFT2.retrieve_atom_index(nucleoside, ATP[2])
+    v2 = nucl_array[id_v2]
 
     # Find the vector that corresponds to the O5' -> P vector
-    single_vector1 = generate_vector_of_interest(linker.get_COP(), nucleoside.get_beta(), [v2, v1, v0])
+    single_vector1 = generate_vector_of_interest(linker.get_COP(), nucleoside.get_dihedral("beta"), [v2, v1, v0])
 
     # Add the single_vector1 to O5' atom, to denote the location of P. Then move the linker array to that location
     link = LFT1.position_phosphate(v2, single_vector1, linker.array)   # the linker is in the correct position  
 
     ## We will rotate the linker twice, to get the correct orientation of the linker in 3D space
     # Dihedral C5' - O5' - P - OP2
-    id_P = LFT2.retrieve_atom_index(linker, "P")
-    v3 = link[id_P]
-
-    id_OP2 = LFT2.retrieve_atom_index(linker, "OP2")
-    v4 = link[id_OP2]
+    id_v3 = LFT2.retrieve_atom_index(linker, ATP[3])
+    v3 = link[id_v3]
 
     single_vector2 = generate_vector_of_interest(linker.get_OPO2(), linker.get_OP2_dihedral(), [v3, v2, v1])
 
-    # This is the distance from the positioned phosphorus atom to the origin
-    p_to_origin = v3
+    # This is the distance from the linker's atom to the origin
+    link_distance = link[id_v3]
 
     # move the linker to the origin, by positioning the phosphorus at [0,0,0]
-    link_to_origin = LFT1.move_vector_to_origin(link, p_to_origin)
+    link_to_origin = LFT1.move_vector_to_origin(link, link_distance)
 
     # Rotate the linker a first time
     # Define the vector that goes from P to OP2 and normalize it
-    P_OP2 = LFT1.return_normalized(v4 - v3)
+    id_v4 = LFT2.retrieve_atom_index(linker, ATP[4])
+    v4 = link[id_v4]
+    p3_4 = LFT1.return_normalized(v4 - v3)
 
     # Get quaternion to rotate the linker a first time and rotate it
-    quaternion_P1 = LFT1.get_quaternion(single_vector2 , vector_to_rotate_from=P_OP2)
+    quaternion_P1 = LFT1.get_quaternion(single_vector2 , p3_4)
     link = LFT1.rotate_with_quaternion(quaternion_P1, link_to_origin)
 
     # Move the rotated linker back to the calculated position of the phosphorus atom
-    link = link + p_to_origin
+    link = LFT1.move_vector_to_loc(link, link_distance)
 
     # Rotate the linekr a second time, but now the vector P_OP2 is the direction axis
-    # Since we have rotated P -> OP2, we need to override the vector again from the array 'link' we just overrided
-    v4 = link[id_OP2]
+    # Since we have rotated the linker, we need to override the vector again from the array 'link' we just overrided
+    v4 = link[id_v4]
 
     # Dihedral C5' - O5' - P - OP1
-    id_OP1 = LFT2.retrieve_atom_index(linker, "OP1")
-    v5 = link[id_OP1]
+    id_v5 = LFT2.retrieve_atom_index(linker, ATP[5])
+    v5 = link[id_v5]
 
     # Generate vector we want to rotate P_OP1 on to
     single_vector3 = generate_vector_of_interest(linker.get_OPO1(), linker.get_OP1_dihedral(), [v3, v2, v1])
-    #print(linker.get_OP1_dihedral())
 
     # normalize the single vector, multiply with the set distance (P-O) and replace it with the index of OP1 in the link array, making it the new vector for OP1
-    link[id_OP1] = (LFT1.return_normalized(single_vector3) * 1.48) + link[id_P]
+    distance_P_O = 1.48
+    link[id_v5] = (LFT1.return_normalized(single_vector3) * distance_P_O) + link[id_v3]
 
     # Stack the arrays on top of each other
     nucleotide = np.vstack((link, nucl_array))
@@ -188,48 +176,87 @@ def position_next_nucleoside(next_nucleoside, prev_nucleoside, prev_linker, lead
     leading_strand : the nucleic acid strand to which we append next_nucleoside to
     """
     # The first thing to do is to find the location of the subsequent atom, here O3', then rotate the next_nucleoside by zeta and epsilon
+    # Afterwards, we turn over the epsilon dihedral and by rotate the normal of the plane have to the plane we want; this positions everything!
+
+    # Atom Parsing List (ATP) = Parse which linker and which nucleotide the previous one is
+    APL = ["C5'", "O5'", "P", "O3'", "C3'", "C4'"]
+
+    # Dihedral Parsing List (DPL) = Parse which dihedrals are required to rotate on and over
+    DPL = ["alpha", "zeta", "epsilon"]
+
+    # Angle Parsing List (AngPL)
+    AngPL = [prev_linker.get_O3PO5(), 119.032 * (np.pi / 180), ]
+
+    # List of which we parse our 
+    #### POSITION THE NEXT NUCLEOSIDE PROPERLY TO O3'
     # dihedral C5' - O5' - P - O3'
-
+    # get the size of the linker, since the array goes : " linker.array + nucleotide.array", where linker.array precedes the indices of the nucleotide.array
     shape_linker = prev_linker.get_shape()
-    id_v1 = LFT2.retrieve_atom_index(prev_nucleoside, "O5'") + shape_linker
-    v1 = leading_strand[id_v1]
-
-    id_v0 = LFT2.retrieve_atom_index(prev_nucleoside, "C5'") + shape_linker
+    id_v0 = LFT2.retrieve_atom_index(prev_nucleoside, APL[0]) + shape_linker
     v0 = leading_strand[id_v0]
 
-    id_v2 = LFT2.retrieve_atom_index(prev_linker,"P")
+    id_v1 = LFT2.retrieve_atom_index(prev_nucleoside, APL[1]) + shape_linker
+    v1 = leading_strand[id_v1]
+
+    id_v2 = LFT2.retrieve_atom_index(prev_linker,APL[2])
     v2 = leading_strand[id_v2]
 
-    # We position the nextnuc by the position of O3'
-    single_vector1 = generate_vector_of_interest(prev_linker.get_O3PO5(), next_nucleoside.get_alpha(), [v2, v1, v0])
+    # Get angle and dihedral:
+    alpha_angle = AngPL[0]
+    alpha_dihr = next_nucleoside.get_dihedral(DPL[0])
 
-    # Add single_vector1 to , so that we define the location of O3'
-    # Multiply the normalised vector by 1.6, since 1.6 aengstrom is the distance P -> O3'
-    v3 = LFT1.move_vector_to_loc(LFT1.return_normalized(single_vector1) * 1.6, v2)
+    ## We position the nextnuc by the position of O3'
+    single_vector1 = generate_vector_of_interest(alpha_angle, alpha_dihr, [v2, v1, v0])
+    linker_nuc_distance = 1.6
+    # Add single_vector1 to v2, so that we define the location of ATP[3]
+    v3 = LFT1.move_vector_to_loc(LFT1.return_normalized(single_vector1) * linker_nuc_distance, v2)
 
-    ## Retrieve the vector of the newly created v3 and bring the next_nucleoside from v3_old to v3
-    # Get vector of v3_old
-    id_v3 = LFT2.retrieve_atom_index(next_nucleoside, "O3'")
-    # Get distance from next_nucleoside O3' (v3_old) to the position defined as O3' (v3)
-    v3_old = next_nucleoside.array[id_v3]
-    distance_v3_v3_old = v3 - v3_old
+    ## Bring the nucleoside array to the new position
+    id_v3 = LFT2.retrieve_atom_index(next_nucleoside, APL[3])
+    v3_original = next_nucleoside.array[id_v3]
+    # Get distance from next_nucleoside O3' (v3_old) to the position defined as O3' (v3), so the distance that we need to move the array with
+    distance_v3_v3_original = v3 - v3_original
     # Get the distance from the P -> O3' now and add it to nextnuc_origin which will move the entire molecule(nextnuc) to the position of O3'
-    next_nucleoside_loc = LFT1.move_vector_to_loc(next_nucleoside.array, distance_v3_v3_old)
+    next_nucleoside_loc = LFT1.move_vector_to_loc(next_nucleoside.array, distance_v3_v3_original)
 
+#    for i in range(1, len(DTP)):
+#        #Do the final vector rotation + plane rotation
+#        # Only at the final part do we need to do the rotation.
+#        # We only rotate over the previous dihedral and then the following dihedral.
+#        # The reason we forloop is because perhaps there might be cases where just a single rotation and a plane rotation are sufficient, like with morpholino's presumably.
+#        if i + 1 == len(DTP):
+#            pass
+#            # return
+#
+#        # Just continue if it is not the last one in the loop
+#        id_vA = LFT2.retrieve_atom_index(prev_nucleoside, APL[i]) + shape_linker
+#        vA = leading_strand[id_vA]
+#
+#        id_vB = LFT2.retrieve_atom_index(linker, APL[i + 1])
+#        vB = leading_strand[id_vB]
+#
+#        id_vC = LFT2.retrieve_atom_index(next_nucleoside, APL[i + 2])
+#        vC = next_nucleoside_loc[id_vC]
+#
+#        dihedral_N = next_nucleoside.get_dihedral(DPL[i])
+#        angle_N = AngPL[i]
+#
+#        single_vector_N = generate_cone_vector(angle_N, dihedral_N, [vC, vB, vA]
+    #### POSITION THE NUCLEOSIDE ALONG THE EPSILON BOND BY ROTATIONG THE ZETA DIHEDRAL
     ## Now, we define the next dihedral and find the atom. This is likely to be zeta, so we rotate over zeta afterwards
     # O5' (v1), P (v2), O3' (v3), C3'
-    P_O3_C3 = 119.032 * (np.pi / 180)
-    zeta_dihr = next_nucleoside.get_zeta()
+    zeta_angle = 119.032 * (np.pi / 180)
+    zeta_dihr = next_nucleoside.get_dihedral("zeta")
 
-    single_vector2 = generate_vector_of_interest(P_O3_C3, zeta_dihr, [v3, v2, v1])
+    single_vector2 = generate_vector_of_interest(zeta_angle, zeta_dihr, [v3, v2, v1])
 
-    # We have our vector, which is O3' -> C3', so now we rotate next_nucleoside onto single_vector2
-    id_v4 = LFT2.retrieve_atom_index(next_nucleoside, "C3'")
+    # We have our vector so now we rotate next_nucleoside onto single_vector2
+    id_v4 = LFT2.retrieve_atom_index(next_nucleoside, ATP[4])
     v4 = next_nucleoside_loc[id_v4]
-    p4 = LFT1.return_normalized(v4 - v3)                                                    # C3' - O3' gets the direction of O3' -> C3'
-    quaternion_zeta = LFT1.get_quaternion(single_vector2, p4)
+    p3_4 = LFT1.return_normalized(v4 - v3)
+    quaternion_zeta = LFT1.get_quaternion(single_vector2, p3_4)
 
-    # Move next_nucleoside to the origin, rotate it and move it back into place
+    ## Move next_nucleoside to the origin, rotate it and move it back into place
     # Get nextnuc's O3' atom to be in origin
     distance_to_origin = next_nucleoside_loc[id_v3]
 
@@ -237,64 +264,37 @@ def position_next_nucleoside(next_nucleoside, prev_nucleoside, prev_linker, lead
     next_nucleoside_originloc = LFT1.rotate_with_quaternion(quaternion_zeta, next_nucleoside_originloc)
     next_nucleoside_loc = LFT1.move_vector_to_loc(next_nucleoside_originloc, distance_to_origin)
 
-    ## Now we perform subsequent over epsilon, delta, gamma, beta by looping over this.
-    # We will initialize arrays, which we will iterate over.
-    dihedral_list = [next_nucleoside.get_epsilon(), next_nucleoside.get_delta(), next_nucleoside.get_gamma()]
-    angle_list = [111.919 * (np.pi/180), 115.788 * (np.pi/180), 110.017 * (np.pi/180)]
-    atoms_parsing_list = ["P", "O3'", "C3'", "C4'", "C5'", "O5'"]
-    exclusion_list = ["O3'", "C3'", "C4'", "C5'"]
+    ## NOW ROTATE THE PLANE ALONG THE NEXT DIHEDRAL, BUT DO NOT OVERRIDE THE ONES AT ARE ALREADY IN PLACE
+    # First we rotate the nucleoside as usual, now on epsilon
+    epsilon_dihr = next_nucleoside.get_dihedral("epsilon")
+    epsilon_angle = 111.919 * (np.pi/180)
+    # override vectors that have moved (technically v3 has not moved but whatever, just in case)
+    v4 = next_nucleoside_loc[id_v4] ; v3 = next_nucleoside_loc[id_v3]
+    # retrieve last vector.
+    id_v5 = LFT2.retrieve_atom_index(next_nucleoside, ATP[5])
+    v5 = next_nucleoside_loc[id_v5]
+    # Search for the single_vector
+    single_vector_n = generate_vector_of_interest(epsilon_angle, epsilon_dihr, [v4, v3, v2])
 
-    # We start with int = 2, since we need the first two atoms in the exclusion_list that we want to exclude from the rotation
-    int_exclude = 2
+    # move the nucleoside to the origin
+    distance_to_origin_n = next_nucleoside_loc[id_v4]
+    next_nucleoside_originloc = LFT1.move_vector_to_origin(next_nucleoside_loc, distance_to_origin_n)
 
-    for i in range(len(dihedral_list)):
-        # Retrieve all the necessary vector to start the computation for the location of the fourth vector
+    ## Generate to normal vectors of the planes of interest. The order in which you perform the cross product is not important BUT!!!
+    # It IS important that the same vectors are operated on in the same order for both normal vectors!!!
+    # normal to rotate from
+    n0 = LFT1.get_normal_vector_of_plane(v4 - v3, v5 - v4)
+    # normal to rotate to
+    n1 = LFT1.get_normal_vector_of_plane(v4 - v3, single_vector_n)
 
-        # If it is the first one in the sequence, retrieve the vector from the leading_strand. Else, retrieve the first one from next_nucleoside
-        if i == 0:
-            id_v5 = LFT2.retrieve_atom_index(prev_linker,atoms_parsing_list[0])
-            v5 = leading_strand[id_v5]
-        else :
-            id_v5 = LFT2.retrieve_atom_index(next_nucleoside, atoms_parsing_list[i])
-            v5 = next_nucleoside_loc[id_v5]
+    # Get the indices of the vectors you do not want moved
+    exclusion_list = ["O3'", "C3'"]
+    exclude_these_atoms = [LFT2.retrieve_atom_index(next_nucleoside, atom) for atom in exclusion_list]
 
-        id_v6 = LFT2.retrieve_atom_index(next_nucleoside, atoms_parsing_list[i + 1])
-        v6 = next_nucleoside_loc[id_v6]
-
-        id_v7 = LFT2.retrieve_atom_index(next_nucleoside, atoms_parsing_list[i + 2])
-        v7 = next_nucleoside_loc[id_v7]
-
-        # Retrieve the dihedral and the angle of interest
-        dihedral_n = dihedral_list[i]
-        angle_n = angle_list[i]
-
-        # Search for the single_vector
-        single_vector_n = generate_vector_of_interest(angle_n, dihedral_n, [v7, v6, v5])
-
-        # Now that we have our vector, we rotate the nucleoside onto it
-        # First retrieve the vector that we will rotate from
-        id_from = LFT2.retrieve_atom_index(next_nucleoside, atoms_parsing_list[i + 3])
-        v_from = next_nucleoside_loc[id_from]
-        p_from = LFT1.return_normalized(v_from - v7)
-
-        # The distance from which we will bring the nucleoside to the origin is equal to the vector of the third in line in the dihedral sequence
-        distance_to_origin_n = next_nucleoside_loc[id_v7]
-
-        # Now move the nucleoside_array to the origin
-        next_nucleoside_originloc_n = LFT1.move_vector_to_origin(next_nucleoside_loc, distance_to_origin_n)
-
-        ## Decide which atoms to exclude :
-        exclude_these_atoms = []
-        for atoms in range(int_exclude):
-            exclude_these_atoms.append(LFT2.retrieve_atom_index(next_nucleoside, exclusion_list[atoms]))
-
-        # Increment this value, for the next round
-        int_exclude += 1
-
-        ## Perform the rotation
-        quaternion_dihedral = LFT1.get_quaternion(single_vector_n, p_from)
-        next_nucleoside_originloc_rotated = LFT1.apply_subsequent_rotation(quaternion_dihedral, next_nucleoside_originloc_n, exclude_these_atoms)
-        next_nucleoside_loc = next_nucleoside_originloc_rotated + distance_to_origin_n
+    # The order of the quaternion does matter, as it starts with " vector to rotate to" and secondly with "vector that we want to rotate from "
+    quaternion_plane = LFT1.get_quaternion(n1, n0)
+    next_nucleoside_originloc_rotated = LFT1.apply_rotation_of_planes(quaternion_plane, next_nucleoside_originloc, exclude_these_atoms)
+    next_nucleoside_loc = next_nucleoside_originloc_rotated + distance_to_origin_n
 
     return next_nucleoside_loc
 
@@ -319,7 +319,8 @@ def create_PDB_from_matrix(matrix : np.ndarray, list_of_sequence : list) -> None
     df['SegmentID'] = str('   ')
     df['ElementSymbol'] = LFT2.pdb_AtomNames_or_ElementSymbol(list_of_sequence, "Symbol")
 
-    with open('testing_daedalus.pdb' ,'w') as pdb:
+    filename = "testing_daedalus.pdb"
+    with open(filename ,'w') as pdb:
         for index, row in df.iterrows():
             split_line = [ row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13] ]
             pdb.write('%-6s%5s%5s%s%s%3s%5s  %8s%8s%8s%6s%6s%4s      %2s\n' % tuple(split_line))

@@ -33,7 +33,7 @@ def Transmutation(pdb_file, nucleic_acid_chemistry : str):
 
     # Coordinates and Shape
     pdb_properties["Coordinates"] = json.dumps(nucleic_acid.get_array())
-    pdb_properties["Shape"] json.dumps(nucleic_acid.get_shape_array())
+    pdb_properties["Shape"] = json.dumps(nucleic_acid.get_shape_array())
 
     # Get Atom namelist             NB: json outputs double quotations as \" XX \" for strings, since there are apostrophes in the molecules
     pdb_properties["Atoms"] = json.dumps(nucleic_acid.get_atoms())
@@ -66,13 +66,13 @@ def Transmutation(pdb_file, nucleic_acid_chemistry : str):
     angle = {}
 
     # Get dihedrals
-    dihedrals = nucleic_acid.get_dihedrals(nucleic_acid_chemistry)
+    dihedrals = nucleic_acid.get_dihedrals(nucleic_acid_chemistry, base)
 
     # Get Bond angles
-    angles = nucleic_acid.get_angles(nucleic_acid_chemistry)
+    angles = nucleic_acid.get_angles(nucleic_acid_chemistry, base)
 
-    angle["Dihedrals"] = json.dumps(dihedrals)
-    angle["Bond_angles"] = json.dumps(angles)
+    angle["dihedrals"] = json.dumps(dihedrals)
+    angle["bond_angles"] = json.dumps(angles)
 
     #----------------- DUMP EVERYTHING INTO THE MOLECULE DICTIONARY -----------------#
     molecule["pdb_properties"] = pdb_properties
@@ -80,11 +80,11 @@ def Transmutation(pdb_file, nucleic_acid_chemistry : str):
     molecule["angles"] = angle
 
     #----------------------------- WRITE OUT A JSON FILE ----------------------------#
-    # The json dump() method always requires us to dump it to a file in the current directory
-    fname = nucleic_acid.get_file_name()
-
-    with open("./json/" + fname + ".json", "w"):
-        dump_json = json.dump(molecule, filejson, indent=4)
+#    # The json dump() method always requires us to dump it to a file in the current directory
+#    fname = nucleic_acid.get_file_name(nucleic_acid_chemistry)
+#
+#    with open("./json/" + fname + ".json", "w"):
+#        dump_json = json.dump(molecule, filejson, indent=4)
 
 
 def linker_to_json(pdb_file):
