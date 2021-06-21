@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import json
+import json, sys
 
 import transmute_func_tools as TFT
 
@@ -40,7 +40,7 @@ class TransmuteToJson:
         AtomName, ResName, Xcoord, Ycoord, Zcoord, ElementSym = ([] for i in range(6))
 
         # Read the file and fill out the dataframe
-        with open(self.filename_readFile) as pdbfile:
+        with open(self.filename) as pdbfile:
             for line in pdbfile:
                 if line[:4] == 'ATOM' or line[:6] == 'HETATM':
 
@@ -75,7 +75,7 @@ class TransmuteToJson:
             # Add the atom name list as an attribute
             self.atom_list = list(map(lambda x : x.strip(), AtomName))
 
-    def get_matrix(self) -> list:
+    def get_array(self) -> list:
         """ Create a list of the array of coordinates respectively."""
         return np.ndarray.tolist(self.array)
 
@@ -102,132 +102,115 @@ class TransmuteToJson:
         return self.pdb_dataframe['ResName'][0].strip()
 
 
-    def get_full_name(identifier : str) -> str:
+    def get_full_name(self, identifier : str, moiety) -> str:
         """ Get the full name of the nucleic acid chemistry we want to convert to a json """
-        return TFT.identity_dict[identifier]
+        if moiety == "nucleoside":
+            return TFT.nucleoside_dict[identifier.upper()]
+        if moiety == "linker":
+            return TFT.linker_dict[identifier.upper()]
 
 
     def get_base(self) -> str:
         """ Get the base that corresponds with this nucleic acid. Take the last character of the string Residue Name and
             look for it in the dictionary """
-        name_id = self.pdb_dataframe['ResName'][0]
-        base = name_id[-1].upper()
+        name_id = self.pdb_dataframe['ResName'][0].strip()
+        base = str(name_id)[-1]
 
         return TFT.base_dict[base]
 
 
-    def get_dihedrals(self, identifier : str, base : str) -> dict:
-        # for alpha and zeta, we need to include the the atoms of the adjacent atoms
-        # backbone_angles = ["P1", "O5'", "C5'", "C4'", "C3'", "O3'", "P2"]
-        # we set the alpha and zeta angles fixed for now, since the atoms are \
-                # not part of the nucleic acid residue
-        dihedrals_of_interest = ["beta", "gamma", "delta", "epsilon", "chi"]
+    def get_dihedrals(self, identifier : str, moiety : str,  dihedrals_list : list) -> dict:
+        """ List the dihedrals differently whether it belongs to a nucleoside or a linker moiety """
 
-        # Check which type of base this is
-        base_type = TFT.get_base_type(base)
+        if moiety == "nucleoside":
+            # Split the string into a list of strings
+            dihedral_list = dihedrals_list.split(",")
+            dihedral_list = list(map(lambda x: x.strip(), dihedral_list))
+            print(dihedral_list) ; exit()
+            if len(dihedral_list) == 7:
+                dihedrals_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "chi"]
+            else:
+                print("Amount of dihedrals prompted is not aligned with the standard amount of dihedrals.")
+                sys.exit(0)
 
-        # Parse the nucleic acid chemistry
-        identity = TFT.dihedral_dict[identifier]
+            # Check if all values are float
+            for i in dihedrals_list:
+                if not isinstance(i, float):
+                    print("One or more of the dihedral angles is not a floating point number. Please reconsider the entries for the dihedrals.\n")
 
-        # Initialise dictionary
-        set_of_dihedrals = {}
-
-        set_of_dihedrals["alpha"] = -39.202
-        set_of_dihedrals["beta"] = pass
-        set_of_dihedrals["gamma"] = pass
-        set_of_dihedrals["delta"] = pass
-        set_of_dihedrals["epsilon"] = pass
-        set_of_dihedrals["zeta"] = -98.887
-
-        # Parse from the dihedral_dict which atoms are required to calculate the chi dihedral
-        chi_atoms = TFT.dihedral_dict[base][base_type]
-        chi_indices = TFT.get_indices_of_atoms(chi_atoms, self.atom_list)
-        set_of_dihedrals["chi"] = pass
-
-        return set_of_dihedrals
-
-    def get_angles(self, identifier : str) -> dict:
-
-        # Initialise dictionary
-        set_of_angles = {}
-
-        set_of_angles["alpha"] = pass
-        set_of_angles["beta"] = pass
-        set_of_angles["gamma"] = pass
-        set_of_angles["delta"] = pass
-        set_of_angles["epsilon"] = pass
-        set_of_angles["zeta"] = pass
-
-        # Parse from the angle_dict which atoms are required to calculate the chi dihedral
-        chi_atoms = TFT.angle_dict[base][base_type]
-        chi_indices = TFT.get_indices_of_atoms(chi_atoms, self.atom_list)
-
-        set_of_angles["chi"] = pass
-
-        return set_of_angles
+            # Initialise dictionary
+            set_of_dihedrals = {}
+            # Append the values to their respective dihedrals 
+            for dihr in range(len(dihedrals_of_interest)):
+                set_of_dihedrals[dihedrals_of_interest[dihr]] = dihedral_list[dihr]
+            return set_of_dihedrals
 
 
-    def get_file_name(self, identifier : str) -> str:
+        if moiety == "linker":
+            ## For now we hardcode this with the phospate linker, until we start broadening the linker space
+
+            # Split the string into a list of strings
+            dihedral_list = list(map(lambda x : x.strip(), dihedrals_list.split(",")))
+
+            # Check if all values are float
+            for i in dihedrals_list:
+                if not isinstance(i, float):
+                    print("One or more of the dihedral angles is not a floating point number. Please reconsider the entries for the dihedrals.\n")
+
+            # Initialise dictionary
+            set_of_dihedrals = {}
+            set_of_dihedrals["OP2_dihedral"] = dihedral_list[0]
+            set_of_dihedrals["OP1_dihedral"] = dihedral_list[1]
+            return set_of_dihedrals
+
+
+    def get_angles(self, identifier : str, moiety : str, angles_list : list) -> dict:
+        """ List the bond angles differently whether it belongs to a nucleoside or a linker moiety """
+        if moiety == "nucleoside":
+            angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "chi"]
+
+            # Split the string into a list of strings
+            angles_list = list(map(lambda x : x.strip(), angles_list.split(",")))
+
+            # Check if all values are float
+            for i in angles_list:
+                if not isinstance(i, float):
+                    print("One or more of the bond angles is not a floating point number. Please reconsider the entries for the bond angles.\n")
+
+            # Initialise dictionary
+            set_of_angles = {}
+            # Append the values to their respective bond angles
+            for ang in range(len(angles_list)):
+                set_of_angles[angles_of_interest[ang]] = angles_list[ang]
+            return set_of_angles
+
+
+        if moiety == "linker":
+            ## For now we hardcode this with the phospate linker, until we start broadening the linker space
+
+            # Split the string into a list of strings
+            angles_list = list(map(lambda x : x.strip(), angles_list.split(",")))
+
+            # Check if all values are float
+            for i in angles_list:
+                if not isinstance(i, float):
+                    print("One or more of the bond angles is not a floating point number. Please reconsider the entries for the bond angles.\n")
+
+            # Initialise dictionary
+            set_of_angles = {}
+            set_of_angles["OPO"] = angles_list[0]
+            return set_of_angles
+
+
+    def get_file_name(self, identifier : str, moiety : str) -> str:
         """ Create the name of the file based on the identifier of the nucleic acid chemistry and its corresponding base """
-        name_of_chemistry = identifier.lower()
+        if moiety == "nucleoside":
+            name_of_chemistry = identifier.lower()
+            name_of_base = self.get_base().lower()
+            return name_of_chemistry + "_" + name_of_base
 
-        name_of_base = self.get_base().lower()
+        if moiety == "linker":
+            name_of_chemistry = identifier.lower()
+            name_of_linker = TFT.linker_dict[identifier].lower()
+            return name_of_chemistry + "_" + name_of_linker
 
-        return name_of_chemistry + "_" + name_of_base
-
-
-##---------------------------- FUNCTIONS THAT ARE NOT IN USE ANYMORE ----------------------------##
-#class TransmuteToPDB:
-#
-#    def __init__(self, jsonfile):
-#
-#        self.splitted = jsonfile.split('.')[0]
-#        self.pdb_dataframe = pd.DataFrame()
-#        self.filename = self.splitted + '.json'
-#
-#        with open(self.filename) as jason:
-#            self.jason = json.load(jason)
-#
-#
-#    def get_recordName(self):
-#
-#        length_array = json.loads(self.jason['pdb_properties']['Shape'])[0]
-#        return ['ATOM' for x in range(length_array)]
-#
-#
-#    def get_coord_array(self):
-#
-#        # Since the dimensions are preserved, we don't need to worry about the shape of the array
-#        return np.asarray(json.loads(self.jason['pdb_properties']['Coordinates']), dtype=float)
-#
-#
-#    def get_ID(self):
-#
-#        return json.loads(self.jason['Identity'])[2]
-#
-#
-#    def get_atoms(self):
-#
-#        return json.loads(self.jason['pdb_properties']['Atoms'])
-#
-#
-#    def get_sequence(self):
-#
-#        length_sequence = json.loads(self.jason['pdb_properties']['Shape'])[0]
-#        return [x for x in range(1, length_sequence + 1)]
-#
-#
-#    def get_symbol(self):
-#
-#        return json.loads(self.jason['pdb_properties']['Symbol'])
-#
-#
-#    def write_pdb(self):
-#        with open(self.splitted + '.pdb' ,'w') as pdb:
-#            for index, row in self.pdb_dataframe.iterrows():
-#                split_line = [ row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13] ]
-#                pdb.write('%-6s%5s%5s%s%s%2s%5s   %8s%8s%8s%6s%6s%4s      %2s\n' % tuple(split_line))
-#
-#            pdb.write('END')
-#
-### just \n ##

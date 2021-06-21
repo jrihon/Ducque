@@ -42,7 +42,7 @@ def get_direction_of_rotation(from_vector : np.ndarray, vector_to_rotate_onto : 
 
 def get_angle_of_rotation(from_vector : np.ndarray, vector_to_rotate_onto : np.ndarray) -> float:
     """The scalar product (dot product) to get the cosine angle.
-        Here we do the arccos, the get the angle immediately. """
+        Here we do the arccos, to get the angle immediately. """
     return np.arccos(np.dot(from_vector, vector_to_rotate_onto))
 
 

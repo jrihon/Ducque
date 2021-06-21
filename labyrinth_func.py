@@ -180,24 +180,21 @@ def position_next_nucleoside(next_nucleoside, prev_nucleoside, prev_linker, lead
 
     # Atom Parsing List (ATP) = Parse which linker and which nucleotide the previous one is
     APL = ["C5'", "O5'", "P", "O3'", "C3'", "C4'"]
-
     # Dihedral Parsing List (DPL) = Parse which dihedrals are required to rotate on and over
     DPL = ["alpha", "zeta", "epsilon"]
-
     # Angle Parsing List (AngPL)
-    AngPL = [prev_linker.get_O3PO5(), 119.032 * (np.pi / 180), ]
+    AngPL = [prev_linker.get_O3PO5(), 119.032 * (np.pi / 180), 111.919 * (np.pi/180)]
+    # Get the indices of the vectors you do not want moved
+    exclusion_list = ["O3'", "C3'"]
 
-    # List of which we parse our 
-    #### POSITION THE NEXT NUCLEOSIDE PROPERLY TO O3'
+    #### POSITION THE NEXT NUCLEOSIDE PROPERLY.
     # dihedral C5' - O5' - P - O3'
     # get the size of the linker, since the array goes : " linker.array + nucleotide.array", where linker.array precedes the indices of the nucleotide.array
     shape_linker = prev_linker.get_shape()
     id_v0 = LFT2.retrieve_atom_index(prev_nucleoside, APL[0]) + shape_linker
     v0 = leading_strand[id_v0]
-
     id_v1 = LFT2.retrieve_atom_index(prev_nucleoside, APL[1]) + shape_linker
     v1 = leading_strand[id_v1]
-
     id_v2 = LFT2.retrieve_atom_index(prev_linker,APL[2])
     v2 = leading_strand[id_v2]
 
@@ -219,84 +216,71 @@ def position_next_nucleoside(next_nucleoside, prev_nucleoside, prev_linker, lead
     # Get the distance from the P -> O3' now and add it to nextnuc_origin which will move the entire molecule(nextnuc) to the position of O3'
     next_nucleoside_loc = LFT1.move_vector_to_loc(next_nucleoside.array, distance_v3_v3_original)
 
-#    for i in range(1, len(DTP)):
-#        #Do the final vector rotation + plane rotation
-#        # Only at the final part do we need to do the rotation.
-#        # We only rotate over the previous dihedral and then the following dihedral.
-#        # The reason we forloop is because perhaps there might be cases where just a single rotation and a plane rotation are sufficient, like with morpholino's presumably.
-#        if i + 1 == len(DTP):
-#            pass
-#            # return
-#
-#        # Just continue if it is not the last one in the loop
-#        id_vA = LFT2.retrieve_atom_index(prev_nucleoside, APL[i]) + shape_linker
-#        vA = leading_strand[id_vA]
-#
-#        id_vB = LFT2.retrieve_atom_index(linker, APL[i + 1])
-#        vB = leading_strand[id_vB]
-#
-#        id_vC = LFT2.retrieve_atom_index(next_nucleoside, APL[i + 2])
-#        vC = next_nucleoside_loc[id_vC]
-#
-#        dihedral_N = next_nucleoside.get_dihedral(DPL[i])
-#        angle_N = AngPL[i]
-#
-#        single_vector_N = generate_cone_vector(angle_N, dihedral_N, [vC, vB, vA]
-    #### POSITION THE NUCLEOSIDE ALONG THE EPSILON BOND BY ROTATIONG THE ZETA DIHEDRAL
-    ## Now, we define the next dihedral and find the atom. This is likely to be zeta, so we rotate over zeta afterwards
-    # O5' (v1), P (v2), O3' (v3), C3'
-    zeta_angle = 119.032 * (np.pi / 180)
-    zeta_dihr = next_nucleoside.get_dihedral("zeta")
+    for i in range(1, len(DPL)):
+        # Only at the final dihedral do we require a plane rotation.
+        # The reason we forloop is because perhaps there might be cases where just a single rotation and a plane rotation are sufficient, like with morpholino's presumably.
+        if i + 1 == len(DPL):
+            # Do the final vector rotation + plane rotation
+            id_vA = LFT2.retrieve_atom_index(prev_linker, APL[i])
+            vA = leading_strand[id_vA]
+            id_vB = LFT2.retrieve_atom_index(next_nucleoside, APL[i + 1])
+            vB = next_nucleoside_loc[id_vB]
+            id_vC = LFT2.retrieve_atom_index(next_nucleoside, APL[i + 2])
+            vC = next_nucleoside_loc[id_vC]
+            #Get the required angles
+            dihedral_N = next_nucleoside.get_dihedral(DPL[i])
+            angle_N = AngPL[i]
 
-    single_vector2 = generate_vector_of_interest(zeta_angle, zeta_dihr, [v3, v2, v1])
+            single_vector_N = generate_vector_of_interest(angle_N, dihedral_N, [vC, vB, vA])
 
-    # We have our vector so now we rotate next_nucleoside onto single_vector2
-    id_v4 = LFT2.retrieve_atom_index(next_nucleoside, ATP[4])
-    v4 = next_nucleoside_loc[id_v4]
-    p3_4 = LFT1.return_normalized(v4 - v3)
-    quaternion_zeta = LFT1.get_quaternion(single_vector2, p3_4)
+            # Retrieve the next atom vector in the sequence, required for rotation
+            id_vD = LFT2.retrieve_atom_index(next_nucleoside, APL[i + 3])
+            vD = next_nucleoside_loc[id_vD]
 
-    ## Move next_nucleoside to the origin, rotate it and move it back into place
-    # Get nextnuc's O3' atom to be in origin
-    distance_to_origin = next_nucleoside_loc[id_v3]
+            ## Generate to normal vectors of the planes of interest. The order in which you perform the cross product is not important BUT!!!
+            # It IS important that the same vectors are operated on in the same order for both normal vectors!!!
+            # normal to rotate from
+            n0 = LFT1.get_normal_vector_of_plane(vC - vB, vD - vC)
+            # normal to rotate to
+            n1 = LFT1.get_normal_vector_of_plane(vC - vB, single_vector_N)
+            # The order of the quaternion does matter, as it starts with " vector to rotate to" and secondly with "vector that we want to rotate from "
+            quaternion_plane = LFT1.get_quaternion(n1, n0)
 
-    next_nucleoside_originloc = LFT1.move_vector_to_origin(next_nucleoside_loc, distance_to_origin)
-    next_nucleoside_originloc = LFT1.rotate_with_quaternion(quaternion_zeta, next_nucleoside_originloc)
-    next_nucleoside_loc = LFT1.move_vector_to_loc(next_nucleoside_originloc, distance_to_origin)
+            #Now bring the array to the origin
+            distance_to_origin_N = next_nucleoside_loc[id_vC]
+            next_nucleoside_originloc_N = LFT1.move_vector_to_origin(next_nucleoside_loc, distance_to_origin_N)
+            # exclude atoms from the rotation and perform the rotation of the planes
+            exclude_these_atoms = [LFT2.retrieve_atom_index(next_nucleoside, atom) for atom in exclusion_list]
+            next_nucleoside_originloc_rotated = LFT1.apply_rotation_of_planes(quaternion_plane, next_nucleoside_originloc_N, exclude_these_atoms)
+            next_nucleoside_loc = LFT1.move_vector_to_loc(next_nucleoside_originloc_rotated, distance_to_origin_N)
+            return next_nucleoside_loc
 
-    ## NOW ROTATE THE PLANE ALONG THE NEXT DIHEDRAL, BUT DO NOT OVERRIDE THE ONES AT ARE ALREADY IN PLACE
-    # First we rotate the nucleoside as usual, now on epsilon
-    epsilon_dihr = next_nucleoside.get_dihedral("epsilon")
-    epsilon_angle = 111.919 * (np.pi/180)
-    # override vectors that have moved (technically v3 has not moved but whatever, just in case)
-    v4 = next_nucleoside_loc[id_v4] ; v3 = next_nucleoside_loc[id_v3]
-    # retrieve last vector.
-    id_v5 = LFT2.retrieve_atom_index(next_nucleoside, ATP[5])
-    v5 = next_nucleoside_loc[id_v5]
-    # Search for the single_vector
-    single_vector_n = generate_vector_of_interest(epsilon_angle, epsilon_dihr, [v4, v3, v2])
+        # Just continue if it is not the last one in the loop
+        id_vA = LFT2.retrieve_atom_index(prev_nucleoside, APL[i]) + shape_linker
+        vA = leading_strand[id_vA]
+        id_vB = LFT2.retrieve_atom_index(prev_linker, APL[i + 1])
+        vB = leading_strand[id_vB]
+        id_vC = LFT2.retrieve_atom_index(next_nucleoside, APL[i + 2])
+        vC = next_nucleoside_loc[id_vC]
 
-    # move the nucleoside to the origin
-    distance_to_origin_n = next_nucleoside_loc[id_v4]
-    next_nucleoside_originloc = LFT1.move_vector_to_origin(next_nucleoside_loc, distance_to_origin_n)
+        #Get the required angles
+        dihedral_N = next_nucleoside.get_dihedral(DPL[i])
+        angle_N = AngPL[i]
 
-    ## Generate to normal vectors of the planes of interest. The order in which you perform the cross product is not important BUT!!!
-    # It IS important that the same vectors are operated on in the same order for both normal vectors!!!
-    # normal to rotate from
-    n0 = LFT1.get_normal_vector_of_plane(v4 - v3, v5 - v4)
-    # normal to rotate to
-    n1 = LFT1.get_normal_vector_of_plane(v4 - v3, single_vector_n)
+        single_vector_N = generate_vector_of_interest(angle_N, dihedral_N, [vC, vB, vA])
 
-    # Get the indices of the vectors you do not want moved
-    exclusion_list = ["O3'", "C3'"]
-    exclude_these_atoms = [LFT2.retrieve_atom_index(next_nucleoside, atom) for atom in exclusion_list]
+        # Retrieve the appropriate quaternion for the rotation
+        id_vD = LFT2.retrieve_atom_index(next_nucleoside, APL[i + 3])
+        vD = next_nucleoside_loc[id_vD]
+        pC_D = LFT1.return_normalized(vD - vC)
+        quaternion_N = LFT1.get_quaternion(single_vector_N, pC_D)
 
-    # The order of the quaternion does matter, as it starts with " vector to rotate to" and secondly with "vector that we want to rotate from "
-    quaternion_plane = LFT1.get_quaternion(n1, n0)
-    next_nucleoside_originloc_rotated = LFT1.apply_rotation_of_planes(quaternion_plane, next_nucleoside_originloc, exclude_these_atoms)
-    next_nucleoside_loc = next_nucleoside_originloc_rotated + distance_to_origin_n
+        #Now rotate your molecule onto single_vector_N
+        distance_to_origin_N = next_nucleoside_loc[id_vC]
 
-    return next_nucleoside_loc
+        next_nucleoside_originloc_N = LFT1.move_vector_to_origin(next_nucleoside_loc, distance_to_origin_N)
+        next_nucleoside_originloc_rotated = LFT1.rotate_with_quaternion(quaternion_N, next_nucleoside_originloc_N)
+        next_nucleoside_loc = LFT1.move_vector_to_loc(next_nucleoside_originloc_rotated, distance_to_origin_N)
 
 
 def create_PDB_from_matrix(matrix : np.ndarray, list_of_sequence : list) -> None:
