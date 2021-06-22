@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import json, sys
+import json, sys, os
 
 import transmute_func_tools as TFT
 
@@ -39,8 +39,13 @@ class TransmuteToJson:
         # Start new lists to append it all
         AtomName, ResName, Xcoord, Ycoord, Zcoord, ElementSym = ([] for i in range(6))
 
+        # Check if file is in cwd or in the pdb directory
+        pdbfname = self.filename
+        if not os.path.isfile(pdbfname):
+            pdbfname = "./pdb/" + self.filename
+
         # Read the file and fill out the dataframe
-        with open(self.filename) as pdbfile:
+        with open(pdbfname) as pdbfile:
             for line in pdbfile:
                 if line[:4] == 'ATOM' or line[:6] == 'HETATM':
 
@@ -123,11 +128,9 @@ class TransmuteToJson:
         """ List the dihedrals differently whether it belongs to a nucleoside or a linker moiety """
 
         if moiety == "nucleoside":
-            # Split the string into a list of strings
-            dihedral_list = dihedrals_list.split(",")
-            dihedral_list = list(map(lambda x: x.strip(), dihedral_list))
-            print(dihedral_list) ; exit()
-            if len(dihedral_list) == 7:
+            # Strip the list of (for now) string values of their comma 
+            dihedrals_list = list(map(lambda x: x.strip(","), dihedrals_list))
+            if len(dihedrals_list) == 7:
                 dihedrals_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "chi"]
             else:
                 print("Amount of dihedrals prompted is not aligned with the standard amount of dihedrals.")
@@ -135,14 +138,15 @@ class TransmuteToJson:
 
             # Check if all values are float
             for i in dihedrals_list:
-                if not isinstance(i, float):
-                    print("One or more of the dihedral angles is not a floating point number. Please reconsider the entries for the dihedrals.\n")
+                if not isinstance(float(i), float):
+                    print("One or more of the dihedral angles is not a floating point number : " + i + ". Please reconsider the entries for the dihedrals.\n")
+                    sys.exit(0)
 
             # Initialise dictionary
             set_of_dihedrals = {}
             # Append the values to their respective dihedrals 
             for dihr in range(len(dihedrals_of_interest)):
-                set_of_dihedrals[dihedrals_of_interest[dihr]] = dihedral_list[dihr]
+                set_of_dihedrals[dihedrals_of_interest[dihr]] = float(dihedrals_list[dihr])
             return set_of_dihedrals
 
 
@@ -150,17 +154,18 @@ class TransmuteToJson:
             ## For now we hardcode this with the phospate linker, until we start broadening the linker space
 
             # Split the string into a list of strings
-            dihedral_list = list(map(lambda x : x.strip(), dihedrals_list.split(",")))
+            dihedrals_list = list(map(lambda x : x.strip(","), dihedrals_list))
 
             # Check if all values are float
             for i in dihedrals_list:
-                if not isinstance(i, float):
-                    print("One or more of the dihedral angles is not a floating point number. Please reconsider the entries for the dihedrals.\n")
+                if not isinstance(float(i), float):
+                    print("One or more of the dihedral angles is not a floating point number : " + i + ". Please reconsider the entries for the dihedrals.\n")
+                    sys.exit(0)
 
             # Initialise dictionary
             set_of_dihedrals = {}
-            set_of_dihedrals["OP2_dihedral"] = dihedral_list[0]
-            set_of_dihedrals["OP1_dihedral"] = dihedral_list[1]
+            set_of_dihedrals["OP2_dihedral"] = float(dihedrals_list[0])
+            set_of_dihedrals["OP1_dihedral"] = float(dihedrals_list[1])
             return set_of_dihedrals
 
 
@@ -169,40 +174,41 @@ class TransmuteToJson:
         if moiety == "nucleoside":
             angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "chi"]
 
-            # Split the string into a list of strings
-            angles_list = list(map(lambda x : x.strip(), angles_list.split(",")))
+            # Strip the list of (for now) string values of their comma 
+            angles_list = list(map(lambda x: x.strip(","), angles_list))
 
             # Check if all values are float
             for i in angles_list:
-                if not isinstance(i, float):
-                    print("One or more of the bond angles is not a floating point number. Please reconsider the entries for the bond angles.\n")
+                if not isinstance(float(i), float):
+                    print("One or more of the dihedral angles is not a floating point number : " + i + ". Please reconsider the entries for the dihedrals.\n")
+                    sys.exit(0)
 
             # Initialise dictionary
             set_of_angles = {}
             # Append the values to their respective bond angles
             for ang in range(len(angles_list)):
-                set_of_angles[angles_of_interest[ang]] = angles_list[ang]
+                set_of_angles[angles_of_interest[ang]] = float(angles_list[ang])
             return set_of_angles
 
 
         if moiety == "linker":
             ## For now we hardcode this with the phospate linker, until we start broadening the linker space
-
-            # Split the string into a list of strings
-            angles_list = list(map(lambda x : x.strip(), angles_list.split(",")))
+            # Strip the list of (for now) string values of their comma 
+            angles_list = list(map(lambda x: x.strip(","), angles_list))
 
             # Check if all values are float
             for i in angles_list:
-                if not isinstance(i, float):
-                    print("One or more of the bond angles is not a floating point number. Please reconsider the entries for the bond angles.\n")
+                if not isinstance(float(i), float):
+                    print("One or more of the dihedral angles is not a floating point number : " + i + ". Please reconsider the entries for the dihedrals.\n")
+                    sys.exit(0)
 
             # Initialise dictionary
             set_of_angles = {}
-            set_of_angles["OPO"] = angles_list[0]
+            set_of_angles["OPO"] = float(angles_list[0])
             return set_of_angles
 
 
-    def get_file_name(self, identifier : str, moiety : str) -> str:
+    def get_output_name(self, identifier : str, moiety : str) -> str:
         """ Create the name of the file based on the identifier of the nucleic acid chemistry and its corresponding base """
         if moiety == "nucleoside":
             name_of_chemistry = identifier.lower()

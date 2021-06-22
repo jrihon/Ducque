@@ -23,13 +23,13 @@ class Nucleoside:
         self.array =  np.asarray(json.loads(self.jason["pdb_properties"]["Coordinates"]), dtype=float)
         self.atom_list = json.loads(self.jason["pdb_properties"]["Atoms"])
 
-    # One method that makes it easy to call the prompted dihedrals of the nucleoside.
     # because the dihedral is still inside a the backbone dictionary, we need to load the string (json.loads) again
     def get_dihedral(self, dihedral : str) -> float:
-        return float(json.loads(self.jason["Dihedrals"]["Backbone"])[dihedral])
+        return float(json.loads(self.jason["angles"]["dihedrals"])[dihedral])
 
     def get_angle(self, angle : str) -> float:
-        return float(json.loads(self.jason["Dihedrals"]["Backbone"])[angle]) * (np.pi/180)
+        """ Needs to be converted to radians    """
+        return float(json.loads(self.jason["angles"]["bond_angles"])[angle]) * (np.pi/180)
 
 
 class Desmos(Nucleoside):
@@ -39,25 +39,13 @@ class Desmos(Nucleoside):
         # returns the size of the linker shape, but only the first value
         return int(json.loads(self.jason["pdb_properties"]["Shape"])[0])
 
-
-    def get_COP(self) -> float:
-        # since the angles are inside the angles dictionary, we don"t need to load string again
-        return float(self.jason["Angles"]["C5_O5_P"]) * (np.pi / 180)
-
-    def get_OPO2(self) -> float:
-        return float(self.jason["Angles"]["O5_P_OP2"]) * (np.pi / 180)
-
-    def get_OPO1(self) -> float:
-        return float(self.jason["Angles"]["O5_P_OP1"]) * (np.pi / 180)
-
-    def get_O3PO5(self) -> float:
-        return float(self.jason["Angles"]["O5_P_O3"]) * (np.pi / 180)
-
-    def get_OP2_dihedral(self) -> float:
-        return float(self.jason["Dihedrals"]["dihedral_oxygen_OP2"])
-
-    def get_OP1_dihedral(self) -> float:
-        return float(self.jason["Dihedrals"]["dihedral_oxygen_OP1"])
+## Technically these functions are redunant, since we import then from the Nucleoside class.
+#    def get_dihedral(self, dihedral : str) -> float:
+#        return float(json.loads(self.jason["angles"]["dihedrals"])[dihedral])
+#
+#    def get_angle(self, angle : str) -> float:
+#        """ Needs to be converted to radians    """
+#        return float(json.loads(self.jason["angles"]["bond_angles"])[angle]) * (np.pi/180)
 
 
 ## FUNCTIONS THAT ARE MEANT TO BYPASS THE ITERATIVE CODING AND RESULT IN ONLY THE NECESSARY RESULTS IN THE LABYRINTH.PY : ARCHITECTURE()
@@ -103,31 +91,31 @@ def position_phosphate_linker(nucleoside, nucl_array : np.ndarray, linker) -> np
     linker is a json object
     """
     # Atom parsing list : last ones of the nucleoside and the ones needed from the linker
-    ATP = ["C4'", "C5'", "O5'", "P", "OP2", "OP1"]
+    APL = ["C4'", "C5'", "O5'", "P", "OP2", "OP1"]
 
     # Retrieve the vectors of the atoms that make up the dihedral you research
     # Dihedral C4' - C5' - O5' - P
-    id_v0 = LFT2.retrieve_atom_index(nucleoside, ATP[0])
+    id_v0 = LFT2.retrieve_atom_index(nucleoside, APL[0])
     v0 = nucl_array[id_v0]
 
-    id_v1 = LFT2.retrieve_atom_index(nucleoside, ATP[1])
+    id_v1 = LFT2.retrieve_atom_index(nucleoside, APL[1])
     v1 = nucl_array[id_v1]
 
-    id_v2 = LFT2.retrieve_atom_index(nucleoside, ATP[2])
+    id_v2 = LFT2.retrieve_atom_index(nucleoside, APL[2])
     v2 = nucl_array[id_v2]
 
     # Find the vector that corresponds to the O5' -> P vector
-    single_vector1 = generate_vector_of_interest(linker.get_COP(), nucleoside.get_dihedral("beta"), [v2, v1, v0])
+    single_vector1 = generate_vector_of_interest(nucleoside.get_angle("beta"), nucleoside.get_dihedral("beta"), [v2, v1, v0])
 
     # Add the single_vector1 to O5' atom, to denote the location of P. Then move the linker array to that location
     link = LFT1.position_phosphate(v2, single_vector1, linker.array)   # the linker is in the correct position  
 
     ## We will rotate the linker twice, to get the correct orientation of the linker in 3D space
     # Dihedral C5' - O5' - P - OP2
-    id_v3 = LFT2.retrieve_atom_index(linker, ATP[3])
+    id_v3 = LFT2.retrieve_atom_index(linker, APL[3])
     v3 = link[id_v3]
 
-    single_vector2 = generate_vector_of_interest(linker.get_OPO2(), linker.get_OP2_dihedral(), [v3, v2, v1])
+    single_vector2 = generate_vector_of_interest(linker.get_angle("OPO"), linker.get_dihedral("OP2_dihedral"), [v3, v2, v1])
 
     # This is the distance from the linker's atom to the origin
     link_distance = link[id_v3]
@@ -137,7 +125,7 @@ def position_phosphate_linker(nucleoside, nucl_array : np.ndarray, linker) -> np
 
     # Rotate the linker a first time
     # Define the vector that goes from P to OP2 and normalize it
-    id_v4 = LFT2.retrieve_atom_index(linker, ATP[4])
+    id_v4 = LFT2.retrieve_atom_index(linker, APL[4])
     v4 = link[id_v4]
     p3_4 = LFT1.return_normalized(v4 - v3)
 
@@ -153,11 +141,11 @@ def position_phosphate_linker(nucleoside, nucl_array : np.ndarray, linker) -> np
     v4 = link[id_v4]
 
     # Dihedral C5' - O5' - P - OP1
-    id_v5 = LFT2.retrieve_atom_index(linker, ATP[5])
+    id_v5 = LFT2.retrieve_atom_index(linker, APL[5])
     v5 = link[id_v5]
 
     # Generate vector we want to rotate P_OP1 on to
-    single_vector3 = generate_vector_of_interest(linker.get_OPO1(), linker.get_OP1_dihedral(), [v3, v2, v1])
+    single_vector3 = generate_vector_of_interest(linker.get_angle("OPO"), linker.get_dihedral("OP1_dihedral"), [v3, v2, v1])
 
     # normalize the single vector, multiply with the set distance (P-O) and replace it with the index of OP1 in the link array, making it the new vector for OP1
     distance_P_O = 1.48
@@ -183,7 +171,7 @@ def position_next_nucleoside(next_nucleoside, prev_nucleoside, prev_linker, lead
     # Dihedral Parsing List (DPL) = Parse which dihedrals are required to rotate on and over
     DPL = ["alpha", "zeta", "epsilon"]
     # Angle Parsing List (AngPL)
-    AngPL = [prev_linker.get_O3PO5(), 119.032 * (np.pi / 180), 111.919 * (np.pi/180)]
+    AngPL = ["alpha", "zeta", "epsilon"]
     # Get the indices of the vectors you do not want moved
     exclusion_list = ["O3'", "C3'"]
 
@@ -199,7 +187,7 @@ def position_next_nucleoside(next_nucleoside, prev_nucleoside, prev_linker, lead
     v2 = leading_strand[id_v2]
 
     # Get angle and dihedral:
-    alpha_angle = AngPL[0]
+    alpha_angle = next_nucleoside.get_angle(AngPL[0])
     alpha_dihr = next_nucleoside.get_dihedral(DPL[0])
 
     ## We position the nextnuc by the position of O3'
@@ -228,8 +216,8 @@ def position_next_nucleoside(next_nucleoside, prev_nucleoside, prev_linker, lead
             id_vC = LFT2.retrieve_atom_index(next_nucleoside, APL[i + 2])
             vC = next_nucleoside_loc[id_vC]
             #Get the required angles
+            angle_N = next_nucleoside.get_angle(AngPL[i])
             dihedral_N = next_nucleoside.get_dihedral(DPL[i])
-            angle_N = AngPL[i]
 
             single_vector_N = generate_vector_of_interest(angle_N, dihedral_N, [vC, vB, vA])
 
@@ -264,8 +252,8 @@ def position_next_nucleoside(next_nucleoside, prev_nucleoside, prev_linker, lead
         vC = next_nucleoside_loc[id_vC]
 
         #Get the required angles
+        angle_N = next_nucleoside.get_angle(AngPL[i])
         dihedral_N = next_nucleoside.get_dihedral(DPL[i])
-        angle_N = AngPL[i]
 
         single_vector_N = generate_vector_of_interest(angle_N, dihedral_N, [vC, vB, vA])
 

@@ -65,6 +65,11 @@ def Transmutation(pdb_file, nucleic_acid_chemistry : str, moiety : str, dihedral
     if moiety == "linker":
         # full name
         fullname = nucleic_acid.get_full_name(nucleic_acid_chemistry, moiety)
+        identity.append(fullname)
+
+        # abbreviated name
+        abbr = nucleic_acid_chemistry
+        identity.append(abbr)
 
     #------------------------------------- ANGLE ------------------------------------#
     # Initialise the dictionary for the dihedrals and the bond angles
@@ -86,47 +91,9 @@ def Transmutation(pdb_file, nucleic_acid_chemistry : str, moiety : str, dihedral
 
     #----------------------------- WRITE OUT A JSON FILE ----------------------------#
     # The json dump() method always requires us to dump it to a file in the current directory
-    fname = nucleic_acid.get_file_name(nucleic_acid_chemistry)
+    fname = nucleic_acid.get_output_name(nucleic_acid_chemistry, moiety)
 
-    with open("./json/" + fname + "test.json", "w"):
-        dump_json = json.dump(molecule, filejson, indent=4)
+    with open("./json/" + fname + ".json", "w") as filejson:
+        json.dump(molecule, filejson, indent=4)
 
-
-#def linker_to_json(pdb_file):
-#
-#    ## Initialise the dictionary
-#    molecule = {}
-#    pdb_properties = {}
-#    # dihedrals of the phosphate ( C5', O5' , P , OP1)
-#    dihedrals = {'dihedral_oxygen_OP1': 76.676, 'dihedral_oxygen_OP2': -155.039}
-#    angles = {'C5_O5_P' : 118.958, 'O5_P_OP2' : 109.766, 'O5_P_OP1' : 109.746, 'O5_P_O3' : 101.415}
-#    identity = ['Phosphate','Linker']
-#
-#    # Create instance
-#    linker = transmute_func.TransmuteToJson(pdb_file)
-#
-#    linker.pdb_to_dataframe()
-#
-#    # Retrieve matrix about coordinates
-#    xyz_array, shape = linker.write_matrix()
-#    pdb_properties['Coordinates'], pdb_properties['Shape'] = json.dumps(xyz_array), json.dumps(shape)
-#
-#    # Atom namelist
-#    pdb_properties['Atoms'] = json.dumps(linker.write_atoms())
-#
-#    # Element Symbol
-#    pdb_properties['Symbol'] = json.dumps(linker.write_element_symbol())
-#
-#    # Put everything into the pdb
-#    molecule['pdb_properties'] = pdb_properties
-#    molecule['identity'] = identity
-#    molecule['Dihedrals'] = dihedrals
-#    molecule['Angles'] = angles
-#
-#
-#    # The json dump() method always requires us to dump it to a file in the current directory
-#    fname = linker.filename.split('/')[-1].split('.')[0]
-#    filejson = open(fname + '.json', 'w')
-#    dump_json = json.dump(molecule, filejson, indent=4)
-#    filejson.close()
 

@@ -198,7 +198,7 @@ def pdb_Residuename(list_of_sequence : list) -> list:
                 nucleoside = json.load(nuc)
 
             nuc_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0]
-            ID = json.loads(nucleoside["Identity"])[2]
+            ID = json.loads(nucleoside["identity"])[2]
 
             tmp_resname = [ID for i in range(nuc_shape)]
             resname_list = resname_list + tmp_resname
@@ -218,7 +218,7 @@ def pdb_Residuename(list_of_sequence : list) -> list:
                 linker = json.load(lnk)
 
             nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0]
-            ID = json.loads(nucleoside["Identity"])[2]
+            ID = json.loads(nucleoside["identity"])[2]
 
             tmp_resname = [ID for i in range(nucleotide_shape)]
             resname_list = resname_list + tmp_resname
@@ -241,7 +241,7 @@ def pdb_Residuename(list_of_sequence : list) -> list:
                 linker = json.load(lnk)
 
             nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0]
-            ID = json.loads(nucleoside["Identity"])[2]
+            ID = json.loads(nucleoside["identity"])[2]
 
             tmp_resname = [ID for i in range(nucleotide_shape)]
             resname_list = resname_list + tmp_resname

@@ -82,10 +82,10 @@ else:
                 moiety = arg[1]
 
             if arg[0] == "--dihedrals":
-                dihedrals = arg[1]
+                dihedrals = arg[1:]
 
             if arg[0] == "--bondangles":
-                angles = arg[1]
+                angles = arg[1:]
 
 # Try and see if any of the options are used together. 
 # Daedalus will not allow this to happen for the reason that I don't feel like complicating stuff too much.
@@ -101,11 +101,12 @@ def main():
 
     # Convert pdb to json
     if arguments.transmute:
-        print("Converting " + pdb_file + " to a json file.")
         transmute.Transmutation(pdb_file, identifier, moiety, dihedrals, angles)
+        print("Converting " + pdb_file + " to a json file.")
 
     # Build nucleic acid duplex
     if arguments.Daedalus:
+        print("Bulding sequence ...\n")
         labyrinth.Architecture(fileDaedalus)
 
     print("Time spent: %.5f seconds." % (time() - t0))
