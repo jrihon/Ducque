@@ -9,9 +9,9 @@ import labyrinth_func as LabF
 
 codex_acidum_nucleicum = {
 "dT": ["json/dna_thymidine.json", "json/dna_phosphate.json"],
-"dA": ["json/dna_adenosine.json", "json/phosphate_linker.json"],
-"dC": ["json/dna_cytidine.json", "json/phosphate_linker.json"],
-"dG": ["json/dna_guanosine.json", "json/phosphate_linker.json"],
+"dA": ["json/dna_adenosine.json", "json/dna_phosphate.json"],
+"dC": ["json/dna_cytidine.json", "json/dna_phosphate.json"],
+"dG": ["json/dna_guanosine.json", "json/dna_phosphate.json"],
 }
 
 def Architecture(nucleic_acid_list):
