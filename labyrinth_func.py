@@ -274,7 +274,7 @@ def position_next_nucleoside(next_nucleoside, prev_nucleoside, prev_linker, lead
 def create_PDB_from_matrix(matrix : np.ndarray, list_of_sequence : list) -> None:
     """ Write out the data for the pdb file """
     print("Writing to pdb ...")
-
+    list_of_sequence = list_of_sequence[::-1]
     df = pd.DataFrame()
 
     df['RecName'] = ['ATOM' for x in range(matrix.shape[0])]
