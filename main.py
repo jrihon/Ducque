@@ -5,6 +5,7 @@ from time import time
 
 import transmute    # Convert a given pdb file to a custom json format
 import labyrinth    # Build the duplex
+import randomise    # Output a random sequence
 import fundaments   # Exceptions or custom errors
 
 explanation = """
@@ -58,7 +59,7 @@ else:
         # Check if amount of inputs are valid
         list_of_valid_flags = ["--pdb", "--id", "--moiety", "--dihedrals", "--bondangles"]
         if len(fileTransmute) != len(list_of_valid_flags):
-            print("Only four arguments are required, please check our input file.\n\n\n")
+            print("Only five arguments are required, please check our input file.\n\n\n")
             options.print_help()
             sys.exit(0)
 
@@ -67,7 +68,7 @@ else:
             arg = argument.split()
             # If a given flag is not a valid one, shut it down
             if not arg[0] in list_of_valid_flags:
-                print("\n\nThe following flag is invalid : " + arg[0] + ". Please check our input file.\n\n\n")
+                print("\n\nThe following flag is invalid : " + arg[0] + ". Please check your input file.\n\n\n")
                 options.print_help()
                 sys.exit(0)
 
@@ -86,6 +87,41 @@ else:
 
             if arg[0] == "--bondangles":
                 angles = arg[1:]
+
+    # If we want to call for a randomised sequence
+    if arguments.randomise:
+        fileRandomise = list(map(lambda x: x.strip(), arguments.randomise.readlines()))
+
+        # Check list of 
+        list_of_valid_flags = ["--chemistry", "--length", "--sequence"]
+#        if len(fileRandomise) != len(list_of_valid_flags):
+#            print("Only three arguments are required, please check our input file.\n\n\n")
+#            options.print_help()
+#            sys.exit(0)
+
+        # Check if flags are valid
+        for argument in fileRandomise:
+            arg = argument.split()
+            # If a given flag is not a valid one, shut it down
+            if not arg[0] in list_of_valid_flags:
+                print("\n\nThe following flag is invalid : " + arg[0] + ". Please check your input file.\n\n\n")
+                options.print_help()
+                sys.exit(0)
+
+            # Save the prompted arguments according to their respective flags
+            if arg[0] == "--chemistry":
+                if len(arg) > 2:
+                    chemistry = arg[1:]
+                elif len(arg) == 2:
+                    chemistry = arg[1]
+
+            if arg[0] == "--length":
+                length_seq = int(arg[1])
+                sequence = None
+
+            if arg[0] == "--sequence":
+                sequence = arg[1:]
+                length_seq = 0
 
 # Try and see if any of the options are used together. 
 # Daedalus will not allow this to happen for the reason that I don't feel like complicating stuff too much.
@@ -108,6 +144,11 @@ def main():
     if arguments.Daedalus:
         print("Bulding sequence ...\n")
         labyrinth.Architecture(fileDaedalus)
+
+    # Output a randomised sequence
+    if arguments.randomise:
+        print("Randioli randioli, what is the spaghetolli?")
+        randomise.randomiser(chemistry, length_seq, sequence)
 
     print("Time spent: %.5f seconds." % (time() - t0))
 

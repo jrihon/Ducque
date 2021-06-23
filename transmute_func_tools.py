@@ -1,5 +1,4 @@
 import sys
-import numpy as np
 
 
 """ Contains all the dictionaries and the tools to help the Transmutation work properly.    """
@@ -79,6 +78,7 @@ def get_base_type(base : str) -> str:
         sys.exit(0)
 
 #------------------------------------- NEVER USED THESE FUNCTIONS -------------------------------------#
+#import numpy as np
 #def get_indices_of_atoms(atom_names : list, atom_list : np.array) -> list:
 #    """ retrieve the index of each respective atom in the atom list """
 #    list_of_indices = []

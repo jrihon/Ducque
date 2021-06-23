@@ -1,8 +1,6 @@
 import sys, os, json
 import numpy as np
 
-import labyrinth_func_tools1 as LFT1
-from scipy.spatial.transform import Rotation as R
 import labyrinth_func as LabF
 
 """ Create dictionary of the filename and their molecule code """
@@ -59,6 +57,7 @@ def Architecture(nucleic_acid_list):
             leading_strand = np.vstack((next_nucleoSIDE_positioned, leading_strand))
 
         num_nucl += 1
+
     ######################### CREATE THE PDB THAT GOES WITH ARRAY INPUTTED ####################
     LabF.create_PDB_from_matrix(leading_strand, nucleic_acid_list)
     print("\nNumber of nucleotides in the duplex :" , num_nucl, "\n")
