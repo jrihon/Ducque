@@ -92,12 +92,12 @@ else:
     if arguments.randomise:
         fileRandomise = list(map(lambda x: x.strip(), arguments.randomise.readlines()))
 
-        # Check list of 
+        # Check list of valid inputs 
         list_of_valid_flags = ["--chemistry", "--length", "--sequence"]
-#        if len(fileRandomise) != len(list_of_valid_flags):
-#            print("Only three arguments are required, please check our input file.\n\n\n")
-#            options.print_help()
-#            sys.exit(0)
+        if len(fileRandomise) != 2:
+            print("Only two arguments are required at one time, please check our input file.\n\n\n")
+            options.print_help()
+            sys.exit(0)
 
         # Check if flags are valid
         for argument in fileRandomise:
@@ -110,10 +110,19 @@ else:
 
             # Save the prompted arguments according to their respective flags
             if arg[0] == "--chemistry":
+                # If multiple chemistries are prompted
                 if len(arg) > 2:
                     chemistry = arg[1:]
+                # If one chemistry is prompted
                 elif len(arg) == 2:
                     chemistry = arg[1]
+            # If the variable chemistry has not been defined, then
+            try:
+                chemistry
+            except NameError:
+                print("No chemistry type was prompted! Revise your input file. \n")
+                options.print_help()
+                sys.exit(0)
 
             if arg[0] == "--length":
                 length_seq = int(arg[1])

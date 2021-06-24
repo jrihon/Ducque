@@ -48,7 +48,6 @@ def randomise_chemistry(chemistry : list, sequence : list):
         seq.write(output_sequence + "\n")
 
 
-
 def randomise_sequence_and_chemistry(chemistry : list, length_seq : int):
     """ randomise both the sequence and for a set of given chemistry """
     # Get the given chemistry without the comma's in the strings
@@ -67,22 +66,20 @@ def randomise_sequence_and_chemistry(chemistry : list, length_seq : int):
 def randomiser(chemistry : Union[str, list], length_seq : int, sequence : list):
     """ the 'MAIN' function in the Daedalus.randomise script """
 
-    # Could do with a try: these instances -> Except raise error. mutuallyexclusive.
-    if length_seq != 0 and sequence is not None:
-        print("Both a sequence and its length are specified, but these are mutually exclusive. Please check the given input file.\n")
-        sys.exit(0)
-
-    # if randomise sequence, so if there is only one chemistry given
+    # if the chemistry is a string, there is only one chemistry given.
     if isinstance(chemistry, str) and length_seq:
         return randomise_sequence(chemistry, length_seq)
 
-    # if randomise chemistry for a given sequence, so a sequence must be adhered to, but not the chemistry.
-    # can choose to input a set of chemistry or all chemistry
+    # if given a single chemistry and a sequence, do nothing. If you already write out the specific sequence, might as well add the chemistry
+    if isinstance(chemistry, str) and sequence:
+        print("\nThat's pretty lazy bro. You've given a sequence, but can't add the single chemistry denotator in front of it? bruh.\n")
+        return
+
+    # if randomise chemistry for a given sequence, we adhere to a given sequence and can randomise with the given chemistries
     if chemistry is not None and sequence is not None:
         return randomise_chemistry(chemistry, sequence)
 
-    # if randomise both the sequence and the chemistry of the sequence
-    # justfuckmeupfam
+    # if you've reach this part, you can randomise the sequence and the chemistry (with the given inputs)
     if chemistry is not None and length_seq > 0:
         return randomise_sequence_and_chemistry(chemistry, length_seq)
 
