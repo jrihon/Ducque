@@ -65,7 +65,7 @@ Randomise:
             --chemistry SINGLE
             --length LENGTH
 
-        - randomise a given sequence with a set of prompted chemistries : 
+        - randomise the chemistries of a given sequence with a set of prompted chemistries : 
             --chemistry LIST
             --sequence SEQUENCE
 
