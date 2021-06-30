@@ -15,7 +15,8 @@
 
     Acknowledgement:
                     dr. Rinaldo Wander Montalvao for his guidance on the fundamentals of linear algebra.
-                    dr. Charles-Alexandre Mattelaer for his guidance on Quantum Mechanics and without his experimental work, Daedalus could have never been conceived.
+                    dr. Charles-Alexandre Mattelaer for his guidance on Quantum Mechanics and without his experimental work, 
+		    	Daedalus could have never been conceived.
 
 
 Daedalus has three (3) main functions:
