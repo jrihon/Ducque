@@ -151,8 +151,8 @@ To run this project, you will need to add the libraries to your **python env**
 
 `$ pip install scipy` | `$ conda install -c scipy `
 #
-Daedalus runs on sys, os and json. These are built-in libraries, so no need to install these additionally.
-The other python scripts are accopagnied when installing Daedalus.
+Daedalus runs on `sys`, `os` and `json`. These are built-in libraries, so no need to install these additionally.
+The other python scripts are accopagnied when installing **Daedalus**.
   
 ## Acknowledgements
 This README.md has been written with the help of [readme.so](https://readme.so)
