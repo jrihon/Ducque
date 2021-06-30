@@ -3,7 +3,7 @@
 
 A Software for the purpose of building native and synthetic nucleic acid duplexes.
     
-> *Nobody told me it wasn't feasible, so I went ahead and did it*
+<p align='center'> *Nobody told me it wasn't feasible, so I went ahead and did it* </p>
 
 #### All rights reserved to the Laboratory of Medicinal Chemistry @Rega Institute of Medical Research, Herestraat 49, 3000 Leuven, Belgium. Katholieke Universiteit Leuven (KUL).
     Software created and written by Doctorandus Rihon, Jerome
