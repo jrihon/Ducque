@@ -1,9 +1,9 @@
 
 # Daedalus
 
-<p align='center'> *Nobody told me it wasn't feasible, so I went ahead and did it* </p>
+<p align='center'> Nobody told me it wasn't feasible, so I went ahead and did it </p>
 
- *A Software for the purpose of building native and synthetic nucleic acid duplexes.*
+ **A Software for the purpose of building native and synthetic nucleic acid duplexes.**
     
 
 #### All rights reserved to the Laboratory of Medicinal Chemistry @Rega Institute of Medical Research, Herestraat 49, 3000 Leuven, Belgium. Katholieke Universiteit Leuven (KUL).
