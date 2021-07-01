@@ -299,3 +299,33 @@ def create_PDB_from_matrix(matrix : np.ndarray, list_of_sequence : list) -> None
             pdb.write('%-6s%5s%5s%s%s%3s%5s  %8s%8s%8s%6s%6s%4s      %2s\n' % tuple(split_line))
         pdb.write('END')
 
+
+def generate_complementary_sequence(sequence_list : list, complement : str) -> list:
+    """ sequence list is the given input.
+        complement will specify what the complementary strand will look like. choices between homo - hetero(dna) - hetero(rna) """
+    complementary_dictDNA = { "A" : "T", "T" : "A", "G" : "C", "C" : "G", "U":"A" }
+    complementary_dictRNA = { "A" : "U", "T" : "A", "G" : "C", "C" : "G", "U":"A" }
+
+    bases = LFT2.retrieve_bases_only(sequence_list)
+
+    if complement.lower() == "homo":
+        chemistry = LFT2.retrieve_chemistry_only(sequence_list)
+
+        comp_bases = LFT2.get_complementary_bases(bases, complementary_dictDNA)
+        complementary_sequence = LFT2.concatenate_chem_and_bases(chemistry, comp_bases)
+        return complementary_sequence
+
+    if complement.upper() == "DNA":
+        chemistry = "d"
+
+        comp_bases = LFT2.get_complementary_bases(bases, complementary_dictDNA)
+        complementary_sequence = LFT2.concatenate_chem_and_bases(chemistry, comp_bases)
+        return complementary_sequence
+
+    if complement.upper() == "RNA":
+        chemistry = "r"
+
+        comp_bases = LFT2.get_complementary_bases(bases, complementary_dictRNA)
+        complementary_sequence = LFT2.concatenate_chem_and_bases(chemistry, comp_bases)
+        return complementary_sequence
+

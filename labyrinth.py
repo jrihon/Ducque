@@ -58,6 +58,12 @@ def Architecture(nucleic_acid_list):
 
         num_nucl += 1
 
+    # Generate a list of complementary nucleotides
+    complement = "RNA"
+    compl_nucleic_acid_list = LabF.generate_complementary_sequence(nucleic_acid_list, complement)
+    print(nucleic_acid_list)
+    print(compl_nucleic_acid_list)
     ######################### CREATE THE PDB THAT GOES WITH ARRAY INPUTTED ####################
-    LabF.create_PDB_from_matrix(leading_strand, nucleic_acid_list)
-    print("\nNumber of nucleotides in the duplex :" , num_nucl, "\n")
+#    LabF.create_PDB_from_matrix(leading_strand, nucleic_acid_list)
+#    print("\nNumber of nucleotides in the duplex :" , num_nucl, "\n")
+

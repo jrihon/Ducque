@@ -3,6 +3,7 @@ The python file that organises the labyrinth_func.py better
 """
 import numpy as np
 import json
+from typing import Union
 
 import labyrinth
 
@@ -245,4 +246,29 @@ def pdb_Residuename(list_of_sequence : list) -> list:
 
             tmp_resname = [ID for i in range(nucleotide_shape)]
             resname_list = resname_list + tmp_resname
+
+
+def retrieve_bases_only(sequence : list) -> list:
+    """ retrieve the base denominator from the list of nucleic acids """
+    return [x[-1] for x in sequence]
+
+def retrieve_chemistry_only(sequence : list) -> list:
+    """ retrieve the chemistry denominator from the list of nucleic acids """
+    return [x[:-1] for x in sequence]
+
+
+def get_complementary_bases(sequence : list, comp_dict : dict) -> list:
+    """ get the complementary strand """
+    return [comp_dict[x] for x in sequence]
+
+def concatenate_chem_and_bases(chemistry : Union[str, list], bases : list) -> list:
+    """ concatenate the chemistries with the bases """
+
+    if isinstance(chemistry, list):
+        nucleoside_list = [chemistry[i] + bases[i] for i in range(len(bases))]
+        return nucleoside_list
+
+    if isinstance(chemistry, str):
+        nucleoside_list = [chemistry + bases[i] for i in range(len(bases))]
+        return nucleoside_list
 

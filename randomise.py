@@ -29,7 +29,7 @@ def randomise_chemistry(chemistry : list, sequence : list):
     sequence = list(map(lambda x: x.strip(","), sequence))
     chemistry = list(map(lambda x: x.strip(","), chemistry))
 
-    # Include the different chemistries by parsing from the dictionary and then cutting out the base part
+    # Include the different chemistries by parsing from the dictionary, taking the first option and then cutting out the base part.. leaving only the chemistry
     list_of_chemistries = []
     for chem in chemistry:
         list_of_chemistries.append(chemistry_dict[chem][0])

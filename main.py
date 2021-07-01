@@ -9,6 +9,13 @@ import randomise    # Output a random sequence
 import fundaments   # Exceptions or custom errors
 
 explanation = """
+                         ____                 _       _
+                        |  _ \  __ _  ___  __| | __ _| |_   _ ___
+                        | | | |/ _` |/ _ \/ _` |/ _` | | | | / __|
+                        | |_| | (_| |  __/ (_| | (_| | | |_| \__ \ 
+                        |____/ \__,_|\___|\__,_|\__,_|_|\__,_|___/
+
+
 Project to generate and customize DNA, RNA, XNA duplex molecules
 
 Designed and written by Doctorandus Rihon Jérôme.\n
