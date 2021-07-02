@@ -11,6 +11,11 @@ chemistry_dict = {
         "RNA" : ["rA", "rC", "rG", "rU"],
         }
 
+def write_sequence_to_file(output_sequence : str):
+
+    with open("./sequence_testing.in", "w") as seq:
+        seq.write("--sequence " + output_sequence + "\n--complement ")
+
 
 def randomise_sequence(chemistry : str, length_seq : int):
     """ depends on the prompted chemistry and the length of the sequence """
@@ -19,8 +24,8 @@ def randomise_sequence(chemistry : str, length_seq : int):
 
     output_sequence = ", ".join(random.choice(list_of_nucleotides) for i in range(length_seq))
 
-    with open("./sequence_testing.in", "w") as seq:
-        seq.write(output_sequence + "\n")
+    # Write out sequence to file
+    write_sequence_to_file(output_sequence)
 
 
 def randomise_chemistry(chemistry : list, sequence : list):
@@ -44,8 +49,8 @@ def randomise_chemistry(chemistry : list, sequence : list):
 
     output_sequence = ", ".join(tmpseq)
 
-    with open("./sequence_testing.in", "w") as seq:
-        seq.write(output_sequence + "\n")
+    # Write out sequence to file
+    write_sequence_to_file(output_sequence)
 
 
 def randomise_sequence_and_chemistry(chemistry : list, length_seq : int):
@@ -59,8 +64,8 @@ def randomise_sequence_and_chemistry(chemistry : list, length_seq : int):
 
     output_sequence = ", ".join(random.choice(list_of_nucleotides) for i in range(length_seq))
 
-    with open("./sequence_testing.in", "w") as seq:
-        seq.write(output_sequence + "\n")
+    # Write out sequence to file
+    write_sequence_to_file(output_sequence)
 
 
 def randomiser(chemistry : Union[str, list], length_seq : int, sequence : list):

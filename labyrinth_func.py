@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import json, sys
 import time
-
+from typing import Union
 import labyrinth_func_tools1 as LFT1
 import labyrinth_func_tools2 as LFT2
 
@@ -12,7 +12,7 @@ Labyrinth_func.py
 The script that contains the classes and all the functions that concatenate the workflow of consecutively adding the linker and nucleotides.
 """
 
-# CLASSES
+                                                                                # CLASSES
 class Nucleoside:
 
     def __init__(self, jsonfile):
@@ -39,16 +39,9 @@ class Desmos(Nucleoside):
         # returns the size of the linker shape, but only the first value
         return int(json.loads(self.jason["pdb_properties"]["Shape"])[0])
 
-## Technically these functions are redunant, since we import then from the Nucleoside class.
-#    def get_dihedral(self, dihedral : str) -> float:
-#        return float(json.loads(self.jason["angles"]["dihedrals"])[dihedral])
-#
-#    def get_angle(self, angle : str) -> float:
-#        """ Needs to be converted to radians    """
-#        return float(json.loads(self.jason["angles"]["bond_angles"])[angle]) * (np.pi/180)
 
-
-## FUNCTIONS THAT ARE MEANT TO BYPASS THE ITERATIVE CODING AND RESULT IN ONLY THE NECESSARY RESULTS IN THE LABYRINTH.PY : ARCHITECTURE()
+                                                                                # FUNCTIONS
+# Functions that are meant to bypass the iterative coding in Labyrinth.py : Architecture() 
 def generate_vector_of_interest(angle : float, dihedral : float, atom_array : np.array) -> np.array:
     """ This function generates a single vector for which there exists only one angle and dihedral.
     The atom_array contains the three first atoms in the sequence that make up the dihedral.
@@ -271,6 +264,46 @@ def position_next_nucleoside(next_nucleoside, prev_nucleoside, prev_linker, lead
         next_nucleoside_loc = LFT1.move_vector_to_loc(next_nucleoside_originloc_rotated, distance_to_origin_N)
 
 
+def generate_complementary_sequence(sequence_list : list, complement : Union[list, str]) -> list:
+    """ sequence list is the given input.
+        complement will specify what the complementary strand will look like. choices between homo - hetero(dna) - hetero(rna) """
+    complementary_dictDNA = { "A" : "T", "T" : "A", "G" : "C", "C" : "G", "U":"A" }
+    complementary_dictRNA = { "A" : "U", "T" : "A", "G" : "C", "C" : "G", "U":"A" }
+
+    bases = LFT2.retrieve_bases_only(sequence_list)
+    if isinstance(complement, list):
+        complementary_sequence = list(map(lambda x: x.strip(","), complement))
+
+        # See of the lengths match. If the lengths do not match, give an assertion error and print the following string.
+        assert len(sequence_list) == len(complementary_sequence), "The length of the complementary strand does not match the length of the leading strand!"
+
+        return complementary_sequence
+
+    if complement.lower() == "homo":
+        chemistry = LFT2.retrieve_chemistry_only(sequence_list)
+
+        # Switch the bases the get their complementary base
+        comp_bases = LFT2.get_complementary_bases(bases, complementary_dictDNA)
+        complementary_sequence = LFT2.concatenate_chem_and_bases(chemistry, comp_bases)
+        return complementary_sequence
+
+    if complement.upper() == "DNA":
+        chemistry = "d"
+
+        # Switch the bases the get their complementary base
+        comp_bases = LFT2.get_complementary_bases(bases, complementary_dictDNA)
+        complementary_sequence = LFT2.concatenate_chem_and_bases(chemistry, comp_bases)
+        return complementary_sequence
+
+    if complement.upper() == "RNA":
+        chemistry = "r"
+
+        # Switch the bases the get their complementary base
+        comp_bases = LFT2.get_complementary_bases(bases, complementary_dictRNA)
+        complementary_sequence = LFT2.concatenate_chem_and_bases(chemistry, comp_bases)
+        return complementary_sequence
+
+
 def create_PDB_from_matrix(matrix : np.ndarray, list_of_sequence : list) -> None:
     """ Write out the data for the pdb file """
     print("Writing to pdb ...")
@@ -299,33 +332,4 @@ def create_PDB_from_matrix(matrix : np.ndarray, list_of_sequence : list) -> None
             pdb.write('%-6s%5s%5s%s%s%3s%5s  %8s%8s%8s%6s%6s%4s      %2s\n' % tuple(split_line))
         pdb.write('END')
 
-
-def generate_complementary_sequence(sequence_list : list, complement : str) -> list:
-    """ sequence list is the given input.
-        complement will specify what the complementary strand will look like. choices between homo - hetero(dna) - hetero(rna) """
-    complementary_dictDNA = { "A" : "T", "T" : "A", "G" : "C", "C" : "G", "U":"A" }
-    complementary_dictRNA = { "A" : "U", "T" : "A", "G" : "C", "C" : "G", "U":"A" }
-
-    bases = LFT2.retrieve_bases_only(sequence_list)
-
-    if complement.lower() == "homo":
-        chemistry = LFT2.retrieve_chemistry_only(sequence_list)
-
-        comp_bases = LFT2.get_complementary_bases(bases, complementary_dictDNA)
-        complementary_sequence = LFT2.concatenate_chem_and_bases(chemistry, comp_bases)
-        return complementary_sequence
-
-    if complement.upper() == "DNA":
-        chemistry = "d"
-
-        comp_bases = LFT2.get_complementary_bases(bases, complementary_dictDNA)
-        complementary_sequence = LFT2.concatenate_chem_and_bases(chemistry, comp_bases)
-        return complementary_sequence
-
-    if complement.upper() == "RNA":
-        chemistry = "r"
-
-        comp_bases = LFT2.get_complementary_bases(bases, complementary_dictRNA)
-        complementary_sequence = LFT2.concatenate_chem_and_bases(chemistry, comp_bases)
-        return complementary_sequence
 

@@ -9,12 +9,13 @@ import randomise    # Output a random sequence
 import fundaments   # Exceptions or custom errors
 
 explanation = """
-                         ____                 _       _
-                        |  _ \  __ _  ___  __| | __ _| |_   _ ___
-                        | | | |/ _` |/ _ \/ _` |/ _` | | | | / __|
-                        | |_| | (_| |  __/ (_| | (_| | | |_| \__ \ 
-                        |____/ \__,_|\___|\__,_|\__,_|_|\__,_|___/
-
+                                                               AUG   TCC        TCG   TTC        TAT   TCG
+                         ____                 _       _        :::C A:::G      A:::G T:::A      A:::T C:::G
+                        |  _ \  __ _  ___  __| | __ _| |_   _ ___  G:::::A    G:::::T:::::G    G:::::G:::::C         :
+                        | | | |/ _` |/ _ \/ _` |/ _` | | | | / __|  T:::::G  T:::::C A:::::T  G:::::A G:::::T   G   :G
+                        | |_| | (_| |  __/ (_| | (_| | | |_| \__ \   A:::::TC:::::C   A:::::AT:::::A   A:::::AGA:  :A
+                        |____/ \__,_|\___|\__,_|\__,_|_|\__,_|___/    G::::CG::::G     G::::TA::::T     C::::TC::::T
+                                                                       GCTC  AGTA       GGCA  CCTA       CCGA  TCTA
 
 Project to generate and customize DNA, RNA, XNA duplex molecules
 
@@ -22,6 +23,7 @@ Designed and written by Doctorandus Rihon Jérôme.\n
 ______________________________________________________________________
 """
 t0 = time()
+print(explanation)
 ## -------------------------------------------------- P A R S E  A R G U M E N T S --------------------------------------- ##
 options = argparse.ArgumentParser(description=explanation,
                                   add_help=False,
@@ -49,11 +51,40 @@ else:
 
     # If we call the nucleic acid builder
     if arguments.Daedalus:
+        list_of_valid_flags = ["--sequence", "--complement"]
         # Read the input file and create a list object of the sequence. Removes any whitespace.
-        fileDaedalus = list(map(lambda x: x.strip(), arguments.Daedalus.readline().strip("\n").split(",")))
+        fileDaedalus = list(map(lambda x: x.strip(), arguments.Daedalus.readlines()))
+
+        # Check if amount of inputs are valid
+        if len(fileDaedalus) != len(list_of_valid_flags):
+            print("Only two arguments are required, please check our input file.\n\n\n")
+            options.print_help()
+            sys.exit(0)
+
+        for argument in fileDaedalus:
+            arg = argument.split()
+
+            # Check if flags are valid. If a given flag is not a valid one, shut it down
+            if not arg[0] in list_of_valid_flags:
+                print("\n\nThe following flag is invalid : " + arg[0] + ". Please check your input file.\n\n\n")
+                options.print_help()
+                sys.exit(0)
+
+            if arg[0] == "--sequence":
+                nucleic_acid_list = list(map(lambda x: x.strip(","), arg[1:]))
+
+            if arg[0] == "--complement":
+                # If there is a input possibility at index 2, meaning more than one string have been inputted, then get the entire string as a list variable.
+                # If there is not an input possibility at index 2, this means there is only one input after the flag available and that means it is just a string.
+                try:
+                    arg[2]
+                except:
+                    complement = arg[1]
+                else:
+                    complement = arg[1:]
 
         # If a given nucleotide is not in the list of valid nucleotides, stop the program
-        if not fundaments.check_if_nucleotides_are_valid(fileDaedalus):
+        if not fundaments.check_if_nucleotides_are_valid(nucleic_acid_list):
             options.print_help()
             sys.exit(0)
 
@@ -70,10 +101,9 @@ else:
             options.print_help()
             sys.exit(0)
 
-        # Check if flags are valid
         for argument in fileTransmute:
             arg = argument.split()
-            # If a given flag is not a valid one, shut it down
+            # Check if flags are valid. If a given flag is not a valid one, shut it down
             if not arg[0] in list_of_valid_flags:
                 print("\n\nThe following flag is invalid : " + arg[0] + ". Please check your input file.\n\n\n")
                 options.print_help()
@@ -158,8 +188,8 @@ def main():
 
     # Build nucleic acid duplex
     if arguments.Daedalus:
-        print("Bulding sequence ...\n")
-        labyrinth.Architecture(fileDaedalus)
+        print("Building sequence ...\n")
+        labyrinth.Architecture(nucleic_acid_list, complement)
 
     # Output a randomised sequence
     if arguments.randomise:
