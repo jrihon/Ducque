@@ -40,9 +40,18 @@ this
         Usage - $ python main.py --Daedalus INPUTFILE
         The inputfile is read in and the sequence is built accordingly.
 
-        Only valid input in the file just a string of the required nucleotides, separated by a comma and then a space :
-            Example: dT, dC, dA, dA, dC, dG, dG, dT, dA
+        At any given time, there are two (2) flags in total that should be involved in the Daedalus - Nucleic Acid Builder.
+        
+        --sequence SEQUENCE
+            Only valid input in the file just a string of the required nucleotides, separated by a comma and then a space.
+                Example: dT, dC, dA, dA, dC, dG, dG, dT, dA
 
+        --complement COMPLEMENT
+            The complement flag denotes the structure of the complementary strand
+            The following strings are valid inputs : homo (homoduplex)    DNA (DNA complementary)    RNA (RNA complementary) 
+            A list of nucleotides is also a valid input, if one wants to specify the complementary strand. 
+                Example: --complement homo
+                Example: --complement dT, dA, dC, dC, dG, dT, dT, dG, dA
 
 - #### Randomise:
 
@@ -155,7 +164,7 @@ To run this project, you will need to add the libraries to your **python env**
 `$ pip install scipy` | `$ conda install -c scipy `
 #
 Daedalus runs on `sys`, `os` and `json`. These are built-in libraries, so no need to install these additionally.
-The other python scripts are accopagnied when installing **Daedalus**.
+The other python scripts are accompagnied when installing **Daedalus**.
   
 ## Acknowledgements
 This README.md has been written with the help of [readme.so](https://readme.so)
