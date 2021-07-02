@@ -303,6 +303,10 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[lis
         complementary_sequence = LFT2.concatenate_chem_and_bases(chemistry, comp_bases)
         return complementary_sequence
 
+    if True:
+        # At this point, any input the user has prompted should have gone through a return statement. So if 
+        raise ValueError("The variable you have prompted for the '--complement' flag is not correct. Please review your input file.\n")
+        sys.exit(1)
 
 def create_PDB_from_matrix(matrix : np.ndarray, list_of_sequence : list) -> None:
     """ Write out the data for the pdb file """
