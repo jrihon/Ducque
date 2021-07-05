@@ -248,11 +248,12 @@ def pdb_Residuename(list_of_sequence : list) -> list:
             resname_list = resname_list + tmp_resname
 
 
-def retrieve_bases_only(sequence : list) -> list:
+def retrieve_bases_list(sequence : list) -> list:
     """ retrieve the base denominator from the list of nucleic acids """
     return [x[-1] for x in sequence]
 
-def retrieve_chemistry_only(sequence : list) -> list:
+
+def retrieve_chemistry_list(sequence : list) -> list:
     """ retrieve the chemistry denominator from the list of nucleic acids """
     return [x[:-1] for x in sequence]
 
@@ -260,6 +261,7 @@ def retrieve_chemistry_only(sequence : list) -> list:
 def get_complementary_bases(sequence : list, comp_dict : dict) -> list:
     """ get the complementary strand """
     return [comp_dict[x] for x in sequence]
+
 
 def concatenate_chem_and_bases(chemistry : Union[str, list], bases : list) -> list:
     """ concatenate the chemistries with the bases """
@@ -272,3 +274,24 @@ def concatenate_chem_and_bases(chemistry : Union[str, list], bases : list) -> li
         nucleoside_list = [chemistry + bases[i] for i in range(len(bases))]
         return nucleoside_list
 
+
+def retrieve_base(base : str) -> str:
+    """ retrieve the base denominator for this specific nucleoside """
+    return x[-1]
+
+
+def retrieve_base_atoms(base1 : str, base2) -> list:
+    # switch case statement. if A : return ["N9", "C8", "C4"] 
+
+    # A - T base pairing
+
+    # C - G base pairing
+
+    # T - A base pairing
+
+    # G - C base pairing
+
+    # U - A base pairing
+
+    # A - U base pairing
+    pass

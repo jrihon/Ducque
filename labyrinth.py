@@ -24,12 +24,14 @@ def Architecture(nucleic_acid_list, complement):
     # Reverse the list order, because we build the nucleoside from the bottom up.
     nucleic_acid_list.reverse()
 
+    # Start the index counter. We will need this when we position the complementary nucleotides
+    index_counter = 0
     # Parse the first nucleotide in the list.
     nucleic_acid = nucleic_acid_list[0]
 
     # Parse dictionary for the correct filename; input(DT) - output(dna_thymidine.json). This also parses the correct linker.
-    nucleoside = LabF.Nucleoside(codex_acidum_nucleicum[nucleic_acid][0])
-    linker = LabF.Desmos(codex_acidum_nucleicum[nucleic_acid][1])
+    nucleoside = LabF.Nucleoside(codex_acidum_nucleicum[nucleic_acid][0]) ; index_counter += nucleoside.mol_length
+    linker = LabF.Desmos(codex_acidum_nucleicum[nucleic_acid][1]) ; index_counter += linker.mol_length
 
     # Position the linker moiety on the nucleoside.
     leading_strand = LabF.position_phosphate_linker(nucleoside, nucleoside.array, linker)
@@ -41,8 +43,8 @@ def Architecture(nucleic_acid_list, complement):
 
         # Import the next nucleoside and create an object
         nextnuc_acid = nucleic_acid_list[NA]
-        nextnuc = LabF.Nucleoside(codex_acidum_nucleicum[nextnuc_acid][0])
-        nextlink = LabF.Desmos(codex_acidum_nucleicum[nextnuc_acid][1])
+        nextnuc = LabF.Nucleoside(codex_acidum_nucleicum[nextnuc_acid][0]) ; index_counter += nextnuc.mol_length
+        nextlink = LabF.Desmos(codex_acidum_nucleicum[nextnuc_acid][1]) ; index_counter += nextlink.mol_length
 
         # Parse the dictionary for the previous nucleotide, to append the next nucleotide onto.
         previous_nucleic_acid = nucleic_acid_list[NA - 1]
@@ -62,19 +64,19 @@ def Architecture(nucleic_acid_list, complement):
         else:
             # Leave the object as a nucleoside, since it is the last one in the sequence. Create a tuple of the two arrays to finalise the leading strand.
             leading_strand = np.vstack((next_nucleoSIDE_positioned, leading_strand))
+            index_counter -= nextlink.mol_length
 
         num_nucl += 1
 
     # Generate a list of complementary nucleotides
     compl_nucleic_acid_list = LabF.generate_complementary_sequence(nucleic_acid_list, complement)
 
-
-
-
+    # Retro-actively fit in the bases
+    LabF.position_complementary_base(index_counter)
 
 
 
     #------------------------ CREATE THE PDB THAT GOES WITH ARRAY INPUTTED -------------------#
-    LabF.create_PDB_from_matrix(leading_strand, nucleic_acid_list)
     print("\nNumber of nucleotides in the duplex :" , num_nucl, "\n")
-
+    #print("Count of index is : ", index_counter)
+    LabF.create_PDB_from_matrix(leading_strand, nucleic_acid_list)

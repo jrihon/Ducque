@@ -22,9 +22,9 @@ class Nucleoside:
 
         self.array =  np.asarray(json.loads(self.jason["pdb_properties"]["Coordinates"]), dtype=float)
         self.atom_list = json.loads(self.jason["pdb_properties"]["Atoms"])
+        self.mol_length = int(json.loads(self.jason["pdb_properties"]["Shape"])[0])
 
-    # because the dihedral is still inside a the backbone dictionary, we need to load the string (json.loads) again
-    def get_dihedral(self, dihedral : str) -> float:
+    def get_dihedral(self, dihedral : str) -> float:                        # because the dihedral is still inside a dictionary, we need to load the string (json.loads)
         return float(json.loads(self.jason["angles"]["dihedrals"])[dihedral])
 
     def get_angle(self, angle : str) -> float:
@@ -36,7 +36,7 @@ class Desmos(Nucleoside):
     """  We can just simply pass this in here for now, since we essentially copy the parent class """
 
     def get_shape(self) -> int:
-        # returns the size of the linker shape, but only the first value
+        """ returns the size of the linker shape, but only the first value """
         return int(json.loads(self.jason["pdb_properties"]["Shape"])[0])
 
 
@@ -45,8 +45,8 @@ class Desmos(Nucleoside):
 def generate_vector_of_interest(angle : float, dihedral : float, atom_array : np.array) -> np.array:
     """ This function generates a single vector for which there exists only one angle and dihedral.
     The atom_array contains the three first atoms in the sequence that make up the dihedral.
-    Example = if the sequence of a dihedral is C4' - C5' - O5' - P (beta backbone), then the atom_array is [O5', C5', C4']
-    """
+    Example = if the sequence of a dihedral is C4' - C5' - O5' - P (beta backbone), then the atom_array is [O5', C5', C4'] """
+
     # Get the vector to rotate the cone vector onto. This is done on the middle two atoms of the sequence
     # Example : [O5'] minus (-) [C5'] results in a vector that goes [C5' -> O5']
     p0 = LFT1.return_normalized(atom_array[0] - atom_array[1])
@@ -270,7 +270,7 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[lis
     complementary_dictDNA = { "A" : "T", "T" : "A", "G" : "C", "C" : "G", "U":"A" }
     complementary_dictRNA = { "A" : "U", "T" : "A", "G" : "C", "C" : "G", "U":"A" }
 
-    bases = LFT2.retrieve_bases_only(sequence_list)
+    bases = LFT2.retrieve_bases_list(sequence_list)
     if isinstance(complement, list):
         complementary_sequence = list(map(lambda x: x.strip(","), complement))
 
@@ -280,7 +280,7 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[lis
         return complementary_sequence
 
     if complement.lower() == "homo":
-        chemistry = LFT2.retrieve_chemistry_only(sequence_list)
+        chemistry = LFT2.retrieve_chemistry_list(sequence_list)
 
         # Switch the bases the get their complementary base
         comp_bases = LFT2.get_complementary_bases(bases, complementary_dictDNA)
@@ -304,34 +304,72 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[lis
         return complementary_sequence
 
     if True:
-        # At this point, any input the user has prompted should have gone through a return statement. So if 
+        # At this point, any input the user has prompted should have gone through a return statement. So if we reach this point, just stop the program. 
         raise ValueError("The variable you have prompted for the '--complement' flag is not correct. Please review your input file.\n")
         sys.exit(1)
+
+
+def position_complementary_base(complementary_base, index_counter : int) -> np.ndarray:
+    """ This functions positions the base correctly, which inherently positions the entire nucleoside correctly.
+        After this function, there comes an iterative process of fitting the backbone correctly. """
+
+    ## Parse the correct atoms to get started for
+    # get the object for the leading base, needing to parse the atoms for the indexes
+
+    # get the object for the complementary base
+
+
+    # Get the base of nucleotide that needs to in the plane of the leading_strand base
+    #LFT2.retrieve_base(leading_base)
+
+    # Get the base of nucleotide that needs to in the plane of the complementary_strand base
+    #LFT2.retrieve_base(compl_base)
+
+    # Create a function that, when you input the base, it retrieves the atoms required for parsing
+    #LFT2.retrieve_base_atoms(letter-leading_base, letter_compl_base)
+
+    # Get the cross product of the atoms of leading_base and reverse the sign of that vector. Dont forget to normalise
+
+    # Get the cross product of the atoms of leading_base that make it if both bases are in the same plane, the cross product vectors are exactly opposite
+
+    # Get the quaternion to turn complementary_base into the same plane as the leading_base and turn it
+
+
+    # Get the Q and R dihedral. Dont forget to correct the normalised vector and multiply it with the length
+    # We can hardcore the dihedrals, which is 180 degrees. The angle of the two last vectors is also hardcoded, but respectively to be calculated for (depending on the base).
+
+    # Calculate for X1 then and position Hn (compl_base) to the position
+
+    # Calculate for X2 and calculate between J1 = Hn -> Ot and J2 = Hn -> X2. Since it is all in the same plane, we only need to turn J1 onto J2
+
+
+
+    pass
 
 def create_PDB_from_matrix(matrix : np.ndarray, list_of_sequence : list) -> None:
     """ Write out the data for the pdb file """
     print("Writing to pdb ...")
     list_of_sequence = list_of_sequence[::-1]
-    df = pd.DataFrame()
+    df_leading = pd.DataFrame()
 
-    df['RecName'] = ['ATOM' for x in range(matrix.shape[0])]
-    df['AtomNum'] = np.arange(start=1, stop=matrix.shape[0] + 1)
-    df['AtomName'] = LFT2.pdb_AtomNames_or_ElementSymbol(list_of_sequence, "Atoms")
-    df['AltLoc'] = ' '
-    df['ResName'] = LFT2.pdb_Residuename(list_of_sequence)
-    df['Chain'] = 'A'
-    df['Sequence'] = LFT2.pdb_Sequence(list_of_sequence)
-    df['X_coord'] = list(map(lambda x: '{:.3f}'.format(x), matrix[:,0]))
-    df['Y_coord'] = list(map(lambda x: '{:.3f}'.format(x), matrix[:,1]))
-    df['Z_coord'] = list(map(lambda x: '{:.3f}'.format(x), matrix[:,2]))
-    df['Occupancy'] = '1.00'
-    df['Temp'] = '0.00'
-    df['SegmentID'] = str('   ')
-    df['ElementSymbol'] = LFT2.pdb_AtomNames_or_ElementSymbol(list_of_sequence, "Symbol")
+    df_leading['RecName'] = ['ATOM' for x in range(matrix.shape[0])]
+    df_leading['AtomNum'] = np.arange(start=1, stop=matrix.shape[0] + 1)
+    df_leading['AtomName'] = LFT2.pdb_AtomNames_or_ElementSymbol(list_of_sequence, "Atoms")
+    df_leading['AltLoc'] = ' '
+    df_leading['ResName'] = LFT2.pdb_Residuename(list_of_sequence)
+    df_leading['Chain'] = 'A'
+    df_leading['Sequence'] = LFT2.pdb_Sequence(list_of_sequence)
+    df_leading['X_coord'] = list(map(lambda x: '{:.3f}'.format(x), matrix[:,0]))
+    df_leading['Y_coord'] = list(map(lambda x: '{:.3f}'.format(x), matrix[:,1]))
+    df_leading['Z_coord'] = list(map(lambda x: '{:.3f}'.format(x), matrix[:,2]))
+    df_leading['Occupancy'] = '1.00'
+    df_leading['Temp'] = '0.00'
+    df_leading['SegmentID'] = str('   ')
+    df_leading['ElementSymbol'] = LFT2.pdb_AtomNames_or_ElementSymbol(list_of_sequence, "Symbol")
 
     filename = "testing_daedalus.pdb"
     with open(filename ,'w') as pdb:
-        for index, row in df.iterrows():
+        for index, row in df_leading.iterrows():
             split_line = [ row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13] ]
             pdb.write('%-6s%5s%5s%s%s%3s%5s  %8s%8s%8s%6s%6s%4s      %2s\n' % tuple(split_line))
         pdb.write('END')

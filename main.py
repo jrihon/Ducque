@@ -188,7 +188,7 @@ def main():
 
     # Build nucleic acid duplex
     if arguments.Daedalus:
-        print("Building sequence ...\n")
+        print("Daedalus - Nucleic Acid Builder initiated! Building sequence ...\n")
         labyrinth.Architecture(nucleic_acid_list, complement)
 
     # Output a randomised sequence
@@ -196,7 +196,7 @@ def main():
         print("Randioli randioli, what is the spaghetolli?")
         randomise.randomiser(chemistry, length_seq, sequence)
 
-    print("Time spent: %.5f seconds." % (time() - t0))
+    print("                         Time spent: %.5f seconds." % (time() - t0))
 
 ## ---------------------------------------- S T A R T   T H E   S H O W ---------------------------------------- ##
 if __name__ == "__main__":
