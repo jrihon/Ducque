@@ -104,6 +104,13 @@ this
             The chemistry that defines the prompted nucleotide or the chemistry that is involved with said chemistry
                 Example: --id DNA
 
+        --comformation CONFORMATION
+            The conformation that denotes the nucleic acid. Used to name the output .json file. Used when building the complementary strand.
+            NB : for the leading strand, I typically use a conformation that is the most stable.
+                The complementary strand is then fitted onto the leading strand.
+                Example: --conformation 2endo
+                Example: --conformation 1-4boat
+
         --moiety MOIETY
             The moiety that the structure defines. Should either be "nucleoside" or "linker"
                 Example: --moiety nucleoside
