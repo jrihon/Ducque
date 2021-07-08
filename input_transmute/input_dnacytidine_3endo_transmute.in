@@ -1,0 +1,6 @@
+--pdb dna_cytidine_3endo.pdb
+--id DNA
+--conformation 3endo
+--moiety nucleoside
+--dihedrals -83.894, -152.088, 45.458, 84.304, 179.457, -49.126, -154.205
+--bondangles 100.797, 119.352, 110.354, 115.383, 111.918, 119.898, 117.959
