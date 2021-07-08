@@ -1,5 +1,6 @@
 --pdb phosphate_linker.pdb
 --id DNA
+--conformation 2endo 
 --moiety linker
 --dihedrals -155.047, 76.677
 --bondangles 109.770
