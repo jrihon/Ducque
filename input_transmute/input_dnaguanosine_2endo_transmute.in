@@ -1,0 +1,6 @@
+--pdb dna_guanosine_2endo.pdb
+--id DNA
+--conformation 2endo
+--moiety nucleoside
+--dihedrals -39.215, -151.434, 30.883, 156.515, 159.130, -98.894, -99.379
+--bondangles 101.433, 118.980, 110.026, 115.749, 111.918, 119.026, 125.573

@@ -1,0 +1,6 @@
+--pdb rna_uracil.pdb
+--id RNA
+--conformation 2endo
+--moiety nucleoside
+--dihedrals -62.130, -179.872, 47.433, 83.473, -151.700, -73.639, -165.774
+--bondangles 102.008, 118.306, 109.839, 115.756, 111.939, 119.370, 117.308
