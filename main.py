@@ -23,7 +23,6 @@ Designed and written by Doctorandus Rihon Jérôme.\n
 ______________________________________________________________________
 """
 t0 = time()
-print(explanation)
 ## -------------------------------------------------- P A R S E  A R G U M E N T S --------------------------------------- ##
 options = argparse.ArgumentParser(description=explanation,
                                   add_help=False,
@@ -95,9 +94,10 @@ else:
         fileTransmute = list(map(lambda x: x.strip(), arguments.transmute.readlines()))
 
         # Check if amount of inputs are valid
-        list_of_valid_flags = ["--pdb", "--id", "--moiety", "--dihedrals", "--bondangles"]
-        if len(fileTransmute) != len(list_of_valid_flags):
-            print("Only five arguments are required, please check our input file.\n\n\n")
+        list_of_valid_flags = ["--pdb", "--id", "--moiety", "--conformation", "--dihedrals", "--bondangles"]
+        if not len(fileTransmute) == len(list_of_valid_flags) and not len(fileTransmute) == (len(list_of_valid_flags) - 1):
+            print("Only five/six arguments are required, please check your input file.\n\n\n")
+
             options.print_help()
             sys.exit(0)
 
@@ -116,6 +116,9 @@ else:
             if arg[0] == "--id":
                 identifier = arg[1]
 
+            if arg[0] == "--conformation":
+                conformation = arg[1]
+
             if arg[0] == "--moiety":
                 moiety = arg[1]
 
@@ -124,6 +127,7 @@ else:
 
             if arg[0] == "--bondangles":
                 angles = arg[1:]
+
 
     # If we want to call for a randomised sequence
     if arguments.randomise:
@@ -181,9 +185,12 @@ except fundaments.InputExclusivity:
 ## -------------------------------------------------- M A I N -------------------------------------------------- ##
 def main():
 
+    # Print the Daedalus prompt
+    print(explanation)
+
     # Convert pdb to json
     if arguments.transmute:
-        transmute.Transmutation(pdb_file, identifier, moiety, dihedrals, angles)
+        transmute.Transmutation(pdb_file, identifier, moiety, dihedrals, angles, conformation)
         print("Converting " + pdb_file + " to a json file.")
 
     # Build nucleic acid duplex

@@ -371,7 +371,7 @@ def create_PDB_from_matrix(matrix : np.ndarray, list_of_sequence : list) -> None
     with open(filename ,'w') as pdb:
         for index, row in df_leading.iterrows():
             split_line = [ row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13] ]
-            pdb.write('%-6s%5s%5s%s%s%3s%5s  %8s%8s%8s%6s%6s%4s      %2s\n' % tuple(split_line))
+            pdb.write('%-6s%5s%5s%s%2s%3s%5s  %8s%8s%8s%6s%6s%4s      %2s\n' % tuple(split_line))
         pdb.write('END')
 
 

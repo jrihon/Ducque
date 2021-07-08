@@ -2,7 +2,7 @@ import transmute_func as TF
 import json
 
 
-def Transmutation(pdb_file, nucleic_acid_chemistry : str, moiety : str, dihedral_list : list, angles_list : list):
+def Transmutation(pdb_file, nucleic_acid_chemistry : str, moiety : str, dihedral_list : list, angles_list : list, conformation : str = False ):
     """This function converts a pdb formatted file into a json file.
     Json files make for a much easier data parsing format, are computationally much more efficient and require less memory to be held.
 
@@ -91,7 +91,7 @@ def Transmutation(pdb_file, nucleic_acid_chemistry : str, moiety : str, dihedral
 
     #----------------------------- WRITE OUT A JSON FILE ----------------------------#
     # The json dump() method always requires us to dump it to a file in the current directory
-    fname = nucleic_acid.get_output_name(nucleic_acid_chemistry, moiety)
+    fname = nucleic_acid.get_output_name(nucleic_acid_chemistry, moiety, conformation)
 
     with open("./json/" + fname + ".json", "w") as filejson:
         json.dump(molecule, filejson, indent=4)

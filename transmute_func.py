@@ -208,12 +208,17 @@ class TransmuteToJson:
             return set_of_angles
 
 
-    def get_output_name(self, identifier : str, moiety : str) -> str:
+    def get_output_name(self, identifier : str, moiety : str, conformation : str) -> str:
         """ Create the name of the file based on the identifier of the nucleic acid chemistry and its corresponding base """
         if moiety == "nucleoside":
             name_of_chemistry = identifier.lower()
             name_of_base = self.get_base().lower()
-            return name_of_chemistry + "_" + name_of_base
+
+            if not conformation:
+                return name_of_chemistry + "_" + name_of_base
+
+            conformation = conformation.lower()
+            return name_of_chemistry + "_" + name_of_base + "_" + conformation
 
         if moiety == "linker":
             name_of_chemistry = identifier.lower()
