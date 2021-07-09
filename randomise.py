@@ -13,9 +13,11 @@ chemistry_dict = {
 
 def write_sequence_to_file(output_sequence : str):
 
-    with open("./sequence_testing.in", "w") as seq:
+    fname = "sequence_testing.in"
+    with open("./" + fname, "w") as seq:
         seq.write("--sequence " + output_sequence + "\n--complement ")
 
+    print("\nDo not forget to add the complementary argument in " + fname + "!\n")
 
 def randomise_sequence(chemistry : str, length_seq : int):
     """ depends on the prompted chemistry and the length of the sequence """

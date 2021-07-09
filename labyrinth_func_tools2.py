@@ -1,11 +1,11 @@
-"""
-The python file that organises the labyrinth_func.py better
-"""
 import numpy as np
 import json
 from typing import Union
 
 import labyrinth
+""" This scripts makes data parsing much easier and makes labyrinth.py much more organised. """
+
+
 
 def check_slope_of_array(arr : np.array) -> str:
     """ In labyrinth_func_tools1.py there is a function that retrieves the interpolated dihedral angle
@@ -38,6 +38,16 @@ def retrieve_atom_index(json_object, atom : str) -> np.array :
     """ Retrieves the index in the json_object.array of the atom of interest
     This integer will be used to retrieve the vector of the atom of interest """
     return json_object.atom_list.index(atom)
+
+
+def retrieve_atom_index_MULTIPLE(json_object, atoms : list, index_counter : int = 0) -> np.array :
+    """ Retrieves the index in the json_object.array of the atom of interest
+    This integer will be used to retrieve the vector of the atom of interest """
+    first_atom = json_object.atom_list.index(atoms[0]) + index_counter
+    second_atom = json_object.atom_list.index(atoms[1]) + index_counter
+    third_atom = json_object.atom_list.index(atoms[2]) + index_counter
+
+    return np.array([first_atom, second_atom, third_atom])
 
 
 def pdb_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : str) -> list:
@@ -280,18 +290,3 @@ def retrieve_base(base : str) -> str:
     return x[-1]
 
 
-def retrieve_base_atoms(base1 : str, base2) -> list:
-    # switch case statement. if A : return ["N9", "C8", "C4"] 
-
-    # A - T base pairing
-
-    # C - G base pairing
-
-    # T - A base pairing
-
-    # G - C base pairing
-
-    # U - A base pairing
-
-    # A - U base pairing
-    pass
