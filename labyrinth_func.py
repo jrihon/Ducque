@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import json, sys
-import time
 from typing import Union
 
 import labyrinth_func_tools1 as LFT1
@@ -50,7 +49,7 @@ class Desmos(Nucleoside):
 
 
                                                                              #### FUNCTIONS
-# Functions that are meant to bypass the iterative coding in Labyrinth.py : Architecture() 
+# Functions that are meant to concatenate and bypass the iterative coding in Labyrinth.py : Architecture() 
 def generate_vector_of_interest(angle : float, dihedral : float, atom_array : np.array) -> np.array:
     """ This function generates a single vector for which there exists only one angle and dihedral.
     The atom_array contains the three first atoms in the sequence that make up the dihedral.
@@ -81,6 +80,7 @@ def generate_vector_of_interest(angle : float, dihedral : float, atom_array : np
     single_vector = LFT1.generate_and_rotate_single_vector(theta_interpolate, angle, quaternion)
 
     return single_vector
+
 
 def position_phosphate_linker(nucleoside, nucl_array : np.ndarray, linker) -> np.ndarray:
     """
@@ -157,6 +157,7 @@ def position_phosphate_linker(nucleoside, nucl_array : np.ndarray, linker) -> np
     nucleotide = np.vstack((link, nucl_array))
 
     return nucleotide
+
 
 def position_next_nucleoside(next_nucleoside, prev_nucleoside, prev_linker, leading_strand : np.array) -> np.array:
     """ This function is used after position_phosphate_linker().
@@ -286,63 +287,98 @@ def position_complementary_base(leading_base, complementary_base, leading_array 
     base1 = leading_base.get_base_denominator()
     base2 = complementary_base.get_base_denominator()
 
-    rotPlane_base1_id, rotPlane_base2_id = LFT3.retrieve_atoms_for_plane_rotation_of_complement(base1, base2)
+    rotPlane_base1_atoms, rotPlane_base2_atoms = LFT3.retrieve_atoms_for_plane_rotation_of_complement(base1, base2)
 
     ## Get the proper vectors for the plane rotation
     # leading base vectors
-    array_rotPlane_base1 = LFT2.retrieve_atom_index_MULTIPLE(leading_base, rotPlane_base1_id, index_counter)
+    list_rotPlane_base1_id = LFT2.retrieve_atom_index_MULTIPLE(leading_base, rotPlane_base1_atoms, index_counter)
 
-    vL0 = leading_array[array_rotPlane_base1[0]]
-    vL1 = leading_array[array_rotPlane_base1[1]]
-    vL2 = leading_array[array_rotPlane_base1[2]]
+    vL0 = leading_array[list_rotPlane_base1_id[0]]
+    vL1 = leading_array[list_rotPlane_base1_id[1]]
+    vL2 = leading_array[list_rotPlane_base1_id[2]]
 
     pL0 = LFT1.return_normalized(vL1 - vL0)     # C2 - N1
     pL1 = LFT1.return_normalized(vL2 - vL0)     # C6 - N1
 
     # complementary base vectors
-    array_rotPlane_base2 = LFT2.retrieve_atom_index_MULTIPLE(complementary_base, rotPlane_base2_id)
+    list_rotPlane_base2_id = LFT2.retrieve_atom_index_MULTIPLE(complementary_base, rotPlane_base2_atoms)
 
-    vC0 = complementary_base.array[array_rotPlane_base2[0]]
-    vC1 = complementary_base.array[array_rotPlane_base2[1]]
-    vC2 = complementary_base.array[array_rotPlane_base2[2]]
+    vC0 = complementary_base.array[list_rotPlane_base2_id[0]]
+    vC1 = complementary_base.array[list_rotPlane_base2_id[1]]
+    vC2 = complementary_base.array[list_rotPlane_base2_id[2]]
 
     pC0 = LFT1.return_normalized(vC1 - vC0)     # C4 - N9
     pC1 = LFT1.return_normalized(vC2 - vC0)     # C8 - N9
 
+### Rotate the plane
     ## Rotate the complementary base onto the plane of the leading base
     # Get the cross product of the atoms of leading_base and reverse the sign of that vector. Dont forget to normalise
-    cross_base1 = LFT1.return_normalized(np.cross(pL0, pL1))
-    cross_base2 = LFT1.return_normalized(np.cross(pC0, pC1))
+    #cross_base1 = LFT1.return_normalized(np.cross(pL0, pL1))
+    cross_base1 = LFT1.return_normalized(np.cross(pL1, pL0))
+    #cross_base2 = LFT1.return_normalized(np.cross(pC0, pC1))
+    cross_base2 = LFT1.return_normalized(np.cross(pC1, pC0))
 
     # Get the cross product of the atoms of leading_base that make it if both bases are in the same plane, the cross product vectors are exactly opposite
-    plane_quaternion = LFT1.get_quaternion( cross_base1 * -1.0, cross_base2)
+    plane1_quaternion = LFT1.get_quaternion( cross_base1 * -1.0, cross_base2)
 
     # Apply the rotation
-    base2_at_origin = LFT1.move_vector_to_origin(complementary_base.array - vC0)
-    base2_at_origin_rotated = LFT1.rotate_with_quaternion(plane_quaternion, base2_at_origin)
+    base2_at_origin = LFT1.move_vector_to_origin(complementary_base.array, vC0)
+    base2_at_origin_rotated = LFT1.rotate_with_quaternion(plane1_quaternion, base2_at_origin)
 
-    ### Now we have rotated the plane, we leave it there until we find the position of Hn to place it.
-    compl1_base1_id, compl1_base2_id = LFT3.retrieve_atoms_for_positioning_of_complement1(base1, base2)
+### Apply a translation to get the initial positioning
+    ### (X1) Now we have rotated the plane, we calculate X1 vector and move our complementary base there.
+    compl1_base1_atoms, compl1_base2_atom = LFT3.retrieve_atoms_for_positioning_of_complement1(base1, base2)
 
-    arr_compl1_base1 = LFT2.retrieve_atom_index_MULTIPLE(leading_base, compl1_base1_id, index_counter)
-    compl1_angle = 178.359 * (np.pi/180)
-    compl1_dihedral = 180
-    dist_between_bases = 1.81
+    list_compl1_base1_id = LFT2.retrieve_atom_index_MULTIPLE(leading_base, compl1_base1_atoms, index_counter)
 
-    single_vector_compl1 = generate_vector_of_interest(compl1_angle, compl1_dihedral, [arr_compl1_base1[2], arr_compl1_base1[1], arr_compl1_base1[0]])
-    single_vector_compl1 = LFT1.return_normalized(single_vector_compl1) * dist_between_bases
-
-    ## Now that we have the Hn position, we move the complementary base to the position by doing the following :
-    # move_to_this_loc = arr_compl1_base1 + single_vector_compl1
-    # v_compl1_base2 = LFT2.retrieve_atom_index(complementary_base, compl1_base2_id)
-    # new_loc = (move_to_this_loc - v_compl1_base2) + vC0
-
-    # Get the Q and R dihedral. Dont forget to correct the normalised vector and multiply it with the length
-    # We can hardcode the dihedrals, which is 180 degrees. The angle of the two last vectors is also hardcoded, but respectively to be calculated for (depending on the base).
+    # Get the required parameters for the rotations
+    Q_angle, Q_dihedral, R_angle, R_dihedral = LFT3.retrieve_angles_and_dihedrals_for_initial_base_positioning(base1)
+    dist_between_bases1 = 1.81 ; dist_between_bases2 = 1.87
 
     # Calculate for X1 then and position Hn (compl_base) to the position
+    single_vector_compl1 = generate_vector_of_interest(Q_angle, Q_dihedral, [leading_array[list_compl1_base1_id[2]], leading_array[list_compl1_base1_id[1]], leading_array[list_compl1_base1_id[0]]])
+    single_vector_compl1 = LFT1.return_normalized(single_vector_compl1) * dist_between_bases1
 
-    # Calculate for X2 and calculate between J1 = Hn -> Ot and J2 = Hn -> X2. Since it is all in the same plane, we only need to turn J1 onto J2
+    ## Now that we have the Hn position, we move the complementary base to the position by doing the following :
+    # Get distance at which we want to position the base's hydrogen bond
+    move_to_this_loc1 = leading_array[list_compl1_base1_id[2]] + single_vector_compl1
+    # retrieve the vector of the atom that we want to attach 'move_to_this_loc' to.
+    v_compl1_base2_id = LFT2.retrieve_atom_index(complementary_base, compl1_base2_atom)
+
+    # the distance from the location we want to have compl1_base2_atom move to. But we move the array from the origin, so substract that and then move it
+    distance_for_compl1 = move_to_this_loc1 - base2_at_origin_rotated[v_compl1_base2_id]
+
+    base2_at_loc = LFT1.move_vector_to_loc(base2_at_origin_rotated, distance_for_compl1)
+
+### Apply rotation a second time
+    ### (X2) Now we have placed complementary base in the correct orientation, now we rotate it to get the 3D orientation in order by turning onto the second hydrogen bond
+    compl2_base1_atoms, compl2_base2_atom = LFT3.retrieve_atoms_for_position_of_complement2(base1, base2)
+    list_compl2_base1_id = LFT2.retrieve_atom_index_MULTIPLE(leading_base, compl2_base1_atoms, index_counter)
+
+    # Calculate for X2
+    single_vector_compl2 = generate_vector_of_interest(R_angle, R_dihedral, [leading_array[list_compl2_base1_id[2]], leading_array[list_compl2_base1_id[1]], leading_array[list_compl2_base1_id[0]]])
+    single_vector_compl2 = LFT1.return_normalized(single_vector_compl2) * dist_between_bases2
+
+    # Creates the coordinate at which we want to move our compl2_base2_atom to
+    move_to_this_loc2 = leading_array[list_compl2_base1_id[2]] + single_vector_compl2
+
+    v_compl2_base2_id = LFT2.retrieve_atom_index(complementary_base, compl2_base2_atom)
+    # j1 = MVTL2 - Hn
+    # j2 = Ot - Hn
+    # move the 
+    v_Hn = base2_at_loc[v_compl1_base2_id]
+    j1 = LFT1.return_normalized(move_to_this_loc2 - v_Hn)
+    j2 = LFT1.return_normalized(base2_at_loc[v_compl2_base2_id] - v_Hn)
+
+    plane2_quaternion = LFT1.get_quaternion(j1, j2)
+
+    base2_at_origin = base2_at_loc - base2_at_loc[v_compl1_base2_id]
+    base2_at_origin_rotated = LFT1.rotate_with_quaternion(plane2_quaternion, base2_at_origin)
+
+    base2_at_loc = base2_at_origin_rotated + v_Hn
+
+    return base2_at_loc
+
 
 
 
@@ -350,14 +386,14 @@ def position_complementary_base(leading_base, complementary_base, leading_array 
 def generate_complementary_sequence(sequence_list : list, complement : Union[list, str]) -> list:
     """ sequence list is the given input.
         complement will specify what the complementary strand will look like. choices between homo - DNA - RNA """
-    complementary_dictDNA = { "A" : "T", "T" : "A", "G" : "C", "C" : "G", "U":"A" }
-    complementary_dictRNA = { "A" : "U", "T" : "A", "G" : "C", "C" : "G", "U":"A" }
+    complementary_dictDNA = { "A" : "T", "T" : "A", "G" : "C", "C" : "G", "U" : "A" }
+    complementary_dictRNA = { "A" : "U", "T" : "A", "G" : "C", "C" : "G", "U" : "A" }
 
     bases = LFT2.retrieve_bases_list(sequence_list)
     if isinstance(complement, list):
         complementary_sequence = list(map(lambda x: x.strip(","), complement))
 
-        # See of the lengths match. If the lengths do not match, give an assertion error and print the following string.
+        # See of the lengths match. If the lengths do not match, give an assertion error and print the following string. This exits the software too.
         assert len(sequence_list) == len(complementary_sequence), "The length of the complementary strand does not match the length of the leading strand!"
 
         return complementary_sequence
@@ -392,96 +428,97 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[lis
         sys.exit(1)
 
 
-#def create_PDB_from_matrix_final(leading_array : np.ndarray, list_of_leading_sequence : list, complementary_array : np.ndarray,list_of_complementary_sequence : list) -> None:
-#    """ Write out the data for the pdb file """
-#    print("Writing to pdb ...")
-#    list_of_leading_sequence = list_of_leading_sequence[::-1]
-#
-#    # LEADING STRAND
-#    df_leading = pd.DataFrame()
-#
-#    df_leading['RecName'] = ['ATOM' for x in range(leading_array.shape[0])]
-#    df_leading['AtomNum'] = np.arange(start=1, stop=leading_array.shape[0] + 1)
-#    df_leading['AtomName'] = LFT2.pdb_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Atoms")
-#    df_leading['AltLoc'] = ' '
-#    df_leading['ResName'] = LFT2.pdb_Residuename(list_of_leading_sequence)
-#    df_leading['Chain'] = 'A'
-#    df_leading['Sequence'] = LFT2.pdb_Sequence(list_of_leading_sequence)
-#    df_leading['X_coord'] = list(map(lambda x: '{:.3f}'.format(x), leading_array[:,0]))
-#    df_leading['Y_coord'] = list(map(lambda x: '{:.3f}'.format(x), leading_array[:,1]))
-#    df_leading['Z_coord'] = list(map(lambda x: '{:.3f}'.format(x), leading_array[:,2]))
-#    df_leading['Occupancy'] = '1.00'
-#    df_leading['Temp'] = '0.00'
-#    df_leading['SegmentID'] = str('   ')
-#    df_leading['ElementSymbol'] = LFT2.pdb_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Symbol")
-#
-#    # TER line between the single strands
-#    TER_line = pd.DataFrame({'RecordName': 'TER', 'Sequence': i}, index=[69])
-#
-#    # COMPLEMENTARY STRAND
-#    df_complementary = pd.DataFrame()
-#
-#    df_complementary['RecName'] = ['ATOM' for x in range(complementary_array.shape[0])]
-#    df_complementary['AtomNum'] = np.arange(start=1, stop=complementary_array.shape[0] + 1)
-#    df_complementary['AtomName'] = LFT2.pdb_AtomNames_or_ElementSymbol(list_of_complementary_sequence, "Atoms")
-#    df_complementary['AltLoc'] = ' '
-#    df_complementary['ResName'] = LFT2.pdb_Residuename(list_of_complementary_sequence)
-#    df_complementary['Chain'] = 'K'
-#    df_complementary['Sequence'] = LFT2.pdb_Sequence(list_of_complementary_sequence)
-#    df_complementary['X_coord'] = list(map(lambda x: '{:.3f}'.format(x), complementary_array[:,0]))
-#    df_complementary['Y_coord'] = list(map(lambda x: '{:.3f}'.format(x), complementary_array[:,1]))
-#    df_complementary['Z_coord'] = list(map(lambda x: '{:.3f}'.format(x), complementary_array[:,2]))
-#    df_complementary['Occupancy'] = '1.00'
-#    df_complementary['Temp'] = '0.00'
-#    df_complementary['SegmentID'] = str('   ')
-#    df_complementary['ElementSymbol'] = LFT2.pdb_AtomNames_or_ElementSymbol(list_of_complementary_sequence, "Symbol")
-#
-#    # Concatenate the two dataframes
-#    duplex_df = pd.concat([df_leading, TER_line, df_complementary], ignore_index=True)
-#
-#    # Write out the pdb file
-#    filename = "testing_daedalus.pdb"
-#    with open(filename ,'w') as pdb:
-#        for index, row in duplex_df.iterrows():
-#            if row[0] == 'TER':
-#                TERline = row[0].split()
-#                f.write('%-6s\n' % tuple(TERline))
-#            if not row[0] == 'TER':
-#                split_line = [ row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13] ]
-#                pdb.write('%-6s%5s%5s%s%2s%3s%5s  %8s%8s%8s%6s%6s%4s      %2s\n' % tuple(split_line))
-#        pdb.write('END')
-#        pdb.close()
-
-
-def create_PDB_from_matrix(leading_array : np.ndarray, list_of_leading_sequence : list) -> None:
+def create_PDB_from_array_final(leading_array : np.ndarray, list_of_leading_sequence : list, complementary_array : np.ndarray, list_of_complementary_sequence : list) -> None:
     """ Write out the data for the pdb file """
     print("Writing to pdb ...")
     list_of_leading_sequence = list_of_leading_sequence[::-1]
+    #list_of_complementary_sequence = list_of_complementary_sequence[::-1]
 
     # LEADING STRAND
     df_leading = pd.DataFrame()
 
-    df_leading['RecName'] = ['ATOM' for x in range(leading_array.shape[0])]
-    df_leading['AtomNum'] = np.arange(start=1, stop=leading_array.shape[0] + 1)
-    df_leading['AtomName'] = LFT2.pdb_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Atoms")
-    df_leading['AltLoc'] = ' '
-    df_leading['ResName'] = LFT2.pdb_Residuename(list_of_leading_sequence)
-    df_leading['Chain'] = 'A'
-    df_leading['Sequence'] = LFT2.pdb_Sequence(list_of_leading_sequence)
-    df_leading['X_coord'] = list(map(lambda x: '{:.3f}'.format(x), leading_array[:,0]))
-    df_leading['Y_coord'] = list(map(lambda x: '{:.3f}'.format(x), leading_array[:,1]))
-    df_leading['Z_coord'] = list(map(lambda x: '{:.3f}'.format(x), leading_array[:,2]))
-    df_leading['Occupancy'] = '1.00'
-    df_leading['Temp'] = '0.00'
-    df_leading['SegmentID'] = str('   ')
-    df_leading['ElementSymbol'] = LFT2.pdb_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Symbol")
+    df_leading["RecName"] = ["ATOM" for x in range(leading_array.shape[0])]
+    df_leading["AtomNum"] = np.arange(start=1, stop=leading_array.shape[0] + 1)
+    df_leading["AtomName"] = LFT2.LEAD_pdb_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Atoms")
+    df_leading["AltLoc"] = " "
+    df_leading["ResName"] = LFT2.LEAD_pdb_Residuename(list_of_leading_sequence)
+    df_leading["Chain"] = "A"
+    df_leading["Sequence"] = LFT2.LEAD_pdb_Sequence(list_of_leading_sequence)
+    df_leading["X_coord"] = list(map(lambda x: "{:.3f}".format(x), leading_array[:,0]))
+    df_leading["Y_coord"] = list(map(lambda x: "{:.3f}".format(x), leading_array[:,1]))
+    df_leading["Z_coord"] = list(map(lambda x: "{:.3f}".format(x), leading_array[:,2]))
+    df_leading["Occupancy"] = "1.00"
+    df_leading["Temp"] = "0.00"
+    df_leading["SegmentID"] = str("   ")
+    df_leading["ElementSymbol"] = LFT2.LEAD_pdb_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Symbol")
 
+    # TER line between the single strands
+    TER_line = pd.DataFrame({"RecName" : "TER", "AtomNum" : 69}, index=[69])
+    ln_lead = len(df_leading["AtomNum"])
+
+    # COMPLEMENTARY STRAND
+    df_complementary = pd.DataFrame()
+
+    df_complementary["RecName"] = ["ATOM" for x in range(complementary_array.shape[0])]
+    df_complementary["AtomNum"] = np.arange(start=ln_lead + 1, stop=(ln_lead + complementary_array.shape[0] + 1))
+    df_complementary["AtomName"] = LFT2.COMPLEMENTARY_pdb_AtomNames_or_ElementSymbol(list_of_complementary_sequence, "Atoms")
+    df_complementary["AltLoc"] = " "
+    df_complementary["ResName"] = LFT2.COMPLEMENTARY_pdb_Residuename(list_of_complementary_sequence)
+    df_complementary["Chain"] = "K"
+    df_complementary["Sequence"] = LFT2.COMPLEMENTARY_pdb_Sequence(list_of_complementary_sequence, len(list_of_leading_sequence))
+    df_complementary["X_coord"] = list(map(lambda x: "{:.3f}".format(x), complementary_array[:,0]))
+    df_complementary["Y_coord"] = list(map(lambda x: "{:.3f}".format(x), complementary_array[:,1]))
+    df_complementary["Z_coord"] = list(map(lambda x: "{:.3f}".format(x), complementary_array[:,2]))
+    df_complementary["Occupancy"] = "1.00"
+    df_complementary["Temp"] = "0.00"
+    df_complementary["SegmentID"] = str("   ")
+    df_complementary["ElementSymbol"] = LFT2.COMPLEMENTARY_pdb_AtomNames_or_ElementSymbol(list_of_complementary_sequence, "Symbol")
+
+    # Concatenate the two dataframes
+    duplex_df = pd.concat([df_leading, TER_line, df_complementary], ignore_index=True)
 
     # Write out the pdb file
-    filename = "testing_daedalus.pdb"
-    with open(filename ,'w') as pdb:
-        for index, row in df_leading.iterrows():
-            split_line = [ row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13] ]
-            pdb.write('%-6s%5s%5s%s%2s%3s%5s  %8s%8s%8s%6s%6s%4s      %2s\n' % tuple(split_line))
-        pdb.write('END')
+    filename = "testing_duplex.pdb"
+    with open(filename ,"w") as pdb:
+        for index, row in duplex_df.iterrows():
+            if row[0] == "TER":
+                TERline = row[0]
+                pdb.write("%-6s\n" % TERline)
+            if not row[0] == "TER":
+                split_line = [ row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13] ]
+                pdb.write("%-6s%5s%5s%s%2s%3s%5d  %8s%8s%8s%6s%6s%4s      %2s\n" % tuple(split_line))
+        pdb.write("END")
         pdb.close()
+
+
+#def create_PDB_from_array(leading_array : np.ndarray, list_of_leading_sequence : list) -> None:
+#    """ Write out the data for the pdb file """
+#    print("Writing to pdb ...")
+#    list_of_leading_sequence = list_of_leading_sequence[::-1]
+#
+#    df = pd.DataFrame()
+#
+#    df["RecName"] = ["ATOM" for x in range(leading_array.shape[0])]
+#    df["AtomNum"] = np.arange(start=1, stop=leading_array.shape[0] + 1)
+#    df["AtomName"] = LFT2.pdb_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Atoms")
+#    df["AltLoc"] = " "
+#    df["ResName"] = LFT2.pdb_Residuename(list_of_leading_sequence)
+#    df["Chain"] = "A"
+#    df["Sequence"] = LFT2.pdb_Sequence(list_of_leading_sequence)
+#    df["X_coord"] = list(map(lambda x: "{:.3f}".format(x), leading_array[:,0]))
+#    df["Y_coord"] = list(map(lambda x: "{:.3f}".format(x), leading_array[:,1]))
+#    df["Z_coord"] = list(map(lambda x: "{:.3f}".format(x), leading_array[:,2]))
+#    df["Occupancy"] = "1.00"
+#    df["Temp"] = "0.00"
+#    df["SegmentID"] = str("   ")
+#    df["ElementSymbol"] = LFT2.pdb_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Symbol")
+#
+#
+#    # Write out the pdb file
+#    filename = "testing_daedalus.pdb"
+#    with open(filename ,"w") as pdb:
+#        for index, row in df_leading.iterrows():
+#            split_line = [ row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13] ]
+#            pdb.write("%-6s%5s%5s%s%2s%3s%5s  %8s%8s%8s%6s%6s%4s      %2s\n" % tuple(split_line))
+#        pdb.write("END")
+#        pdb.close()

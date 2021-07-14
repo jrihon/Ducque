@@ -33,6 +33,8 @@ def Architecture(nucleic_acid_list, complement):
     # Parse the first nucleotide in the list.
     nucleic_acid = nucleic_acid_list[0]
 
+    ## Start the leading strand
+
     # Parse dictionary for the correct filename; input(DT) - output(dna_thymidine.json). This also parses the correct linker.
     nucleoside = LabF.Nucleoside(codex_acidum_nucleicum[nucleic_acid][0]) ; index_counter += nucleoside.mol_length
     linker = LabF.Desmos(codex_acidum_nucleicum[nucleic_acid][1]) ; index_counter += linker.mol_length
@@ -68,36 +70,77 @@ def Architecture(nucleic_acid_list, complement):
         else:
             # Leave the object as a nucleoside, since it is the last one in the sequence. Create a tuple of the two arrays to finalise the leading strand.
             leading_strand = np.vstack((next_nucleoSIDE_positioned, leading_strand))
-            # Substract the last linker's molecule size, since it is not included at the end of the strand
+            # Substract the last linker's molecule size, since it is not included at the end of the leading strand. This index_counter is now set correctly to start the complementary strand build.
             index_counter -= nextlink.mol_length
 
         num_nucl += 1
 
-    #print(index_counter)
-    # Generate a list of complementary nucleotides
+
+    ## Generate the complementary strand
+
+    # a list of complementary nucleotides
     compl_nucleic_acid_list = LabF.generate_complementary_sequence(nucleic_acid_list, complement)
-    # The order of the compl_nucleic_acid_list is already in the correct order, since we will build from bottom to top
 
+    for i in range(len(compl_nucleic_acid_list)):
+        if compl_nucleic_acid_list[i] == "rT":
+            compl_nucleic_acid_list[i] = "rU"
+
+    ## Build the complementary strand
     compl_nucleic_acid = compl_nucleic_acid_list[0]
+    compl_nucleoside, compl_linker = LabF.Nucleoside(codex_acidum_nucleicum[compl_nucleic_acid][0]), LabF.Nucleoside(codex_acidum_nucleicum[compl_nucleic_acid][1])
+
+    # Initiate the object and decrement index_counter, so we can parse the correct vectors
     lead_nucleic_acid = nucleic_acid_list[0]
+    lead_nucleoside, lead_linker = LabF.Nucleoside(codex_acidum_nucleicum[lead_nucleic_acid][0]), LabF.Nucleoside(codex_acidum_nucleicum[lead_nucleic_acid][1])
 
-    compl_nucleoside = LabF.Nucleoside(codex_acidum_nucleicum[compl_nucleic_acid][0])
-    compl_linker = LabF.Nucleoside(codex_acidum_nucleicum[compl_nucleic_acid][1])
-                                                                                      # Decrease the counter of the index, so we can parse the correct vectors
-    lead_nucleoside = LabF.Nucleoside(codex_acidum_nucleicum[lead_nucleic_acid][0]) ; index_counter -= lead_nucleoside.mol_length
-    lead_linker = LabF.Nucleoside(codex_acidum_nucleicum[lead_nucleic_acid][1])
-    LabF.position_complementary_base(lead_nucleoside, compl_nucleoside, leading_strand, index_counter)
+    index_counter -= lead_nucleoside.mol_length
 
+    # Position the complementary nucleoside
+    #compl_nuc_array = LabF.position_complementary_base(lead_nucleoside, compl_nucleoside, leading_strand, index_counter)
+    complementary_strand = LabF.position_complementary_base(lead_nucleoside, compl_nucleoside, leading_strand, index_counter)
 
-  #  print(nucleic_acid_list)
-  #  print(compl_nucleic_acid_list)
-  #  print(index_counter)
+    # Position the linker
+    #complementary_strand = LabF.position_phosphate_linker(compl_nucleoside, compl_nuc_array, compl_linker)
 
+    for cNA in range(1, len(compl_nucleic_acid_list)):
 
+        # Import the next complementary nucleoside and create the objects
+        compl_nextnuc_acid = compl_nucleic_acid_list[cNA]
+        compl_nextnucleoside, compl_nextlink= LabF.Nucleoside(codex_acidum_nucleicum[compl_nextnuc_acid][0]), LabF.Desmos(codex_acidum_nucleicum[compl_nextnuc_acid][1])
+
+        # Import the next leading nucleoside and create the objects
+        lead_nextnuc_acid = nucleic_acid_list[cNA]
+        lead_nucleoside, lead_linker = LabF.Nucleoside(codex_acidum_nucleicum[lead_nextnuc_acid][0]), LabF.Nucleoside(codex_acidum_nucleicum[lead_nextnuc_acid][1])
+
+        index_counter -= lead_nucleoside.mol_length; index_counter -= lead_linker.mol_length
+
+        # Position the complementary nucleoside
+        compl_nextnuc = LabF.position_complementary_base(lead_nucleoside, compl_nextnucleoside, leading_strand, index_counter)
+
+        complementary_nucleoTIDE = LabF.position_phosphate_linker(compl_nextnucleoside, compl_nextnuc, compl_linker)
+
+        complementary_strand = np.vstack((complementary_strand, complementary_nucleoTIDE))
+#        # Position the following linker to create a nucleotide array
+#        if not (cNA + 1) == len(compl_nucleic_acid_list):
+#            # Position its linker
+#            complementary_nucleoTIDE = LabF.position_phosphate_linker(compl_nextnucleoside, compl_nextnuc, compl_linker)
+#
+#            # Create a tuple of the two arrays and stack them. This becomes the leading strand upon which we continue appending nucleotides.
+#            #complementary_strand = np.vstack((complementary_nucleoTIDE, complementary_strand))
+#
+#            # REVERSE Create a tuple of the two arrays and stack them. This becomes the leading strand upon which we continue appending nucleotides.
+#            complementary_strand = np.vstack((complementary_strand, complementary_nucleoTIDE))
+#        else:
+#            # Leave the object as a nucleoside, since it is the last one in the sequence. Create a tuple of the two arrays to finalise the leading strand.
+#            #complementary_strand = np.vstack((compl_nextnuc, complementary_strand))
+#
+#            # REVERSE Leave the object as a nucleoside, since it is the last one in the sequence. Create a tuple of the two arrays to finalise the leading strand.
+#            complementary_strand = np.vstack((complementary_strand, compl_nextnuc))
 
 
 
     #------------------------ CREATE THE PDB THAT GOES WITH ARRAY INPUTTED -------------------#
-#    LabF.create_PDB_from_matrix(leading_strand, nucleic_acid_list)
-    print("\nNumber of nucleotides in the duplex :" , num_nucl, "\n")
+#    LabF.create_PDB_from_array(leading_strand, nucleic_acid_list)
+    LabF.create_PDB_from_array_final(leading_strand, nucleic_acid_list, complementary_strand, compl_nucleic_acid_list)
+#    print("\nNumber of nucleotides in the duplex :" , num_nucl, "\n")
 

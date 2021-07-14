@@ -4,11 +4,8 @@ from typing import Tuple
 """ This script will function as a repository for all the atoms, angles and dihedrals that need to be parsed to build up the nucleic acid duplex"""
 
 
-### WHILE THE DIHEDRAL SHOULD ALWAYS BE AROUND 180, THE ANGLES ARE OFTEN NOT A CONSTANT VALUE AND SHOULD BE INCLUDED FROM BASE-PAIR TO BASE-PAIR IN COMPLEMENT1 AND COMPLEMENT2
-
-
 def retrieve_atoms_for_plane_rotation_of_complement(base1 : str, base2 : str) -> Tuple[list, list]:
-    """ base1 belongs to the leading strand, base2 to the complementary base"""
+    """ base1 belongs to the leading strand, base2 to the complementary base """
 
     # BASE1
     if base1 == "A": atoms1 = ["N9", "C4", "C8"]
@@ -28,7 +25,7 @@ def retrieve_atoms_for_plane_rotation_of_complement(base1 : str, base2 : str) ->
 
 
 def retrieve_atoms_for_positioning_of_complement1(base1 : str, base2 :str) -> Tuple[list, str]:
-    """ base1 belongs to the leading strand, base2 to the complementary base"""
+    """ base1 belongs to the leading strand, base2 to the complementary base """
 
     # BASE1
     if base1 == "A": atoms1 = ["N3", "C2", "N1"]
@@ -48,7 +45,7 @@ def retrieve_atoms_for_positioning_of_complement1(base1 : str, base2 :str) -> Tu
 
 
 def retrieve_atoms_for_position_of_complement2(base1 : str, base2 :str) -> Tuple[list, str]:
-    """ base1 belongs to the leading strand, base2 to the complementary base"""
+    """ base1 belongs to the leading strand, base2 to the complementary base """
 
     # BASE1
     if base1 == "A": atoms1 = ["C6", "N6", "H61"]
@@ -67,4 +64,22 @@ def retrieve_atoms_for_position_of_complement2(base1 : str, base2 :str) -> Tuple
     return atoms1, atom2
 
 
+def retrieve_angles_and_dihedrals_for_initial_base_positioning(base1 : str) -> Tuple[float, float, float, float]:
+    """ Only the leading strand's base is required. Normally we could hardcore in pairs, but this would disallow mismatching.
+
+        Return in the following order :
+        Q angle, Q dihedral, R angle, R dihedral            """
+
+    Q_dihedral = 180
+    R_dihedral = 180
+
+    to_rad = (np.pi / 180)
+
+    if base1 == "A": Q_angle, R_angle = 121.822 * to_rad, 178.802 * to_rad
+    if base1 == "C": Q_angle, R_angle = 117.050 * to_rad, 176.177 * to_rad
+    if base1 == "G": Q_angle, R_angle = 177.195 * to_rad, 123.466 * to_rad
+    if base1 == "T": Q_angle, R_angle = 178.359 * to_rad, 122.583 * to_rad
+    if base1 == "U": Q_angle, R_angle = 178.359 * to_rad, 122.583 * to_rad
+
+    return Q_angle, Q_dihedral, R_angle, R_dihedral
 
