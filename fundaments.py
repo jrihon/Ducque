@@ -23,6 +23,7 @@ def check_if_nucleotides_are_valid(input_sequence : list) -> bool:
 
     return report
 
+
 def daedalus(DaedalusInput, options):
 
     list_of_valid_flags = ["--sequence", "--complement"]
@@ -50,6 +51,12 @@ def daedalus(DaedalusInput, options):
         if arg[0] == "--complement":
             # If there is a input possibility at index 2, meaning more than one string have been inputted, then get the entire string as a list variable.
             # If there is not an input possibility at index 2, this means there is only one input after the flag available and that means it is just a string.
+            try:
+                arg[1]
+            except:
+                print("You have forgotten to include an argument for the --complement flag! Please add this to your input file.")
+                sys.exit(0)
+
             try:
                 arg[2]
             except:
