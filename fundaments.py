@@ -143,14 +143,6 @@ def randomise(RandomiseInput, options):
             # If one chemistry is prompted
             elif len(arg) == 2:
                 chemistry = arg[1]
-        # If the variable chemistry has not been defined, then
-        try:
-            chemistry
-        except NameError:
-            print("No chemistry type was prompted! Revise your input file. \n")
-            options.print_help()
-            sys.exit(0)
-
         if arg[0] == "--length":
             length_sequence = int(arg[1])
             sequence = None
@@ -158,5 +150,13 @@ def randomise(RandomiseInput, options):
         if arg[0] == "--sequence":
             sequence = arg[1:]
             length_seq = 0
+
+    # If the variable chemistry has not been defined, then
+    try:
+        chemistry
+    except NameError:
+        print("No chemistry type was prompted! Revise your input file. \n")
+        options.print_help()
+        sys.exit(0)
 
     return chemistry, length_sequence, sequence
