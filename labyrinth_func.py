@@ -402,6 +402,12 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[lis
         chemistry = LFT2.retrieve_chemistry_list(sequence_list)
 
         # Switch the bases the get their complementary base
+        if chemistry[0] == "r":
+            comp_bases = LFT2.get_complementary_bases(bases, complementary_dictRNA)
+            complementary_sequence = LFT2.concatenate_chem_and_bases(chemistry, comp_bases)
+            return complementary_sequence
+
+        # If the complementary strand is not RNA based, use the DNA native bases.
         comp_bases = LFT2.get_complementary_bases(bases, complementary_dictDNA)
         complementary_sequence = LFT2.concatenate_chem_and_bases(chemistry, comp_bases)
         return complementary_sequence

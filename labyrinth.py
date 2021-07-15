@@ -81,11 +81,10 @@ def Architecture(nucleic_acid_list, complement):
     # a list of complementary nucleotides
     compl_nucleic_acid_list = LabF.generate_complementary_sequence(nucleic_acid_list, complement)
 
-    for i in range(len(compl_nucleic_acid_list)):
-        if compl_nucleic_acid_list[i] == "rT":
-            compl_nucleic_acid_list[i] = "rU"
 
     ## Build the complementary strand
+
+    # Initiate the objects for the complementary strand
     compl_nucleic_acid = compl_nucleic_acid_list[0]
     compl_nucleoside, compl_linker = LabF.Nucleoside(codex_acidum_nucleicum[compl_nucleic_acid][0]), LabF.Nucleoside(codex_acidum_nucleicum[compl_nucleic_acid][1])
 
