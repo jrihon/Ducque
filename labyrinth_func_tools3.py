@@ -30,7 +30,7 @@ def retrieve_atoms_for_positioning_of_complement1(base1 : str, base2 :str) -> Tu
     # BASE1
     if base1 == "A": atoms1 = ["N3", "C2", "N1"]
     if base1 == "C": atoms1 = ["N1", "C2", "N3"]
-    if base1 == "G": atoms1 = ["N3", "C2", "N1"]
+    if base1 == "G": atoms1 = ["C2", "N1", "H1"]
     if base1 == "T": atoms1 = ["C2", "N3", "H3"]
     if base1 == "U": atoms1 = ["C2", "N3", "H3"]
 
@@ -50,9 +50,9 @@ def retrieve_atoms_for_position_of_complement2(base1 : str, base2 :str) -> Tuple
     # BASE1
     if base1 == "A": atoms1 = ["C6", "N6", "H61"]
     if base1 == "C": atoms1 = ["C4", "N4", "H41"]
-    if base1 == "G": atoms1 = ["N1", "C6", "O6"]
-    if base1 == "T": atoms1 = ["N3", "C4", "O4"]
-    if base1 == "U": atoms1 = ["N3", "C4", "O4"]
+    if base1 == "G": atoms1 = ["C5", "C6", "O6"]
+    if base1 == "T": atoms1 = ["C5", "C4", "O4"]
+    if base1 == "U": atoms1 = ["C5", "C4", "O4"]
 
     # BASE2
     if base2 == "A": atom2 = "H61"

@@ -435,7 +435,9 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[lis
 
 
 def create_PDB_from_array_final(leading_array : np.ndarray, list_of_leading_sequence : list, complementary_array : np.ndarray, list_of_complementary_sequence : list) -> None:
-    """ Write out the data for the pdb file """
+    """ Write out the data for the pdb filename
+        https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/tutorials/framepdbintro.html"""
+
     print("Writing to pdb ...")
     list_of_leading_sequence = list_of_leading_sequence[::-1]
     #list_of_complementary_sequence = list_of_complementary_sequence[::-1]
@@ -492,7 +494,7 @@ def create_PDB_from_array_final(leading_array : np.ndarray, list_of_leading_sequ
                 pdb.write("%-6s\n" % TERline)
             if not row[0] == "TER":
                 split_line = [ row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13] ]
-                pdb.write("%-6s%5s%5s%s%2s%3s%5d  %8s%8s%8s%6s%6s%4s      %2s\n" % tuple(split_line))
+                pdb.write("%-6s%5s%5s%s%2s%3s%5d  %8s%8s%9s%6s%7s%4s     %2s\n" % tuple(split_line))
         pdb.write("END")
         pdb.close()
 

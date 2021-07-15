@@ -141,5 +141,5 @@ def Architecture(nucleic_acid_list, complement):
     #------------------------ CREATE THE PDB THAT GOES WITH ARRAY INPUTTED -------------------#
 #    LabF.create_PDB_from_array(leading_strand, nucleic_acid_list)
     LabF.create_PDB_from_array_final(leading_strand, nucleic_acid_list, complementary_strand, compl_nucleic_acid_list)
-#    print("\nNumber of nucleotides in the duplex :" , num_nucl, "\n")
+    print("\nNumber of nucleotides in the duplex :" , num_nucl, "\n")
 
