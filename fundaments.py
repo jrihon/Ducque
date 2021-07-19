@@ -42,7 +42,7 @@ def daedalus(DaedalusInput, options):
         # Check if flags are valid. If a given flag is not a valid one, shut it down
         if not arg[0] in list_of_valid_flags:
             print("\n\nThe following flag is invalid : " + arg[0] + ". Please check your input file.\n\n\n")
-            options.print_help()
+            #options.print_help()
             sys.exit(0)
 
         if arg[0] == "--sequence":
@@ -66,7 +66,7 @@ def daedalus(DaedalusInput, options):
 
     # If a given nucleotide is not in the list of valid nucleotides, stop the program
     if not check_if_nucleotides_are_valid(nucleic_acid_list):
-        options.print_help()
+        #options.print_help()
         sys.exit(0)
 
     return nucleic_acid_list, complement
@@ -90,7 +90,7 @@ def transmute(TransmuteInput, options):
         # Check if flags are valid. If a given flag is not a valid one, shut it down
         if not arg[0] in list_of_valid_flags:
             print("\n\nThe following flag is invalid : " + arg[0] + ". Please check your input file.\n\n\n")
-            options.print_help()
+            #options.print_help()
             sys.exit(0)
 
         # Save the prompted arguments according to the respective flags
@@ -132,7 +132,7 @@ def randomise(RandomiseInput, options):
         # If a given flag is not a valid one, shut it down
         if not arg[0] in list_of_valid_flags:
             print("\n\nThe following flag is invalid : " + arg[0] + ". Please check your input file.\n\n\n")
-            options.print_help()
+            #options.print_help()
             sys.exit(0)
 
         # Save the prompted arguments according to their respective flags
@@ -156,7 +156,7 @@ def randomise(RandomiseInput, options):
         chemistry
     except NameError:
         print("No chemistry type was prompted! Revise your input file. \n")
-        options.print_help()
+        #options.print_help()
         sys.exit(0)
 
     return chemistry, length_sequence, sequence
