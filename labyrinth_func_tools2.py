@@ -3,9 +3,10 @@ import json
 from typing import Union
 
 import labyrinth
+import labyrinth_func_tools3 as LFT3    # Parse the nucleic acid dictionaries
 """ This scripts makes data parsing much easier and makes labyrinth.py much more organised. """
 
-
+CODEX = LFT3.codex_acidum_nucleicum
 
 def check_slope_of_array(arr : np.array) -> str:
     """ In labyrinth_func_tools1.py there is a function that retrieves the interpolated dihedral angle
@@ -64,7 +65,7 @@ def LEAD_pdb_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : st
         if i == 0:
             buildingblock = list_of_sequence[i]
             # Make json object of nucleoside
-            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            nucleoside = CODEX[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
@@ -77,12 +78,12 @@ def LEAD_pdb_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : st
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            nucleoside = CODEX[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
             # Make json object of linker
-            linker = labyrinth.codex_acidum_nucleicum[buildingblock][1]
+            linker = CODEX[buildingblock][1]
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
@@ -97,12 +98,12 @@ def LEAD_pdb_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : st
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            nucleoside = CODEX[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
             # Make json object of linker
-            linker = labyrinth.codex_acidum_nucleicum[buildingblock][1]
+            linker = CODEX[buildingblock][1]
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
@@ -127,7 +128,7 @@ def LEAD_pdb_Sequence(list_of_sequence : list, start_of_sequence : int = 0) -> n
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            nucleoside = CODEX[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
@@ -143,12 +144,12 @@ def LEAD_pdb_Sequence(list_of_sequence : list, start_of_sequence : int = 0) -> n
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            nucleoside = CODEX[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
             # Make json object of linker
-            linker = labyrinth.codex_acidum_nucleicum[buildingblock][1]
+            linker = CODEX[buildingblock][1]
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
@@ -165,12 +166,12 @@ def LEAD_pdb_Sequence(list_of_sequence : list, start_of_sequence : int = 0) -> n
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            nucleoside = CODEX[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
             # Make json object of linker
-            linker = labyrinth.codex_acidum_nucleicum[buildingblock][1]
+            linker = CODEX[buildingblock][1]
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
@@ -194,7 +195,7 @@ def LEAD_pdb_Residuename(list_of_sequence : list) -> list:
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            nucleoside = CODEX[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
@@ -209,12 +210,12 @@ def LEAD_pdb_Residuename(list_of_sequence : list) -> list:
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            nucleoside = CODEX[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
             # Make json object of linker
-            linker = labyrinth.codex_acidum_nucleicum[buildingblock][1]
+            linker = CODEX[buildingblock][1]
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
@@ -232,12 +233,12 @@ def LEAD_pdb_Residuename(list_of_sequence : list) -> list:
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            nucleoside = CODEX[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
             # Make json object of linker
-            linker = labyrinth.codex_acidum_nucleicum[buildingblock][1]
+            linker = CODEX[buildingblock][1]
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
@@ -261,7 +262,7 @@ def COMPLEMENTARY_pdb_AtomNames_or_ElementSymbol(list_of_sequence : list, identi
         if i == 0:
             buildingblock = list_of_sequence[i]
             # Make json object of nucleoside
-            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            nucleoside = CODEX[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
@@ -274,12 +275,12 @@ def COMPLEMENTARY_pdb_AtomNames_or_ElementSymbol(list_of_sequence : list, identi
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            nucleoside = CODEX[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
             # Make json object of linker
-            linker = labyrinth.codex_acidum_nucleicum[buildingblock][1]
+            linker = CODEX[buildingblock][1]
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
@@ -294,12 +295,12 @@ def COMPLEMENTARY_pdb_AtomNames_or_ElementSymbol(list_of_sequence : list, identi
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            nucleoside = CODEX[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
             # Make json object of linker
-            linker = labyrinth.codex_acidum_nucleicum[buildingblock][1]
+            linker = CODEX[buildingblock][1]
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
@@ -324,7 +325,7 @@ def COMPLEMENTARY_pdb_Sequence(list_of_sequence : list, start_of_sequence : int 
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            nucleoside = CODEX[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
@@ -340,12 +341,12 @@ def COMPLEMENTARY_pdb_Sequence(list_of_sequence : list, start_of_sequence : int 
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            nucleoside = CODEX[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
             # Make json object of linker
-            linker = labyrinth.codex_acidum_nucleicum[buildingblock][1]
+            linker = CODEX[buildingblock][1]
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
@@ -362,12 +363,12 @@ def COMPLEMENTARY_pdb_Sequence(list_of_sequence : list, start_of_sequence : int 
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            nucleoside = CODEX[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
             # Make json object of linker
-            linker = labyrinth.codex_acidum_nucleicum[buildingblock][1]
+            linker = CODEX[buildingblock][1]
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
@@ -391,7 +392,7 @@ def COMPLEMENTARY_pdb_Residuename(list_of_sequence : list) -> list:
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            nucleoside = CODEX[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
@@ -406,12 +407,12 @@ def COMPLEMENTARY_pdb_Residuename(list_of_sequence : list) -> list:
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            nucleoside = CODEX[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
             # Make json object of linker
-            linker = labyrinth.codex_acidum_nucleicum[buildingblock][1]
+            linker = CODEX[buildingblock][1]
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
@@ -429,12 +430,12 @@ def COMPLEMENTARY_pdb_Residuename(list_of_sequence : list) -> list:
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = labyrinth.codex_acidum_nucleicum[buildingblock][0]
+            nucleoside = CODEX[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
             # Make json object of linker
-            linker = labyrinth.codex_acidum_nucleicum[buildingblock][1]
+            linker = CODEX[buildingblock][1]
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 

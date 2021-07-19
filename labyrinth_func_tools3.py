@@ -4,6 +4,33 @@ from typing import Tuple
 """ This script will function as a repository for all the atoms, angles and dihedrals that need to be parsed to build up the nucleic acid duplex"""
 
 
+codex_acidum_nucleicum = {
+"dA": ["json/dna_adenosine.json", "json/dna_phosphate.json"],
+"dG": ["json/dna_guanosine.json", "json/dna_phosphate.json"],
+"dC": ["json/dna_cytidine.json", "json/dna_phosphate.json"],
+"dT": ["json/dna_thymidine.json", "json/dna_phosphate.json"],
+"rA": ["json/rna_adenosine.json", "json/rna_phosphate.json"],
+"rC": ["json/rna_cytidine.json", "json/rna_phosphate.json"],
+"rG": ["json/rna_guanosine.json", "json/rna_phosphate.json"],
+"rU": ["json/rna_uracil.json", "json/rna_phosphate.json"],
+}
+
+
+
+complementary_codex = {
+"dA": ["json/dna_adenosine_2endo.json", "json/dna_adenosine_3endo.json"],
+"dC": ["json/dna_cytidine_2endo.json", "json/dna_cytidine_3endo.json"],
+"dG": ["json/dna_guanosine_2endo.json", "json/dna_guanosine_3endo.json"],
+"dT": ["json/dna_thymidine_2endo.json", "json/dna_thymidine_3endo.json"],
+"rA": ["json/rna_adenosine_3endo.json"],
+"rC": ["json/rna_cytidine_3endo.json"],
+"rG": ["json/rna_guanosine_3endo.json"],
+"rU": ["json/rna_uracil_3endo.json"],
+}
+
+
+
+
 def retrieve_atoms_for_plane_rotation_of_complement(base1 : str, base2 : str) -> Tuple[list, list]:
     """ base1 belongs to the leading strand, base2 to the complementary base """
 

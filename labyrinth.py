@@ -2,19 +2,16 @@ import sys, os, json
 import numpy as np
 
 import labyrinth_func as LabF
+import labyrinth_func_tools3    # Import the nucleic acid dictionaries
+
 
 """ Create dictionary of the filename and their molecule code """
 
-codex_acidum_nucleicum = {
-"dT": ["json/dna_thymidine.json", "json/dna_phosphate.json"],
-"dA": ["json/dna_adenosine.json", "json/dna_phosphate.json"],
-"dC": ["json/dna_cytidine.json", "json/dna_phosphate.json"],
-"dG": ["json/dna_guanosine.json", "json/dna_phosphate.json"],
-"rA": ["json/rna_adenosine.json", "json/rna_phosphate.json"],
-"rU": ["json/rna_uracil.json", "json/rna_phosphate.json"],
-"rC": ["json/rna_cytidine.json", "json/rna_phosphate.json"],
-"rG": ["json/rna_guanosine.json", "json/rna_phosphate.json"],
-}
+CODEX_LEAD = labyrinth_func_tools3.codex_acidum_nucleicum   # Creates an instance of the nucleic acid dictionary for the leading strand
+
+CODEX_COMPL = labyrinth_func_tools3.complementary_codex     # Creates an instance of the nucleic acid dictionary for the complementary strand
+
+
 
 def Architecture(nucleic_acid_list, complement):
     """ This function contains all the functions to create the nucleic acid duplex.
@@ -36,8 +33,8 @@ def Architecture(nucleic_acid_list, complement):
     ## Start the leading strand
 
     # Parse dictionary for the correct filename; input(DT) - output(dna_thymidine.json). This also parses the correct linker.
-    nucleoside = LabF.Nucleoside(codex_acidum_nucleicum[nucleic_acid][0]) ; index_counter += nucleoside.mol_length
-    linker = LabF.Desmos(codex_acidum_nucleicum[nucleic_acid][1]) ; index_counter += linker.mol_length
+    nucleoside = LabF.Nucleoside(CODEX_LEAD[nucleic_acid][0]) ; index_counter += nucleoside.mol_length
+    linker = LabF.Desmos(CODEX_LEAD[nucleic_acid][1]) ; index_counter += linker.mol_length
 
     # Position the linker moiety on the nucleoside.
     leading_strand = LabF.position_phosphate_linker(nucleoside, nucleoside.array, linker)
@@ -49,13 +46,13 @@ def Architecture(nucleic_acid_list, complement):
 
         # Import the next nucleoside and create an object
         nextnuc_acid = nucleic_acid_list[NA]
-        nextnuc = LabF.Nucleoside(codex_acidum_nucleicum[nextnuc_acid][0]) ; index_counter += nextnuc.mol_length
-        nextlink = LabF.Desmos(codex_acidum_nucleicum[nextnuc_acid][1]) ; index_counter += nextlink.mol_length
+        nextnuc = LabF.Nucleoside(CODEX_LEAD[nextnuc_acid][0]) ; index_counter += nextnuc.mol_length
+        nextlink = LabF.Desmos(CODEX_LEAD[nextnuc_acid][1]) ; index_counter += nextlink.mol_length
 
         # Parse the dictionary for the previous nucleotide, to append the next nucleotide onto.
         previous_nucleic_acid = nucleic_acid_list[NA - 1]
         # Parse the correct nucleoside and linker and create them as objects
-        prevnuc, prevlink = LabF.Nucleoside(codex_acidum_nucleicum[previous_nucleic_acid][0]), LabF.Desmos(codex_acidum_nucleicum[previous_nucleic_acid][1])
+        prevnuc, prevlink = LabF.Nucleoside(CODEX_LEAD[previous_nucleic_acid][0]), LabF.Desmos(CODEX_LEAD[previous_nucleic_acid][1])
 
         # Position the following nucleoside in the sequence
         next_nucleoSIDE_positioned = LabF.position_next_nucleoside(nextnuc, prevnuc, prevlink, leading_strand)
@@ -86,30 +83,26 @@ def Architecture(nucleic_acid_list, complement):
 
     # Initiate the objects for the complementary strand
     compl_nucleic_acid = compl_nucleic_acid_list[0]
-    compl_nucleoside, compl_linker = LabF.Nucleoside(codex_acidum_nucleicum[compl_nucleic_acid][0]), LabF.Nucleoside(codex_acidum_nucleicum[compl_nucleic_acid][1])
+    compl_nucleoside, compl_linker = LabF.Nucleoside(CODEX_LEAD[compl_nucleic_acid][0]), LabF.Nucleoside(CODEX_LEAD[compl_nucleic_acid][1])
 
     # Initiate the object and decrement index_counter, so we can parse the correct vectors
     lead_nucleic_acid = nucleic_acid_list[0]
-    lead_nucleoside, lead_linker = LabF.Nucleoside(codex_acidum_nucleicum[lead_nucleic_acid][0]), LabF.Nucleoside(codex_acidum_nucleicum[lead_nucleic_acid][1])
+    lead_nucleoside, lead_linker = LabF.Nucleoside(CODEX_LEAD[lead_nucleic_acid][0]), LabF.Nucleoside(CODEX_LEAD[lead_nucleic_acid][1])
 
     index_counter -= lead_nucleoside.mol_length
 
     # Position the complementary nucleoside
-    #compl_nuc_array = LabF.position_complementary_base(lead_nucleoside, compl_nucleoside, leading_strand, index_counter)
     complementary_strand = LabF.position_complementary_base(lead_nucleoside, compl_nucleoside, leading_strand, index_counter)
-
-    # Position the linker
-    #complementary_strand = LabF.position_phosphate_linker(compl_nucleoside, compl_nuc_array, compl_linker)
 
     for cNA in range(1, len(compl_nucleic_acid_list)):
 
         # Import the next complementary nucleoside and create the objects
         compl_nextnuc_acid = compl_nucleic_acid_list[cNA]
-        compl_nextnucleoside, compl_nextlink= LabF.Nucleoside(codex_acidum_nucleicum[compl_nextnuc_acid][0]), LabF.Desmos(codex_acidum_nucleicum[compl_nextnuc_acid][1])
+        compl_nextnucleoside, compl_nextlink= LabF.Nucleoside(CODEX_LEAD[compl_nextnuc_acid][0]), LabF.Desmos(CODEX_LEAD[compl_nextnuc_acid][1])
 
         # Import the next leading nucleoside and create the objects
         lead_nextnuc_acid = nucleic_acid_list[cNA]
-        lead_nucleoside, lead_linker = LabF.Nucleoside(codex_acidum_nucleicum[lead_nextnuc_acid][0]), LabF.Nucleoside(codex_acidum_nucleicum[lead_nextnuc_acid][1])
+        lead_nucleoside, lead_linker = LabF.Nucleoside(CODEX_LEAD[lead_nextnuc_acid][0]), LabF.Nucleoside(CODEX_LEAD[lead_nextnuc_acid][1])
 
         index_counter -= lead_nucleoside.mol_length; index_counter -= lead_linker.mol_length
 
@@ -119,27 +112,10 @@ def Architecture(nucleic_acid_list, complement):
         complementary_nucleoTIDE = LabF.position_phosphate_linker(compl_nextnucleoside, compl_nextnuc, compl_linker)
 
         complementary_strand = np.vstack((complementary_strand, complementary_nucleoTIDE))
-#        # Position the following linker to create a nucleotide array
-#        if not (cNA + 1) == len(compl_nucleic_acid_list):
-#            # Position its linker
-#            complementary_nucleoTIDE = LabF.position_phosphate_linker(compl_nextnucleoside, compl_nextnuc, compl_linker)
-#
-#            # Create a tuple of the two arrays and stack them. This becomes the leading strand upon which we continue appending nucleotides.
-#            #complementary_strand = np.vstack((complementary_nucleoTIDE, complementary_strand))
-#
-#            # REVERSE Create a tuple of the two arrays and stack them. This becomes the leading strand upon which we continue appending nucleotides.
-#            complementary_strand = np.vstack((complementary_strand, complementary_nucleoTIDE))
-#        else:
-#            # Leave the object as a nucleoside, since it is the last one in the sequence. Create a tuple of the two arrays to finalise the leading strand.
-#            #complementary_strand = np.vstack((compl_nextnuc, complementary_strand))
-#
-#            # REVERSE Leave the object as a nucleoside, since it is the last one in the sequence. Create a tuple of the two arrays to finalise the leading strand.
-#            complementary_strand = np.vstack((complementary_strand, compl_nextnuc))
 
 
 
     #------------------------ CREATE THE PDB THAT GOES WITH ARRAY INPUTTED -------------------#
-#    LabF.create_PDB_from_array(leading_strand, nucleic_acid_list)
     LabF.create_PDB_from_array_final(leading_strand, nucleic_acid_list, complementary_strand, compl_nucleic_acid_list)
     print("\nNumber of nucleotides in the duplex :" , num_nucl, "\n")
 
