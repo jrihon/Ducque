@@ -438,7 +438,6 @@ def create_PDB_from_array_final(leading_array : np.ndarray, list_of_leading_sequ
     """ Write out the data for the pdb filename
         https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/tutorials/framepdbintro.html"""
 
-    print("Writing to pdb ...")
     list_of_leading_sequence = list_of_leading_sequence[::-1]
     #list_of_complementary_sequence = list_of_complementary_sequence[::-1]
 
@@ -497,6 +496,9 @@ def create_PDB_from_array_final(leading_array : np.ndarray, list_of_leading_sequ
                 pdb.write("%-6s%5s%5s%s%2s%3s%5d  %8s%8s%9s%6s%7s%4s     %2s\n" % tuple(split_line))
         pdb.write("END")
         pdb.close()
+
+    print("\n\nWriting nucleic acid duplex to " + filename + ". \n\n")
+
 
 
 #def create_PDB_from_array(leading_array : np.ndarray, list_of_leading_sequence : list) -> None:

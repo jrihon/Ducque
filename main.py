@@ -87,7 +87,7 @@ def main():
 
     # Build nucleic acid duplex
     if arguments.Daedalus:
-        print("Daedalus - Nucleic Acid Builder initiated! Building sequence ...\n")
+        print("Daedalus - Nucleic Acid Architecture initiated! Building sequence ...\n")
         labyrinth.Architecture(nucleic_acid_list, complement)
 
     # Output a randomised sequence
