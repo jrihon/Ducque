@@ -1,15 +1,15 @@
 import sys, os, json
 import numpy as np
 
-import labyrinth_func as LabF
+import labyrinth_func as LabF   # Import all the functions to do with creating the nucleic acid duplex
 import labyrinth_func_tools3    # Import the nucleic acid dictionaries
 
 
 """ Create dictionary of the filename and their molecule code """
 
-CODEX_LEAD = labyrinth_func_tools3.codex_acidum_nucleicum   # Creates an instance of the nucleic acid dictionary for the leading strand
+CODEX_LEAD = labyrinth_func_tools3.codex_acidum_nucleicum   # Creates an object of the nucleic acid dictionary for the leading strand
 
-CODEX_COMPL = labyrinth_func_tools3.complementary_codex     # Creates an instance of the nucleic acid dictionary for the complementary strand
+CODEX_COMPL = labyrinth_func_tools3.complementary_codex     # Creates an object of the nucleic acid dictionary for the complementary strand
 
 
 
@@ -25,7 +25,7 @@ def Architecture(nucleic_acid_list, complement):
     # Reverse the list order, because we build the nucleoside from the bottom up.
     nucleic_acid_list.reverse()
 
-    index_counter = 0   # Initiate the index counter. 
+    index_lead = 0   # Initiate the index counter for the leading strand. 
 
     # Parse the first nucleotide in the list.
     nucleic_acid = nucleic_acid_list[0]
@@ -33,8 +33,8 @@ def Architecture(nucleic_acid_list, complement):
     ## Start the leading strand
 
     # Parse dictionary for the correct filename; input(DT) - output(dna_thymidine.json). This also parses the correct linker.
-    nucleoside = LabF.Nucleoside(CODEX_LEAD[nucleic_acid][0]) ; index_counter += nucleoside.mol_length
-    linker = LabF.Desmos(CODEX_LEAD[nucleic_acid][1]) ; index_counter += linker.mol_length
+    nucleoside = LabF.Nucleoside(CODEX_LEAD[nucleic_acid][0]) ; index_lead += nucleoside.mol_length
+    linker = LabF.Desmos(CODEX_LEAD[nucleic_acid][1]) ; index_lead += linker.mol_length
 
     # Position the linker moiety on the nucleoside.
     leading_strand = LabF.position_phosphate_linker(nucleoside, nucleoside.array, linker)
@@ -46,8 +46,8 @@ def Architecture(nucleic_acid_list, complement):
 
         # Import the next nucleoside and create an object
         nextnuc_acid = nucleic_acid_list[NA]
-        nextnuc = LabF.Nucleoside(CODEX_LEAD[nextnuc_acid][0]) ; index_counter += nextnuc.mol_length
-        nextlink = LabF.Desmos(CODEX_LEAD[nextnuc_acid][1]) ; index_counter += nextlink.mol_length
+        nextnuc = LabF.Nucleoside(CODEX_LEAD[nextnuc_acid][0]) ; index_lead += nextnuc.mol_length
+        nextlink = LabF.Desmos(CODEX_LEAD[nextnuc_acid][1]) ; index_lead += nextlink.mol_length
 
         # Parse the dictionary for the previous nucleotide, to append the next nucleotide onto.
         previous_nucleic_acid = nucleic_acid_list[NA - 1]
@@ -67,8 +67,8 @@ def Architecture(nucleic_acid_list, complement):
         else:
             # Leave the object as a nucleoside, since it is the last one in the sequence. Create a tuple of the two arrays to finalise the leading strand.
             leading_strand = np.vstack((next_nucleoSIDE_positioned, leading_strand))
-            # Substract the last linker's molecule size, since it is not included at the end of the leading strand. This index_counter is now set correctly to start the complementary strand build.
-            index_counter -= nextlink.mol_length
+            # Substract the last linker's molecule size, since it is not included at the end of the leading strand. This index_lead is now set correctly to start the complementary strand build.
+            index_lead -= nextlink.mol_length
 
         num_nucl += 1
 
@@ -78,38 +78,55 @@ def Architecture(nucleic_acid_list, complement):
     # a list of complementary nucleotides
     compl_nucleic_acid_list = LabF.generate_complementary_sequence(nucleic_acid_list, complement)
 
-
     ## Build the complementary strand
 
     # Initiate the objects for the complementary strand
     compl_nucleic_acid = compl_nucleic_acid_list[0]
-    compl_nucleoside, compl_linker = LabF.Nucleoside(CODEX_LEAD[compl_nucleic_acid][0]), LabF.Nucleoside(CODEX_LEAD[compl_nucleic_acid][1])
+    compl_nucleoside = LabF.Nucleoside(CODEX_LEAD[compl_nucleic_acid][0])       # I dont think this is necessary tbh ... compl_linker = LabF.Nucleoside(CODEX_LEAD[compl_nucleic_acid][1])
 
-    # Initiate the object and decrement index_counter, so we can parse the correct vectors
+    # Initiate the object and decrement index_lead, so we can parse the correct vectors
     lead_nucleic_acid = nucleic_acid_list[0]
-    lead_nucleoside, lead_linker = LabF.Nucleoside(CODEX_LEAD[lead_nucleic_acid][0]), LabF.Nucleoside(CODEX_LEAD[lead_nucleic_acid][1])
+    lead_nucleoside, lead_linker = LabF.Nucleoside(CODEX_LEAD[lead_nucleic_acid][0]), LabF.Desmos(CODEX_LEAD[lead_nucleic_acid][1])
 
-    index_counter -= lead_nucleoside.mol_length
+    index_lead -= lead_nucleoside.mol_length
+    #### Import the leading strand nucleosides, but as a list
+    #### leading_nucleosides = [CODEX_LEAD[lead_nucleic_acid], CODEX_LEAD[lead_nucleic_acid]] 
+    #### 
+    #### compl1, compl2 = compl_nucleic_acid_list[0], compl_nucleic_acid_list[1]
+    #### 
+    #### complementary_strand, index_lead = LFT1.assert_starting_bases_of_complementary_strand(CODEX_COMPL[compl1], CODEX_COMPL[compl2], leading_nucleosides, leading_strand, index_lead)
+    ####
+    #### index_compl = complementary_strand.shape[0]
 
     # Position the complementary nucleoside
-    complementary_strand = LabF.position_complementary_base(lead_nucleoside, compl_nucleoside, leading_strand, index_counter)
+    complementary_strand = LabF.position_complementary_base(lead_nucleoside, compl_nucleoside, leading_strand, index_lead)
 
+    #### index_compl += compl_nucleoside.mol_length                 # Increment the index_complementary integer
+
+    # Add subsequent complementary nucleotides
     for cNA in range(1, len(compl_nucleic_acid_list)):
 
         # Import the next complementary nucleoside and create the objects
         compl_nextnuc_acid = compl_nucleic_acid_list[cNA]
-        compl_nextnucleoside, compl_nextlink= LabF.Nucleoside(CODEX_LEAD[compl_nextnuc_acid][0]), LabF.Desmos(CODEX_LEAD[compl_nextnuc_acid][1])
+        compl_nextnucleoside, compl_nextlinker = LabF.Nucleoside(CODEX_LEAD[compl_nextnuc_acid][0]), LabF.Desmos(CODEX_LEAD[compl_nextnuc_acid][1])
 
         # Import the next leading nucleoside and create the objects
         lead_nextnuc_acid = nucleic_acid_list[cNA]
-        lead_nucleoside, lead_linker = LabF.Nucleoside(CODEX_LEAD[lead_nextnuc_acid][0]), LabF.Nucleoside(CODEX_LEAD[lead_nextnuc_acid][1])
+        lead_nucleoside, lead_linker = LabF.Nucleoside(CODEX_LEAD[lead_nextnuc_acid][0]), LabF.Desmos(CODEX_LEAD[lead_nextnuc_acid][1])
 
-        index_counter -= lead_nucleoside.mol_length; index_counter -= lead_linker.mol_length
+        index_lead -= lead_nucleoside.mol_length; index_lead -= lead_linker.mol_length
 
-        # Position the complementary nucleoside
-        compl_nextnuc = LabF.position_complementary_base(lead_nucleoside, compl_nextnucleoside, leading_strand, index_counter)
+        # Import the previous complementary nucleoside and create the objects
+        prev_compl = compl_nucleic_acid_list[cNA - 1]
+        prev_compl_nuc, prev_compl_linker= LabF.Nucleoside(CODEX_LEAD[prev_compl][0]), LabF.Desmos(CODEX_LEAD[prev_compl][1])
 
-        complementary_nucleoTIDE = LabF.position_phosphate_linker(compl_nextnucleoside, compl_nextnuc, compl_linker)
+        #### conformations = CODEX_COMPL[compl_nucleic_acid_list[cNA]]
+        #### compl_nextnuc = LabF.assert_possible_base_conformations_and_fit(lead_nextnuc_acid, leading_strand, conformations, compl_nextlink, complementary_strand,
+        ####                                                                                               prev_compl_nuc, prev_compl_linker, index_lead, index_compl)
+        #### Position the complementary nucleoside
+        compl_nextnuc = LabF.position_complementary_base(lead_nucleoside, compl_nextnucleoside, leading_strand, index_lead)
+
+        complementary_nucleoTIDE = LabF.position_phosphate_linker(compl_nextnucleoside, compl_nextnuc, compl_nextlinker)
 
         complementary_strand = np.vstack((complementary_strand, complementary_nucleoTIDE))
 

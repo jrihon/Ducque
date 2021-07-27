@@ -1,5 +1,5 @@
 import numpy as np
-import os, sys
+import os, sys, json
 from typing import Tuple
 """ This script will function as a repository for all the atoms, angles and dihedrals that need to be parsed to build up the nucleic acid duplex"""
 
@@ -29,7 +29,56 @@ complementary_codex = {
 }
 
 
+backbone_codex = {
+"DNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
+"RNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
+"Phosphate" : ["P"],
+}
 
+linker_codex = {
+"Phosphate" : ["P", "OP2", "OP1"]
+
+}
+def Atom_Parsing_List(prevnuc, link, nextnuc = None) -> list:
+    """ Retrieves the atoms that correspond to the correct index of the array, with which we calculate with.
+    All variables are json object
+
+    By default, nextnuc is equal to None. If no json object has been parsed into nextnuc, that means you are positioning the following linker and not the following nucleoside. """
+
+    if nextnuc == None:
+        prevChem = backbone_codex[json.loads(prevnuc.jason["identity"])[1]]
+        linkChem = linker_codex[json.loads(link.jason["identity"])[0]]
+
+        truncPrevChem = [prevChem[-3], prevChem[-2], prevChem[-1]]
+
+        return truncPrevChem + linkChem
+
+
+    if not nextnuc == None:
+        prevChem = backbone_codex[json.loads(prevnuc.jason["identity"])[1]]
+        linkChem = backbone_codex[json.loads(link.jason["identity"])[0]]
+        nextChem = backbone_codex[json.loads(nextnuc.jason["identity"])[1]]
+
+        if len(linkChem) == 1:
+            truncPrevChem = [prevChem[-2], prevChem[-1]]
+
+            return truncPrevChem + linkChem + nextChem
+
+        if len(linkChem) == 2:
+            truncprevChem = [prevChem[-1]]
+
+            return truncPrevChem + linkChem + nextChem
+
+        if len(linkChem) == 3:
+
+            return linkChem + nextChem
+
+
+def Dihedral_and_Angle_Parsing_List():
+    """ Retrieves the atoms that correspond to the correct index of the array, with which we calculate with.
+    All variables are json object """
+
+    pass
 
 def retrieve_atoms_for_plane_rotation_of_complement(base1 : str, base2 : str) -> Tuple[list, list]:
     """ base1 belongs to the leading strand, base2 to the complementary base """
