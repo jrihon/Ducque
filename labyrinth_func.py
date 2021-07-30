@@ -539,7 +539,7 @@ def assert_starting_bases_of_complementary_strand(compl1_base_confs : list, comp
     id_dist_compl1 = LFT2.retrieve_atom_index(compl1_base, APL1[3])
     v_dist = arr_best_fit[id_dist_compl1] - arr_best_fit[id_dist_compl2]
 
-    # Get the atoms that make up the dihedral of the following, so only the three atoms
+    # Get the atoms that make up the dihedral of the following, so only the three first atoms of the APL list.
     APL2 = LFT3.Atom_Parsing_List(compl2_base, compl2_linker, compl1_base)[:3]
     dist_compl2_atom_indexlist = LFT2.retrieve_atom_index_MULTIPLE(compl2_base, APL2, index_fit)
 
@@ -556,10 +556,18 @@ def assert_starting_bases_of_complementary_strand(compl1_base_confs : list, comp
     nuc1 = arr_best_fit[:index_fit]
     nuc2 = arr_best_fit[index_fit:]
 
+    # Get the atom you want at the origin (substract the array from the vector)
+    nuc1_base = compl1_base.get_base_denominator())
+    nuc1_origin, _ = LFT3.retrieve_atoms_for_plane_rotation_of_complement(nuc1_base, nuc1_base)
+    v_nuc1_origin = LFT2.retrieve_atom_index(compl1_base, nuc1_origin[0])
 
+    nuc2_base = compl2_base.get_base_denominator())
+    nuc2_origin, _ = LFT3.retrieve_atoms_for_plane_rotation_of_complement(nuc2_base, nuc2_base)
+    v_nuc2_origin = LFT2.retrieve_atom_index(compl2_base, nuc2_origin[0])
 
-
-
+    # Rotate the nucleotides
+    # Move compl2 (the second nucleotide) twice, in both directions and assert the distance in between them. 
+    # Whichever rotation makes for a smaller distance is the direction of the rotation we will use for the rotation of the first nucleoside.
     return complementary_strand, index_lead
 
 
