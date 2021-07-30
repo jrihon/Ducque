@@ -52,15 +52,15 @@ if len(sys.argv) == 1:
 else:
     # If we call the nucleic acid builder
     if arguments.Daedalus:
-        nucleic_acid_list, complement = fundaments.daedalus(arguments.Daedalus, options)
+        NUCLEIC_ACID_LIST, COMPLEMENT = fundaments.daedalus(arguments.Daedalus, options)
 
     # If we want to convert a pdb to a json file
     if arguments.transmute:
-        pdb_file, identifier, moiety, dihedrals, angles, conformation = fundaments.transmute(arguments.transmute, options)
+        PDB_FILE, IDENTIFIER, MOIETY, DIHEDRALS, ANGLES, CONFORMATION = fundaments.transmute(arguments.transmute, options)
 
     # If we want to call for a randomised sequence
     if arguments.randomise:
-        chemistry, length_sequence, sequence = fundaments.randomise(arguments.randomise, options)
+        CHEMISTRY, LENGTH_SEQUENCE, SEQUENCE = fundaments.randomise(arguments.randomise, options)
 
 
 # Try and see if any of the options are used together. 
@@ -82,18 +82,18 @@ def main():
 
     # Convert pdb to json
     if arguments.transmute:
-        transmute.Transmutation(pdb_file, identifier, moiety, dihedrals, angles, conformation)
+        transmute.Transmutation(PDB_FILE, IDENTIFIER, MOIETY, DIHEDRALS, ANGLES, CONFORMATION)
         print("Converting " + pdb_file + " to a json file.")
 
     # Build nucleic acid duplex
     if arguments.Daedalus:
         print("Daedalus - Nucleic Acid Architecture initiated! Building sequence ...\n")
-        labyrinth.Architecture(nucleic_acid_list, complement)
+        labyrinth.Architecture(NUCLEIC_ACID_LIST, COMPLEMENT)
 
     # Output a randomised sequence
     if arguments.randomise:
         print("Randioli randioli, what is the spaghetolli?")
-        randomise.randomiser(chemistry, length_sequence, sequence)
+        randomise.randomiser(CHEMISTRY, LENGTH_SEQUENCE, SEQUENCE)
 
     print("                         Time spent: %.5f seconds." % (time.time() - t0))
 

@@ -36,7 +36,7 @@ class Nucleoside:
 
     def get_base_denominator(self) -> str:
         """ returns the type of base of the nucleic acid. So if the base is Guanosine, return 'G'. """
-        return json.loads(self.jason["identity"])[3][0]
+        return json.loads(self.jason["identity"])[2][-1]
 
 class Desmos(Nucleoside):
     """  We can just simply pass this in here for now, since we essentially copy the parent class """
@@ -412,51 +412,149 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, compl_nuc_
     # If one or both values are false, try to position the bases to an appropriate orientation
     else :
         # Generate a quaternion that orients the alpha dihedral properly
-        single_vector_1 = generate_vector_of_interest(angle, dihedral, [v2, v1, v0])
+        single_vector1 = generate_vector_of_interest(angle, dihedral, [v2, v1, v0])
         v_link = v_compl_strand - v2
-        quaternion_1 = LFT1.get_quaternion(single_vector_1, v_link)
+        angle_of_rot = LFT1.get_angle_of_rotation(v_link, single_vector1)
 
         # Retrieve which the denominator of the base that the nucleotide is
-        base_1 = LFT2.retrieve_base(json.loads(compl_nuc.jason["identity"])[2])
+        base_1 = compl_nuc.get_base_denominator()
 
-        # Get the distance to the origin from the first atom of the base. We only require one output of 'retrieve_atoms_for_plane_rotation_of_complement'
-        atom_base, _ = LFT3.retrieve_atoms_for_plane_rotation_of_complement(base_1, base_1)
-        id_atom_base = LFT2.retrieve_atom_index(compl_nuc, atom_base)
-        v_atom_base = compl_nuc_arr[id_atom_base]
+        # Make a custom direction and angle. Not to worry, the direction is perpendicular to the movement
+        atom_base1, _ = LFT3.retrieve_atoms_for_plane_rotation_of_complement(base_1, base_1)
+        id_atom_base1 = LFT2.retrieve_atom_index_MULTIPLE(compl_nuc, atom_base1)
+        v0_atom_base1 = compl_nuc_arr[id_atom_base1[0]]
+        #v1_atom_base1 = compl_nuc_arr[id_atom_base1[1]]
+        #v2_atom_base1 = compl_nuc_arr[id_atom_base1[2]]
+        #v_cross_plane = LFT1.get_direction_of_rotation(v1_atom_base1 - v0_atom_base1, v2_atom_base1 - v0_atom_base1)
 
+        atom_base2, _ = LFT3.retrieve_atoms_for_positioning_of_complement1(base_1, base_1)
+        id_atom_base2 = LFT2.retrieve_atom_index_MULTIPLE(compl_nuc, atom_base2)
+        v2_atom_base2 = compl_nuc_arr[id_atom_base2[2]]
+        v_direction = LFT1.return_normalized(v2_atom_base2 - v0_atom_base1)
+
+        # Generate a customized quaternion
+        quaternion1 = LFT1.get_custom_quaternion(v_direction, angle_of_rot)
+
+
+        # OKAY, this is nice. For the next part we rotate the array both ways and assert the distance between the nucleosides. 
+        # If the distance becomes larger after the first rotation, invert the direction axis and double the rotational angle and rotate again.
+
+        # Afterwards, we can incrementally change the angle until we get to some sort of sweet spot
         # Rotate the array
-        compl_nuc_arr = LFT1.move_to_origin_ROTATE_move_back_to_loc(quaternion_1, compl_nuc_arr, v_atom_base)
+        compl_nuc_arr = LFT1.move_to_origin_ROTATE_move_back_to_loc(quaternion1, compl_nuc_arr, v0_atom_base1)
 
         return compl_nuc_arr
 
 
-def assert_starting_bases_of_complementary_strand(compl_base_confs1 : list, compl_base_confs2 : list, lead_bases : list, leading_strand_array : np.ndarray, index_lead : int) -> np.ndarray :
+def assert_starting_bases_of_complementary_strand(compl1_base_confs : list, compl2_base_confs : list, compl2_linker, lead_bases : list, leading_strand : np.ndarray, index_lead : int) -> np.ndarray :
     """ The first two bases need to be fitted as best as it can.
         Unfortunately, the first nucleoside incorporated has no reference point. As such, the second base ( a nucleotide ) cannot be fitted correctly.
+        compl2_linker is a json object
 
         The thoughtprocess here is that we calculate the magnitude of the tilt for the second base and rotate both bases by half of that magnitude.
         So we first assert all the possibilities by iteratively fitting the bases.
 
         Propose : the amount of conformations is equal to 2 for both nucleosides. This sets the total amount of combinations to 4.
 
-        conf1       conf1       conf2       conf2
-        conf1       conf2       conf1       conf2
+        conf1   |   conf1
+        conf1   |   conf2
+        --------|--------
+        conf1   |   conf2
+        conf2   |   conf2
 
         These combinations are asserted and the best one is selected for fitting. """
 
     # Instantiate an array that holds all the possible conformation combinations
-    # Say we have 3 conformations for the 1st base and 2 for the 2nd. with this we create an array that has 2 rows and 3 columns, making it easier to loop over the
-        # array based on position of the nucleotide
-    array_of_possible_dinucleotide_conformations = np.zeros(len(base_confs_2) * len(base_confs_1))
+    # Consider we have 3 conformations for the 1st base and 2 for the 2nd. with this we create an array that has 2 rows and 3 columns, making it easier to loop over the
+    #   array based on position of the nucleotide
+    array_of_possible_dinucleotide_conformations = np.zeros((len(compl1_base_confs), len(compl2_base_confs)))
 
     # Create instanced objects of the two nucleotides to parse the correct vectors
-    compl_base1 = Nucleoside(compl_base_confs1[0])
-    compl_base2 = Nucleoside(compl_base_confs2[0])
+    lead1_base, lead1_link = Nucleoside(lead_bases[0][0]), Nucleoside(lead_bases[0][1])
+    lead2_base, lead2_link = Nucleoside(lead_bases[0][1]), Nucleoside(lead_bases[1][1])
 
-    lead_base1, lead_link1 = Nucleoside(lead_bases[0][0]), Nucleoside(lead_bases[0][1])
-    lead_base2, lead_link2 = Nucleoside(lead_bases[0][1]), Nucleoside(lead_bases[1][1])
+    # Prepare variables for the forloop
+    index_lead -= lead1_link.mol_length
+    size_of_lead_base2 = lead2_base.mol_length + lead2_link.mol_length
+
+    for i in range(len(compl1_base_confs)):
+        # Instantiate the complementary base
+        compl1_base = Nucleoside(compl1_base_confs[i])
+        # position the complementary base
+        compl1_base_arr = position_complementary_base(lead1_base, compl1_base, leading_strand, index_lead)
+
+        for j in range(len(compl2_base_confs)):
+            #decrement the index_lead
+            index_lead -= size_of_lead_base2
+
+            # Instantiate the complementary base
+            compl2_base = Nucleoside(compl2_base_confs[j])
+            # position the complementary base
+            compl2_base_arr = position_complementary_base(lead1_base, compl1_base, leading_strand, index_lead)
+            # add linker to the complementary base
+            position_phosphate_linker(compl2_base, compl2_base_arr, compl2_linker)
+
+            # Store the array of the dinucleotide
+            array_of_possible_dinucleotide_conformations[i][j] = np.vstack((compl1_base_arr, compl2_base_arr))
+
+            #increment the index_lead back
+            index_lead += size_of_lead_base2
 
 
+    # decrement it again, since we return this variable for the upcoming nucleotides after this function finalises.
+    index_lead -= size_of_lead_base2
+
+    # Parse the index of the values we want. compl1 is the atom that is being attached to the linker of the previous nucleotide. compl2 is the last atom in the backbone of the linker.
+    APL1 = LFT3.Atom_Parsing_List(compl2_base, compl2_linker, compl1_base)
+    id_dist_compl2 = LFT2.retrieve_atom_index(compl2_base, APL1[2]) + compl1_base.mol_length
+    id_dist_compl1 = LFT2.retrieve_atom_index(compl1_base, APL1[3])
+
+    # Now we iterate over the array. When we calculate for a small distance, we will remember the index of its array and keep that as the best fit so far
+    dist = 100      # start with an unreasonable distance. This value will be tested against the distances we find
+    for i in range(len(compl1_base_confs)):
+        for j in range(len(compl2_base_confs)):
+            tmp_array = array_of_possible_dinucleotide_conformations[i][j]
+            v_compl1 = tmp_array[id_dist_compl1]
+            v_compl2 = tmp_array[id_dist_compl2]
+
+            distance_between_nucleotides = LFT1.get_length_of_vector(v_compl1, v_compl2)
+
+            if distance_between_nucleotides > dist :
+                # Override the variable dist and save the best dinucleotide conformation as an array. Also save off the index to parse the correct json file.
+                dist = distance_between_nucleotides
+                arr_best_fit = array_of_possible_dinucleotide_conformations[i][j]
+
+                compl1_id = i
+                compl2_id = j
+
+    # Now that we have the best fit, just to be sure we instantiate the correct object for the correct json filem for atom parsing.
+    # This is generally not necessary, if the only differences between the json files, of the conformations of the same nucleosides, is the atoms coordinates.
+    compl1_base = Nucleoside(compl1_base_confs[i])
+    compl2_base = Nucleoside(compl2_base_confs[j])
+    # get the size of the array as an index to correctly parse the required atoms of compl2_base
+    index_fit = compl1_base.mol_length
+
+    # Parse the index of the values we want. compl1 is the atom that is being attached to the linker of the previous nucleotide. compl2 is the last atom in the backbone of the linker.
+    id_dist_compl2 = LFT2.retrieve_atom_index(compl2_base, APL1[2]) + index_fit
+    id_dist_compl1 = LFT2.retrieve_atom_index(compl1_base, APL1[3])
+    v_dist = arr_best_fit[id_dist_compl1] - arr_best_fit[id_dist_compl2]
+
+    # Get the atoms that make up the dihedral of the following, so only the three atoms
+    APL2 = LFT3.Atom_Parsing_List(compl2_base, compl2_linker, compl1_base)[:3]
+    dist_compl2_atom_indexlist = LFT2.retrieve_atom_index_MULTIPLE(compl2_base, APL2, index_fit)
+
+    v0_compl2 = arr_best_fit[dist_compl2_atom_indexlist[0]]
+    v1_compl2 = arr_best_fit[dist_compl2_atom_indexlist[1]]
+    v2_compl2 = arr_best_fit[dist_compl2_atom_indexlist[2]]
+    # Get the angle and dihedral, then create the single vector that denotes the position of compl1_base
+    angle, dihedral = compl2_base.get_angle("alpha"), compl2_base.get_dihedral("alpha")
+    single_vector = generate_vector_of_interest(angle, dihedral, [v2_compl2, v1_compl2, v0_compl2])
+    # Get the angle of rotation, then half the rotation since we want them to tilt equally.
+    angle_of_rot = LFT1.get_angle_of_rotation(v_dist, single_vector) / 2
+
+    # Parse the two nucleotides from the array
+    nuc1 = arr_best_fit[:index_fit]
+    nuc2 = arr_best_fit[index_fit:]
 
 
 
@@ -466,18 +564,14 @@ def assert_starting_bases_of_complementary_strand(compl_base_confs1 : list, comp
 
 
 
-
-
-
-
 def assert_possible_base_conformations_and_fit(leading_nuc, leading_array : np.ndarray, conformations : list, compl_linker, complementary_strand : np.ndarray,
                                                                                 prev_compl_nuc, prev_compl_linker, index_lead : int, index_compl : int) -> np.ndarray:
     """ Conformations is a list of the complementary_codex[NA], that contains one, two or three different conformations of the same NA.
 
         Conformations contains the names of particular json files, which will be converted to json objects.
         leading_nuc is already a json object.
-        linker is already a json object
-        prev_compl_nuc are already json objects
+        compl_linker is already a json object
+        prev_compl_nuc is already json objects
 
         after the initial fit is done, it will calculate the best orientation for the nucleoside to be in, with respect to leading and complementary strand.
         Returns the conformation that has the best fit into the leading strand and the progressing complementary strand """

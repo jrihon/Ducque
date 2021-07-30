@@ -71,6 +71,18 @@ def get_quaternion(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : n
 
     return quaternion
 
+def get_custom_quaternion(axis : np.array, theta : float) -> np.array:
+    """ Generate a customized quaternion. This is only succesful if the direction axis is perpendicular. """
+    # Create the quaternion
+    qx = axis[0] * np.sin(theta)
+    qy = axis[1] * np.sin(theta)
+    qz = axis[2] * np.sin(theta)
+    qw = np.cos(theta)
+
+    quaternion = R.from_quat([qx, qy, qz, qw])
+
+    return quaternion
+
 
 def get_normal_vector_of_plane(v_first : np.ndarray, v_second : np.ndarray) -> np.ndarray:
     """ Retrieve the normal of a plane, by taking the cross product of two vectors. """
@@ -348,7 +360,7 @@ def assert_dihedral_of_nucleotide(calculated_dihedral : float, dihedral : float)
     return dihedral - 20 <= calculated_dihedral <= dihedral + 20
 
 
-#def check_phi_angle_of_vector(vectors : np.ndarray, axis : np.array = np.array([0,0,1])) -> None:
+#def check_phi_angle_of_vector(vectors : np.ndarray, axis : np.array = np.array([0,0,1])) :
 #    """ The dotproduct determines the angle of the vector with a given axis/vector.
 #    This function is mainly for debugging purposes and has no value for building duplexes.
 #

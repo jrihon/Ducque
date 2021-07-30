@@ -74,12 +74,10 @@ def Architecture(nucleic_acid_list, complement):
 
 
     ## Generate the complementary strand
-
     # a list of complementary nucleotides
     compl_nucleic_acid_list = LabF.generate_complementary_sequence(nucleic_acid_list, complement)
 
     ## Build the complementary strand
-
     # Initiate the objects for the complementary strand
     compl_nucleic_acid = compl_nucleic_acid_list[0]
     compl_nucleoside = LabF.Nucleoside(CODEX_LEAD[compl_nucleic_acid][0])       # I dont think this is necessary tbh ... compl_linker = LabF.Nucleoside(CODEX_LEAD[compl_nucleic_acid][1])
@@ -93,8 +91,8 @@ def Architecture(nucleic_acid_list, complement):
     #### leading_nucleosides = [CODEX_LEAD[lead_nucleic_acid], CODEX_LEAD[lead_nucleic_acid]] 
     #### 
     #### compl1, compl2 = compl_nucleic_acid_list[0], compl_nucleic_acid_list[1]
-    #### 
-    #### complementary_strand, index_lead = LFT1.assert_starting_bases_of_complementary_strand(CODEX_COMPL[compl1], CODEX_COMPL[compl2], leading_nucleosides, leading_strand, index_lead)
+    #### compl2_linker = LabF.Desmos(CODEX_LEAD[compl_nucleic_acid_list[1]]) 
+    #### complementary_strand, index_lead = LFT1.assert_starting_bases_of_complementary_strand(CODEX_COMPL[compl1], CODEX_COMPL[compl2], compl2_linker, leading_nucleosides, leading_strand, index_lead)
     ####
     #### index_compl = complementary_strand.shape[0]
 
@@ -114,7 +112,7 @@ def Architecture(nucleic_acid_list, complement):
         lead_nextnuc_acid = nucleic_acid_list[cNA]
         lead_nucleoside, lead_linker = LabF.Nucleoside(CODEX_LEAD[lead_nextnuc_acid][0]), LabF.Desmos(CODEX_LEAD[lead_nextnuc_acid][1])
 
-        index_lead -= lead_nucleoside.mol_length; index_lead -= lead_linker.mol_length
+        index_lead -= (lead_nucleoside.mol_length + lead_linker.mol_length)
 
         # Import the previous complementary nucleoside and create the objects
         prev_compl = compl_nucleic_acid_list[cNA - 1]
