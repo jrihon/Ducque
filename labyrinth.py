@@ -131,6 +131,7 @@ def Architecture(nucleic_acid_list, complement):
         # Parse the information of the leading strand nucleotide we want to fit the complementary nucleoside against
         lead_nextnuc_acid = nucleic_acid_list[cNA]
         lead_nextnuc, lead_nextlinker = LabF.Nucleoside(CODEX_LEAD[lead_nextnuc_acid][0]), LabF.Desmos(CODEX_LEAD[lead_nextnuc_acid][1])
+        index_lead -= (lead_nextnuc.mol_length + lead_nextlinker.mol_length)
 
         # Parse the name of the files of the different conformations of the complementary nucleic acid
         compl_nextnuc_acid = compl_nucleic_acid_list[cNA]
@@ -141,15 +142,11 @@ def Architecture(nucleic_acid_list, complement):
         prev_compl_nuc, prev_compl_linker = LabF.Nucleoside(CODEX_LEAD[prev_compl_nextnuc_acid][0]), LabF.Desmos(CODEX_LEAD[prev_compl_nextnuc_acid][1])
         index_compl -= (prev_compl_linker.mol_length + prev_compl_nuc.mol_length)
 
-        compl_nextnuc_arr, compl_nextnuc = LabF.assert_possible_base_conformations_and_fit(lead_nextnuc, leading_strand, conformations, compl_nextlinker, complementary_strand,
+        compl_nextnuc_arr = LabF.assert_possible_base_conformations_and_fit(lead_nextnuc, leading_strand, conformations, compl_nextlinker, complementary_strand,
                                                                                                   prev_compl_nuc, prev_compl_linker, index_lead, index_compl)
-#        compl_nextnucleoside = LabF.Nucleoside(compl_nextnuc)
-#        complementary_nucleoTIDE = LabF.position_phosphate_linker(compl_nextnucleoside, compl_nextnuc_arr, compl_nextlinker)
-
-        #complementary_strand = np.vstack((complementary_strand, complementary_nucleoTIDE))
         complementary_strand = np.vstack((complementary_strand, compl_nextnuc_arr))
 
-        index_compl += (prev_compl_linker.mol_length + prev_compl_nuc.mol_length)
+        index_compl += (prev_compl_linker.mol_length + prev_compl_nuc.mol_length) + compl_nextnuc_arr.shape[0]
     #------------------------ CREATE THE PDB THAT GOES WITH ARRAY INPUTTED -------------------#
    # print(nucleic_acid_list)
    # print(compl_nucleic_acid_list)
