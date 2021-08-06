@@ -438,19 +438,19 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linke
         if not LFT1.assert_length_of_vector(dist_between_nucs):
             v_direction *= -1.0
 
-    # Generate angles of rotation. Make note that we won't go past a 15 degree angle, since that general will not be necessary to turn that much.
-    array_of_rot_angles = np.linspace(2.5, 15, 8) * (np.pi/180)
+        # Generate angles of rotation. Make note that we won't go past a 15 degree angle, since that general will not be necessary to turn that much.
+        array_of_rot_angles = np.linspace(2.5, 15, 8) * (np.pi/180)
 
-    stored_distances = np.zeros(len(array_of_rot_angles))
-    for i in range(len(array_of_rot_angles)) :
-        quat_nuc1 = LFT1.get_custom_quaternion(v_direction, array_of_rot_angles[i])
+        stored_distances = np.zeros(len(array_of_rot_angles))
+        for i in range(len(array_of_rot_angles)) :
+            quat_nuc1 = LFT1.get_custom_quaternion(v_direction, array_of_rot_angles[i])
 
-        testnuc1 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, compl_nuc_arr, compl_nuc_arr[id_atom_base1])
+            testnuc1 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, compl_nuc_arr, compl_nuc_arr[id_atom_base1])
 
-        dist_between_nucs = LFT1.get_length_of_vector(testnuc1[id_v2], complementary_strand[id_compl_strand])
-        # If the distance is suitable according to the boundaries, return the stack
-        if LFT1.assert_length_of_vector(dist_between_nucs) :
-            return testnuc1
+            dist_between_nucs = LFT1.get_length_of_vector(testnuc1[id_v2], complementary_strand[id_compl_strand])
+            # If the distance is suitable according to the boundaries, return the stack
+            if LFT1.assert_length_of_vector(dist_between_nucs) :
+                return testnuc1
 
 
 def assert_starting_bases_of_complementary_strand(compl1_base_confs : list, compl2_base_confs : list, compl2_linker, lead_bases : list, leading_strand : np.ndarray, index_lead : int) -> np.ndarray :
