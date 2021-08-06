@@ -78,7 +78,7 @@ except fundaments.InputExclusivity:
 def main():
 
     # Print the Daedalus prompt
-    print(explanation)
+#    print(explanation)
 
     # Convert pdb to json
     if arguments.transmute:

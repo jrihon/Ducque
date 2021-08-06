@@ -37,7 +37,8 @@ def get_direction_of_rotation(from_vector : np.ndarray, vector_to_rotate_onto : 
         Let's normalize the direction """
 
     cross_product = np.cross(from_vector, vector_to_rotate_onto)
-    return cross_product / LA.norm(cross_product)
+    return return_normalized(cross_product)
+    #return cross_product / LA.norm(cross_product)
 
 
 def get_angle_of_rotation(from_vector : np.ndarray, vector_to_rotate_onto : np.ndarray) -> float:
@@ -352,11 +353,33 @@ def move_to_origin_ROTATE_move_back_to_loc(quaternion : np.ndarray, array_to_man
 
 def assert_length_of_vector(length : float) -> bool:
     """ Check if length is roughly the correct size or if the nucleotide needs to be rotated """
-    return 1 <= length <= 2
+    return 1.15 <= length <= 1.85
 
 
 def assert_dihedral_of_nucleotide(calculated_dihedral : float, dihedral : float) -> bool:
     """ Check if dihedral is roughly the correct angle or if the nucleotide needs to be rotated """
+
+    # If the dihedral surpasses passed 180 degrees, then assert if the dihedral is smaller than -180 + the difference of (180 - dihedral)
+    if dihedral + 20 > 180:
+        diff = -180 + (dihedral - 180 + 20)
+
+        check1 = dihedral - 20 <= calculated_dihedral <= 180
+        check2 = -180 <= calculated_dihedral <= diff
+
+        if check1 or check2:
+            return True
+
+    # If the dihedral goes below -180 degrees, then assert if the dihedral is smaller than 180 - the difference of (-180 + dihedral)
+    if dihedral - 20 < -180:
+        diff = 180 + (calculated_dihedral + 180 - 20)
+
+        check1 = -180 <= calculated_dihedral <= dihedral + 20
+        check2 = diff <= calculated_dihedral <= 180
+
+        if check1 or check2:
+            return True
+
+    # If it does not go over the bounds of -180 or 180, then just calculate it like this
     return dihedral - 20 <= calculated_dihedral <= dihedral + 20
 
 
