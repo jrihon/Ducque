@@ -147,11 +147,8 @@ def Architecture(nucleic_acid_list, complement):
         complementary_strand = np.vstack((complementary_strand, compl_nextnuc_arr))
 
         index_compl += (prev_compl_linker.mol_length + prev_compl_nuc.mol_length) + compl_nextnuc_arr.shape[0]
+
     #------------------------ CREATE THE PDB THAT GOES WITH ARRAY INPUTTED -------------------#
-   # print(nucleic_acid_list)
-   # print(compl_nucleic_acid_list)
-   # print(leading_strand.shape)
-   # print(complementary_strand.shape) ; exit()
     LabF.create_PDB_from_array_final(leading_strand, nucleic_acid_list, complementary_strand, compl_nucleic_acid_list)
     print("\nNumber of nucleotides in the duplex :" , num_nucl, "\n")
 

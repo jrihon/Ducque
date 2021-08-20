@@ -353,7 +353,7 @@ def move_to_origin_ROTATE_move_back_to_loc(quaternion : np.ndarray, array_to_man
 
 def assert_length_of_vector(length : float) -> bool:
     """ Check if length is roughly the correct size or if the nucleotide needs to be rotated """
-    return 1.25 <= length <= 1.75
+    return 1.40 <= length <= 1.80
 
 
 def assert_dihedral_of_nucleotide(calculated_dihedral : float, dihedral : float) -> bool:

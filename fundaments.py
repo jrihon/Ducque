@@ -149,7 +149,7 @@ def randomise(RandomiseInput, options):
 
         if arg[0] == "--sequence":
             sequence = arg[1:]
-            length_seq = 0
+            length_sequence = 0
 
     # If the variable chemistry has not been defined, then
     try:

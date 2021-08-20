@@ -6,6 +6,7 @@ from typing import Union
 import labyrinth_func_tools1 as LFT1
 import labyrinth_func_tools2 as LFT2
 import labyrinth_func_tools3 as LFT3
+import labyrinth_func_andthefunkybunch as LFFB
 
 
 """
@@ -439,7 +440,7 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linke
             quat_nuc1 = LFT1.get_custom_quaternion(v_direction_test, angle_of_rot_TEST)
             test_turn_arr = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, compl_nuc_arr, compl_nuc_arr[id_atom_base1])
             x2 = LFT1.get_length_of_vector(test_turn_arr[id_v2], complementary_strand[id_compl_strand])
-            print(x1, x2)
+
             if x1 > x2 :
                 v_direction *= -1.0
 
@@ -450,7 +451,7 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linke
         for i in range(len(array_of_rot_angles)) :
             quat_nuc1 = LFT1.get_custom_quaternion(v_direction, array_of_rot_angles[i])
 
-            testnuc1 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, test_turn_arr, test_turn_arr[id_atom_base1])
+            testnuc1 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, compl_nuc_arr, compl_nuc_arr[id_atom_base1])
 
             dist_between_nucs = LFT1.get_length_of_vector(testnuc1[id_v2], complementary_strand[id_compl_strand])
             # If the distance is suitable according to the boundaries, return the stack
@@ -459,7 +460,6 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linke
                 return testnuc1
 
         # If this part of the code is reached, that means none of the evaluated distances are suitable. Let's search the shortest one in the list
-        print(stored_distances)
         min_val = stored_distances.min()
         index_min = np.where(stored_distances == min_val)
         angle_of_rot = array_of_rot_angles[index_min[0]]
@@ -677,21 +677,16 @@ def assert_possible_base_conformations_and_fit(leading_nuc, leading_array : np.n
         conf_n_final = tilt_array_to_get_a_better_fit(conf_n, compl_linker, prev_compl_nuc, prev_compl_linker, conf_with_linker, complementary_strand, index_compl)
         return conf_n_final
 
+    ## Since there are multiple conformations available, we will need to sort out which one will fit the best.
+    ## First we parse the correct indexes for the vectors we want to evaluate (check the distance)
+    ## We first check if there are nucleotides that fit well without rotation of the base-plane. If that's not the case, we will check all conformations based on best fit after rotation of the base-plane.
+    ## We then assert the different conformations after they've been fitted to the best it can
 
-    # Instantiate the possible conformations in an array
-    possibilities_of_conformations = np.zeros(shape=len(conformations), dtype=object)
-    #index_compl -= (prev_compl_nuc.mol_length + prev_compl_linker.mol_length)        # decrement the index of the complementary strand to parse the correct vectors
-    # iterate over the list and store the conformations into the array
-    for file_i in range(len(possibilities_of_conformations)) :
-        conf_n = Nucleoside(conformations[file_i])
-        conf_n_arr = position_complementary_base(leading_nuc, conf_n, leading_array, index_lead)
-        # add the linker to the nucleoside
-        possibilities_of_conformations[file_i] = position_phosphate_linker(conf_n, conf_n_arr, compl_linker)
-    # we can still use conf_n to instantiate the required vectors of both arrays
-    # Get the name of the atom that connect the next nucleoside with the previous linker moiety
+    # nuc_data is used just to be able to parse the correct indexes in the code below
+    nuc_data = Nucleoside(conformations[0])
 
     # The first atom in the backbone of the nucleoside the current nucleoside attaches to
-    atomOfInterest2 = LFT3.backbone_codex[json.loads(conf_n.jason["identity"])[1]][0]   # first value of the backbone_codex to parse. else make list(_VAL)[0]
+    atomOfInterest2 = LFT3.backbone_codex[json.loads(nuc_data.jason["identity"])[1]][0]   # first value of the backbone_codex to parse. else make list(_VAL)[0]
     bb_id = LFT2.retrieve_atom_index(prev_compl_nuc, atomOfInterest2) + index_compl + prev_compl_linker.mol_length
     bb_v = complementary_strand[bb_id]
 
@@ -699,24 +694,57 @@ def assert_possible_base_conformations_and_fit(leading_nuc, leading_array : np.n
     atomOfInterest1 = LFT3.backbone_codex[json.loads(compl_linker.jason["identity"])[0]][-1] # since it is the last of the backbone_codex that should be parsed. else make list(_VAL)[-1]
     link_id = LFT2.retrieve_atom_index(compl_linker, atomOfInterest1)
 
-    distance_backbone = 100
+    ## First we assert the conformations without tilting by the base-plane
+
+    # Instantiate a matrix to store possible conformations in an array
+    possibilities_of_conformations = np.zeros(shape=len(conformations), dtype=object)
+
+    for file_n in range(len(possibilities_of_conformations)):
+        conf_n = Nucleoside(conformations[file_n])
+        conf_n_arr = position_complementary_base(leading_nuc, conf_n, leading_array, index_lead)
+        # add the linker to the nucleoside
+        possibilities_of_conformations[file_n] = position_phosphate_linker(conf_n, conf_n_arr, compl_linker)
+
+    # Instantiate a matrix to store the distances in the backbone, from linker to previous nucleotide, and whether or not they fit within the boundaries of asserting set distances
+    stored_bb_distances = np.zeros(shape=len(conformations), dtype=object)
+    stored_bb_bools = np.zeros(shape=len(conformations), dtype=bool)
+
     for i in range(len(possibilities_of_conformations)):
         link_v = possibilities_of_conformations[i][link_id]
         # Check the distance between the two nucleotides, so P -> O3' (with native nucs as example) one of which will have the shortest distance. Pick that one
-        dist_test = LFT1.get_length_of_vector(link_v, bb_v)
-        print(dist_test)
-        # see which distance between previous nucleoside and the current one is larger
-        if dist_test < distance_backbone :
-            distance_backbone = dist_test
-            best_fit = i
+        stored_bb_distances[i] = LFT1.get_length_of_vector(link_v, bb_v)
+        stored_bb_bools[i] = LFT1.assert_length_of_vector(stored_bb_distances[i])
 
-    nuc_array_of_interest = possibilities_of_conformations[best_fit]
-    file_of_best_conf = Nucleoside(conformations[best_fit])
-    # Fit the nucleoside array better
-    conf_n_arr_tilted = tilt_array_to_get_a_better_fit(file_of_best_conf, compl_linker, prev_compl_nuc, prev_compl_linker, nuc_array_of_interest, complementary_strand, index_compl)
+    # If any of the stored conformations are suitable, we can already that one here and build it in the complementary strand.
+    if np.any(stored_bb_bools == True):
+        index_of_best_conformation = LFFB.retrieve_index_of_best_conformation(stored_bb_distances, stored_bb_bools)
+        return possibilities_of_conformations[index_of_best_conformation]
 
-    return conf_n_arr_tilted
 
+    ## Alas, none of the conformations were suitable enough, it seems we will have to fit them over and over.
+    # Instantiate a matrix to store possible conformations in an array
+    possibilities_of_conformations = np.zeros(shape=len(conformations), dtype=object)
+
+    for file_n in range(len(possibilities_of_conformations)):
+        conf_n = Nucleoside(conformations[file_n])
+        conf_n_arr = position_complementary_base(leading_nuc, conf_n, leading_array, index_lead)
+        # add the linker to the nucleoside
+        conf_n_arr_link = position_phosphate_linker(conf_n, conf_n_arr, compl_linker)
+        # tilt the conformation to the best possible fit
+        possibilities_of_conformations[file_n] = tilt_array_to_get_a_better_fit(conf_n, compl_linker, prev_compl_nuc, prev_compl_linker, conf_n_arr_link, complementary_strand, index_compl)
+
+    # Instantiate a matrix to store the distances in the backbone, from linker to previous nucleotide, and whether or not they fit within the boundaries of asserting set distances
+    stored_bb_distances = np.zeros(shape=len(conformations), dtype=object)
+    stored_bb_bools = np.zeros(shape=len(conformations), dtype=bool)
+    for i in range(len(possibilities_of_conformations)):
+        link_v = possibilities_of_conformations[i][link_id]
+        # Check the distance between the two nucleotides, so P -> O3' (with native nucs as example) one of which will have the shortest distance. Pick that one
+        stored_bb_distances[i] = LFT1.get_length_of_vector(link_v, bb_v)
+        stored_bb_bools[i] = LFT1.assert_length_of_vector(stored_bb_distances[i])
+
+
+    index_of_best_conformation = LFFB.retrieve_index_of_best_conformation(stored_bb_distances, stored_bb_bools)
+    return possibilities_of_conformations[index_of_best_conformation]
 
 def generate_complementary_sequence(sequence_list : list, complement : Union[list, str]) -> list:
     """ sequence list is the given input.
@@ -733,19 +761,21 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[lis
 
         return complementary_sequence
 
+    # if the sequence needs to be complementary per nucleotide
     if complement.lower() == "homo":
         chemistry = LFT2.retrieve_chemistry_list(sequence_list)
 
-        # Switch the bases the get their complementary base
-        if chemistry[0] == "r":
-            comp_bases = LFT2.get_complementary_bases(bases, complementary_dictRNA)
-            complementary_sequence = LFT2.concatenate_chem_and_bases(chemistry, comp_bases)
-            return complementary_sequence
+        complementary_sequence = []
+        for chem_i in range(len(chemistry)):
+            if chemistry[chem_i] == "r":
+                comp_base = complementary_dictRNA[bases[chem_i]]
+                complementary_sequence.append(chemistry[chem_i] + comp_base)
+            else:
+                comp_base = complementary_dictDNA[bases[chem_i]]
+                complementary_sequence.append(chemistry[chem_i] + comp_base)
 
-        # If the complementary strand is not RNA based, use the DNA native bases.
-        comp_bases = LFT2.get_complementary_bases(bases, complementary_dictDNA)
-        complementary_sequence = LFT2.concatenate_chem_and_bases(chemistry, comp_bases)
         return complementary_sequence
+
 
     if complement.upper() == "DNA":
         chemistry = "d"
