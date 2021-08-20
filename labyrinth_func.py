@@ -698,6 +698,11 @@ def assert_possible_base_conformations_and_fit(leading_nuc, leading_array : np.n
 
     # Instantiate a matrix to store possible conformations in an array
     possibilities_of_conformations = np.zeros(shape=len(conformations), dtype=object)
+    # Instantiate a matrix to store the distances in the backbone, from linker to previous nucleotide, and whether or not they fit within the boundaries of asserting set distances
+    stored_bb_distances = np.zeros(shape=len(conformations), dtype=object)
+    stored_bb_distance_bools = np.zeros(shape=len(conformations), dtype=bool)
+    stored_bb_dihedral_bools = np.zeros(shape=len(conformations), dtype=bool)
+
 
     for file_n in range(len(possibilities_of_conformations)):
         conf_n = Nucleoside(conformations[file_n])
@@ -705,25 +710,32 @@ def assert_possible_base_conformations_and_fit(leading_nuc, leading_array : np.n
         # add the linker to the nucleoside
         possibilities_of_conformations[file_n] = position_phosphate_linker(conf_n, conf_n_arr, compl_linker)
 
-    # Instantiate a matrix to store the distances in the backbone, from linker to previous nucleotide, and whether or not they fit within the boundaries of asserting set distances
-    stored_bb_distances = np.zeros(shape=len(conformations), dtype=object)
-    stored_bb_bools = np.zeros(shape=len(conformations), dtype=bool)
-
-    for i in range(len(possibilities_of_conformations)):
-        link_v = possibilities_of_conformations[i][link_id]
+        link_v = possibilities_of_conformations[file_n][link_id]
         # Check the distance between the two nucleotides, so P -> O3' (with native nucs as example) one of which will have the shortest distance. Pick that one
-        stored_bb_distances[i] = LFT1.get_length_of_vector(link_v, bb_v)
-        stored_bb_bools[i] = LFT1.assert_length_of_vector(stored_bb_distances[i])
+        stored_bb_distances[file_n] = LFT1.get_length_of_vector(link_v, bb_v)
+        stored_bb_distance_bools[file_n] = LFT1.assert_length_of_vector(stored_bb_distances[file_n])
+        stored_bb_dihedral_bools[file_n] = LFFB.assert_the_dihedral_of_interest(conf_n, possibilities_of_conformations[file_n], compl_linker, prev_compl_nuc, complementary_strand, index_compl, prev_compl_linker)
 
-    # If any of the stored conformations are suitable, we can already that one here and build it in the complementary strand.
-    if np.any(stored_bb_bools == True):
-        index_of_best_conformation = LFFB.retrieve_index_of_best_conformation(stored_bb_distances, stored_bb_bools)
+    # check dihedral suitability
+    if np.any(stored_bb_dihedral_bools == True) :
+        index_of_best_conformation = LFFB.retrieve_index_of_best_conformation(stored_bb_distances, stored_bb_dihedral_bools)
+        if not stored_bb_distance_bools[index_of_best_conformation] == True:
+            return tilt_array_to_get_a_better_fit(Nucleoside(conformations[index_of_best_conformation]), compl_linker, prev_compl_nuc, prev_compl_linker, possibilities_of_conformations[index_of_best_conformation], complementary_strand, index_compl)
+
+        return possibilities_of_conformations[index_of_best_conformation]
+    # if the check dihedral suitability fails, check for distance suitability
+    if np.any(stored_bb_distance_bools == True):
+        index_of_best_conformation = LFFB.retrieve_index_of_best_conformation(stored_bb_distances, stored_bb_distance_bools)
         return possibilities_of_conformations[index_of_best_conformation]
 
 
     ## Alas, none of the conformations were suitable enough, it seems we will have to fit them over and over.
     # Instantiate a matrix to store possible conformations in an array
     possibilities_of_conformations = np.zeros(shape=len(conformations), dtype=object)
+    # Instantiate a matrix to store the distances in the backbone, from linker to previous nucleotide, and whether or not they fit within the boundaries of asserting set distances
+    stored_bb_distances = np.zeros(shape=len(conformations), dtype=object)
+    stored_bb_distance_bools = np.zeros(shape=len(conformations), dtype=bool)
+    stored_bb_dihedral_bools = np.zeros(shape=len(conformations), dtype=bool)
 
     for file_n in range(len(possibilities_of_conformations)):
         conf_n = Nucleoside(conformations[file_n])
@@ -733,18 +745,19 @@ def assert_possible_base_conformations_and_fit(leading_nuc, leading_array : np.n
         # tilt the conformation to the best possible fit
         possibilities_of_conformations[file_n] = tilt_array_to_get_a_better_fit(conf_n, compl_linker, prev_compl_nuc, prev_compl_linker, conf_n_arr_link, complementary_strand, index_compl)
 
-    # Instantiate a matrix to store the distances in the backbone, from linker to previous nucleotide, and whether or not they fit within the boundaries of asserting set distances
-    stored_bb_distances = np.zeros(shape=len(conformations), dtype=object)
-    stored_bb_bools = np.zeros(shape=len(conformations), dtype=bool)
-    for i in range(len(possibilities_of_conformations)):
-        link_v = possibilities_of_conformations[i][link_id]
+        link_v = possibilities_of_conformations[file_n][link_id]
         # Check the distance between the two nucleotides, so P -> O3' (with native nucs as example) one of which will have the shortest distance. Pick that one
-        stored_bb_distances[i] = LFT1.get_length_of_vector(link_v, bb_v)
-        stored_bb_bools[i] = LFT1.assert_length_of_vector(stored_bb_distances[i])
+        stored_bb_distances[file_n] = LFT1.get_length_of_vector(link_v, bb_v)
+        stored_bb_distance_bools[file_n] = LFT1.assert_length_of_vector(stored_bb_distances[file_n])
+        stored_bb_dihedral_bools[file_n] = LFFB.assert_the_dihedral_of_interest(conf_n, possibilities_of_conformations[file_n], compl_linker, prev_compl_nuc, complementary_strand, index_compl, prev_compl_linker)
 
-
-    index_of_best_conformation = LFFB.retrieve_index_of_best_conformation(stored_bb_distances, stored_bb_bools)
+    if np.any(stored_bb_dihedral_bools == True) :
+        index_of_best_conformation = LFFB.retrieve_index_of_best_conformation(stored_bb_distances, stored_bb_dihedral_bools)
+        return possibilities_of_conformations[index_of_best_conformation]
+    # This gives the one with the least distance from the desired bb_distance
+    index_of_best_conformation = LFFB.retrieve_index_of_best_conformation(stored_bb_distances, stored_bb_distance_bools)
     return possibilities_of_conformations[index_of_best_conformation]
+
 
 def generate_complementary_sequence(sequence_list : list, complement : Union[list, str]) -> list:
     """ sequence list is the given input.
