@@ -39,6 +39,9 @@ options.add_argument("--randomise", type=argparse.FileType("r"),
 options.add_argument("--Daedalus", type=argparse.FileType("r"),
         help="Ask the software to build a nucleic acid duplex with a given sequence.")
 
+options.add_argument("--xyz_pdb", type=argparse.FileType("r"),
+        help="Convert the inputted .xyz file to a properly formatted .pdb file.")
+
 options.add_argument("--help", action="help",
         help="Prompt Daedalus's help message to appear")
 
@@ -56,11 +59,16 @@ else:
 
     # If we want to convert a pdb to a json file
     if arguments.transmute:
+
         PDB_FILE, IDENTIFIER, MOIETY, DIHEDRALS, ANGLES, CONFORMATION = fundaments.transmute(arguments.transmute, options)
 
     # If we want to call for a randomised sequence
     if arguments.randomise:
         CHEMISTRY, LENGTH_SEQUENCE, SEQUENCE = fundaments.randomise(arguments.randomise, options)
+
+    # If we want to convert XYZ file to PDB
+    if arguments.xyz_pdb:
+        FILENAME_XYZ, ATOM_ID, ATOMNAME_LIST = fundaments.xyz_to_pdb(arguments.xyz_pdb, options)
 
 
 # Try and see if any of the options are used together. 
@@ -94,6 +102,11 @@ def main():
     if arguments.randomise:
         print("Randioli randioli, what is the spaghetolli?")
         randomise.randomiser(CHEMISTRY, LENGTH_SEQUENCE, SEQUENCE)
+
+    # Convert an ORCA xyz-formatted molecule file to a pdb file
+    if arguments.xyz_pdb:
+        print("Converting " + FILENAME_XYZ + " to a .pdb format file.")
+        transmute.convert_XYZ_to_PDB(FILENAME_XYZ, ATOM_ID, ATOMNAME_LIST)
 
     print("                         Time spent: %.5f seconds." % (time.time() - t0))
 

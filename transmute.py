@@ -1,8 +1,10 @@
 import transmute_func as TF
+import sys
 import json
+from typing import Union
 
 
-def Transmutation(pdb_file, nucleic_acid_chemistry : str, moiety : str, dihedral_list : list, angles_list : list, conformation : str = False ):
+def Transmutation(pdb_file, nucleic_acid_chemistry : str, moiety : str, dihedral_list : list, angles_list : list, conformation : Union[str, bool] = False ):
     """This function converts a pdb formatted file into a json file.
     Json files make for a much easier data parsing format, are computationally much more efficient and require less memory to be held.
 
@@ -97,3 +99,29 @@ def Transmutation(pdb_file, nucleic_acid_chemistry : str, moiety : str, dihedral
         json.dump(molecule, filejson, indent=4)
 
 
+def convert_XYZ_to_PDB(xyz_file, atomID, atomname_list):
+    """ the main function that convert an xyz formatted file to the required pdb format """
+
+    # Instantiate the object
+    pdb_to_be = TF.TransmuteToPdb(xyz_file)
+
+    # Parse all the required data from the xyz file
+    x_coords, y_coords, z_coords, elementsymbol = pdb_to_be.parse_xyz_and_elementsymbol()
+
+    # Process the inputted atomname list from a string to a list
+    atomname_list = pdb_to_be.return_processed_atomname_list(atomname_list)
+
+    # If the inputted atomname list and the array size do not match in size, exit the program
+    if not pdb_to_be.arraysize_vs_atomname_list_compatibility(elements, atomname_list) :
+        print("The size of the prompted '--atomname_list' is not equal to the array of the cartesian coordinates ,pertaining to the atoms of the molecule.\n"
+                "Please revise the prompted atomlist.")
+        sys.exit(0)
+
+    if not pdb_to_be.elementsymbol_vs_atomname_list_compatibility(elementsymbol, atomname_list) :
+        print("The prompted '--atomname_list' do not match the order of the parsed elementsymbol list, pertaining to the atoms of the molecule.\n"
+                "Please revise the prompted atomlist.")
+        sys.exit(0)
+
+    pdb_to_be.fill_in_the_rest_of_the_pdb_dataframe_attribute(atomID, atomname_list, x_coords, y_coords, z_coords, elementsymbol)
+
+    pdb_to_be.write_to_pdb_formatted_file()

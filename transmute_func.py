@@ -225,3 +225,115 @@ class TransmuteToJson:
             name_of_linker = TFT.linker_dict[identifier].lower()
             return name_of_chemistry + "_" + name_of_linker
 
+
+
+class TransmuteToPdb:
+
+
+    def __init__(self, xyzfile):
+        """ Initialise the object and create object attributes """
+        self.splitted = xyzfile.split('.')[:-1]
+        self.pdb_dataframe = pd.DataFrame()
+        self.filename = self.splitted + '.xyz'
+        self.array = np.array([])
+
+    def parse_xyz_and_elementsymbol(self):
+        """ Reads the xyz datafile and returns the coordinates and the element symbol"""
+        # read only the lines with x-y-z coordinates
+        file = open(self.filename).readlines()[2:]
+        file = [line.strip() for line in file]
+        file.close()
+
+        # extract the coordinates. 
+        x_coords, y_coords, z_coords, elements = [], [], [], []
+        for line in file:
+            x, y, z = '{:.3f}'.format(float(line.split()[1])), '{:.3f}'.format(float(line.split()[2])), '{:.3f}'.format(float(line.split()[3]))
+            ele = line.split()[0].strip()
+            
+            x_coords.append(x)
+            y_coords.append(y)
+            z_coords.append(z)
+            elements.append(ele)
+
+        return x_coords, y_coords, z_coords, elements
+
+
+    def return_processed_atomname_list(self, atomname_list : list) -> list:
+        """ Returns a list of atom names in a well formatted list """
+        atomname_list = atomname_list.split(",")
+
+        atomname_list = [x.strip(",").strip() for x in atomname_list]
+
+        for atom in atomname_list:
+            if len(atom) > 4:
+                print("The following atom has too many characters in the string " + atom +" . Maximum amount allowed is 4.\n")
+                sys.exit(0)
+
+        return atomname_list
+
+
+    def arraysize_vs_atomname_list_compatibility(self, elements : list, atomname_list : list) -> bool:
+        """ Checks to see if the size of the parsed cartesian coordinates (in length) matches the size of the inputted atomname_list. They should match! """
+
+        if len(elements) == len(atomname_list):
+            return True
+        else :
+            return False
+
+
+    def elementsymbol_vs_atomname_list_compatibility(self, elements : list, atomname_list : list) -> bool:
+        """ Checks if the same type of atoms are prompted in atomname, when comparing them to the element symbol list """
+
+        list_of_two_character_valid_atoms = ["Cl", "Br", "Si"]
+        for atom in range(len(atomname_list)):
+            # Check if the atomname you are testing is longer than two characters
+            if elements[atom] in list_of_two_character_valid_atoms:
+                atom_type = atomname_list[atom][:2]
+                if atom_type != elements[atom]:
+                    print("Check for capitalization of the prompted atom : " + atom_type + " .\n"
+                            "If that did not prompt the error, check for its validity as an atom.\n"
+                            "Here is the valid atom list : ", list_of_two_character_valid_atoms, " .\n"
+                            "Feel free to adjust this to your needs in the file : transmute_func.py ; elementsymbol_vs_atomname_list_compatibility() function.\n")
+                    return False
+            # First parse out only the first character, since this one denotes the atom type
+            atom_type = atomname_list[atom][0]
+
+            if atom_type != elements[atom]:
+                return False
+
+        return True
+
+
+    def fill_in_the_rest_of_the_pdb_dataframe_attribute(self, atomID, atomname_list, x_coords, y_coords, z_coords, elements):
+        """ Fill in the remaining blanks of the pdb dataframe"""
+        from random import randint
+        randomised_integer_for_sequence_number = randint(1,100)
+
+        AtomNum_range = np.linspace(1, len(elements), len(elements), dtype=int)
+
+        self.pdb_dataframe = pd.DataFrame(index=range(numb_of_atoms))
+        self.pdb_dataframe['RecName'] = 'HETATM'
+        self.pdb_dataframe['AtomNum'] = AtomNum_range
+        self.pdb_dataframe['AtomName'] = atomname_list
+        self.pdb_dataframe['AltLoc'] = ' '
+        self.pdb_dataframe['ResName'] = atomID
+        self.pdb_dataframe['Chain'] = 'A'
+        self.pdb_dataframe['SeqNum'] = randomised_integer_for_sequence_number
+        self.pdb_dataframe['X_coord'] = x_coords
+        self.pdb_dataframe['Y_coord'] = y_coords
+        self.pdb_dataframe['Z_coord'] = z_coords
+        self.pdb_dataframe['Occupancy'] = '1.00'
+        self.pdb_dataframe['Temp'] = '0.00'
+        self.pdb_dataframe['SegmentID'] = '   '
+        self.pdb_dataframe['Element'] = Element
+
+
+    def write_to_pdb_formatted_file(self):
+        """ Write out the pdb file """
+
+        with open(self.filename, "w") as pdb:
+            for index, row in self.pdb_dataframe.iterrows():
+                split_line = [ row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13] ]
+                pdb.write("%-6s%5s%5s%s%2s%3s%5d  %8s%8s%9s%6s%7s%4s     %2s\n" % tuple(split_line))
+            pdb.write("END")
+            pdb.close()

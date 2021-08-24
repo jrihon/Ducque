@@ -13,15 +13,13 @@ def check_if_nucleotides_are_valid(input_sequence : list) -> bool:
     # Retrieve the keys of the dictionary from which we parse the data
     keys_of_dict = LFT3.codex_acidum_nucleicum.keys()
     # Check if any of the prompted nucleotides is not found in the sequence
-    report = True
 
     for NA in input_sequence:
         if NA not in keys_of_dict:
             print("One or more of the nucleotides in the given sequence is invalid. Please check your input file : " + NA + "\n\n")
-            report = False
-            return report
+            return False
 
-    return report
+    return True
 
 
 def daedalus(DaedalusInput, options):
@@ -160,3 +158,45 @@ def randomise(RandomiseInput, options):
         sys.exit(0)
 
     return chemistry, length_sequence, sequence
+
+
+def xyz_to_pdb(ConversionInput, options):
+
+    fileConversion = list(map(lambda x: x.strip(), ConversionInput.readlines()))
+
+    # Check list of valid inputs 
+    list_of_valid_flags = ["--xyz", "--atomID", "--atomname_list"]
+    if len(fileRandomise) != 3:
+        print("Only three arguments are required at one time. Please check your input file. \n\n\n ")
+        options.print_help()
+        sys.exit(0)
+
+    # Check if flags are valid
+    for argument in ConversionInput:
+        arg = argument.split()
+        # If a given flag is not a valid one, shut it down
+        if not arg[0] in list_of_valid_flags:
+            print("\n\nThe following flag is invalid : " + arg[0] + ". Please check your input file.\n\n\n")
+            #options.print_help()
+            sys.exit(0)
+
+        # Save the prompted arguments according to their respective flags
+        if arg[0] == "--xyz":
+            fname_xyz = arg[1]
+            try:
+                os.path.isfile(fname_xyz)
+            except FileNotFoundError:
+                print("File " + fname_xyz + "was not found. Please revise either its name or its location.\n")
+                sys.exit(0)
+
+        if arg[0] == "--atomID":
+            atomID = arg[1]
+            if len(atomID) != 3:
+                print("The argument '--atomID' requires three characters in its name.\n"
+                        "Technically it does not, but I made Daedalus require it, so deal with it.\n")
+
+        if arg[0] == "--atomname_list":
+            atomname_list = arg[1:]
+
+    return fname_xyz, atomID, atomname_list
+
