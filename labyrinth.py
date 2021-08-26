@@ -54,6 +54,12 @@ def Architecture(nucleic_acid_list, complement):
         # Parse the correct nucleoside and linker and create them as objects
         prevnuc, prevlink = LabF.Nucleoside(CODEX_LEAD[previous_nucleic_acid][0]), LabF.Desmos(CODEX_LEAD[previous_nucleic_acid][1])
 
+        # Assert which conformation fits the strand better and take that one and use it build the nucleotide
+        # conformations = CODEX_COMPL[nextnuc_acid]
+        # nextnuc_asserted_conf = LabF.assert_leading_strand_nucleotide_conformation(conformations, prevnuc, prevlink, leading_strand)
+        # nextnuc = LabF.Nucleoside(nextnuc_asserted_conf) ; index_lead += nextnuc.mol_length
+        # nextlink = LabF.Desmos(CODEX_LEAD[nextnuc_acid][1]) ; index_lead += nextlink.mol_length
+
         # Position the following nucleoside in the sequence
         next_nucleoSIDE_positioned = LabF.position_next_nucleoside(nextnuc, prevnuc, prevlink, leading_strand)
 

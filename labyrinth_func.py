@@ -9,10 +9,8 @@ import labyrinth_func_tools3 as LFT3
 import labyrinth_func_andthefunkybunch as LFFB
 
 
-"""
-Labyrinth_func.py
-The script that contains the classes and all the functions that concatenate the workflow of consecutively adding the linker and nucleotides.
-"""
+""" Labyrinth_func.py
+The script that contains the classes and all the functions that concatenate the workflow of consecutively adding the linker and nucleotides. """
 
                                                                              #### CLASSES
 class Nucleoside:
@@ -38,6 +36,7 @@ class Nucleoside:
     def get_base_denominator(self) -> str:
         """ returns the type of base of the nucleic acid. So if the base is Guanosine, return 'G'. """
         return json.loads(self.jason["identity"])[2][-1]
+
 
 class Desmos(Nucleoside):
     """  We can just simply pass this in here for now, since we essentially copy the parent class """
@@ -255,9 +254,7 @@ def position_next_nucleoside(next_nucleoside, prev_nucleoside, prev_linker, lead
 
         single_vector_N = generate_vector_of_interest(angle_N, dihedral_N, [vC, vB, vA])
 
-        # Retrieve the appropriate quaternion for the rotation
-        id_vD = LFT2.retrieve_atom_index(next_nucleoside, APL[i + 3])
-        vD = next_nucleoside_loc[id_vD]
+        # Retrieve the appropriate quaternion for the rotation id_vD = LFT2.retrieve_atom_index(next_nucleoside, APL[i + 3]) vD = next_nucleoside_loc[id_vD]
         pC_D = LFT1.return_normalized(vD - vC)
         quaternion_N = LFT1.get_quaternion(single_vector_N, pC_D)
 
@@ -265,6 +262,69 @@ def position_next_nucleoside(next_nucleoside, prev_nucleoside, prev_linker, lead
         distance_to_origin_N = next_nucleoside_loc[id_vC]
 
         next_nucleoside_loc = LFT1.move_to_origin_ROTATE_move_back_to_loc(quaternion_N, next_nucleoside_loc, distance_to_origin_N)
+
+
+def assert_leading_strand_nucleotide_conformation(conformations, prev_nucleoside, prev_link, leading_strand):
+    """ Position the different conformations and assert which conformation is the most parralel with respect to the bases of both nucleosides """ 
+
+    # If there is only one conformation possible, no point in asserting the best one
+    if len(conformations) == 1:
+        return conformations[0]
+
+
+    # Position the different conformations
+    arrays_of_the_conformations = np.zeros(len(conformations), dtype=object)
+
+    for conf in range(len(conformations)):
+        nucleoside = Nucleoside(conformations[conf])
+        arrays_of_the_conformations[conf] = position_next_nucleoside(nucleoside, prev_nucleoside, prev_link, leading_strand)
+
+    # Get the json object parse the correct atoms for the vector comparison
+    next_nucleoside = Nucleoside(conformations[0])
+    prev_base = prev_nucleoside.get_base_denominator() 
+    next_base = next_nucleoside_loc.get_base_denominator()
+    prev_base_atoms, next_base_atoms = LFT3.retrieve_atoms_for_plane_rotation_of_complement(prev_base, next_base) 
+
+    # Parse the indexes of the atoms of interest
+    prev_base_indexes = LFT2.retrieve_atom_index_MULTIPLE(prev_nucleoside, prev_base_atoms, index_counter=prev_link.mol_length)
+    next_base_indexes = LFT2.retrieve_atom_index_MULTIPLE(next_nucleoside, next_base_atoms)
+
+    # Previous nucleoside Cross Vector
+    vp0 = leading_strand[prev_base_indexes[0]]
+    vp1 = leading_strand[prev_base_indexes[1]]
+    vp2 = leading_strand[prev_base_indexes[2]]
+
+    vp3 = LFT1.return_normalized(vp1 - vp0)
+    vp4 = LFT1.return_normalized(vp2 - vp0)
+
+    cross_prev = LFT1.return_normalized(np.cross(vp4, vp3))
+
+    # Array of different cross vectors of the next nucleoside
+    possible_cross_vectors = np.zeros(len(conformations), dtype=object)
+
+    for conf in range(len(conformations)):
+        # Previous nucleoside Cross Vector
+        nucleoside = Nucleoside(conformations[conf])
+        vn0 = nucleoside[prev_base_indexes[0]]
+        vn1 = nucleoside[prev_base_indexes[1]]
+        vn2 = nucleoside[prev_base_indexes[2]]
+
+        vn3 = LFT1.return_normalized(vn1 - vn0)
+        vn4 = LFT1.return_normalized(vn2 - vn0)
+
+        possible_cross_vectors[conf] = LFT1.return_normalized(np.cross(vn4, vn3))
+
+    # Compare the dot product of the vector products of the next nuc with that of the previous nuc
+    scalar_products_array = np.zeros(len(conformations), dtype=object)
+
+    for v in range(len(conformations)):
+        scalar_products_array = np.dot(cross_prev, possible_cross_vectors[v])
+
+    smallest_val = scalar_products_array.min()
+
+    index_smallest_val = np.where(scalar_products_array == smallest_val)[0]
+
+    return conformations[index_smallest_val]
 
 
 def position_complementary_base(leading_base, complementary_base, leading_array : np.ndarray, index_lead : int) -> np.ndarray:

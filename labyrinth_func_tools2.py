@@ -51,11 +51,6 @@ def retrieve_atom_index_MULTIPLE(json_object, atoms : list, index_counter : int 
         array_of_indexes[i] = json_object.atom_list.index(atoms[i]) + index_counter
 
     return array_of_indexes
-    #first_atom = json_object.atom_list.index(atoms[0]) + index_counter
-    #second_atom = json_object.atom_list.index(atoms[1]) + index_counter
-    #third_atom = json_object.atom_list.index(atoms[2]) + index_counter
-
-    #return np.array([first_atom, second_atom, third_atom])
 
 
                                                                         #### THE FOLLOWING THREE FUNCTIONS ARE FOR THE LEADING STRAND DATAFRAME
