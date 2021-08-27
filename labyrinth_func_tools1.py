@@ -353,34 +353,34 @@ def move_to_origin_ROTATE_move_back_to_loc(quaternion : np.ndarray, array_to_man
 
 def assert_length_of_vector(length : float) -> bool:
     """ Check if length is roughly the correct size or if the nucleotide needs to be rotated """
-    return 1.40 <= length <= 1.80
+    return 1.30 <= length <= 1.90
 
 
 def assert_dihedral_of_nucleotide(calculated_dihedral : float, dihedral : float) -> bool:
     """ Check if dihedral is roughly the correct angle or if the nucleotide needs to be rotated """
-
+    offset_dihedral = 25
     # If the dihedral surpasses passed 180 degrees, then assert if the dihedral is smaller than -180 + the difference of (180 - dihedral)
-    if dihedral + 20 > 180:
-        diff = -180 + (dihedral - 180 + 20)
+    if dihedral + offset_dihedral > 180:
+        diff = -180 + (dihedral - 180 + offset_dihedral)
 
-        check1 = dihedral - 20 <= calculated_dihedral <= 180
+        check1 = dihedral - offset_dihedral <= calculated_dihedral <= 180
         check2 = -180 <= calculated_dihedral <= diff
 
         if check1 or check2:
             return True
 
     # If the dihedral goes below -180 degrees, then assert if the dihedral is smaller than 180 - the difference of (-180 + dihedral)
-    if dihedral - 20 < -180:
-        diff = 180 + (calculated_dihedral + 180 - 20)
+    if dihedral - offset_dihedral < -180:
+        diff = 180 + (calculated_dihedral + 180 - offset_dihedral)
 
-        check1 = -180 <= calculated_dihedral <= dihedral + 20
+        check1 = -180 <= calculated_dihedral <= dihedral + offset_dihedral
         check2 = diff <= calculated_dihedral <= 180
 
         if check1 or check2:
             return True
 
     # If it does not go over the bounds of -180 or 180, then just calculate it like this
-    return dihedral - 20 <= calculated_dihedral <= dihedral + 20
+    return dihedral - offset_dihedral <= calculated_dihedral <= dihedral + offset_dihedral
 
 
 #def check_phi_angle_of_vector(vectors : np.ndarray, axis : np.array = np.array([0,0,1])) :

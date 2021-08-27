@@ -186,7 +186,7 @@ def xyz_to_pdb(ConversionInput, options):
             try:
                 os.path.isfile(fname_xyz)
             except FileNotFoundError:
-                print("File " + fname_xyz + "was not found. Please revise either its name or its location.\n")
+                print("File " + fname_xyz + "was not found. Please revise either its name or its location on your system.\n")
                 sys.exit(0)
 
         if arg[0] == "--atomID":

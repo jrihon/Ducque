@@ -93,7 +93,6 @@ def Architecture(nucleic_acid_list, complement):
 
     index_compl = complementary_strand.shape[0]                 # Increment the index_complementary integer
 
-        #--------------------------------------------------------------------------------------------------------------------------------------------------------------------
     # Add subsequent complementary nucleotides
     for cNA in range(2, len(compl_nucleic_acid_list)):
         # Parse the information of the leading strand nucleotide we want to fit the complementary nucleoside against

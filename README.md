@@ -24,6 +24,7 @@ Daedalus has three (3) main functions:
 - --Daedalus : the nucleic acid builder
 - --randomise : returns a randomised sequence to the user. This can then be read by --Daedalus
 - --transmute : converts a given pdb file to the correct json format.
+- --xyz_pdb : converts a given xyz file to the proper pdb format.
 
 ## Authors
 
@@ -126,6 +127,26 @@ this
                 Example: --bondangles 101.407, 118.980, 110.017, 115.788, 111.943, 119.045, 126.013
 
 
+- #### XYZ_PDB:
+        Usage - $ python main.py --xyz_pdb INPUTFILE
+        The inputfile is read, the xyz file used as an input to output a well formatted pdb.
+
+        There are three(3) flags total involved in the conversion of a xyz coordinate file to a pdb structure file.
+        --xyz XYZ
+            The name of the file of the molecule you want to convert to pdb
+               Example --xyz dna_2endo.xyz
+
+        --atomID ATOMID
+            The identifier for the molecule, typically named the 'Residue name' column. Right before the 'Chain' column. Typically a three-letter code, but can also be two or one.
+            NB : Daedalus does not allow custom nucleic acid chemistries with an atomID unequal to three!
+                Example: --atomID dXY
+                    (in this example, dXA is equal to deoxy Xylose nucleic acid with an adenin base)
+
+        --atomname_list ATOMNAME_LIST
+            The ordered list of atoms that belong in the 'Atom name' column in a pdb file. Typically the third column, after the atom numbers.
+            The order needs to so that it follows the order of the atoms from the xyz file. 
+            Daedalus has a built-in method to check whether the order is correct by element, but the responsability is with the end-user to see everything is correct.
+                Example: --atomname_list O5', C5', H5'1, H5'2, C4' ··· , O3' 
 
 
 ### JSON structure:
