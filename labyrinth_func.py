@@ -254,7 +254,9 @@ def position_next_nucleoside(next_nucleoside, prev_nucleoside, prev_linker, lead
 
         single_vector_N = generate_vector_of_interest(angle_N, dihedral_N, [vC, vB, vA])
 
-        # Retrieve the appropriate quaternion for the rotation id_vD = LFT2.retrieve_atom_index(next_nucleoside, APL[i + 3]) vD = next_nucleoside_loc[id_vD]
+        # Retrieve the appropriate quaternion for the rotation 
+        id_vD = LFT2.retrieve_atom_index(next_nucleoside, APL[i + 3])
+        vD = next_nucleoside_loc[id_vD]
         pC_D = LFT1.return_normalized(vD - vC)
         quaternion_N = LFT1.get_quaternion(single_vector_N, pC_D)
 
