@@ -37,6 +37,10 @@ class Nucleoside:
         """ returns the type of base of the nucleic acid. So if the base is Guanosine, return 'G'. """
         return json.loads(self.jason["identity"])[2][-1]
 
+    def get_nucleic_acid_code(self) -> str:
+        """ returns the type of chemistry of the nucleic acid. """
+        return json.loads(self.jason["identity"])[1]
+
 
 class Desmos(Nucleoside):
     """  We can just simply pass this in here for now, since we essentially copy the parent class """
@@ -45,6 +49,9 @@ class Desmos(Nucleoside):
         """ returns the size of the linker shape, but only the first value """
         return int(json.loads(self.jason["pdb_properties"]["Shape"])[0])
 
+    def get_nucleic_acid_code(self) -> str:
+        """ returns the type of chemistry of the nucleic acid. """
+        return json.loads(self.jason["identity"])[0]
 
 
 
@@ -874,22 +881,49 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[lis
         sys.exit(1)
 
 
+def cap_nucleic_acid_strands(leading_array : np.ndarray, leading_sequence : list, complementary_array : np.ndarray, complementary_sequence : list) -> Union[np.ndarray, list]:
+    """ Cap the nucleic acid strands with a hydrogen, to finish the build of the duplex
+        
+        We create two functions in LFFB that parse both the correct coordinates of the capping atoms and their names """
+
+    # Retrieve the backbone dictionary from LFT3, since we'll be needing it
+    backbone = LFT3.backbone_codex
+
+    # Retrieve the dictionary for the nucleoside filenames from LFT3 as well
+    filenames = LFT3.codex_acidum_nucleicum
+
+    # Defines and returns the cartesian position of the hydrogens 
+    atom_array = LFFB.capping_retrieve_atomarrays(leading_array, leading_sequence, complementary_array, complementary_sequence, backbone, filenames)
+
+    # Returns the name of the hydrogens that have been defined with the previous function
+    atom_names = LFFB.capping_retrieve_atomnames(leading_sequence, complementary_sequence, backbone, filenames)
+
+    return atom_array, atom_names
+
+
 def create_PDB_from_array_final(leading_array : np.ndarray, list_of_leading_sequence : list, complementary_array : np.ndarray, list_of_complementary_sequence : list):
     """ Write out the data for the pdb filename
         https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/tutorials/framepdbintro.html"""
 
+    # Reverse the sequence of this to parse the correct atoms along the array
     list_of_leading_sequence = list_of_leading_sequence[::-1]
-    #list_of_complementary_sequence = list_of_complementary_sequence[::-1]
+
+    # Capping of the duplexes
+    # First two elements belong to the leading strand, the last two elements belong to the complementary strand. A total of four elements per variable
+    atom_array, atom_names = cap_nucleic_acid_strands(leading_array, list_of_leading_sequence, complementary_array, list_of_complementary_sequence)
+
+    # Adjust leading strand's array
+    leading_array = np.vstack((atom_array[0], leading_array, atom_array[1]))
 
     # LEADING STRAND
     df_leading = pd.DataFrame()
 
     df_leading["RecName"] = ["ATOM" for x in range(leading_array.shape[0])]
     df_leading["AtomNum"] = np.arange(start=1, stop=leading_array.shape[0] + 1)
-    df_leading["AtomName"] = LFT2.LEAD_pdb_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Atoms")
+    df_leading["AtomName"] = atom_names[0] + LFT2.LEAD_pdb_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Atoms") + atom_names[1]
     df_leading["AltLoc"] = " "
     df_leading["ResName"] = LFT2.LEAD_pdb_Residuename(list_of_leading_sequence)
-    df_leading["Chain"] = "A"
+    df_leading["Chain"] = "J"
     df_leading["Sequence"] = LFT2.LEAD_pdb_Sequence(list_of_leading_sequence)
     df_leading["X_coord"] = list(map(lambda x: "{:.3f}".format(x), leading_array[:,0]))
     df_leading["Y_coord"] = list(map(lambda x: "{:.3f}".format(x), leading_array[:,1]))
@@ -897,21 +931,24 @@ def create_PDB_from_array_final(leading_array : np.ndarray, list_of_leading_sequ
     df_leading["Occupancy"] = "1.00"
     df_leading["Temp"] = "0.00"
     df_leading["SegmentID"] = str("   ")
-    df_leading["ElementSymbol"] = LFT2.LEAD_pdb_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Symbol")
+    df_leading["ElementSymbol"] = ["H"] + LFT2.LEAD_pdb_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Symbol") + ["H"]
 
     # TER line between the single strands
     TER_line = pd.DataFrame({"RecName" : "TER", "AtomNum" : 69}, index=[69])
     ln_lead = len(df_leading["AtomNum"])
+
+    # Adjust complementary strand's array
+    complementary_array = np.vstack((atom_array[2], complementary_array, atom_array[3]))
 
     # COMPLEMENTARY STRAND
     df_complementary = pd.DataFrame()
 
     df_complementary["RecName"] = ["ATOM" for x in range(complementary_array.shape[0])]
     df_complementary["AtomNum"] = np.arange(start=ln_lead + 1, stop=(ln_lead + complementary_array.shape[0] + 1))
-    df_complementary["AtomName"] = LFT2.COMPLEMENTARY_pdb_AtomNames_or_ElementSymbol(list_of_complementary_sequence, "Atoms")
+    df_complementary["AtomName"] = atom_names[2] + LFT2.COMPLEMENTARY_pdb_AtomNames_or_ElementSymbol(list_of_complementary_sequence, "Atoms") + atom_names[3]
     df_complementary["AltLoc"] = " "
     df_complementary["ResName"] = LFT2.COMPLEMENTARY_pdb_Residuename(list_of_complementary_sequence)
-    df_complementary["Chain"] = "K"
+    df_complementary["Chain"] = "R"
     df_complementary["Sequence"] = LFT2.COMPLEMENTARY_pdb_Sequence(list_of_complementary_sequence, len(list_of_complementary_sequence))
     df_complementary["X_coord"] = list(map(lambda x: "{:.3f}".format(x), complementary_array[:,0]))
     df_complementary["Y_coord"] = list(map(lambda x: "{:.3f}".format(x), complementary_array[:,1]))
@@ -919,7 +956,7 @@ def create_PDB_from_array_final(leading_array : np.ndarray, list_of_leading_sequ
     df_complementary["Occupancy"] = "1.00"
     df_complementary["Temp"] = "0.00"
     df_complementary["SegmentID"] = str("   ")
-    df_complementary["ElementSymbol"] = LFT2.COMPLEMENTARY_pdb_AtomNames_or_ElementSymbol(list_of_complementary_sequence, "Symbol")
+    df_complementary["ElementSymbol"] = ["H"] + LFT2.COMPLEMENTARY_pdb_AtomNames_or_ElementSymbol(list_of_complementary_sequence, "Symbol") + ["H"]
 
     # Concatenate the two dataframes
     duplex_df = pd.concat([df_leading, TER_line, df_complementary], ignore_index=True)

@@ -115,7 +115,8 @@ def LEAD_pdb_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : st
 
 
 def LEAD_pdb_Sequence(list_of_sequence : list, start_of_sequence : int = 0) -> np.array :
-    """ Determines the number in the sequence of the nucleotides in the strands based off on the shape of their array  """
+    """ Determines the number in the sequence of the nucleotides in the strands based off on the shape of their array.
+        The '+1' for the first and last nucleotide is to account for the capping of the nucleoside, here with a single hydrogen. """
 
     # Initialise an empty array
     sequence_array = np.array([], dtype=int)
@@ -134,7 +135,7 @@ def LEAD_pdb_Sequence(list_of_sequence : list, start_of_sequence : int = 0) -> n
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
-            nuc_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0]
+            nuc_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + 1
             tmp_seqarray = np.full(nuc_shape, seq_count, dtype=int)
 
             seq_count += 1
@@ -155,7 +156,7 @@ def LEAD_pdb_Sequence(list_of_sequence : list, start_of_sequence : int = 0) -> n
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
-            nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0]
+            nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0] + 1
             tmp_seqarray = np.full(nucleotide_shape, seq_count, dtype=int)
 
             sequence_array = np.concatenate((sequence_array, tmp_seqarray), axis=None)
@@ -201,7 +202,7 @@ def LEAD_pdb_Residuename(list_of_sequence : list) -> list:
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
-            nuc_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0]
+            nuc_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + 1
             ID = json.loads(nucleoside["identity"])[2]
 
             tmp_resname = [ID for i in range(nuc_shape)]
@@ -221,7 +222,7 @@ def LEAD_pdb_Residuename(list_of_sequence : list) -> list:
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
-            nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0]
+            nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0] + 1
             ID = json.loads(nucleoside["identity"])[2]
 
             tmp_resname = [ID for i in range(nucleotide_shape)]
@@ -312,7 +313,8 @@ def COMPLEMENTARY_pdb_AtomNames_or_ElementSymbol(list_of_sequence : list, identi
 
 
 def COMPLEMENTARY_pdb_Sequence(list_of_sequence : list, start_of_sequence : int = 0) -> np.array :
-    """ Determines the number in the sequence of the nucleotides in the strands based off on the shape of their array  """
+    """ Determines the number in the sequence of the nucleotides in the strands based off on the shape of their array.
+        The '+1' for the first and last nucleotide is to account for the capping of the nucleoside, here with a single hydrogen. """
 
     # Initialise an empty array
     sequence_array = np.array([], dtype=int)
@@ -331,7 +333,7 @@ def COMPLEMENTARY_pdb_Sequence(list_of_sequence : list, start_of_sequence : int 
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
-            nuc_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0]
+            nuc_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + 1
             tmp_seqarray = np.full(nuc_shape, seq_count, dtype=int)
 
             seq_count += 1
@@ -352,7 +354,7 @@ def COMPLEMENTARY_pdb_Sequence(list_of_sequence : list, start_of_sequence : int 
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
-            nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0]
+            nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0] + 1
             tmp_seqarray = np.full(nucleotide_shape, seq_count, dtype=int)
 
             sequence_array = np.concatenate((sequence_array, tmp_seqarray), axis=None)
@@ -398,7 +400,7 @@ def COMPLEMENTARY_pdb_Residuename(list_of_sequence : list) -> list:
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
-            nuc_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0]
+            nuc_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + 1
             ID = json.loads(nucleoside["identity"])[2]
 
             tmp_resname = [ID for i in range(nuc_shape)]
@@ -418,7 +420,7 @@ def COMPLEMENTARY_pdb_Residuename(list_of_sequence : list) -> list:
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
-            nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0]
+            nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0] + 1
             ID = json.loads(nucleoside["identity"])[2]
 
             tmp_resname = [ID for i in range(nucleotide_shape)]

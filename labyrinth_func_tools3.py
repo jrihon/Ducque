@@ -39,6 +39,7 @@ linker_codex = {
 "Phosphate" : ["P", "OP2", "OP1"]
 
 }
+
 def Atom_Parsing_List(prevnuc, link, nextnuc = None) -> list:
     """ Retrieves the atoms that correspond to the correct index of the array, with which we calculate with.
     All variables are json object
