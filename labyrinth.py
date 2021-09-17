@@ -29,7 +29,6 @@ def Architecture(nucleic_acid_list, complement):
 
     # Parse the first nucleotide in the list.
     nucleic_acid = nucleic_acid_list[0]
-
     ## Start the leading strand
 
     # Parse dictionary for the correct filename; input(DT) - output(dna_thymidine.json). This also parses the correct linker.

@@ -85,27 +85,35 @@ except fundaments.InputExclusivity:
 ## -------------------------------------------------- M A I N -------------------------------------------------- ##
 def main():
 
+    def print_divide_between_command_and_output():
+        print("-----------------------------------------------------------")
+
+
     # Print the Daedalus prompt
 #    print(explanation)
 
     # Convert pdb to json
     if arguments.transmute:
+        print_divide_between_command_and_output()
         transmute.Transmutation(PDB_FILE, IDENTIFIER, MOIETY, DIHEDRALS, ANGLES, CONFORMATION)
-        print("Converting " + pdb_file + " to a json file.")
+        print("Converting " + PDB_FILE + " to a json file.")
 
     # Build nucleic acid duplex
     if arguments.Daedalus:
+        print_divide_between_command_and_output()
         print("Daedalus - Nucleic Acid Architecture initiated! Building sequence ...\n")
         labyrinth.Architecture(NUCLEIC_ACID_LIST, COMPLEMENT)
 
     # Output a randomised sequence
     if arguments.randomise:
-        print("Randioli randioli, what is the spaghetolli?")
+        print_divide_between_command_and_output()
+        print("Randioli randioli, what is the spaghetolli?\n")
         randomise.randomiser(CHEMISTRY, LENGTH_SEQUENCE, SEQUENCE)
 
     # Convert an ORCA xyz-formatted molecule file to a pdb file
     if arguments.xyz_pdb:
-        print("Converting " + FILENAME_XYZ + " to a .pdb format file.")
+        print_divide_between_command_and_output()
+        print("Converting " + FILENAME_XYZ + " to a .pdb format file.\n")
         transmute.convert_XYZ_to_PDB(FILENAME_XYZ, ATOM_ID, ATOMNAME_LIST)
 
     print("                         Time spent: %.5f seconds." % (time.time() - t0))

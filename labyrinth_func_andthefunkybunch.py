@@ -49,6 +49,34 @@ def retrieve_index_of_best_conformation(stored_bb_distances, stored_bb_bools):
     return int(index_smallest_dif)
 
 
+def return_cross_vector_for_plane_rotation(strand_array : np.ndarray, atom_list_id : list) -> np.array :
+    """ Take the array of either the leading or complementary strand and the indexes of the atoms we want to retrieve from it.
+        returns the cross product of the of the plane in which the base of the nucleoside lies in. 
+        In other words, it give you a vector that is perpendicular to the nucleoside's base. """
+
+    v0 = strand_array[atom_list_id[0]]      # Atom that connects base to the sugar moiety
+    v1 = strand_array[atom_list_id[1]]      # Atom that, with the next vector v2, defines the plane in which the base lies in.
+    v2 = strand_array[atom_list_id[2]]      # Atom that, with the previous vector v1, defines the plane in which the base lies in.
+
+    p0 = LFT1.return_normalized(v1 - v0)    # Vector connect -> v1
+    p1 = LFT1.return_normalized(v2 - v0)    # Vector connect -> v2
+
+    # Return the cross vector of the plane in which the nucleoside's lies in.
+    return LFT1.return_normalized(np.cross(p1, p0))
+
+
+def return_position_for_complementary_base(angle : float, dihedral : float, strand_array : np.ndarray, atom_list_id : list, vector_size : float) -> np.array : 
+    """ Returns the vector that denotes the position of the where we want to complementary base to rotate to"""
+
+    # Get the vectors of interest from the array
+    v0 = strand_array[atom_list_id[0]]
+    v1 = strand_array[atom_list_id[1]]
+    v2 = strand_array[atom_list_id[2]]
+
+    # Generate a vector of interest, here in the context of positioning the complementary nucleoside's base
+    v_position_for_complement = LabF.generate_vector_of_interest(angle, dihedral, [v2, v1, v0])
+    return LFT1.return_normalized(v_position_for_complement) * vector_size
+
 
 def assert_the_dihedral_of_interest(compl_nuc, compl_nuc_arr : np.ndarray, compl_linker, prev_nuc, complementary_strand : np.ndarray, index_compl, prev_linker) -> bool:
     # Atom Parsing List for the knowing which atoms to parse from the respective arrays ; for bond length and dihedral evaluation
@@ -201,4 +229,5 @@ def capping_retrieve_atomarrays(leading_array : np.ndarray, list_of_leading_sequ
 
 
     return H_vectors
+
 

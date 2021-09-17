@@ -44,7 +44,6 @@ def retrieve_atom_index(json_object, atom : str) -> int :
 def retrieve_atom_index_MULTIPLE(json_object, atoms : list, index_counter : int = 0) -> np.array :
     """ Retrieves the index in the json_object.array of the atom of interest
         This integer will be used to retrieve the vector of the atom of interest """
-
     array_of_indexes = np.zeros(len(atoms), dtype=int)
 
     for i in range(len(atoms)):

@@ -94,7 +94,6 @@ def Transmutation(pdb_file, nucleic_acid_chemistry : str, moiety : str, dihedral
     #----------------------------- WRITE OUT A JSON FILE ----------------------------#
     # The json dump() method always requires us to dump it to a file in the current directory
     fname = nucleic_acid.get_output_name(nucleic_acid_chemistry, moiety, conformation)
-
     with open("./json/" + fname + ".json", "w") as filejson:
         json.dump(molecule, filejson, indent=4)
 
@@ -112,8 +111,8 @@ def convert_XYZ_to_PDB(xyz_file, atomID, atomname_list):
     atomname_list = pdb_to_be.return_processed_atomname_list(atomname_list)
 
     # If the inputted atomname list and the array size do not match in size, exit the program
-    if not pdb_to_be.arraysize_vs_atomname_list_compatibility(elements, atomname_list) :
-        print("The size of the prompted '--atomname_list' is not equal to the array of the cartesian coordinates ,pertaining to the atoms of the molecule.\n"
+    if not pdb_to_be.arraysize_vs_atomname_list_compatibility(elementsymbol, atomname_list) :
+        print("The size of the prompted '--atomname_list' is not equal to the array of the cartesian coordinates, pertaining to the atoms of the molecule.\n"
                 "Please revise the prompted atomlist.")
         sys.exit(0)
 

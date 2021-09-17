@@ -1,7 +1,14 @@
 import labyrinth_func_tools3 as LFT3
 import sys
+import os
 
 """ When the user prompts the wrong values or flags, this python script intercepts most errors that happen at the start """
+
+
+def print_divide_between_command_and_output():
+    """ This function exists solely to split the Daedalus call command and its output."""
+    print("-----------------------------------------------------------")
+
 
 class InputExclusivity(Exception):
     Except = " These flags are mutually exclusive; --transmute     --Daedalus "
@@ -16,6 +23,7 @@ def check_if_nucleotides_are_valid(input_sequence : list) -> bool:
 
     for NA in input_sequence:
         if NA not in keys_of_dict:
+            print_divide_between_command_and_output()
             print("One or more of the nucleotides in the given sequence is invalid. Please check your input file : " + NA + "\n\n")
             return False
 
@@ -30,6 +38,7 @@ def daedalus(DaedalusInput, options):
 
     # Check if amount of inputs are valid
     if len(fileDaedalus) != len(list_of_valid_flags):
+        print_divide_between_command_and_output()
         print("Only two arguments are required, please check our input file.\n\n\n")
         options.print_help()
         sys.exit(0)
@@ -39,7 +48,8 @@ def daedalus(DaedalusInput, options):
 
         # Check if flags are valid. If a given flag is not a valid one, shut it down
         if not arg[0] in list_of_valid_flags:
-            print("\n\nThe following flag is invalid : " + arg[0] + ". Please check your input file.\n\n\n")
+            print_divide_between_command_and_output()
+            print("The following flag is invalid : " + arg[0] + ". Please check your input file.\n\n\n")
             #options.print_help()
             sys.exit(0)
 
@@ -52,6 +62,7 @@ def daedalus(DaedalusInput, options):
             try:
                 arg[1]
             except:
+                print_divide_between_command_and_output()
                 print("You have forgotten to include an argument for the --complement flag! Please add this to your input file.")
                 sys.exit(0)
 
@@ -78,6 +89,7 @@ def transmute(TransmuteInput, options):
     # Check if amount of inputs are valid
     list_of_valid_flags = ["--pdb", "--id", "--moiety", "--conformation", "--dihedrals", "--bondangles"]
     if not len(fileTransmute) == len(list_of_valid_flags) and not len(fileTransmute) == (len(list_of_valid_flags) - 1):
+        print_divide_between_command_and_output()
         print("Only five/six arguments are required, please check your input file.\n\n\n")
 
         options.print_help()
@@ -87,6 +99,7 @@ def transmute(TransmuteInput, options):
         arg = argument.split()
         # Check if flags are valid. If a given flag is not a valid one, shut it down
         if not arg[0] in list_of_valid_flags:
+            print_divide_between_command_and_output()
             print("\n\nThe following flag is invalid : " + arg[0] + ". Please check your input file.\n\n\n")
             #options.print_help()
             sys.exit(0)
@@ -110,7 +123,7 @@ def transmute(TransmuteInput, options):
         if arg[0] == "--bondangles":
             angles = arg[1:]
 
-    return pdb_file, identifier, conformation, moiety, dihedrals, angles
+    return pdb_file, identifier, moiety, dihedrals, angles, conformation
 
 
 def randomise(RandomiseInput, options):
@@ -120,6 +133,7 @@ def randomise(RandomiseInput, options):
     # Check list of valid inputs 
     list_of_valid_flags = ["--chemistry", "--length", "--sequence"]
     if len(fileRandomise) != 2:
+        print_divide_between_command_and_output()
         print("Only two arguments are required at one time, please check our input file.\n\n\n")
         options.print_help()
         sys.exit(0)
@@ -129,7 +143,8 @@ def randomise(RandomiseInput, options):
         arg = argument.split()
         # If a given flag is not a valid one, shut it down
         if not arg[0] in list_of_valid_flags:
-            print("\n\nThe following flag is invalid : " + arg[0] + ". Please check your input file.\n\n\n")
+            print_divide_between_command_and_output()
+            print("The following flag is invalid : " + arg[0] + ". Please check your input file.\n\n\n")
             #options.print_help()
             sys.exit(0)
 
@@ -153,6 +168,7 @@ def randomise(RandomiseInput, options):
     try:
         chemistry
     except NameError:
+        print_divide_between_command_and_output()
         print("No chemistry type was prompted! Revise your input file. \n")
         #options.print_help()
         sys.exit(0)
@@ -166,17 +182,19 @@ def xyz_to_pdb(ConversionInput, options):
 
     # Check list of valid inputs 
     list_of_valid_flags = ["--xyz", "--atomID", "--atomname_list"]
-    if len(fileRandomise) != 3:
+    if len(fileConversion) != 3:
+        print_divide_between_command_and_output()
         print("Only three arguments are required at one time. Please check your input file. \n\n\n ")
         options.print_help()
         sys.exit(0)
 
     # Check if flags are valid
-    for argument in ConversionInput:
+    for argument in fileConversion:
         arg = argument.split()
         # If a given flag is not a valid one, shut it down
         if not arg[0] in list_of_valid_flags:
-            print("\n\nThe following flag is invalid : " + arg[0] + ". Please check your input file.\n\n\n")
+            print_divide_between_command_and_output()
+            print("The following flag is invalid : " + arg[0] + ". Please check your input file.\n\n\n")
             #options.print_help()
             sys.exit(0)
 
@@ -186,14 +204,17 @@ def xyz_to_pdb(ConversionInput, options):
             try:
                 os.path.isfile(fname_xyz)
             except FileNotFoundError:
+                print_divide_between_command_and_output()
                 print("File " + fname_xyz + "was not found. Please revise either its name or its location on your system.\n")
                 sys.exit(0)
 
         if arg[0] == "--atomID":
             atomID = arg[1]
-            if len(atomID) != 3:
-                print("The argument '--atomID' requires three characters in its name.\n"
-                        "Technically it does not, but I made Daedalus require it, so deal with it.\n")
+            if len(atomID) > 4:
+                print_divide_between_command_and_output()
+                print("The argument '--atomID' requires up to three characters in its name.\n"
+                        "Check your input of the atom identifier.\n")
+                sys.exit(0)
 
         if arg[0] == "--atomname_list":
             atomname_list = arg[1:]

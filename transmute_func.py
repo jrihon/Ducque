@@ -55,13 +55,13 @@ class TransmuteToJson:
                     resname = line[17:20]
                     ResName.append(resname)
 
-                    _Xcoord = line[31:38]
+                    _Xcoord = line[30:38]
                     Xcoord.append(_Xcoord)
 
-                    _Ycoord = line[39:46]
+                    _Ycoord = line[38:46]
                     Ycoord.append(_Ycoord)
 
-                    _Zcoord = line[47:54]
+                    _Zcoord = line[46:54]
                     Zcoord.append(_Zcoord)
 
                     ElemSym = line[76:78]
@@ -232,7 +232,7 @@ class TransmuteToPdb:
 
     def __init__(self, xyzfile):
         """ Initialise the object and create object attributes """
-        self.splitted = xyzfile.split('.')[:-1]
+        self.splitted = xyzfile.split('.')[0]
         self.pdb_dataframe = pd.DataFrame()
         self.filename = self.splitted + '.xyz'
         self.array = np.array([])
@@ -240,9 +240,10 @@ class TransmuteToPdb:
     def parse_xyz_and_elementsymbol(self):
         """ Reads the xyz datafile and returns the coordinates and the element symbol"""
         # read only the lines with x-y-z coordinates
-        file = open(self.filename).readlines()[2:]
-        file = [line.strip() for line in file]
-        file.close()
+        file_n = open(self.filename, "r")
+        file_list = file_n.readlines()[2:]
+        file = [line.strip() for line in file_list]
+        file_n.close()
 
         # extract the coordinates. 
         x_coords, y_coords, z_coords, elements = [], [], [], []
@@ -260,9 +261,7 @@ class TransmuteToPdb:
 
     def return_processed_atomname_list(self, atomname_list : list) -> list:
         """ Returns a list of atom names in a well formatted list """
-        atomname_list = atomname_list.split(",")
-
-        atomname_list = [x.strip(",").strip() for x in atomname_list]
+        atomname_list = list(map(lambda x : x.strip(","), atomname_list))
 
         for atom in atomname_list:
             if len(atom) > 4:
@@ -278,6 +277,7 @@ class TransmuteToPdb:
         if len(elements) == len(atomname_list):
             return True
         else :
+            print("Atomname_list length : " , len(atomname_list) , " . Coordinate array size : (" , len(elements) , ", 3 ).")
             return False
 
 
@@ -295,10 +295,12 @@ class TransmuteToPdb:
                             "Here is the valid atom list : ", list_of_two_character_valid_atoms, " .\n"
                             "Feel free to adjust this to your needs in the file : transmute_func.py ; elementsymbol_vs_atomname_list_compatibility() function.\n")
                     return False
+
             # First parse out only the first character, since this one denotes the atom type
             atom_type = atomname_list[atom][0]
 
             if atom_type != elements[atom]:
+                print("Atoms that do not match : Atom prompted - " + atom_type + ". Element parsed : " + elements[atom] + ".\n")
                 return False
 
         return True
@@ -311,8 +313,8 @@ class TransmuteToPdb:
 
         AtomNum_range = np.linspace(1, len(elements), len(elements), dtype=int)
 
-        self.pdb_dataframe = pd.DataFrame(index=range(numb_of_atoms))
-        self.pdb_dataframe['RecName'] = 'HETATM'
+        self.pdb_dataframe = pd.DataFrame(index=range(len(elements)))
+        self.pdb_dataframe['RecName'] = 'ATOM'
         self.pdb_dataframe['AtomNum'] = AtomNum_range
         self.pdb_dataframe['AtomName'] = atomname_list
         self.pdb_dataframe['AltLoc'] = ' '
@@ -325,13 +327,13 @@ class TransmuteToPdb:
         self.pdb_dataframe['Occupancy'] = '1.00'
         self.pdb_dataframe['Temp'] = '0.00'
         self.pdb_dataframe['SegmentID'] = '   '
-        self.pdb_dataframe['Element'] = Element
+        self.pdb_dataframe['Element'] = elements
 
 
     def write_to_pdb_formatted_file(self):
         """ Write out the pdb file """
 
-        with open(self.filename, "w") as pdb:
+        with open(self.splitted + ".pdb", "w") as pdb:
             for index, row in self.pdb_dataframe.iterrows():
                 split_line = [ row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13] ]
                 pdb.write("%-6s%5s%5s%s%2s%3s%5d  %8s%8s%9s%6s%7s%4s     %2s\n" % tuple(split_line))
