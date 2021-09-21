@@ -1,0 +1,6 @@
+--pdb Pucker_data/b-homoDNA/T/min01.pdb
+--id b-homoDNA
+--conformation 1-4chair
+--moiety nucleoside
+--dihedrals -60.000, -179.557, 58.248, 62.844, -178.175, -60.000, -148.239
+--bondangles 109.061, 118.943, 108.079, 112.744, 105.564, 117.565, 117.071

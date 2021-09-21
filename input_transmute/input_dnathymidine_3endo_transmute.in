@@ -1,0 +1,6 @@
+--pdb dna_thymidine_3endo.pdb
+--id DNA
+--conformation 3endo
+--moiety nucleoside
+--dihedrals -83.895, -152.091, 45.505, 84.229, 179.469, -49.056, -154.284
+--bondangles 100.793, 119.355, 110.353, 115.417, 112.894, 119.945, 117.313

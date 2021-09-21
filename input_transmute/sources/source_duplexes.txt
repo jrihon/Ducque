@@ -1,0 +1,58 @@
+## Xylo nucleic acid
+PDB code : 2N4J
+https://www.rcsb.org/structure/2N4J
+https://academic.oup.com/nar/article/43/15/7189/2414450
+
+
+## Hexitol nucleic acid
+PDB code : 481D
+https://www.rcsb.org/structure/481D
+https://pubs.acs.org/doi/10.1021/ja016570w
+PDB code : 1D7Z
+https://www.rcsb.org/structure/1D7Z
+https://pubs.acs.org/doi/10.1021/ja016570w
+PDB code : 2BJ6
+HNA::RNA hybrid
+
+
+## dXylo nucleic acid
+PDB code : 7BFX
+https://www.rcsb.org/structure/7BFX
+https://chemistry-europe.onlinelibrary.wiley.com/doi/10.1002/cbic.202000803
+PDB code : 7BFS
+
+
+## Cyclohexenyl nucleic acid
+PDB code : 1U01
+https://pubmed.ncbi.nlm.nih.gov/15863723/
+https://pubs.acs.org/doi/10.1021/ja000018%2B
+
+
+## 2'-fluoro arabino nucleic acid
+This one is quite an interesting article, might read later : https://pubs.acs.org/doi/10.1021/acs.accounts.1c00125
+PDB code : 2FIL
+https://www.rcsb.org/structure/2FIL
+https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2553321/
+PDB code : 2LSC
+https://www.rcsb.org/structure/2LSC
+https://academic.oup.com/nar/article/40/18/9329/2411749
+
+
+## 2'-fluoro ribo nucleic acid
+PDB code : 3P4C
+https://www.rcsb.org/structure/3P4C ; alternating RNA and FNA nucleotides
+
+## beta-homo deoxy nucleic acid
+Dit onderste is echt een pittig goed artikel, de waarden staan er gewoon los bij wajo
+https://pubs.rsc.org/en/content/articlelanding/2007/CS/B606807C
+PDB code : 2H9S
+https://www.rcsb.org/structure/2H9S
+
+
+## 2-O'-methyl ribo nucleic acid
+PDB code : 168D
+https://www.sciencedirect.com/science/article/pii/1074552194900396?via%3Dihub
+
+PDB code : 7OW0
+https://www.rcsb.org/structure/7OW0
+To be published
