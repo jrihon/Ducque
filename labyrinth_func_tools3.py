@@ -21,6 +21,10 @@ codex_acidum_nucleicum = {
 "hG" : ["json/hna_guanosine_1-4chair.json", "json/dna_phosphate.json"],
 "hC" : ["json/hna_cytidine_1-4chair.json", "json/dna_phosphate.json"],
 "hT" : ["json/hna_thymidine_1-4chair.json", "json/dna_phosphate.json"],
+"xA" : ["json/xylo_adenosine_3endo.json", "json/dna_phosphate.json"],
+"xG" : ["json/xylo_guanosine_3endo.json", "json/dna_phosphate.json"],
+"xC" : ["json/xylo_cytidine_3endo.json", "json/dna_phosphate.json"],
+"xU" : ["json/xylo_uracil_3endo.json", "json/dna_phosphate.json"],
 }
 
 
@@ -42,6 +46,10 @@ complementary_codex = {
 "hG" : ["json/hna_guanosine_1-4chair.json"], # "json/hna_guanosine_4-1chair.json"],
 "hC" : ["json/hna_cytidine_1-4chair.json"], # "json/hna_cytidine_4-1chair.json"],
 "hT" : ["json/hna_thymidine_1-4chair.json"], # "json/hna_thymidine_4-1chair.json"],
+"xA" : ["json/xylo_adenosine_3endo.json"],
+"xG" : ["json/xylo_guanosine_3endo.json"],
+"xC" : ["json/xylo_cytidine_3endo.json"],
+"xU" : ["json/xylo_uracil_3endo.json"],
 }
 
 
@@ -50,6 +58,7 @@ backbone_codex = {
 "RNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "b-homoDNA" : ["O4'", "C4'", "C5'", "C6'", "O6'"],
 "HNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
+"Xylo" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "Phosphate" : ["P"],
 }
 
@@ -122,7 +131,7 @@ def retrieve_atoms_for_plane_rotation_of_complement(base1 : str, base2 : str) ->
 def retrieve_atoms_for_positioning_of_complement1(base1 : str, base2 :str) -> Tuple[list, str]:
     """ base1 belongs to the leading strand, base2 to the complementary base """
 
-    # Set distance between the two bases 1
+    # Set distance between the two bases (1)
     distance = 1.81
 
     # BASE1
@@ -144,11 +153,12 @@ def retrieve_atoms_for_positioning_of_complement1(base1 : str, base2 :str) -> Tu
 
 def retrieve_atoms_for_position_of_complement2(base1 : str, base2 :str) -> Tuple[list, str]:
     """ base1 belongs to the leading strand, base2 to the complementary base """
-    # Set distance between the two bases 2
+    # Set distance between the two bases (2)
     #distance = 1.87
     distance = 2.82
-    
+
     # Do not target hydrogens for base pairing, as with optimized orbitals, the amine groups on the nucleobase are not planar any more and that makes it more difficult.
+
     # BASE1
     #if base1 == "A": atoms1 = ["C6", "N6", "H61"]
     #if base1 == "C": atoms1 = ["C4", "N4", "H41"]

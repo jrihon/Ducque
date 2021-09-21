@@ -797,28 +797,54 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[lis
 
     bases = LFT2.retrieve_bases_list(sequence_list)
     if isinstance(complement, list):
+        import fundaments
+
         complementary_sequence = list(map(lambda x: x.strip(","), complement))
 
         # See of the lengths match. If the lengths do not match, give an assertion error and print the following string. This exits the software too.
         assert len(sequence_list) == len(complementary_sequence), "The length of the complementary strand does not match the length of the leading strand!"
 
+        # Check if one of the nucleosides in the prompted list is wrong, i.e. not existing or wrongly prompted (misspelled)
+
+        # The keys, meaning the nucleosides, from the complementary dictionary wil be parsed as a list
+        keys_of_dict = LFT3.codex_acidum_nucleicum.keys()
+        if not fundaments.check_if_nucleotides_are_valid(keys_of_dict):
+            sys.exit(0)
+
         # Reverse the prompted list
         return complementary_sequence[::-1]
 
-    # if the sequence needs to be complementary per nucleotide
+    # if the sequence needs to be complementary per nucleoside
     if complement.lower() == "homo":
-        chemistry = LFT2.retrieve_chemistry_list(sequence_list)
-
         complementary_sequence = []
-        for chem_i in range(len(chemistry)):
-            if chemistry[chem_i] == "r":
-                comp_base = complementary_dictRNA[bases[chem_i]]
-                complementary_sequence.append(chemistry[chem_i] + comp_base)
-            else:
-                comp_base = complementary_dictDNA[bases[chem_i]]
-                complementary_sequence.append(chemistry[chem_i] + comp_base)
+        list_of_chemistries = LFT2.retrieve_chemistry_list(sequence_list)
+
+        # The keys, meaning the nucleosides, from the complementary dictionary wil be parsed as a list
+        keys_of_dict = LFT3.codex_acidum_nucleicum.keys()
+
+        # Get only the nucleosides of the same chemistry as the chemistry it will complement
+        for chem_i in range(len(list_of_chemistries)):
+            # Get the possible nucleosides we can choose from with that have the same chemistry as in the leadstrand's nucleoside
+            parsed_chemistry, ln_str = LFT2.retrieve_chemistry(list_of_chemistries[chem_i])
+            homo_chemistry_list = LFT2.retrieve_homo_nucleosides(keys_of_dict, parsed_chemistry, ln_str)
+
+            # Assess which base fits the complementary nucleoside
+            complementary_nucleoside = LFT2.assess_possible_complementary_base(parsed_chemistry, bases[chem_i], homo_chemistry_list, complementary_dictRNA, complementary_dictDNA)
+            complementary_sequence.append(complementary_nucleoside)
 
         return complementary_sequence
+
+        # We will leave this part of the old code here just in case, but I don't think we'll need it anymore
+            #complementary_sequence = []
+            #for chem_i in range(len(chemistry)):
+            #    if chemistry[chem_i] == "r":
+            #        comp_base = complementary_dictRNA[bases[chem_i]]
+            #        complementary_sequence.append(chemistry[chem_i] + comp_base)
+            #    else:
+            #        comp_base = complementary_dictDNA[bases[chem_i]]
+            #        complementary_sequence.append(chemistry[chem_i] + comp_base)
+
+            #return complementary_sequence
 
 
     if complement.upper() == "DNA":
@@ -845,7 +871,6 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[lis
 
 def cap_nucleic_acid_strands(leading_array : np.ndarray, leading_sequence : list, complementary_array : np.ndarray, complementary_sequence : list) -> Union[np.ndarray, list]:
     """ Cap the nucleic acid strands with a hydrogen, to finish the build of the duplex
-        
         We create two functions in LFFB that parse both the correct coordinates of the capping atoms and their names """
 
     # Retrieve the backbone dictionary from LFT3, since we'll be needing it

@@ -142,6 +142,9 @@ class TransmuteToJson:
                     print("One or more of the dihedral angles is not a floating point number : " + i + ". Please reconsider the entries for the dihedrals.\n")
                     sys.exit(0)
 
+            # Check if size of the prompted dihedral values is the same as the amount of required dihedrals
+            assert len(dihedrals_of_interest) == len(dihedrals_list),  "Check your input for missing dihedral values or missplaced commas.\nNote: the decimal values should be denoted by a point and not a comma."
+
             # Initialise dictionary
             set_of_dihedrals = {}
             # Append the values to their respective dihedrals 
@@ -182,6 +185,9 @@ class TransmuteToJson:
                 if not isinstance(float(i), float):
                     print("One or more of the dihedral angles is not a floating point number : " + i + ". Please reconsider the entries for the dihedrals.\n")
                     sys.exit(0)
+
+            # Check if size of the prompted dihedral values is the same as the amount of required dihedrals
+            assert len(angles_of_interest) == len(angles_list),  "Check your input for missing dihedral values or missplaced commas.\nNote: the decimal values should be denoted by a point and not a comma."
 
             # Initialise dictionary
             set_of_angles = {}
@@ -250,7 +256,7 @@ class TransmuteToPdb:
         for line in file:
             x, y, z = '{:.3f}'.format(float(line.split()[1])), '{:.3f}'.format(float(line.split()[2])), '{:.3f}'.format(float(line.split()[3]))
             ele = line.split()[0].strip()
-            
+
             x_coords.append(x)
             y_coords.append(y)
             z_coords.append(z)

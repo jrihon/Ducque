@@ -189,11 +189,11 @@ In transmute_func_tools.py :
 
 This only serves the purpose of identifying the json file when opening it as the user. This information is not used in the generation of nucleic acid duplexes.
 
-#### Before generating a duplex with the new chemistry
+#### Before generating a duplex with a newly imported nucleoside
 In labyrinth_func_tools3.py :
 - Add to the codex_acidum_nucleicum the most stable conformation of the chemistry you're adding to the library.
 - Add to the complementary_codex all the conformations that you have at your disposal of the chemistry you're adding to the library. The key in both these abbreviated name of the nucleic acid chemistry.
-- Add to the backbone_codex the sugar linker backbone of the chemistry you're adding to the library.
+- Add to the backbone_codex the sugar linker backbone of the chemistry you're adding to the library. The key is the '--id' flag value of the transmute input file. This is done once per chemistry.
 
 ## Python environment
 

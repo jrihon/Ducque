@@ -449,6 +449,15 @@ def COMPLEMENTARY_pdb_Residuename(list_of_sequence : list) -> list:
             resname_list = resname_list + tmp_resname
 
 
+######## FUNCTIONS USED TO GENERATE THE LIST OF THE COMPLEMENTARY NUCLEOSIDES ########
+def retrieve_chemistry(chemistry : str) -> str:
+    """ Parse the chemistry denominator from the nucleoside string.
+        Note that the last element in the string should always be the nucleobase denominator (A, C, G, T, U).
+        That is why we can safely do this. """
+    ln_str = len(chemistry)
+    return chemistry[:ln_str], ln_str
+
+
 def retrieve_bases_list(sequence : list) -> list:
     """ retrieve the base denominator from the list of nucleic acids """
     return [x[-1] for x in sequence]
@@ -479,5 +488,47 @@ def concatenate_chem_and_bases(chemistry : Union[str, list], bases : list) -> li
 def retrieve_base(base : str) -> str:
     """ retrieve the base denominator for this specific nucleoside """
     return x[-1]
+
+
+def retrieve_homo_nucleosides(codex_dict_keys : list, chem_i : str, ln_str : int) -> list:
+    """ Retrieves all the possible nucleobases that the chemistry can have. """
+
+    # Outputted list of homo nucleosides
+    list_of_homo_nucleosides = []
+
+    # Slice the keys of the codex_dict_keys, meaning you only get the chemistries of all the available nucleosides
+    codex_dict_keys_SLICED = [ i[:ln_str] for i in codex_dict_keys]
+
+    # Check which index of the values that correspond to the nucleoside you are looking for
+    for i in range(len(codex_dict_keys_SLICED)):
+        if codex_dict_keys_SLICED[i] == chem_i:
+            list_of_homo_nucleosides.append(list(codex_dict_keys)[i])
+
+    return list_of_homo_nucleosides
+
+
+def assess_possible_complementary_base(chemistry : str, leadingstrand_base : str, homo_chemistry_list : list, RNA_dict : dict, DNA_dict : dict) -> str:
+    """ Check which combination are valid combination with the complementary bases's dict (DNA and RNA dict) """
+
+    dna_nucleoside = chemistry + DNA_dict[leadingstrand_base]
+    rna_nucleoside = chemistry + RNA_dict[leadingstrand_base]
+
+    # This is for A, C and G nucleosides. Since only T and U are different, we end the function here and only assess the bases with those nucleosides.
+    if dna_nucleoside == rna_nucleoside:
+        return dna_nucleoside
+
+    if dna_nucleoside in homo_chemistry_list:
+        return dna_nucleoside
+
+    # If it does not exist in the list, there is only one other option, which is the rna nucleoside variant
+    return rna_nucleoside
+
+
+
+
+
+
+
+
 
 
