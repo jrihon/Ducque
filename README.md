@@ -1,4 +1,3 @@
-
 # Daedalus
 
 <p align='center'> There are no mistakes, only happy little accidents. </p>
@@ -182,18 +181,19 @@ this
 
 ### Adding new chemistries:
 
-#### Before adding a new chemistry
+BEFORE ADDING A NEW CHEMISTRY
 In transmute_func_tools.py :
-- Add to the nucleoside_dict the type of chemistry it is. The key should be in all caps.
-- Add to the linker_dict the type of linker it corresponds with. The key should be in all caps.
+    Add to the nucleoside_dict the type of chemistry it is. The key should be in all caps.
+    Add to the linker_dict the type of linker it corresponds with. The key should be in all caps.
 
-This only serves the purpose of identifying the json file when opening it as the user. This information is not used in the generation of nucleic acid duplexes.
+    This only serves the purpose of identifying the json file when opening it as the user. This information is not used in the generation of nucleic acid duplexes.
 
-#### Before generating a duplex with a newly imported nucleoside
+BEFORE GENERATING A DUPLEX WITH THE NEW CHEMISTRY
 In labyrinth_func_tools3.py :
-- Add to the codex_acidum_nucleicum the most stable conformation of the chemistry you're adding to the library.
-- Add to the complementary_codex all the conformations that you have at your disposal of the chemistry you're adding to the library. The key in both these abbreviated name of the nucleic acid chemistry.
-- Add to the backbone_codex the sugar linker backbone of the chemistry you're adding to the library. The key is the '--id' flag value of the transmute input file. This is done once per chemistry.
+    Add to the codex_acidum_nucleicum the most stable conformation of the chemistry you're adding to the library.
+    Add to the complementary_codex all the conformations that you have at your disposal of the chemistry you're adding to the library.
+        The key in both these abbreviated name of the nucleic acid chemistry.
+    Add to the backbone_codex the sugar linker backbone of the chemistry you're adding to the library.
 
 ## Python environment
 

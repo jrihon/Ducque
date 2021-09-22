@@ -15,7 +15,7 @@ codex_acidum_nucleicum = {
 "rU": ["json/rna_uracil_3endo.json", "json/rna_phosphate.json"],
 "ddA" : ["json/b-homodna_adenosine_1-4chair.json", "json/dna_phosphate.json"],
 "ddG" : ["json/b-homodna_guanosine_1-4chair.json", "json/dna_phosphate.json"],
-"ddC" : ["json/b-homodna_cytosine_1-4chair.json", "json/dna_phosphate.json"],
+"ddC" : ["json/b-homodna_cytidine_1-4chair.json", "json/dna_phosphate.json"],
 "ddT" : ["json/b-homodna_thymidine_1-4chair.json", "json/dna_phosphate.json"],
 "hA" : ["json/hna_adenosine_1-4chair.json", "json/dna_phosphate.json"],
 "hG" : ["json/hna_guanosine_1-4chair.json", "json/dna_phosphate.json"],
@@ -25,6 +25,7 @@ codex_acidum_nucleicum = {
 "xG" : ["json/xylo_guanosine_3endo.json", "json/dna_phosphate.json"],
 "xC" : ["json/xylo_cytidine_3endo.json", "json/dna_phosphate.json"],
 "xU" : ["json/xylo_uracil_3endo.json", "json/dna_phosphate.json"],
+"2MA" : ["json/2-ome-rna_adenosine_3endo.json", "json/dna_phosphate.json"],
 }
 
 
@@ -38,10 +39,10 @@ complementary_codex = {
 "rC": ["json/rna_cytidine_3endo.json"],
 "rG": ["json/rna_guanosine_3endo.json"],
 "rU": ["json/rna_uracil_3endo.json"],
-"ddA" : ["json/b-homodna_adenosine_1-4chair.json", "json/b-homodna_adenosine_4-1chair.json"],
-"ddG" : ["json/b-homodna_guanosine_1-4chair.json","json/b-homodna_guanosine_4-1chair.json"],
-"ddC" : ["json/b-homodna_cytosine_1-4chair.json","json/b-homodna_cytosine_4-1chair.json"],
-"ddT" : ["json/b-homodna_thymidine_1-4chair.json", "json/b-homodna_thymidine_4-1chair.json",],
+"ddA" : ["json/b-homodna_adenosine_1-4chair.json"], # "json/b-homodna_adenosine_4-1chair.json"],
+"ddG" : ["json/b-homodna_guanosine_1-4chair.json"], #"json/b-homodna_guanosine_4-1chair.json"],
+"ddC" : ["json/b-homodna_cytidine_1-4chair.json"], #"json/b-homodna_cytosine_4-1chair.json"],
+"ddT" : ["json/b-homodna_thymidine_1-4chair.json"], # "json/b-homodna_thymidine_4-1chair.json",],
 "hA" : ["json/hna_adenosine_1-4chair.json"], # "json/hna_adenosine_4-1chair.json"],
 "hG" : ["json/hna_guanosine_1-4chair.json"], # "json/hna_guanosine_4-1chair.json"],
 "hC" : ["json/hna_cytidine_1-4chair.json"], # "json/hna_cytidine_4-1chair.json"],
@@ -50,6 +51,7 @@ complementary_codex = {
 "xG" : ["json/xylo_guanosine_3endo.json"],
 "xC" : ["json/xylo_cytidine_3endo.json"],
 "xU" : ["json/xylo_uracil_3endo.json"],
+"2MA" : ["json/2-ome-rna_adenosine_3endo.json"],
 }
 
 
@@ -59,6 +61,7 @@ backbone_codex = {
 "b-homoDNA" : ["O4'", "C4'", "C5'", "C6'", "O6'"],
 "HNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "Xylo" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
+"2-OMe-RNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "Phosphate" : ["P"],
 }
 

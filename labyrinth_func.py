@@ -897,17 +897,17 @@ def create_PDB_from_array_final(leading_array : np.ndarray, list_of_leading_sequ
 
     # Capping of the duplexes
     # First two elements belong to the leading strand, the last two elements belong to the complementary strand. A total of four elements per variable
-    atom_array, atom_names = cap_nucleic_acid_strands(leading_array, list_of_leading_sequence, complementary_array, list_of_complementary_sequence)
+    capping_array, capping_names = cap_nucleic_acid_strands(leading_array, list_of_leading_sequence, complementary_array, list_of_complementary_sequence)
 
-    # Adjust leading strand's array
-    leading_array = np.vstack((atom_array[0], leading_array, atom_array[1]))
+    # Adjust leading strand's array for the capping
+    leading_array = np.vstack((capping_array[0], leading_array, capping_array[1]))
 
     # LEADING STRAND
     df_leading = pd.DataFrame()
 
     df_leading["RecName"] = ["ATOM" for x in range(leading_array.shape[0])]
     df_leading["AtomNum"] = np.arange(start=1, stop=leading_array.shape[0] + 1)
-    df_leading["AtomName"] = atom_names[0] + LFT2.LEAD_pdb_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Atoms") + atom_names[1]
+    df_leading["AtomName"] = capping_names[0] + LFT2.LEAD_pdb_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Atoms") + capping_names[1]
     df_leading["AltLoc"] = " "
     df_leading["ResName"] = LFT2.LEAD_pdb_Residuename(list_of_leading_sequence)
     df_leading["Chain"] = "J"
@@ -924,15 +924,15 @@ def create_PDB_from_array_final(leading_array : np.ndarray, list_of_leading_sequ
     TER_line = pd.DataFrame({"RecName" : "TER", "AtomNum" : 69}, index=[69])
     ln_lead = len(df_leading["AtomNum"])
 
-    # Adjust complementary strand's array
-    complementary_array = np.vstack((atom_array[2], complementary_array, atom_array[3]))
+    # Adjust complementary strand's array for the capping
+    complementary_array = np.vstack((capping_array[2], complementary_array, capping_array[3]))
 
     # COMPLEMENTARY STRAND
     df_complementary = pd.DataFrame()
 
     df_complementary["RecName"] = ["ATOM" for x in range(complementary_array.shape[0])]
     df_complementary["AtomNum"] = np.arange(start=ln_lead + 1, stop=(ln_lead + complementary_array.shape[0] + 1))
-    df_complementary["AtomName"] = atom_names[2] + LFT2.COMPLEMENTARY_pdb_AtomNames_or_ElementSymbol(list_of_complementary_sequence, "Atoms") + atom_names[3]
+    df_complementary["AtomName"] = capping_names[2] + LFT2.COMPLEMENTARY_pdb_AtomNames_or_ElementSymbol(list_of_complementary_sequence, "Atoms") + capping_names[3]
     df_complementary["AltLoc"] = " "
     df_complementary["ResName"] = LFT2.COMPLEMENTARY_pdb_Residuename(list_of_complementary_sequence)
     df_complementary["Chain"] = "R"
@@ -957,7 +957,7 @@ def create_PDB_from_array_final(leading_array : np.ndarray, list_of_leading_sequ
                 pdb.write("%-6s\n" % TERline)
             if not row[0] == "TER":
                 split_line = [ row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13] ]
-                pdb.write("%-6s%5s%5s%s%2s%3s%5d  %8s%8s%9s%6s%7s%4s     %2s\n" % tuple(split_line))
+                pdb.write("%-6s%5s%5s%s%3s%2s%5d  %8s%8s%9s%6s%7s%4s     %2s\n" % tuple(split_line))
         pdb.write("END")
         pdb.close()
 

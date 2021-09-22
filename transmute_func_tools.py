@@ -10,6 +10,7 @@ nucleoside_dict = {
         "B-HOMODNA" : "beta-Homo Deoxyribonucleic acid",
         "HNA" : "Hexitol Nucleic acid",
         "XYLO" : "Xylose Nucleic acid",
+        "2-OME-RNA" : "2-O-Methyl Ribonucleic acid",
         }
 
 linker_dict = {
@@ -18,6 +19,7 @@ linker_dict = {
         "B-HOMODNA" : "Phosphate",
         "HNA" : "Phosphate",
         "XYLO" : "Phosphate",
+        "2-OME-RNA" : "Phosphate",
         }
 
 

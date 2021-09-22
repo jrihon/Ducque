@@ -81,6 +81,7 @@ def Architecture(nucleic_acid_list, complement):
     ## Generate the complementary strand
     # a list of complementary nucleotides
     compl_nucleic_acid_list = LabF.generate_complementary_sequence(nucleic_acid_list, complement)
+    # print(compl_nucleic_acid_list)
 
     # Import the first two leading strand nucleosides, but as a list
     leading_nucleosides = [CODEX_LEAD[nucleic_acid_list[0]], CODEX_LEAD[nucleic_acid_list[1]]]
