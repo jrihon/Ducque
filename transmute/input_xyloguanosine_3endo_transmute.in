@@ -1,0 +1,6 @@
+--pdb Pucker_data/Xylo/G/min02.pdb
+--id Xylo
+--conformation 3endo
+--moiety nucleoside
+--dihedrals 60.448, -139.697, -112.957, -20.136, 130.035, 102.315, -164.479 
+--bondangles 101.626, 120.123, 112.067, 110.353, 111.152, 121.231, 125.335

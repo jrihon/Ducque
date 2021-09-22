@@ -1,0 +1,6 @@
+--pdb dna_guanosine_3endo.pdb
+--id DNA
+--conformation 3endo
+--moiety nucleoside
+--dihedrals -83.867, -152.082, 45.466, 84.287, 179.460, -49.103, -154.283
+--bondangles 100.792, 119.375, 110.385, 115.383, 112.846, 119.884, 125.827
