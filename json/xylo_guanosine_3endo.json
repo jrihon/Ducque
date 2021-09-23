@@ -7,7 +7,7 @@
     },
     "identity": "[\"Xylose Nucleic acid\", \"Xylo\", \"XG\", \"Guanosine\"]",
     "angles": {
-        "dihedrals": "{\"alpha\": 60.448, \"beta\": -139.697, \"gamma\": -112.957, \"delta\": -20.136, \"epsilon\": 130.035, \"zeta\": 102.315, \"chi\": -164.479}",
+        "dihedrals": "{\"alpha\": 75.448, \"beta\": -115.697, \"gamma\": -112.957, \"delta\": -20.136, \"epsilon\": 100.035, \"zeta\": 95.315, \"chi\": -164.479}",
         "bond_angles": "{\"alpha\": 101.626, \"beta\": 120.123, \"gamma\": 112.067, \"delta\": 110.353, \"epsilon\": 111.152, \"zeta\": 121.231, \"chi\": 125.335}"
     }
 }

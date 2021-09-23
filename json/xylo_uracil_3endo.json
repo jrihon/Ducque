@@ -7,7 +7,7 @@
     },
     "identity": "[\"Xylose Nucleic acid\", \"Xylo\", \"XU\", \"Uracil\"]",
     "angles": {
-        "dihedrals": "{\"alpha\": 30.55, \"beta\": -126.574, \"gamma\": -79.194, \"delta\": -15.341, \"epsilon\": 118.244, \"zeta\": 119.442, \"chi\": -177.668}",
+        "dihedrals": "{\"alpha\": 75.55, \"beta\": -115.574, \"gamma\": -79.194, \"delta\": -15.341, \"epsilon\": 100.244, \"zeta\": 95.442, \"chi\": -177.668}",
         "bond_angles": "{\"alpha\": 101.605, \"beta\": 120.079, \"gamma\": 111.745, \"delta\": 109.911, \"epsilon\": 110.907, \"zeta\": 120.549, \"chi\": 117.818}"
     }
 }

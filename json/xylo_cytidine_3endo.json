@@ -7,7 +7,7 @@
     },
     "identity": "[\"Xylose Nucleic acid\", \"Xylo\", \"XC\", \"Cytidine\"]",
     "angles": {
-        "dihedrals": "{\"alpha\": 36.057, \"beta\": -119.473, \"gamma\": -90.152, \"delta\": -12.252, \"epsilon\": 118.544, \"zeta\": 119.442, \"chi\": 170.948}",
+        "dihedrals": "{\"alpha\": 75.057, \"beta\": -115.473, \"gamma\": -90.152, \"delta\": -12.252, \"epsilon\": 100.544, \"zeta\": 95.442, \"chi\": 170.948}",
         "bond_angles": "{\"alpha\": 102.269, \"beta\": 120.142, \"gamma\": 111.677, \"delta\": 111.172, \"epsilon\": 111.435, \"zeta\": 120.793, \"chi\": 117.903}"
     }
 }
