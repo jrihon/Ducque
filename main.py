@@ -7,6 +7,7 @@ import transmute    # Convert a given pdb file to a custom json format
 import labyrinth    # Build the duplex
 import randomise    # Output a random sequence
 import fundaments   # Exceptions or custom errors
+import sysDaedalus  # Retrieves system information from the machine
 
 explanation = """
                                                                AUG   TCC        TCG   TTC        TAT   TCG
@@ -24,6 +25,9 @@ ______________________________________________________________________
 """
 
 t0 = time.time()
+
+# Check if the version of python is at least python3.6
+sysDaedalus.version_checker()
 
 ## -------------------------------------------------- P A R S E  A R G U M E N T S --------------------------------------- ##
 options = argparse.ArgumentParser(description=explanation,

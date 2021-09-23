@@ -41,8 +41,10 @@ class TransmuteToJson:
 
         # Check if file is in cwd or in the pdb directory
         pdbfname = self.filename
-        if not os.path.isfile(pdbfname):
-            pdbfname = "./pdb/" + self.filename
+        try:
+            os.path.isfile(pdbfname)
+        except FileNotFoundError as Err:
+            print("Could not find "+  pdbfname  +" in the directory.\n")
 
         # Read the file and fill out the dataframe
         with open(pdbfname) as pdbfile:

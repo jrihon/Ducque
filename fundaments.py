@@ -4,7 +4,6 @@ import os
 
 """ When the user prompts the wrong values or flags, this python script intercepts most errors that happen at the start """
 
-
 def print_divide_between_command_and_output():
     """ This function exists solely to split the Daedalus call command and its output."""
     print("-----------------------------------------------------------")
