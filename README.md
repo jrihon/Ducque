@@ -195,8 +195,14 @@ In labyrinth_func_tools3.py :
         The key in both these abbreviated name of the nucleic acid chemistry.
     Add to the backbone_codex the sugar linker backbone of the chemistry you're adding to the library.
 
-## Python environment
+## Environment
 
+## Shell
+To access the Daedalus software from anywhere on your machine, add the following line to your ~/.bashrc
+Where path/to/program is the path to where you've installed Daedalus. (`$ pwd`) inside the Daedalus directory if you're unsure.
+`export PATH=$PATH:path/to/program/Daedalus/bin`
+
+## Python
 To run this project, you will need to add the libraries to your **python env**
 
 `NumPy`, `SciPy`, `Pandas`
