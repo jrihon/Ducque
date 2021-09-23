@@ -181,25 +181,24 @@ this
 
 ### Adding new chemistries:
 
-BEFORE ADDING A NEW CHEMISTRY
-In transmute_func_tools.py :
-    Add to the nucleoside_dict the type of chemistry it is. The key should be in all caps.
-    Add to the linker_dict the type of linker it corresponds with. The key should be in all caps.
+BEFORE ADDING A NEW CHEMISTRY<br />
+In transmute_func_tools.py :<br />
+Add to the nucleoside_dict the type of chemistry it is. The key should be in all caps.<br />
+Add to the linker_dict the type of linker it corresponds with. The key should be in all caps.<br />
+This only serves the purpose of identifying the json file when opening it as the user. This information is not used in the generation of nucleic acid duplexes.<br />
 
-    This only serves the purpose of identifying the json file when opening it as the user. This information is not used in the generation of nucleic acid duplexes.
-
-BEFORE GENERATING A DUPLEX WITH THE NEW CHEMISTRY
-In labyrinth_func_tools3.py :
-    Add to the codex_acidum_nucleicum the most stable conformation of the chemistry you're adding to the library.
-    Add to the complementary_codex all the conformations that you have at your disposal of the chemistry you're adding to the library.
-        The key in both these abbreviated name of the nucleic acid chemistry.
-    Add to the backbone_codex the sugar linker backbone of the chemistry you're adding to the library.
+BEFORE GENERATING A DUPLEX WITH THE NEW CHEMISTRY<br />
+In labyrinth_func_tools3.py :<br />
+Add to the codex_acidum_nucleicum the most stable conformation of the chemistry you're adding to the library.<br />
+Add to the complementary_codex all the conformations that you have at your disposal of the chemistry you're adding to the library.<br />
+The key in both these abbreviated name of the nucleic acid chemistry.
+Add to the backbone_codex the sugar linker backbone of the chemistry you're adding to the library.<br />
 
 ## Environment
 
 ## Shell
-To access the Daedalus software from anywhere on your machine, add the following line to your ~/.bashrc
-Where path/to/program is the path to where you've installed Daedalus. (`$ pwd`) inside the Daedalus directory if you're unsure.
+To access the Daedalus software from anywhere on your machine, add the following line to your `~/.bashrc` .<br />
+Where path/to/program is the path to where you've installed Daedalus. `$ pwd` inside the Daedalus directory if you're unsure.<br />
 `export PATH=$PATH:path/to/program/Daedalus/bin`
 
 ## Python
