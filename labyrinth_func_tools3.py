@@ -40,7 +40,7 @@ codex_acidum_nucleicum = {
 
 
 
-complementary_codex = {
+conformations_codex = {
 "dA": [ dh + "json/dna_adenosine_2endo.json", dh + "json/dna_adenosine_3endo.json"],
 "dC": [ dh + "json/dna_cytidine_2endo.json", dh + "json/dna_cytidine_3endo.json"],
 "dG": [ dh + "json/dna_guanosine_2endo.json", dh + "json/dna_guanosine_3endo.json"],
@@ -95,8 +95,8 @@ def Atom_Parsing_List(prevnuc, link, nextnuc = None) -> list:
     By default, nextnuc is equal to None. If no json object has been parsed into nextnuc, that means you are positioning the following linker and not the following nucleoside. """
 
     if nextnuc == None:
-        prevChem = backbone_codex[json.loads(prevnuc.jason["identity"])[1]]
-        linkChem = linker_codex[json.loads(link.jason["identity"])[0]]
+        prevChem = backbone_codex[json.loads(prevnuc.jsonObject["identity"])[1]]
+        linkChem = linker_codex[json.loads(link.jsonObject["identity"])[0]]
 
         truncPrevChem = [prevChem[-3], prevChem[-2], prevChem[-1]]
 
@@ -104,9 +104,9 @@ def Atom_Parsing_List(prevnuc, link, nextnuc = None) -> list:
 
 
     if not nextnuc == None:
-        prevChem = backbone_codex[json.loads(prevnuc.jason["identity"])[1]]
-        linkChem = backbone_codex[json.loads(link.jason["identity"])[0]]
-        nextChem = backbone_codex[json.loads(nextnuc.jason["identity"])[1]]
+        prevChem = backbone_codex[json.loads(prevnuc.jsonObject["identity"])[1]]
+        linkChem = backbone_codex[json.loads(link.jsonObject["identity"])[0]]
+        nextChem = backbone_codex[json.loads(nextnuc.jsonObject["identity"])[1]]
 
         if len(linkChem) == 1:
             truncPrevChem = [prevChem[-2], prevChem[-1]]

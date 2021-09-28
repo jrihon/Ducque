@@ -1,5 +1,7 @@
 import numpy as np
 
+import initMolecule
+
 import labyrinth_func as LabF
 import labyrinth_func_tools1 as LFT1
 import labyrinth_func_tools2 as LFT2
@@ -51,7 +53,7 @@ def retrieve_index_of_best_conformation(stored_bb_distances, stored_bb_bools):
 
 def return_cross_vector_for_plane_rotation(strand_array : np.ndarray, atom_list_id : list) -> np.array :
     """ Take the array of either the leading or complementary strand and the indexes of the atoms we want to retrieve from it.
-        returns the cross product of the of the plane in which the base of the nucleoside lies in. 
+        returns the cross product of the of the plane in which the base of the nucleoside lies in.
         In other words, it give you a vector that is perpendicular to the nucleoside's base. """
 
     v0 = strand_array[atom_list_id[0]]      # Atom that connects base to the sugar moiety
@@ -76,6 +78,112 @@ def return_position_for_complementary_base(angle : float, dihedral : float, stra
     # Generate a vector of interest, here in the context of positioning the complementary nucleoside's base
     v_position_for_complement = LabF.generate_vector_of_interest(angle, dihedral, [v2, v1, v0])
     return LFT1.return_normalized(v_position_for_complement) * vector_size
+
+
+def position_next_nucleoside(next_nucleoside, prev_nucleoside, prev_linker, leading_strand : np.array) -> np.array:
+    """ This function is used after position_phosphate_linker().
+        It serves the purpose of adding the next nucleotide onto the leading_strand.
+
+        next_nucleoside : json object
+        leading_strand : the nucleic acid strand to which we append next_nucleoside to. """
+    # The first thing to do is to find the location of the subsequent atom, here O3', then rotate the next_nucleoside by zeta and epsilon
+    # Afterwards, we turn over the epsilon dihedral and by rotate the normal of the plane have to the plane we want; this positions everything!
+
+    # Atom Parsing List (ATP) = Parse which linker and which nucleotide the previous one is
+    APL = LFT3.Atom_Parsing_List(prev_nucleoside, prev_linker, next_nucleoside)
+    # Dihedral Parsing List (DPL) = Parse which dihedrals are required to rotate on and over
+    # Angle Parsing List (AngPL)
+    AngPL = DPL =  LFT2.retrieve_list_of_dihedrals_and_angles_to_build_with(next_nucleoside)
+
+    #### POSITION THE NEXT NUCLEOSIDE PROPERLY.
+    # dihedral C5' - O5' - P - O3'
+    # get the size of the linker, since the array goes : " linker.array + nucleotide.array", where linker.array precedes the indices of the nucleotide.array
+    shape_linker = prev_linker.mol_length
+    id_v0 = LFT2.retrieve_atom_index(prev_nucleoside, APL[0]) + shape_linker
+    id_v1 = LFT2.retrieve_atom_index(prev_nucleoside, APL[1]) + shape_linker
+    id_v2 = LFT2.retrieve_atom_index(prev_linker,APL[2])
+    v0 = leading_strand[id_v0]
+    v1 = leading_strand[id_v1]
+    v2 = leading_strand[id_v2]
+
+    # Get angle and dihedral:
+    alpha_angle = next_nucleoside.get_angle(AngPL[0])
+    alpha_dihr = next_nucleoside.get_dihedral(DPL[0])
+
+    ## We position the nextnuc by the position of O3'
+    single_vector1 = LabF.generate_vector_of_interest(alpha_angle, alpha_dihr, [v2, v1, v0])
+    linker_nuc_distance = 1.6
+    # Add single_vector1 to v2, so that we define the location of ATP[3]
+    v3 = LFT1.move_vector_to_loc(LFT1.return_normalized(single_vector1) * linker_nuc_distance, v2)
+
+    ## Bring the nucleoside array to the new position
+    id_v3 = LFT2.retrieve_atom_index(next_nucleoside, APL[3])
+    v3_original = next_nucleoside.array[id_v3]
+    # Get distance from next_nucleoside O3' (v3_old) to the position defined as O3' (v3), so the distance that we need to move the array with
+    distance_v3_v3_original = v3 - v3_original
+    # Get the distance from the P -> O3' now and add it to nextnuc_origin which will move the entire molecule(nextnuc) to the position of O3'
+    next_nucleoside_loc = LFT1.move_vector_to_loc(next_nucleoside.array, distance_v3_v3_original)
+
+    for i in range(1, len(DPL)):
+        # Only at the final dihedral do we require a plane rotation.
+        # The reason we forloop is because perhaps there might be cases where just a single rotation and a plane rotation are sufficient, like with morpholino's presumably.
+        if i + 1 == len(DPL):
+            # Do the final vector rotation + plane rotation
+            id_vA = LFT2.retrieve_atom_index(prev_linker, APL[i])
+            id_vB = LFT2.retrieve_atom_index(next_nucleoside, APL[i + 1])
+            id_vC = LFT2.retrieve_atom_index(next_nucleoside, APL[i + 2])
+            vA = leading_strand[id_vA]
+            vB = next_nucleoside_loc[id_vB]
+            vC = next_nucleoside_loc[id_vC]
+            #Get the required angles
+            angle_N = next_nucleoside.get_angle(AngPL[i])
+            dihedral_N = next_nucleoside.get_dihedral(DPL[i])
+
+            single_vector_N = LabF.generate_vector_of_interest(angle_N, dihedral_N, [vC, vB, vA])
+
+            # Retrieve the next atom vector in the sequence, required for rotation
+            id_vD = LFT2.retrieve_atom_index(next_nucleoside, APL[i + 3])
+            vD = next_nucleoside_loc[id_vD]
+
+            ## Generate to normal vectors of the planes of interest. The order in which you perform the cross product is not important BUT!!!
+            # It IS important that the same vectors are operated on in the same order for both normal vectors!!!
+            # normal to rotate from
+            n0 = LFT1.get_normal_vector_of_plane(vC - vB, vD - vC)
+            # normal to rotate to
+            n1 = LFT1.get_normal_vector_of_plane(vC - vB, single_vector_N)
+            # The order of the quaternion does matter, as it starts with " vector to rotate to" and secondly with "vector that we want to rotate from "
+            quaternion_plane = LFT1.get_quaternion(n1, n0)
+
+            #Now bring the array to the origin
+            distance_to_origin_N = next_nucleoside_loc[id_vC]
+            next_nucleoside_loc = LFT1.move_to_origin_ROTATE_move_back_to_loc(quaternion_plane, next_nucleoside_loc, distance_to_origin_N)
+
+            return next_nucleoside_loc
+
+        # Just continue if it is not the last one in the loop
+        id_vA = LFT2.retrieve_atom_index(prev_nucleoside, APL[i]) + shape_linker
+        vA = leading_strand[id_vA]
+        id_vB = LFT2.retrieve_atom_index(prev_linker, APL[i + 1])
+        vB = leading_strand[id_vB]
+        id_vC = LFT2.retrieve_atom_index(next_nucleoside, APL[i + 2])
+        vC = next_nucleoside_loc[id_vC]
+
+        #Get the required angles
+        angle_N = next_nucleoside.get_angle(AngPL[i])
+        dihedral_N = next_nucleoside.get_dihedral(DPL[i])
+
+        single_vector_N = LabF.generate_vector_of_interest(angle_N, dihedral_N, [vC, vB, vA])
+
+        # Retrieve the appropriate quaternion for the rotation 
+        id_vD = LFT2.retrieve_atom_index(next_nucleoside, APL[i + 3])
+        vD = next_nucleoside_loc[id_vD]
+        pC_D = LFT1.return_normalized(vD - vC)
+        quaternion_N = LFT1.get_quaternion(single_vector_N, pC_D)
+
+        #Now rotate your molecule onto single_vector_N
+        distance_to_origin_N = next_nucleoside_loc[id_vC]
+
+        next_nucleoside_loc = LFT1.move_to_origin_ROTATE_move_back_to_loc(quaternion_N, next_nucleoside_loc, distance_to_origin_N)
 
 
 def assert_the_dihedral_of_interest(compl_nuc, compl_nuc_arr : np.ndarray, compl_linker, prev_nuc, complementary_strand : np.ndarray, index_compl, prev_linker) -> bool:
@@ -106,6 +214,183 @@ def assert_the_dihedral_of_interest(compl_nuc, compl_nuc_arr : np.ndarray, compl
     return bool_dihedral
 
 
+def position_complementary_base(leading_base, complementary_base, leading_array : np.ndarray, index_lead : int) -> np.ndarray:
+    """ This functions positions the base correctly, which inherently positions the entire nucleoside correctly.
+        After this function, there comes an iterative process of fitting the backbone correctly.
+
+        leading_base is a json object
+        complementary_base is a json object                     """
+
+    ### DATA PARSING
+    ## Parse the correct atoms to get started for
+    # Parse the type of base from the nucleoside json object
+    leadingBase = leading_base.get_base_denominator()
+    complBase = complementary_base.get_base_denominator()
+    rotPlane_leadingBase_atoms, rotPlane_complBase_atoms = LFT3.retrieve_atoms_for_plane_rotation_of_complement(leadingBase, complBase)
+    ## Get the proper vectors for the plane rotation
+    # Leading base vector
+    rotPlane_leadingBase_atoms_id = LFT2.retrieve_atom_index_MULTIPLE(leading_base, rotPlane_leadingBase_atoms, index_lead)
+    vCross_leadingBase = return_cross_vector_for_plane_rotation(leading_array, rotPlane_leadingBase_atoms_id)
+
+    # Complementary base vector
+    rotPlane_complBase_atoms_id = LFT2.retrieve_atom_index_MULTIPLE(complementary_base, rotPlane_complBase_atoms)
+    vCross_complBase = return_cross_vector_for_plane_rotation(complementary_base.array, rotPlane_complBase_atoms_id)
+
+    ### ROTATE THE PLANE
+    ## Rotate the complementary base onto the plane of the leading base
+    # Get the cross product of the atoms of leading_base that make it if both bases are in the same plane, the cross product vectors are exactly opposite
+    plane1_quaternion = LFT1.get_quaternion(vCross_leadingBase * -1.0, vCross_complBase)
+
+    ## Apply the rotation
+    # vC0 is atom that binds the base with the sugar moiety, making it the central atom over which we rotate when we bring the molecule to the origin
+    vC0 = complementary_base.array[rotPlane_complBase_atoms_id[0]]
+    tmp_compl_arr = LFT1.move_vector_to_origin(complementary_base.array, vC0)
+    compl_nucleoside_array = LFT1.rotate_with_quaternion(plane1_quaternion, tmp_compl_arr)
+
+    # Get the required parameters for the rotations
+    Q_angle, Q_dihedral, R_angle, R_dihedral = LFT3.retrieve_angles_and_dihedrals_for_initial_base_positioning(leadingBase)
+    #Q_dist_between_bases = 1.81
+    #R_dist_between_bases = 1.87
+
+    ## Apply a translation to get the initial positioning
+    Q_leadingBase_atoms, Q_complBase_atom, Q_distance = LFT3.retrieve_atoms_for_positioning_of_complement1(leadingBase, complBase)
+    Q_leadingBase_atoms_id = LFT2.retrieve_atom_index_MULTIPLE(leading_base, Q_leadingBase_atoms, index_lead)
+
+    # Calculate the position at which we want to the R positioning to be. See paper @Figure X to show what R positioning is.
+    Q_position = return_position_for_complementary_base(Q_angle, Q_dihedral, leading_array, Q_leadingBase_atoms_id, Q_distance)
+
+    ## Now that we have the Q_position, we move the complementary base to the position by doing the following :
+    # Get distance at which we want to position the base's hydrogen bond
+    Q_vector = leading_array[Q_leadingBase_atoms_id[2]] + Q_position
+    # retrieve the vector of the atom that we want to attach 'Q_vector' to.
+    Q_complBase_atom_id = LFT2.retrieve_atom_index(complementary_base, Q_complBase_atom)
+
+    # the distance from the location we want to have compl1_base2_atom move to. But we move the array from where it is at now, so substract that and then move it
+    move_to_Q = Q_vector - compl_nucleoside_array[Q_complBase_atom_id]
+
+    compl_nucleoside_array = LFT1.move_vector_to_loc(compl_nucleoside_array, move_to_Q)
+
+    ### After positioning the planes and moving the nucleoside to Q, we now rotate the nucleoside's base to R
+    R_leadingBase_atoms, R_complBase_atom, R_distance = LFT3.retrieve_atoms_for_position_of_complement2(leadingBase, complBase)
+    R_leadingBase_atoms_id = LFT2.retrieve_atom_index_MULTIPLE(leading_base, R_leadingBase_atoms, index_lead)
+
+    R_position = return_position_for_complementary_base(R_angle, R_dihedral, leading_array, R_leadingBase_atoms_id, R_distance)
+
+    # Creates the coordinate at which we want to move our the Q_complement atom, from the complementary nucleoside's base to
+    R_move_to = leading_array[R_leadingBase_atoms_id[2]] + R_position
+    R_compl_id = LFT2.retrieve_atom_index(complementary_base, R_complBase_atom)
+    R_vector = compl_nucleoside_array[Q_complBase_atom_id]
+
+    # Create quaternion to rotate the complementary base a final time
+    j1 = LFT1.return_normalized(R_move_to - R_vector)
+    j2 = LFT1.return_normalized(compl_nucleoside_array[R_compl_id] - R_vector)
+
+    plane2_quaternion = LFT1.get_quaternion(j1, j2)
+
+    return LFT1.move_to_origin_ROTATE_move_back_to_loc(plane2_quaternion, compl_nucleoside_array, R_vector)
+
+
+def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linker, compl_nuc_arr : np.ndarray, complementary_strand : np.ndarray, index_compl : int) -> np.ndarray :
+    """ Have the returned array from assert_possible_base_conformations fit the leading strand better. Here we will turn the return array according to length, then dihedral
+        compl_nuc is a json object
+        prev_nuc is a json object   """
+
+    ## Now we tilt the array slighted if necessary
+    # The 'if necessary' will be depending on the length and the dihedral it makes
+
+    # Atom Parsing List for the knowing which atoms to parse from the respective arrays ; for bond length and dihedral evaluation
+    APL = LFT3.Atom_Parsing_List(compl_nuc, compl_linker, prev_nuc)
+    dihedral = compl_nuc.get_dihedral("alpha")
+    angle = compl_nuc.get_angle("alpha")
+
+    # Parse the last atom needed from the complementary strand. NB : index_compl has been set to the correct value in the function ' assert_possible ... _and_fit() '.
+    # This is the last final atom in the backbone ( 3'-> 5), so in the case of DNA, this would store the vector of the phosphorus atom in its linker
+    id_compl_strand = LFT2.retrieve_atom_index(prev_nuc, APL[3]) + index_compl + prev_linker.mol_length
+    v_compl_strand = complementary_strand[id_compl_strand]
+
+    # Parse the other atoms needed from the current nucleotide that is being fitted
+    id_v0 = LFT2.retrieve_atom_index(compl_nuc, APL[0]) + compl_linker.mol_length
+    id_v1 = LFT2.retrieve_atom_index(compl_nuc, APL[1]) + compl_linker.mol_length
+    id_v2 = LFT2.retrieve_atom_index(compl_linker, APL[2])
+
+    v0 = compl_nuc_arr[id_v0]
+    v1 = compl_nuc_arr[id_v1]
+    v2 = compl_nuc_arr[id_v2]
+
+    # Calculate of the distance. We will check later if it is between 1 and 2 Angstrom.
+    calculated_length = LFT1.get_length_of_vector(v2, v_compl_strand)
+
+    # Calculate the dihedral. Let's say the dihedral should not deviate more than 25 degrees?
+    calculated_dihr = LFT1.dihedral_single(v0, v1, v2, v_compl_strand)
+
+    # Create booleans to assert the calculated values and see if they are within ranges of concordance
+    bool_length = LFT1.assert_length_of_vector(calculated_length)
+
+    bool_dihedral = LFT1.assert_dihedral_of_nucleotide(calculated_dihr, dihedral)
+
+    # If both values are true, just return the array as is, since it is already relatively well positioned
+    if bool_length and bool_dihedral :
+        return compl_nuc_arr
+
+    # If one or both values are false, try to position the bases to an appropriate orientation
+    else :
+        ## Generate a quaternion that orients the alpha dihedral properly
+        angle_of_rot_TEST = 5 * (np.pi/180)
+        # Retrieve which the denominator of the base that the nucleotide is
+        compl_base = compl_nuc.get_base_denominator()
+
+        # Make a custom direction and angle. Not to worry, the direction is perpendicular to the movement
+        compl_base_atoms1, _ = LFT3.retrieve_atoms_for_plane_rotation_of_complement(compl_base, compl_base)
+        compl_base_atoms1_0 = LFT2.retrieve_atom_index(compl_nuc, compl_base_atoms1[0]) + compl_linker.mol_length
+
+        compl_base_atoms2, _ , __= LFT3.retrieve_atoms_for_positioning_of_complement1(compl_base, compl_base)
+        compl_base_atoms2_2 = LFT2.retrieve_atom_index(compl_nuc, compl_base_atoms2[2]) + compl_linker.mol_length
+
+        v_direction = LFT1.return_normalized(compl_nuc_arr[compl_base_atoms2_2] - compl_nuc_arr[compl_base_atoms1_0])
+
+        # Rotate both directions the nuc1 and assert the distance between nuc1 and nuc2, then remember the direction of the smallest turn
+        nuc1_quaternion = LFT1.get_custom_quaternion(v_direction, angle_of_rot_TEST)
+        test_turn_arr = LFT1.move_to_origin_ROTATE_move_back_to_loc(nuc1_quaternion, compl_nuc_arr, compl_nuc_arr[compl_base_atoms1_0])
+        # Distance between phosphorus of the previous nucleotide and the (i.e.) O3' of the next nucleoside (in the example given a DNA nucleoside)
+        dist_between_nucs = LFT1.get_length_of_vector(test_turn_arr[id_v2], complementary_strand[id_compl_strand])
+
+        # Check if the distance between subsequent nucleotides is suitable, according to the set boundaries.
+        # If that is not the case, store the current distance, rotate the nucleotide in the reverse direction and store that new distance between nucleotides too.
+        # Check which distance is the smallest and remember the orientation of the direction axis, as this will be the direction to rotate over from now on.
+        if not LFT1.assert_length_of_vector(dist_between_nucs):
+            x1 = dist_between_nucs
+
+            v_direction_test = v_direction * -1.0
+            nuc1_quaternion = LFT1.get_custom_quaternion(v_direction_test, angle_of_rot_TEST)
+            test_turn_arr = LFT1.move_to_origin_ROTATE_move_back_to_loc(nuc1_quaternion, compl_nuc_arr, compl_nuc_arr[compl_base_atoms1_0])
+            x2 = LFT1.get_length_of_vector(test_turn_arr[id_v2], complementary_strand[id_compl_strand])
+
+            if x1 > x2 :
+                v_direction *= -1.0
+
+        # Generate angles of rotation. Make note that we won't go past a 15 degree angle, since that general will not be necessary to turn that much.
+        array_of_rot_angles = np.linspace(2.5, 30, 8) * (np.pi/180)
+
+        stored_distances = np.zeros(len(array_of_rot_angles))
+        for i in range(len(array_of_rot_angles)) :
+            nuc1_quaternion = LFT1.get_custom_quaternion(v_direction, array_of_rot_angles[i])
+            testnuc1 = LFT1.move_to_origin_ROTATE_move_back_to_loc(nuc1_quaternion, compl_nuc_arr, compl_nuc_arr[compl_base_atoms1_0])
+            dist_between_nucs = LFT1.get_length_of_vector(testnuc1[id_v2], complementary_strand[id_compl_strand])
+            stored_distances[i] = dist_between_nucs
+
+            # If the distance is suitable according to the boundaries, return the nucleoside's array
+            if LFT1.assert_length_of_vector(dist_between_nucs) :
+                return testnuc1
+
+        # If this part of the code is reached, that means none of the evaluated distances are suitable. Let's search the shortest one in the list
+        min_val = stored_distances.min()
+        index_min = np.where(stored_distances == min_val)
+        angle_of_rot = array_of_rot_angles[index_min[0]]
+        nuc1_quaternion = LFT1.get_custom_quaternion(v_direction, float(angle_of_rot))
+
+        return LFT1.move_to_origin_ROTATE_move_back_to_loc(nuc1_quaternion, compl_nuc_arr, compl_nuc_arr[compl_base_atoms1_0])
+
+
 def capping_retrieve_atomnames(list_of_leading_sequence : list, list_of_complementary_sequence : list, backbone_dict : dict, nuc_dict : dict) -> list:
     """ This should return the names of the capping atoms.
             i.e. ; if the H binds to O5', the atom name of the H should be HO5' 
@@ -118,10 +403,10 @@ def capping_retrieve_atomnames(list_of_leading_sequence : list, list_of_compleme
     for atom in range(len(index_list)):
         # Leading strand
         lead_nucleoside_fname = nuc_dict[list_of_leading_sequence[index_list[atom]]][0]
-        atom_lead = LabF.Nucleoside(lead_nucleoside_fname)
+        atom_lead = initMolecule.Nucleoside(lead_nucleoside_fname)
         # Complementary strand
         compl_nucleoside_fname = nuc_dict[list_of_complementary_sequence[index_list[atom]]][0]
-        atom_compl = LabF.Nucleoside(compl_nucleoside_fname)
+        atom_compl = initMolecule.Nucleoside(compl_nucleoside_fname)
 
         backbone_lead = backbone_dict[atom_lead.get_nucleic_acid_code()]
         backbone_compl = backbone_dict[atom_compl.get_nucleic_acid_code()]
@@ -132,7 +417,7 @@ def capping_retrieve_atomnames(list_of_leading_sequence : list, list_of_compleme
 
     # Concatenate the list
     list_of_atoms = list_lead_atom + list_compl_atom
-    
+
     # Correct the atom names
     for i in range(len(list_of_atoms)):
         list_of_atoms[i] = ["H" + list_of_atoms[i]]
@@ -163,10 +448,10 @@ def capping_retrieve_atomarrays(leading_array : np.ndarray, list_of_leading_sequ
     for i in range(len(index_list)):
         # Leading strand
         lead_nucleoside_fname = nuc_dict[list_of_leading_sequence[index_list[i]]][0]
-        lead_atom = LabF.Nucleoside(lead_nucleoside_fname)
+        lead_atom = initMolecule.Nucleoside(lead_nucleoside_fname)
         # Complementary strand
         compl_nucleoside_fname = nuc_dict[list_of_complementary_sequence[index_list[i]]][0]
-        compl_atom = LabF.Nucleoside(compl_nucleoside_fname)
+        compl_atom = initMolecule.Nucleoside(compl_nucleoside_fname)
 
         backbone_lead = backbone_dict[lead_atom.get_nucleic_acid_code()]
         backbone_compl = backbone_dict[compl_atom.get_nucleic_acid_code()]
