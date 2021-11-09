@@ -14,7 +14,6 @@ import labyrinth_func_andthefunkybunch as LFFB
 """ Labyrinth_func.py
 The script that contains the classes and all the functions that concatenate the workflow of consecutively adding the linker and nucleotides. """
 
-                                                                             #### CLASSES
 # Functions that are meant to concatenate and bypass the iterative coding in Labyrinth.py : Architecture() 
 def generate_vector_of_interest(angle : float, dihedral : float, atom_array : np.array) -> np.array:
     """ This function generates a single vector for which there exists only one angle and dihedral.
@@ -123,16 +122,6 @@ def position_phosphate_linker(nucleoside, nucl_array : np.ndarray, linker) -> np
     nucleotide = np.vstack((link, nucl_array))
 
     return nucleotide
-
-def orient_previous_linker_beter():
-    # Assert if it needs any change. If it does not, return the array unchanged
-
-
-    # If it does need some changing, rotate the plane in which the linker lies in
-    pass
-
-
-
 
 
 def generate_complementary_sequence(sequence_list : list, complement : Union[list, str]) -> list:
@@ -244,6 +233,7 @@ def assert_leading_strand_nucleotide_conformation(conformations, prev_nucleoside
         scalar_product = np.dot(cross_prev, possible_cross_vectors[v])
         radians_product_array[v] = np.arccos(scalar_product)
 
+    stored_distances = LFT1.smallest_difference(radians_product_array, 1)
     smallest_val = radians_product_array.min()
     index_smallest_val = np.where(radians_product_array== smallest_val)[0][0]
 
@@ -311,8 +301,8 @@ def assert_starting_bases_of_complementary_strand(compl1_base_confs : list, comp
 
     # Parse the index of the values we want. compl1 is the atom that is being attached to the linker of the previous nucleotide. compl2 is the last atom in the backbone of the linker.
     APL1 = LFT3.Atom_Parsing_List(compl2_base, compl2_linker, compl1_base)
-    id_dist_compl2 = LFT2.retrieve_atom_index(compl2_linker, APL1[2]) + compl1_base.mol_length
     id_dist_compl1 = LFT2.retrieve_atom_index(compl1_base, APL1[3])
+    id_dist_compl2 = LFT2.retrieve_atom_index(compl2_linker, APL1[2]) + compl1_base.mol_length # Add object.mol_length because we parse from a single array that is a nucleoside
 
     # Now we iterate over the array. When we calculate for a small distance, we will remember the index of its array and keep that as the best fit so far
     dist = 100      # start with an unreasonable distance. This value will be tested against the distances we find
@@ -323,8 +313,8 @@ def assert_starting_bases_of_complementary_strand(compl1_base_confs : list, comp
             v_compl2 = tmp_array[id_dist_compl2]
 
             distance_between_nucleotides = LFT1.get_length_of_vector(v_compl1, v_compl2)
-
-            if 1.25 <= distance_between_nucleotides < dist :
+            #print(distance_between_nucleotides)
+            if 1.00 <= distance_between_nucleotides < dist :
                 # Override the variable dist and save the best dinucleotide conformation as an array. Also save off the index to parse the correct json file.
                 dist = distance_between_nucleotides
                 arr_best_fit = array_of_possible_dinucleotide_conformations[i][j]
@@ -335,104 +325,112 @@ def assert_starting_bases_of_complementary_strand(compl1_base_confs : list, comp
     # If the distance is already of the desired size, then return the dinucleotide as is
     if LFT1.assert_length_of_vector(dist):
         complementary_strand = arr_best_fit
-        return complementary_strand, index_lead
+        nuc1 = initMolecule.Nucleoside(compl1_base_confs[compl1_id])
+        nuc2 = initMolecule.Nucleoside(compl2_base_confs[compl2_id])
+        return complementary_strand, index_lead, nuc1, nuc2
 
     # Now that we have the best fit, just to be sure we instantiate the correct object for the correct json filem for atom parsing.
     # This is generally not necessary, if the only differences between the json files, of the conformations of the same nucleosides, is the atoms coordinates.
-    compl1_base = initMolecule.Nucleoside(compl1_base_confs[i])
-    compl2_base = initMolecule.Nucleoside(compl2_base_confs[j])
+    compl1_nuc = initMolecule.Nucleoside(compl1_base_confs[compl1_id])
+    compl2_nuc = initMolecule.Nucleoside(compl2_base_confs[compl2_id])
     # get the size of the array as an index to correctly parse the required atoms of compl2_base
-    index_fit = compl1_base.mol_length
+    index_fit = compl1_nuc.mol_length
 
     # Parse the two nucleotides from the array
-    nuc1 = arr_best_fit[:index_fit]
-    nuc2 = arr_best_fit[index_fit:]
+    arr_nuc1 = arr_best_fit[:index_fit]
+    arr_nuc2 = arr_best_fit[index_fit:]
 
-    id_dist_compl2 = LFT2.retrieve_atom_index(compl2_linker, APL1[2])
-    id_dist_compl1 = LFT2.retrieve_atom_index(compl1_base, APL1[3])
+    id_dist_compl1 = LFT2.retrieve_atom_index(compl1_nuc, APL1[3])
+    id_dist_compl2 = LFT2.retrieve_atom_index(compl2_nuc, APL1[1])
+    #id_dist_compl2 = LFT2.retrieve_atom_index(compl2_linker, APL1[2])
+
     ## GET THE VECTORS AND THE INDEX OF THE ATOMS REQUIRED FOR THE ROTATIONS
     # NUCLEOTIDE 1
     nuc1_base = compl1_base.get_base_denominator()
     nuc1_origin, _ = LFT3.retrieve_atoms_for_plane_rotation_of_complement(nuc1_base, nuc1_base)
-    id_nuc1_origin = LFT2.retrieve_atom_index(compl1_base, nuc1_origin[0])
-
     nuc1_for_direction, _, __= LFT3.retrieve_atoms_for_positioning_of_complement1(nuc1_base, nuc1_base)
-    id_nuc1_for_direction = LFT2.retrieve_atom_index(compl1_base, nuc1_for_direction[2])
+    id_nuc1_origin = LFT2.retrieve_atom_index(compl1_nuc, nuc1_origin[0])
+    id_nuc1_for_direction = LFT2.retrieve_atom_index(compl1_nuc, nuc1_for_direction[2])
 
-    v_direction1 = LFT1.return_normalized(nuc1[id_nuc1_for_direction] - nuc1[id_nuc1_origin])
     # NUCLEOTIDE 2
     nuc2_base = compl2_base.get_base_denominator()
     nuc2_origin, _ = LFT3.retrieve_atoms_for_plane_rotation_of_complement(nuc2_base, nuc2_base)
-    id_nuc2_origin = LFT2.retrieve_atom_index(compl2_base, nuc2_origin[0]) + compl2_linker.mol_length
-
     nuc2_for_direction, _ , __= LFT3.retrieve_atoms_for_positioning_of_complement1(nuc2_base, nuc2_base)
-    id_nuc2_for_direction = LFT2.retrieve_atom_index(compl2_base, nuc2_for_direction[2]) + compl2_linker.mol_length
+    id_nuc2_origin = LFT2.retrieve_atom_index(compl2_nuc, nuc2_origin[0]) + compl2_linker.mol_length
+    id_nuc2_for_direction = LFT2.retrieve_atom_index(compl2_nuc, nuc2_for_direction[2]) + compl2_linker.mol_length
 
-    v_direction2 = LFT1.return_normalized(nuc2[id_nuc2_for_direction] - nuc2[id_nuc2_origin])
+    # Initialise direction axis
+    v_direction1 = LFT1.return_normalized(arr_nuc1[id_nuc1_for_direction] - arr_nuc1[id_nuc1_origin])
+    v_direction2 = LFT1.return_normalized(arr_nuc2[id_nuc2_for_direction] - arr_nuc2[id_nuc2_origin])
 
-    ## ASSERT THE ROTATIONS
-    # use a small angle of 2 degrees
-    angle_of_rot_TEST = 5 * (np.pi/180)
-
-    # Rotate both directions the nuc1 and assert the distance between nuc1 and nuc2, then remember the direction of the smallest turn
-    quat_nuc1 = LFT1.get_custom_quaternion(v_direction1, angle_of_rot_TEST)
-    testnuc1 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, nuc1, nuc1[id_nuc1_origin])
-    distance_between_nucs = LFT1.get_length_of_vector(testnuc1[id_dist_compl1], nuc2[id_dist_compl2])
-    if not LFT1.assert_length_of_vector(distance_between_nucs) :
-        x1 = distance_between_nucs
-
-        v_direction1_test = v_direction1 * -1.0
-        quat_nuc1 = LFT1.get_custom_quaternion(v_direction1_test, angle_of_rot_TEST)
-        testnuc1 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, nuc1, nuc1[id_nuc1_origin])
-        x2 = LFT1.get_length_of_vector(testnuc1[id_dist_compl1], nuc2[id_dist_compl2])
-        if x1 > x2 :
-            v_direction1 *= -1.0
-
-
-    quat_nuc2 = LFT1.get_custom_quaternion(v_direction2, angle_of_rot_TEST)
-    testnuc2 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc2, nuc2, nuc2[id_nuc2_origin])
-    distance_between_nucs = LFT1.get_length_of_vector(nuc1[id_dist_compl1], testnuc2[id_dist_compl2])
-
-    if not LFT1.assert_length_of_vector(distance_between_nucs) :
-        x1 = distance_between_nucs
-
-        v_direction2_test = v_direction2 * -1.0
-        quat_nuc2 = LFT1.get_custom_quaternion(v_direction2_test, angle_of_rot_TEST)
-        testnuc2 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc2, nuc2, nuc2[id_nuc2_origin])
-        x2 = LFT1.get_length_of_vector(nuc1[id_dist_compl1], testnuc2[id_dist_compl2])
-        if x1 > x2 :
-            v_direction2 *= -1.0
+    # Make lists of the variables, just because it makes it easier to read
+    array_nucs = [arr_nuc1, arr_nuc2]
+    index_origin = [id_nuc1_origin, id_nuc2_origin]
+    index_distance_between_nuc = [id_dist_compl1, id_dist_compl2]
+    v_directions = [v_direction1, v_direction2]
 
     # Generate angles of rotation. Make note that we won't go past a 15 degree angle, since that general will not be necessary to turn that much.
     array_of_rot_angles = np.linspace(2.5, 30, 16) * (np.pi/180)
 
-    stored_distances = np.zeros(len(array_of_rot_angles))
+    ### CALCULATIONS BASED ON DISTANCE
+    v_direction1, v_direction2 = LFFB.assert_rotation_of_bases_by_distance(array_nucs, v_directions, index_origin, index_distance_between_nuc)
+
+    stored_distances = np.empty(shape=len(array_of_rot_angles))
     for i in range(len(array_of_rot_angles)) :
         quat_nuc1 = LFT1.get_custom_quaternion(v_direction1, array_of_rot_angles[i])
         quat_nuc2 = LFT1.get_custom_quaternion(v_direction2, array_of_rot_angles[i])
 
-        testnuc1 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, nuc1, nuc1[id_nuc1_origin])
-        testnuc2 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc2, nuc2, nuc2[id_nuc2_origin])
+        testnuc1 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, arr_nuc1, arr_nuc1[id_nuc1_origin])
+        testnuc2 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc2, arr_nuc2, arr_nuc2[id_nuc2_origin])
 
-        distance_between_nucs = LFT1.get_length_of_vector(testnuc1[id_dist_compl1], testnuc2[id_dist_compl2])
+        stored_distances[i] = LFT1.get_length_of_vector(testnuc1[id_dist_compl1], testnuc2[id_dist_compl2])
         # If the distance is suitable according to the boundaries, return the stack
-        if LFT1.assert_length_of_vector(distance_between_nucs) :
+        if LFT1.assert_length_of_vector(stored_distances[i]) :
             complementary_strand = np.vstack((testnuc1, testnuc2))
-            return complementary_strand, index_lead
-        else:
-            stored_distances[i] = distance_between_nucs
+            return complementary_strand, index_lead, compl1_nuc, compl2_nuc
 
+    ### CALCULATIONS BASED ON ANGLE
+    idx_angle_between_nuc = [LFT2.retrieve_atom_index(compl2_nuc, APL1[1]) + compl2_linker.mol_length,
+                             LFT2.retrieve_atom_index(compl2_linker, APL1[2]),
+                             LFT2.retrieve_atom_index(compl1_nuc, APL1[3])]
+    angle_to_fit = compl2_base.get_angle("alpha")
+    v_direction1, v_direction2 = LFFB.assert_rotation_of_bases_by_angle(array_nucs, v_directions, index_origin, idx_angle_between_nuc, angle_to_fit)
+
+    idx0 = idx_angle_between_nuc[0]
+    idx1 = idx_angle_between_nuc[1]
+    idx2 = idx_angle_between_nuc[2]
+
+    stored_angles = np.empty(shape=len(array_of_rot_angles))
+    for i in range(len(array_of_rot_angles)) :
+        quat_nuc1 = LFT1.get_custom_quaternion(v_direction1, array_of_rot_angles[i])
+        quat_nuc2 = LFT1.get_custom_quaternion(v_direction2, array_of_rot_angles[i])
+
+        testnuc1 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, arr_nuc1, arr_nuc1[id_nuc1_origin])
+        testnuc2 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc2, arr_nuc2, arr_nuc2[id_nuc2_origin])
+
+        # Normalise vectors
+        v0 = LFT1.return_normalized(testnuc2[idx0] - testnuc2[idx1])
+        v1 = LFT1.return_normalized(testnuc1[idx2] - testnuc2[idx1])
+
+        # Calculate the rotation by the angle that the vectors form. The output of the angle is in radians
+        stored_angles[i] = LFT1.get_angle_of_rotation(v0, v1)
+
+        if LFT1.assert_size_of_angle(stored_angles[i], angle_to_fit) :
+            complementary_strand = np.vstack((testnuc1, testnuc2))
+            return complementary_strand, index_lead, compl1_nuc, compl2_nuc
+
+    # If there is no solution, take the one with the smallest angle
+    stored_distances = LFT1.smallest_difference(stored_distances, angle_to_fit)
     # If this part of the code is reached, that means none of the evaluated distances are suitable. Let's search the shortest one in the list
-    min_val = stored_distances.min()
-    index_min = np.where(stored_distances == min_val)
+    index_min = np.where(stored_distances == stored_distances.min())
     angle_of_rot = array_of_rot_angles[index_min[0]]
     quat_nuc1 = LFT1.get_custom_quaternion(v_direction1, float(angle_of_rot))
     quat_nuc2 = LFT1.get_custom_quaternion(v_direction2, float(angle_of_rot))
 
-    nuc1 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, nuc1, nuc1[id_nuc1_origin])
-    nuc2 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc2, nuc2, nuc2[id_nuc2_origin])
+    nuc1 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, arr_nuc1, arr_nuc1[id_nuc1_origin])
+    nuc2 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc2, arr_nuc2, arr_nuc2[id_nuc2_origin])
     complementary_strand = np.vstack((nuc1, nuc2))
-    return complementary_strand, index_lead
+    return complementary_strand, index_lead, compl1_nuc, compl2_nuc
 
 
 def assert_possible_base_conformations_and_fit(leading_nuc, leading_array : np.ndarray, conformations : list, compl_linker, complementary_strand : np.ndarray,
@@ -452,10 +450,11 @@ def assert_possible_base_conformations_and_fit(leading_nuc, leading_array : np.n
         conf_n = initMolecule.Nucleoside(conformations[0])
         conf_n_arr = LFFB.position_complementary_base(leading_nuc, conf_n, leading_array, index_lead)
         conf_with_linker = position_phosphate_linker(conf_n, conf_n_arr, compl_linker)
-#        return conf_with_linker
-        # Fit the nucleoside array better
-        conf_n_final = LFFB.tilt_array_to_get_a_better_fit(conf_n, compl_linker, prev_compl_nuc, prev_compl_linker, conf_with_linker, complementary_strand, index_compl)
-        return conf_n_final
+
+        #conf_n_final = LFFB.tilt_array_to_get_a_better_fit(conf_n, compl_linker, prev_compl_nuc, prev_compl_linker, conf_with_linker, complementary_strand, index_compl)
+        conf_n.array = LFFB.tilt_array_to_get_a_better_fit(conf_n, compl_linker, prev_compl_nuc, prev_compl_linker, conf_with_linker, complementary_strand, index_compl)
+
+        return conf_n
 
     ## Since there are multiple conformations available, we will need to sort out which one will fit the best.
     ## First we parse the correct indexes for the vectors we want to evaluate (check the distance)
@@ -500,13 +499,19 @@ def assert_possible_base_conformations_and_fit(leading_nuc, leading_array : np.n
     if np.any(stored_bb_dihedral_bools == True) :
         index_of_best_conformation = LFFB.retrieve_index_of_best_conformation(stored_bb_distances, stored_bb_dihedral_bools)
         if not stored_bb_distance_bools[index_of_best_conformation] == True:
-            return LFFB.tilt_array_to_get_a_better_fit(initMolecule.Nucleoside(conformations[index_of_best_conformation]), compl_linker, prev_compl_nuc, prev_compl_linker, possibilities_of_conformations[index_of_best_conformation], complementary_strand, index_compl)
+            conf_n = initMolecule.Nucleoside(conformations[index_of_best_conformation])
+            conf_n.array = LFFB.tilt_array_to_get_a_better_fit(conf_n, compl_linker, prev_compl_nuc, prev_compl_linker, possibilities_of_conformations[index_of_best_conformation], complementary_strand, index_compl)
+            return conf_n
+            #return LFFB.tilt_array_to_get_a_better_fit(conf_n, compl_linker, prev_compl_nuc, prev_compl_linker, possibilities_of_conformations[index_of_best_conformation], complementary_strand, index_compl)
 
-        return possibilities_of_conformations[index_of_best_conformation]
+        #return possibilities_of_conformations[index_of_best_conformation]
     # if the check dihedral suitability fails, check for distance suitability
     if np.any(stored_bb_distance_bools == True):
         index_of_best_conformation = LFFB.retrieve_index_of_best_conformation(stored_bb_distances, stored_bb_distance_bools)
-        return possibilities_of_conformations[index_of_best_conformation]
+        conf_n =  initMolecule.Nucleoside(conformations[index_of_best_conformation])
+        conf_n.array = possibilities_of_conformations[index_of_best_conformation]
+        return conf_n
+        #return possibilities_of_conformations[index_of_best_conformation]
 
 
     ## Alas, none of the conformations were suitable enough, it seems we will have to fit them over and over.
@@ -533,10 +538,88 @@ def assert_possible_base_conformations_and_fit(leading_nuc, leading_array : np.n
 
     if np.any(stored_bb_dihedral_bools == True) :
         index_of_best_conformation = LFFB.retrieve_index_of_best_conformation(stored_bb_distances, stored_bb_dihedral_bools)
-        return possibilities_of_conformations[index_of_best_conformation]
+        conf_n =  initMolecule.Nucleoside(conformations[index_of_best_conformation])
+        conf_n.array = possibilities_of_conformations[index_of_best_conformation]
+        return conf_n
+        #return possibilities_of_conformations[index_of_best_conformation]
+
     # This gives the one with the least distance from the desired bb_distance
     index_of_best_conformation = LFFB.retrieve_index_of_best_conformation(stored_bb_distances, stored_bb_distance_bools)
-    return possibilities_of_conformations[index_of_best_conformation]
+    conf_n =  initMolecule.Nucleoside(conformations[index_of_best_conformation])
+    conf_n.array = possibilities_of_conformations[index_of_best_conformation]
+    return conf_n
+    #return possibilities_of_conformations[index_of_best_conformation]
+
+
+def orient_the_linker_moieties_better(CONF_LIST : list, LINK_LIST : list, leading_array : np.ndarray, compl_array : np.ndarray) -> Union[np.ndarray, np.ndarray]:
+    """ There are, for N nucleic acids in a single strands, always N - 1 nucleotides and therefor N - 1 linker moieties built in each strand.
+        This function is implemented to consider the placement of all the linker moieties. If they are unfortunately placed, moved them to a more suitable conformations.
+
+        Important to note is that we build the leading strand from the bottom up.
+        Important to note is that we build the complementary strand from the top up.                         """
+
+    # LEADING STRAND
+    lead_nuc = CONF_LIST[0]
+    lead_link = LINK_LIST[0]
+
+    idx_lead = leading_array.shape[0]          # Initiate the index counter for the leading strand. 
+    for nucleotide in range(len(lead_nuc) - 1):
+        # Initialise the molecules as json objects
+        nuc = initMolecule.Nucleoside(lead_nuc[nucleotide])
+        link = initMolecule.Desmos(lead_link[nucleotide])
+        nextnuc = initMolecule.Nucleoside(lead_nuc[nucleotide + 1])
+
+        # Decrement the idx_lead to be able to parse the atoms from the leading strands's array
+        idx_lead -= (nuc.mol_length + link.mol_length + nextnuc.mol_length)
+
+        # Parse the required atoms from AtomParsingList
+        lead_APL = LFT3.Atom_Parsing_List(nuc, link, nextnuc)
+        ArrOfIdxBB, ArrOfIdxLink = LFFB.parse_indexes_of_the_array_for_linker_reorientation(lead_APL, nuc, link, nextnuc, idx_lead)
+
+        # Based on the positioning, the linker moiety has or has not been rotated
+        # It is a bit overkill to override the same value (if the reorientation was not necessary), but overriding two indexes at a time is not such a large consumption of time to worry over
+        linker_array = LFFB.assert_and_reorient_the_position_of_the_linker(ArrOfIdxBB, ArrOfIdxLink, leading_array)
+        leading_array[ArrOfIdxLink] = linker_array
+
+        # Increment for the next cycle
+        idx_lead += nextnuc.mol_length
+
+
+
+    # COMPLEMENTARY STRAND
+    compl_nuc = CONF_LIST[1]
+    compl_link = LINK_LIST[1]
+
+    idx_link = 0
+    idx_compl = 0                           # Initiate the index counter for the complementary strand.
+
+    for nucleotide in range(1, len(compl_nuc)):
+
+        # Initialise the molecules as json objects
+        nuc = initMolecule.Nucleoside(compl_nuc[nucleotide])
+        link = initMolecule.Desmos(compl_link[idx_link])
+        prevnuc = initMolecule.Nucleoside(compl_nuc[nucleotide - 1])
+
+        # Parse the required atoms from AtomParsingList
+        compl_APL = LFT3.Atom_Parsing_List(prevnuc, link, nuc)
+        ArrOfIdxBB, ArrOfIdxLink = LFFB.parse_indexes_of_the_array_for_linker_reorientation(compl_APL, nuc, link, prevnuc, idx_compl)
+
+        # Based on the positioning, the linker moiety has or has not been rotated
+        # It is a bit overkill to override the same value (if the reorientation was not necessary), but overriding two indexes at a time is not such a large consumption of time to worry over
+        linker_array = LFFB.assert_and_reorient_the_position_of_the_linker(ArrOfIdxBB, ArrOfIdxLink, compl_array)
+        compl_array[ArrOfIdxLink] = linker_array
+
+        # Decrement the idx_lead to be able to parse the atoms from the leading strands's array
+        idx_compl += (prevnuc.mol_length + link.mol_length)
+
+        idx_link += 1
+
+
+
+    return leading_array, compl_array
+
+
+
 
 
 def cap_nucleic_acid_strands(leading_array : np.ndarray, leading_sequence : list, complementary_array : np.ndarray, complementary_sequence : list) -> Union[np.ndarray, list]:

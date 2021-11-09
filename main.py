@@ -68,7 +68,7 @@ else:
 
     # If we want to call for a randomised sequence
     if arguments.randomise:
-        CHEMISTRY, LENGTH_SEQUENCE, SEQUENCE = fundaments.randomise(arguments.randomise, options)
+        CHEMISTRY, LENGTH_SEQUENCE, SEQUENCE, COMPL_SEQ = fundaments.randomise(arguments.randomise, options)
 
     # If we want to convert XYZ file to PDB
     if arguments.xyz_pdb:
@@ -112,7 +112,7 @@ def main():
     if arguments.randomise:
         print_divide_between_command_and_output()
         print("Randioli randioli, what is the spaghetolli?\n")
-        randomise.randomiser(CHEMISTRY, LENGTH_SEQUENCE, SEQUENCE)
+        randomise.randomiser(CHEMISTRY, LENGTH_SEQUENCE, SEQUENCE, COMPL_SEQ)
 
     # Convert an ORCA xyz-formatted molecule file to a pdb file
     if arguments.xyz_pdb:

@@ -13,6 +13,17 @@ class InputExclusivity(Exception):
     Except = " These flags are mutually exclusive; --transmute     --Daedalus "
 
 
+def remove_trailing_whitespace(fileList : list) -> list:
+
+    # intialise new list
+    newList = []
+    # Remove all trailing whitespace, cannot depend on only the last line being whitespace
+    for i in fileList:
+        # Truthy statement check. If this is not empty, append it to the new list
+        if i.strip():
+            newList.append(i)
+
+    return newList
 
 def check_if_nucleotides_are_valid(input_sequence : list) -> bool:
     """ Check if any of the prompted nucleotides is not valid. """
@@ -33,7 +44,7 @@ def daedalus(DaedalusInput, options):
 
     list_of_valid_flags = ["--sequence", "--complement"]
     # Read the input file and create a list object of the sequence. Removes any whitespace.
-    fileDaedalus = list(map(lambda x: x.strip(), DaedalusInput.readlines()))
+    fileDaedalus = remove_trailing_whitespace(list(map(lambda x: x.strip(), DaedalusInput.readlines())))
 
     # Check if amount of inputs are valid
     if len(fileDaedalus) != len(list_of_valid_flags):
@@ -83,7 +94,7 @@ def daedalus(DaedalusInput, options):
 def transmute(TransmuteInput, options):
 
     # Read the input file and create a list object of the sequence. Removes any whitespace.
-    fileTransmute = list(map(lambda x: x.strip(), TransmuteInput.readlines()))
+    fileTransmute = remove_trailing_whitespace(list(map(lambda x: x.strip(), TransmuteInput.readlines())))
 
     # Check if amount of inputs are valid
     list_of_valid_flags = ["--pdb", "--id", "--moiety", "--conformation", "--dihedrals", "--bondangles"]
@@ -127,10 +138,10 @@ def transmute(TransmuteInput, options):
 
 def randomise(RandomiseInput, options):
 
-    fileRandomise = list(map(lambda x: x.strip(), RandomiseInput.readlines()))
+    fileRandomise = remove_trailing_whitespace(list(map(lambda x: x.strip(), RandomiseInput.readlines())))
 
     # Check list of valid inputs 
-    list_of_valid_flags = ["--chemistry", "--length", "--sequence"]
+    list_of_valid_flags = ["--chemistry", "--length", "--sequence", "--complement"]
     if len(fileRandomise) != 2:
         print_divide_between_command_and_output()
         print("Only two arguments are required at one time, please check our input file.\n\n\n")
@@ -155,6 +166,7 @@ def randomise(RandomiseInput, options):
             # If one chemistry is prompted
             elif len(arg) == 2:
                 chemistry = arg[1]
+
         if arg[0] == "--length":
             length_sequence = int(arg[1])
             sequence = None
@@ -162,6 +174,18 @@ def randomise(RandomiseInput, options):
         if arg[0] == "--sequence":
             sequence = arg[1:]
             length_sequence = 0
+
+        if arg[0] == "--complement":
+            if len(arg) > 2:
+                complement = arg[1:]
+                if check_if_nucleotides_are_valid(complement):
+                    sys.exit(1)
+
+            complement = arg[1]
+            compl_test_against = ["homo", "DNA", "RNA"]
+            if complement not in compl_test_against:
+                print("the variable in '--complement' is not a list and not one of the available inputs. Please revise your input for this flag.")
+                sys.exit(0)
 
     # If the variable chemistry has not been defined, then
     try:
@@ -172,12 +196,12 @@ def randomise(RandomiseInput, options):
         #options.print_help()
         sys.exit(0)
 
-    return chemistry, length_sequence, sequence
+    return chemistry, length_sequence, sequence, complement
 
 
 def xyz_to_pdb(ConversionInput, options):
 
-    fileConversion = list(map(lambda x: x.strip(), ConversionInput.readlines()))
+    fileConversion = remove_trailing_whitespace(list(map(lambda x: x.strip(), ConversionInput.readlines())))
 
     # Check list of valid inputs 
     list_of_valid_flags = ["--xyz", "--atomID", "--atomname_list"]

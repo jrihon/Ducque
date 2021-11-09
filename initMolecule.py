@@ -14,6 +14,7 @@ class Nucleoside:
         self.array = asarray(json.loads(self.jsonObject["pdb_properties"]["Coordinates"]), dtype=float)
         self.atom_list = json.loads(self.jsonObject["pdb_properties"]["Atoms"])
         self.mol_length = int(json.loads(self.jsonObject["pdb_properties"]["Shape"])[0])
+        self.filename = jsonfile
 
     def get_dihedral(self, dihedral : str) -> float:
         """ return dihedral value of the queried dihedral """

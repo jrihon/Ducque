@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Union
 
 import initMolecule
 
@@ -10,9 +11,6 @@ import labyrinth_func_tools3 as LFT3
 
 
 """ This file is used to refactor some of the code from labyrinth_func.py, to make a more legible. """
-
-
-
 
 def retrieve_index_of_best_conformation(stored_bb_distances, stored_bb_bools):
 
@@ -290,6 +288,167 @@ def position_complementary_base(leading_base, complementary_base, leading_array 
     return LFT1.move_to_origin_ROTATE_move_back_to_loc(plane2_quaternion, compl_nucleoside_array, R_vector)
 
 
+def assert_rotation_of_bases_by_distance(array_nucs : list, v_directions: np.array, index_origin : Union[list, float], index_distances : list) -> np.ndarray:
+    """ Assert the direction of the rotation axis by measuring the distances between the two nucleic acids; by the backbone"""
+    ## ASSERT THE ROTATIONS
+    # use a small angle of 2 degrees
+    angle_of_rot_TEST = 5 * (np.pi/180)
+
+    nuc1 = array_nucs[0]
+    nuc2 = array_nucs[1]
+
+    if len(v_directions) == 2:
+        v_direction1, v_direction2 = v_directions[0], v_directions[1]
+        direction_of_rotation = np.array([[1,1], [1,-1], [-1, 1], [-1, -1]])
+        stored_distances = np.empty(4)
+
+        index = 0
+        for directions in direction_of_rotation:
+            # The direction of the direction_axis is the following ;
+            d1 = v_direction1 * directions[0]
+            d2 = v_direction2 * directions[1]
+
+            # Get quaternion for the rotation
+            quat_nuc1 = LFT1.get_custom_quaternion(d1, angle_of_rot_TEST)
+            quat_nuc2 = LFT1.get_custom_quaternion(d2, angle_of_rot_TEST)
+
+            # Rotate the nucleoside by the plane of the base
+            tmp_nuc1 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, nuc1, nuc1[index_origin[0]])
+            tmp_nuc2 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc2, nuc2, nuc2[index_origin[1]])
+
+            # Calculate the rotation
+            stored_distances[index] = LFT1.get_length_of_vector(tmp_nuc1[index_distances[0]], tmp_nuc2[index_distances[1]])
+
+            index += 1
+
+        stored_distances = LFT1.smallest_difference(stored_distances, 1.6)
+        index_min = np.where(stored_distances == stored_distances.min())
+        v_directions = direction_of_rotation[index_min[0]][0]
+
+        return v_direction1 * v_directions[0], v_direction2 * v_directions[1]
+
+    if len(v_directions) == 1:
+        v_direction1 = v_directions[0]
+        direction_of_rotation = np.array([[1], [-1]])
+        stored_distances = np.empty(2)
+
+        index = 0
+        for directions in direction_of_rotation:
+            # The direction of the direction_axis is the following ;
+            d1 = v_direction1 * directions
+
+            # Get quaternion for the rotation
+            quat_nuc = LFT1.get_custom_quaternion(d1, angle_of_rot_TEST)
+
+            # Rotate the nucleoside by the plane of the base
+            tmp_nuc2 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc, nuc2, nuc2[index_origin])
+
+            # Calculate the rotation
+            stored_distances[index] = LFT1.get_length_of_vector(nuc1[index_distances[0]], tmp_nuc2[index_distances[1]])
+
+            index += 1
+
+        stored_distances = LFT1.smallest_difference(stored_distances, 1.6)
+        index_min = np.where(stored_distances == stored_distances.min())
+        direction = direction_of_rotation[index_min[0]][0]
+        return v_direction1 * direction
+
+
+def assert_rotation_of_bases_by_angle(array_nucs : list, v_directions : list,  index_origin : Union[list, int], index_angles: list, angle_to_fit : float)  -> np.ndarray:
+    """ Assert the direction of the rotation axis by approximating the best fitting angle between the two nucleic acids; by the backbone"""
+    ## ASSERT THE ROTATIONS
+    # use a small angle of 2 degrees
+    angle_of_rot_TEST = 5 * (np.pi/180)
+    nuc1 = array_nucs[0]
+    nuc2 = array_nucs[1]
+
+    idx0 = index_angles[0]
+    idx1 = index_angles[1]
+    idx2 = index_angles[2]
+
+
+    # Two sets of directions to check
+    if len(v_directions) == 2:
+        stored_angles = np.empty(4)
+        v_direction1, v_direction2 = v_directions[0], v_directions[1]
+        direction_of_rotation = np.array([[1,1], [1,-1], [-1, 1], [-1, -1]])
+
+        index = 0
+        for directions in direction_of_rotation:
+            # The direction of the direction_axis is the following ;
+            d1 = v_direction1 * directions[0]
+            d2 = v_direction2 * directions[1]
+
+            # Get quaternion for the rotation
+            quat_nuc1 = LFT1.get_custom_quaternion(d1, angle_of_rot_TEST)
+            quat_nuc2 = LFT1.get_custom_quaternion(d2, angle_of_rot_TEST)
+
+            # Rotate the nucleoside by the plane of the base
+            tmp_nuc1 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, nuc1, nuc1[index_origin[0]])
+            tmp_nuc2 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc2, nuc2, nuc2[index_origin[1]])
+
+            # Normalise vectors
+            v0 = LFT1.return_normalized(tmp_nuc2[idx0] - tmp_nuc2[idx1])
+            v1 = LFT1.return_normalized(tmp_nuc1[idx2] - tmp_nuc2[idx1])
+
+            # Calculate the rotation by the angle that the vectors form. The output of the angle is in radians
+            stored_angles[index] = LFT1.get_angle_of_rotation(v0, v1)
+
+            index += 1
+        # Find the angle with the lowest difference possible and use that specific set of rotations
+        stored_angles = LFT1.smallest_difference(stored_angles, angle_to_fit)
+        index_min = np.where(stored_angles == stored_angles.min())
+        v_directions = direction_of_rotation[index_min[0]][0]
+
+        return v_direction1 * v_directions[0], v_direction2 * v_directions[1]
+
+    # One direction to check
+    if len(v_directions) == 1:
+        stored_angles = np.empty(2)
+        v_direction1 = v_directions[0]
+        direction_of_rotation = np.array([[1], [-1]])
+
+        index = 0
+        for directions in direction_of_rotation:
+            # The direction of the direction_axis is the following ;
+            d1 = v_direction1 * directions
+
+            # Get quaternion for the rotation
+            quat_nuc = LFT1.get_custom_quaternion(d1, angle_of_rot_TEST)
+
+            # Rotate the nucleoside by the plane of the base
+            tmp_nuc2 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc, nuc2, nuc2[index_origin])
+
+            # Normalise vectors
+            v0 = LFT1.return_normalized(tmp_nuc2[idx0] - tmp_nuc2[idx1])
+            v1 = LFT1.return_normalized(nuc1[idx2] - tmp_nuc2[idx1])
+
+            # Calculate the rotation by the angle that the vectors form. The output of the angle is in radians
+            stored_angles[index] = LFT1.get_angle_of_rotation(v0, v1)
+
+            index += 1
+        # Find the angle with the lowest difference possible and use that specific set of rotations
+        stored_angles = LFT1.smallest_difference(stored_angles, angle_to_fit)
+        index_min = np.where(stored_angles == stored_angles.min())
+        direction = direction_of_rotation[index_min[0]][0]
+
+        return v_direction1 * direction
+
+def distance_or_angle(distances_arr : np.array, angles_arr : np.array, ref_distance : float, ref_angle : float) -> int:
+    """ Check to see if the nucleoside fits best distance-bounds or the angle-bounds. Return the index of the array where it is the smallest. """
+    stored_distances = LFT1.smallest_difference(distances_arr, ref_distance)
+    stored_angles = LFT1.smallest_difference(angles_arr, ref_angle)
+
+    # Relative differences
+    rel_distance = stored_distances.min() / ref_distance
+    rel_angle = stored_angles.min() / ref_angle
+
+    # Pick an index from the most suitable one
+    if rel_angle < rel_distance:
+        return np.where(stored_angles == stored_angles.min())[0]
+    return np.where(stored_distances == stored_distances.min())[0]
+
+
 def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linker, compl_nuc_arr : np.ndarray, complementary_strand : np.ndarray, index_compl : int) -> np.ndarray :
     """ Have the returned array from assert_possible_base_conformations fit the leading strand better. Here we will turn the return array according to length, then dihedral
         compl_nuc is a json object
@@ -301,21 +460,21 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linke
     # Atom Parsing List for the knowing which atoms to parse from the respective arrays ; for bond length and dihedral evaluation
     APL = LFT3.Atom_Parsing_List(compl_nuc, compl_linker, prev_nuc)
     dihedral = compl_nuc.get_dihedral("alpha")
-    angle = compl_nuc.get_angle("alpha")
+    angle_to_fit = compl_nuc.get_angle("alpha")
 
     # Parse the last atom needed from the complementary strand. NB : index_compl has been set to the correct value in the function ' assert_possible ... _and_fit() '.
     # This is the last final atom in the backbone ( 3'-> 5), so in the case of DNA, this would store the vector of the phosphorus atom in its linker
-    id_compl_strand = LFT2.retrieve_atom_index(prev_nuc, APL[3]) + index_compl + prev_linker.mol_length
-    v_compl_strand = complementary_strand[id_compl_strand]
+    idx_compl_strand = LFT2.retrieve_atom_index(prev_nuc, APL[3]) + index_compl + prev_linker.mol_length
+    v_compl_strand = complementary_strand[idx_compl_strand]
 
     # Parse the other atoms needed from the current nucleotide that is being fitted
-    id_v0 = LFT2.retrieve_atom_index(compl_nuc, APL[0]) + compl_linker.mol_length
-    id_v1 = LFT2.retrieve_atom_index(compl_nuc, APL[1]) + compl_linker.mol_length
-    id_v2 = LFT2.retrieve_atom_index(compl_linker, APL[2])
+    idx_v0 = LFT2.retrieve_atom_index(compl_nuc, APL[0]) + compl_linker.mol_length
+    idx_v1 = LFT2.retrieve_atom_index(compl_nuc, APL[1]) + compl_linker.mol_length
+    idx_v2 = LFT2.retrieve_atom_index(compl_linker, APL[2])
 
-    v0 = compl_nuc_arr[id_v0]
-    v1 = compl_nuc_arr[id_v1]
-    v2 = compl_nuc_arr[id_v2]
+    v0 = compl_nuc_arr[idx_v0]
+    v1 = compl_nuc_arr[idx_v1]
+    v2 = compl_nuc_arr[idx_v2]
 
     # Calculate of the distance. We will check later if it is between 1 and 2 Angstrom.
     calculated_length = LFT1.get_length_of_vector(v2, v_compl_strand)
@@ -341,59 +500,159 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linke
 
         # Make a custom direction and angle. Not to worry, the direction is perpendicular to the movement
         compl_base_atoms1, _ = LFT3.retrieve_atoms_for_plane_rotation_of_complement(compl_base, compl_base)
-        compl_base_atoms1_0 = LFT2.retrieve_atom_index(compl_nuc, compl_base_atoms1[0]) + compl_linker.mol_length
-
         compl_base_atoms2, _ , __= LFT3.retrieve_atoms_for_positioning_of_complement1(compl_base, compl_base)
-        compl_base_atoms2_2 = LFT2.retrieve_atom_index(compl_nuc, compl_base_atoms2[2]) + compl_linker.mol_length
+        idx_compl_base_atoms1 = LFT2.retrieve_atom_index(compl_nuc, compl_base_atoms1[0]) + compl_linker.mol_length
+        idx_compl_base_atoms2 = LFT2.retrieve_atom_index(compl_nuc, compl_base_atoms2[2]) + compl_linker.mol_length
+        v_direction = LFT1.return_normalized(compl_nuc_arr[idx_compl_base_atoms2] - compl_nuc_arr[idx_compl_base_atoms1])
 
-        v_direction = LFT1.return_normalized(compl_nuc_arr[compl_base_atoms2_2] - compl_nuc_arr[compl_base_atoms1_0])
+        # rotations that need to be operated with
+        array_of_rot_angles = np.linspace(2.5, 30, 16) * (np.pi/180)
 
-        # Rotate both directions the nuc1 and assert the distance between nuc1 and nuc2, then remember the direction of the smallest turn
-        nuc1_quaternion = LFT1.get_custom_quaternion(v_direction, angle_of_rot_TEST)
-        test_turn_arr = LFT1.move_to_origin_ROTATE_move_back_to_loc(nuc1_quaternion, compl_nuc_arr, compl_nuc_arr[compl_base_atoms1_0])
-        # Distance between phosphorus of the previous nucleotide and the (i.e.) O3' of the next nucleoside (in the example given a DNA nucleoside)
-        dist_between_nucs = LFT1.get_length_of_vector(test_turn_arr[id_v2], complementary_strand[id_compl_strand])
+        ### DISTANCE
+        idx_distance_between_nuc = [LFT2.retrieve_atom_index(compl_linker, APL[2]),
+                                    LFT2.retrieve_atom_index(prev_nuc, APL[3])]
 
-        # Check if the distance between subsequent nucleotides is suitable, according to the set boundaries.
-        # If that is not the case, store the current distance, rotate the nucleotide in the reverse direction and store that new distance between nucleotides too.
-        # Check which distance is the smallest and remember the orientation of the direction axis, as this will be the direction to rotate over from now on.
-        if not LFT1.assert_length_of_vector(dist_between_nucs):
-            x1 = dist_between_nucs
+        v_direction = assert_rotation_of_bases_by_distance([prev_nuc.array, compl_nuc_arr], [v_direction], idx_compl_base_atoms1, idx_distance_between_nuc)
 
-            v_direction_test = v_direction * -1.0
-            nuc1_quaternion = LFT1.get_custom_quaternion(v_direction_test, angle_of_rot_TEST)
-            test_turn_arr = LFT1.move_to_origin_ROTATE_move_back_to_loc(nuc1_quaternion, compl_nuc_arr, compl_nuc_arr[compl_base_atoms1_0])
-            x2 = LFT1.get_length_of_vector(test_turn_arr[id_v2], complementary_strand[id_compl_strand])
-
-            if x1 > x2 :
-                v_direction *= -1.0
-
-        # Generate angles of rotation. Make note that we won't go past a 15 degree angle, since that general will not be necessary to turn that much.
-        array_of_rot_angles = np.linspace(2.5, 30, 8) * (np.pi/180)
-
-        stored_distances = np.zeros(len(array_of_rot_angles))
+        stored_distances = np.empty(len(array_of_rot_angles))
         for i in range(len(array_of_rot_angles)) :
-            nuc1_quaternion = LFT1.get_custom_quaternion(v_direction, array_of_rot_angles[i])
-            testnuc1 = LFT1.move_to_origin_ROTATE_move_back_to_loc(nuc1_quaternion, compl_nuc_arr, compl_nuc_arr[compl_base_atoms1_0])
-            dist_between_nucs = LFT1.get_length_of_vector(testnuc1[id_v2], complementary_strand[id_compl_strand])
-            stored_distances[i] = dist_between_nucs
+            nucD_quaternion = LFT1.get_custom_quaternion(v_direction, array_of_rot_angles[i])
+            testnuc = LFT1.move_to_origin_ROTATE_move_back_to_loc(nucD_quaternion, compl_nuc_arr, compl_nuc_arr[idx_compl_base_atoms1])
+            stored_distances[i] = LFT1.get_length_of_vector(testnuc[idx_v2], complementary_strand[idx_compl_strand])
 
-            # If the distance is suitable according to the boundaries, return the nucleoside's array
-            if LFT1.assert_length_of_vector(dist_between_nucs) :
-                return testnuc1
+            if LFT1.assert_length_of_vector(stored_distances[i]):
+                return testnuc
 
-        # If this part of the code is reached, that means none of the evaluated distances are suitable. Let's search the shortest one in the list
-        min_val = stored_distances.min()
-        index_min = np.where(stored_distances == min_val)
-        angle_of_rot = array_of_rot_angles[index_min[0]]
+
+        ### ANGLE
+        idx_angle_between_nuc = [LFT2.retrieve_atom_index(compl_nuc, APL[1]) + compl_linker.mol_length,
+                                 LFT2.retrieve_atom_index(compl_linker, APL[2]),
+                                 LFT2.retrieve_atom_index(prev_nuc, APL[3])]
+
+        v_direction = assert_rotation_of_bases_by_angle([prev_nuc.array, compl_nuc_arr], [v_direction], idx_compl_base_atoms1, idx_angle_between_nuc, angle_to_fit)
+        idx0 = idx_angle_between_nuc[0]
+        idx1 = idx_angle_between_nuc[1]
+        idx2 = idx_angle_between_nuc[2]
+
+        stored_angles = np.empty(len(array_of_rot_angles))
+        for i in range(len(array_of_rot_angles)) :
+            nucA_quaternion = LFT1.get_custom_quaternion(v_direction, array_of_rot_angles[i])
+            testnuc = LFT1.move_to_origin_ROTATE_move_back_to_loc(nucA_quaternion, compl_nuc_arr, compl_nuc_arr[idx_compl_base_atoms1])
+
+            # Normalise vectors
+            v0 = LFT1.return_normalized(testnuc[idx0] - testnuc[idx1])
+            v1 = LFT1.return_normalized(prev_nuc.array[idx2] - testnuc[idx1])
+
+            # Calculate the rotation by the angle that the vectors form. The output of the angle is in radians
+            stored_distances[i] = LFT1.get_angle_of_rotation(v0, v1)
+
+            ## If the angle is suitable according to the boundaries, return the nucleoside's array
+            if LFT1.assert_size_of_angle(stored_distances[i], angle_to_fit):
+                return testnuc
+
+        # Check to see if distance or angle fits the best of our needs
+        index_min = distance_or_angle(stored_distances, stored_angles, 1.6, angle_to_fit)
+        angle_of_rot = array_of_rot_angles[index_min]
         nuc1_quaternion = LFT1.get_custom_quaternion(v_direction, float(angle_of_rot))
 
-        return LFT1.move_to_origin_ROTATE_move_back_to_loc(nuc1_quaternion, compl_nuc_arr, compl_nuc_arr[compl_base_atoms1_0])
+        return LFT1.move_to_origin_ROTATE_move_back_to_loc(nuc1_quaternion, compl_nuc_arr, compl_nuc_arr[idx_compl_base_atoms1])
+
+
+def parse_indexes_of_the_array_for_linker_reorientation(APL : list, nuc, link, nucPN, idx : int = 0) -> Union[np.array, np.array]:
+        """ Refactor the part of the code where we parse the correct indexes of the atoms we need from the array. """
+
+        nuc_atom_idx = LFT2.retrieve_atom_index(nuc, APL[1], (idx + link.mol_length + nucPN.mol_length ))
+        centrallink_atom_idx = LFT2.retrieve_atom_index(link, APL[2], (idx + nucPN.mol_length))
+        nucPN_atom_idx = LFT2.retrieve_atom_index(nucPN, APL[3], idx)
+        link_atoms_idx = LFT2.retrieve_atom_index_MULTIPLE(link, link.atom_list, (idx + nucPN.mol_length))
+
+        # Remove central atom from the link_atoms_idx array, since this will make it easier to calculate with later on without making mistakes
+        centroid_idx = LFT2.retrieve_atom_index(link, APL[2])
+        link_atoms_idx = np.delete(link_atoms_idx, centroid_idx)
+
+        return np.array([nuc_atom_idx, centrallink_atom_idx, nucPN_atom_idx]), link_atoms_idx
+
+#        if ID == "lead":
+#            # Parse all the indexes from the AtomParsingList
+#            nuc_atom_idx = LFT2.retrieve_atom_index(nuc, APL[1], (idx + link.mol_length + nucPN.mol_length ))
+#            centrallink_atom_idx = LFT2.retrieve_atom_index(link, APL[2], (idx + nucPN.mol_length))
+#            nucPN_atom_idx = LFT2.retrieve_atom_index(nucPN, APL[3], idx)
+#            link_atoms_idx = LFT2.retrieve_atom_index_MULTIPLE(link, link.atom_list, (idx + nucPN.mol_length))
+#
+#            # Remove central atom from the link_atoms_idx array, since this will make it easier to calculate with later on without making mistakes
+#            centroid_idx = LFT2.retrieve_atom_index(link, APL[2])
+#            link_atoms_idx = np.delete(link_atoms_idx, centroid_idx)
+#
+#            return np.array([nuc_atom_idx, centrallink_atom_idx, nucPN_atom_idx]), link_atoms_idx
+#
+#
+#        if ID == "complementary":
+#            # Parse all the indexes from the AtomParsingList
+#            nuc_atom_idx = LFT2.retrieve_atom_index(nuc, APL[1], (idx + link.mol_length + nucPN.mol_length))
+#            centrallink_atom_idx = LFT2.retrieve_atom_index(link, APL[2], (idx + nucPN.mol_length))
+#            nucPN_atom_idx= LFT2.retrieve_atom_index(nucPN, APL[3], idx)
+#
+#            link_atoms_idx = LFT2.retrieve_atom_index_MULTIPLE(link, link.atom_list, (idx + nucPN.mol_length))
+#
+#            # Remove central atom from the link_atoms_idx array, since this will make it easier to calculate with later on without making mistakes
+#            centroid_idx = LFT2.retrieve_atom_index(link, APL[2])
+#            link_atoms_idx = np.delete(link_atoms_idx, centroid_idx)
+#
+#            return np.array([nuc_atom_idx, centrallink_atom_idx, nucPN_atom_idx]), link_atoms_idx
+
+
+
+def assert_and_reorient_the_position_of_the_linker(ArrOfIdxBB: np.array, ArrOfIdxLink: np.array, SA : np.ndarray) -> Union[bool, np.array] :
+    """ Assess whether or not it is useful to reorient the array of the linker moiety.
+        SA is the strand's array
+
+        Important is that the direction of rotation, aka the cross product, is readily normalised 
+        To orient the linker properly, we take the vector from the backbone of the nucleotides (O5' and O3') and make the cross product of the plane
+            in which the linker lies in parallel to the backbone vector. This ensures that the plane of the linker is perpendicular to that of the vector itself.
+        This removes any possible clashes between the linker moiety and the adjacent nucleic acids. """
+
+    # Create the plane in which the backbone atoms lie; e.g. a plane with [O5', P, O3']
+    va0 = LFT1.return_normalized(SA[ArrOfIdxBB[0]] - SA[ArrOfIdxBB[1]])
+    va1 = LFT1.return_normalized(SA[ArrOfIdxBB[2]] - SA[ArrOfIdxBB[1]])
+    aCross = LFT1.get_direction_of_rotation(va1, va0)
+
+    # Create the plane in which the linker's atoms lie; e.g. a plane with [P, OP1, OP2]
+    vb0 = LFT1.return_normalized(SA[ArrOfIdxLink[0]] - SA[ArrOfIdxBB[1]])
+    vb1 = LFT1.return_normalized(SA[ArrOfIdxLink[1]] - SA[ArrOfIdxBB[1]])
+    bCross = LFT1.get_direction_of_rotation(vb1, vb0)
+
+    # An offset of 15 degrees to suggest that over this point, we will start a rotation
+    deg2rad = np.pi/180
+    NinetyDegrees = 1.5707963267948966                          # 90 degrees in radians
+    offSetRadians = 15 * deg2rad
+    dotProductInRad = np.arccos(np.dot(aCross, bCross))
+
+    # if the two cross-vectors are more or less orthogonal, return the function
+    if NinetyDegrees - offSetRadians <= dotProductInRad <= NinetyDegrees + offSetRadians:
+        return SA[ArrOfIdxLink]
+
+    # Generate a cone vector where the angle between aCross and the cone is 90deg.
+    cone_vector = LFT1.generate_cone_vector(NinetyDegrees)
+    quaternion_cone = LFT1.get_quaternion(aCross * -1.0)
+    rotated_cone_vector = LFT1.rotate_with_quaternion(quaternion_cone, cone_vector)
+    # The vectors in the cone will be evaluated against the vector that goes from O5' -> O3' 
+    parallelVector = LFT1.return_normalized(SA[ArrOfIdxBB[2]] - SA[ArrOfIdxBB[0]])
+    quaternion = LFT1.get_quaternion(parallelVector, bCross)
+
+    #return LFT1.move_to_origin_ROTATE_move_back_to_loc(quaternion, SA[ArrOfIdxLink], SA[ArrOfIdxBB[1]])
+    return LFT1.move_to_origin_ROTATE_move_back_to_loc(quaternion, SA[ArrOfIdxLink], SA[ArrOfIdxBB[1]])
+
+
+def reorient_the_position_of_the_linker():
+    """ Reorient the array of the linker and possibly even the atoms to which the central atom of the linker is attached to.
+        e.g. orient [P, OP1, OP2] and also [O3'] and [O5'] """
+    pass
+
 
 
 def capping_retrieve_atomnames(list_of_leading_sequence : list, list_of_complementary_sequence : list, backbone_dict : dict, nuc_dict : dict) -> list:
     """ This should return the names of the capping atoms.
-            i.e. ; if the H binds to O5', the atom name of the H should be HO5' 
+            i.e. ; if the H binds to O5', the atom name of the H should be HO5'
 
         Parse the backbone atoms from the respective dictionaries over at labyrinth_func_tools3.py """
     # Initiate a list with filler values

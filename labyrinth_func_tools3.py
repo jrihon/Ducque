@@ -8,14 +8,14 @@ import sysDaedalus
 dh = sysDaedalus.return_DAEDALUS_home()
 
 codex_acidum_nucleicum = {
-"dA": [ dh + "json/dna_adenosine_2endo.json", dh + "json/dna_phosphate.json"],
-"dG": [ dh + "json/dna_guanosine_2endo.json", dh + "json/dna_phosphate.json"],
-"dC": [ dh + "json/dna_cytidine_2endo.json", dh + "json/dna_phosphate.json"],
-"dT": [ dh + "json/dna_thymidine_2endo.json", dh + "json/dna_phosphate.json"],
-"rA": [ dh + "json/rna_adenosine_3endo.json", dh + "json/rna_phosphate.json"],
-"rC": [ dh + "json/rna_cytidine_3endo.json", dh + "json/rna_phosphate.json"],
-"rG": [ dh + "json/rna_guanosine_3endo.json", dh + "json/rna_phosphate.json"],
-"rU": [ dh + "json/rna_uracil_3endo.json", dh + "json/rna_phosphate.json"],
+"dA" : [ dh + "json/dna_adenosine_2endo.json", dh + "json/dna_phosphate.json"],
+"dG" : [ dh + "json/dna_guanosine_2endo.json", dh + "json/dna_phosphate.json"],
+"dC" : [ dh + "json/dna_cytidine_2endo.json", dh + "json/dna_phosphate.json"],
+"dT" : [ dh + "json/dna_thymidine_2endo.json", dh + "json/dna_phosphate.json"],
+"rA" : [ dh + "json/rna_adenosine_3endo.json", dh + "json/rna_phosphate.json"],
+"rC" : [ dh + "json/rna_cytidine_3endo.json", dh + "json/rna_phosphate.json"],
+"rG" : [ dh + "json/rna_guanosine_3endo.json", dh + "json/rna_phosphate.json"],
+"rU" : [ dh + "json/rna_uracil_3endo.json", dh + "json/rna_phosphate.json"],
 "ddA" : [ dh + "json/b-homodna_adenosine_1-4chair.json", dh + "json/dna_phosphate.json"],
 "ddG" : [ dh + "json/b-homodna_guanosine_1-4chair.json", dh + "json/dna_phosphate.json"],
 "ddC" : [ dh + "json/b-homodna_cytidine_1-4chair.json", dh + "json/dna_phosphate.json"],
@@ -32,10 +32,14 @@ codex_acidum_nucleicum = {
 "2MG" : [ dh + "json/2-ome-rna_guanosine_3endo.json", dh + "json/dna_phosphate.json"],
 "2MC" : [ dh + "json/2-ome-rna_cytidine_3endo.json", dh + "json/dna_phosphate.json"],
 "2MU" : [ dh + "json/2-ome-rna_uracil_3endo.json", dh + "json/dna_phosphate.json"],
-"cA": [ dh + "json/cena_adenosine_3endo.json", dh + "json/rna_phosphate.json"],
-"cG": [ dh + "json/cena_guanosine_3endo.json", dh + "json/rna_phosphate.json"],
-"cC": [ dh + "json/cena_cytidine_3endo.json", dh + "json/rna_phosphate.json"],
-"cT": [ dh + "json/cena_thymidine_3endo.json", dh + "json/rna_phosphate.json"],
+"cA" : [ dh + "json/cena_adenosine_3endo.json", dh + "json/rna_phosphate.json"],
+"cG" : [ dh + "json/cena_guanosine_3endo.json", dh + "json/rna_phosphate.json"],
+"cC" : [ dh + "json/cena_cytidine_3endo.json", dh + "json/rna_phosphate.json"],
+"cT" : [ dh + "json/cena_thymidine_3endo.json", dh + "json/rna_phosphate.json"],
+"dxA" : [dh + "json/dxylo_adenosine_3endo.json", dh + "json/dna_phosphate.json"],
+"dxG" : [dh + "json/dxylo_guanosine_3endo.json", dh + "json/dna_phosphate.json"],
+"dxC" : [dh + "json/dxylo_cytidine_3endo.json", dh + "json/dna_phosphate.json"],
+"dxT" : [dh + "json/dxylo_thymidine_3endo.json", dh + "json/dna_phosphate.json"],
 }
 
 
@@ -69,18 +73,23 @@ conformations_codex = {
 "cG": [ dh + "json/cena_guanosine_3endo.json"],
 "cC": [ dh + "json/cena_cytidine_3endo.json"],
 "cT": [ dh + "json/cena_thymidine_3endo.json"],
+"dxA" : [dh + "json/dxylo_adenosine_3endo.json"],
+"dxG" : [dh + "json/dxylo_guanosine_3endo.json"],
+"dxC" : [dh + "json/dxylo_cytidine_3endo.json"],
+"dxT" : [dh + "json/dxylo_thymidine_3endo.json"],
 }
 
 
 backbone_codex = {
+"Phosphate" : ["P"],
 "DNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "RNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "b-homoDNA" : ["O4'", "C4'", "C5'", "C6'", "O6'"],
 "HNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "Xylo" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "2-OMe-RNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
-"Phosphate" : ["P"],
 "CeNA" : ["O3'", "C3'", "C4'", "C7'", "O7'"],
+"dXylo" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 }
 
 linker_codex = {
@@ -94,6 +103,7 @@ def Atom_Parsing_List(prevnuc, link, nextnuc = None) -> list:
 
     By default, nextnuc is equal to None. If no json object has been parsed into nextnuc, that means you are positioning the following linker and not the following nucleoside. """
 
+    # For when adding the linker moiety to the nucleoside
     if nextnuc == None:
         prevChem = backbone_codex[json.loads(prevnuc.jsonObject["identity"])[1]]
         linkChem = linker_codex[json.loads(link.jsonObject["identity"])[0]]
@@ -103,6 +113,7 @@ def Atom_Parsing_List(prevnuc, link, nextnuc = None) -> list:
         return truncPrevChem + linkChem
 
 
+    # For when building a subsequent nucleoside to the current nucleotide
     if not nextnuc == None:
         prevChem = backbone_codex[json.loads(prevnuc.jsonObject["identity"])[1]]
         linkChem = backbone_codex[json.loads(link.jsonObject["identity"])[0]]

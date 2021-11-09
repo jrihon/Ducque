@@ -38,7 +38,6 @@ def get_direction_of_rotation(from_vector : np.ndarray, vector_to_rotate_onto : 
 
     cross_product = np.cross(from_vector, vector_to_rotate_onto)
     return return_normalized(cross_product)
-    #return cross_product / LA.norm(cross_product)
 
 
 def get_angle_of_rotation(from_vector : np.ndarray, vector_to_rotate_onto : np.ndarray) -> float:
@@ -116,30 +115,30 @@ def generate_and_rotate_single_vector(interpolated_theta_angle : float, phi : fl
     return rotated_vector
 
 
-def apply_rotation_of_planes(quaternion : np.array, nucleoside_array : np.ndarray, index_of_vectors : list) -> np.ndarray :
-    """ This functions applies a second rotation to the nucleoside. The problem here is that we cannot use a custom axis, since direction axises are always perpendicular to the two vectors.
-        This is why we rotate the array as usual. But we only override the vectors that we actually want to rotate.
-        This way, we effectively rotate over a certain bond, but the mathematical part just did a copy-paste of the vectors we really want
-        index_of_vectors : the vectors (or the atoms) that we do not want to have rotated. These will be cut out the list of indices.
-        """
-    # Get size of the array, then make a list of the range of indices to emulate the indices of the array we calculate with
-   # size_of_array = nucleoside_array.shape[0]
-   # list_of_indices = [i for i in range(size_of_array)]
-
-    # Remove index of the vectors of array that we do not want to rotate, so we do not override them later in this function
-    #for index in index_of_vectors:
-    #    list_of_indices.remove(index)
-
-    # apply rotation
-    #tmp_rotated_vector = quaternion.apply(nucleoside_array)
-    return quaternion.apply(nucleoside_array)
-
-    # Override the vectors into the nucleoside_array, ofcourse already having ommited the vectors you do not want to override
-   # for i in list_of_indices:
-   #     nucleoside_array[i] = tmp_rotated_vector[i]
-
-   # return nucleoside_array
-
+#def apply_rotation_of_planes(quaternion : np.array, nucleoside_array : np.ndarray, index_of_vectors : list) -> np.ndarray :
+#    """ This functions applies a second rotation to the nucleoside. The problem here is that we cannot use a custom axis, since direction axises are always perpendicular to the two vectors.
+#        This is why we rotate the array as usual. But we only override the vectors that we actually want to rotate.
+#        This way, we effectively rotate over a certain bond, but the mathematical part just did a copy-paste of the vectors we really want
+#        index_of_vectors : the vectors (or the atoms) that we do not want to have rotated. These will be cut out the list of indices.
+#        """
+#    # Get size of the array, then make a list of the range of indices to emulate the indices of the array we calculate with
+#   # size_of_array = nucleoside_array.shape[0]
+#   # list_of_indices = [i for i in range(size_of_array)]
+#
+#    # Remove index of the vectors of array that we do not want to rotate, so we do not override them later in this function
+#    #for index in index_of_vectors:
+#    #    list_of_indices.remove(index)
+#
+#    # apply rotation
+#    #tmp_rotated_vector = quaternion.apply(nucleoside_array)
+#    return quaternion.apply(nucleoside_array)
+#
+#    # Override the vectors into the nucleoside_array, ofcourse already having ommited the vectors you do not want to override
+#   # for i in list_of_indices:
+#   #     nucleoside_array[i] = tmp_rotated_vector[i]
+#
+#   # return nucleoside_array
+#
 
 def dihedral_array(atoms_in_dihr : np.ndarray, cone_vector : np.ndarray) -> np.ndarray :
     """ https://stackoverflow.com/questions/20305272/dihedral-torsion-angle-from-four-points-in-cartesian-coordinates-in-python
@@ -356,6 +355,11 @@ def assert_length_of_vector(length : float) -> bool:
     return 1.30 <= length <= 1.90
 
 
+def assert_size_of_angle(angle : float, angle_to_fit : float) -> bool:
+    """ Check if angle is roughly the correct size or if the nucleotide needs to be rotated """
+    return angle_to_fit * 0.8 <= angle <= angle_to_fit * 1.2
+
+
 def assert_dihedral_of_nucleotide(calculated_dihedral : float, dihedral : float) -> bool:
     """ Check if dihedral is roughly the correct angle or if the nucleotide needs to be rotated """
     offset_dihedral = 25
@@ -382,6 +386,11 @@ def assert_dihedral_of_nucleotide(calculated_dihedral : float, dihedral : float)
     # If it does not go over the bounds of -180 or 180, then just calculate it like this
     return dihedral - offset_dihedral <= calculated_dihedral <= dihedral + offset_dihedral
 
+
+def smallest_difference(array : np.array, ref_value : float) -> np.array:
+    """ Returns the value in the array where the difference with the reference value is the smallest"""
+    diff_array = array - ref_value
+    return np.abs(diff_array)
 
 #def check_phi_angle_of_vector(vectors : np.ndarray, axis : np.array = np.array([0,0,1])) :
 #    """ The dotproduct determines the angle of the vector with a given axis/vector.

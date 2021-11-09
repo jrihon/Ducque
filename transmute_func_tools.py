@@ -12,6 +12,7 @@ nucleoside_dict = {
         "XYLO" : "Xylose Nucleic acid",
         "2-OME-RNA" : "2-O-Methyl Ribonucleic acid",
         "CENA" : "Cylcohexenyl Nucleic acid",
+        "DXYLO" : "deoxy Xylose Nucleic Acid",
         }
 
 linker_dict = {
@@ -22,6 +23,7 @@ linker_dict = {
         "XYLO" : "Phosphate",
         "2-OME-RNA" : "Phosphate",
         "CENA" : "Phosphate",
+        "DXYLO" : "Phosphate",
         }
 
 

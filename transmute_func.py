@@ -308,7 +308,7 @@ class TransmuteToPdb:
             atom_type = atomname_list[atom][0]
 
             if atom_type != elements[atom]:
-                print("Atoms that do not match : Atom prompted - " + atom_type + ". Element parsed : " + elements[atom] + ".\n")
+                print("Atoms that do not match : Atom prompted - " + atom_type + ". Element parsed : " + elements[atom] + ". Position :" + str(atom + 1) + "\n")
                 return False
 
         return True
