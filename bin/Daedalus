@@ -2,4 +2,4 @@
 
 export DAEDALUSHOME="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 #echo $DAEDALUSHOME
-python $DAEDALUSHOME/main.py "$@"
+python3 $DAEDALUSHOME/main.py "$@"
