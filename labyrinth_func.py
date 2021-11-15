@@ -130,6 +130,9 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[lis
     complementary_dictDNA = { "A" : "T", "T" : "A", "G" : "C", "C" : "G", "U" : "A" }
     complementary_dictRNA = { "A" : "U", "T" : "A", "G" : "C", "C" : "G", "U" : "A" }
 
+    # The keys, meaning the nucleosides, from the complementary dictionary wil be parsed as a list
+    keys_of_dict = LFT3.codex_acidum_nucleicum.keys()
+
     bases = LFT2.retrieve_bases_list(sequence_list)
     if isinstance(complement, list):
         import fundaments
@@ -142,20 +145,16 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[lis
         # Check if one of the nucleosides in the prompted list is wrong, i.e. not existing or wrongly prompted (misspelled)
 
         # The keys, meaning the nucleosides, from the complementary dictionary wil be parsed as a list
-        keys_of_dict = LFT3.codex_acidum_nucleicum.keys()
         if not fundaments.check_if_nucleotides_are_valid(keys_of_dict):
             sys.exit(0)
 
         # Reverse the prompted list
         return complementary_sequence[::-1]
 
-    # if the sequence needs to be complementary per nucleoside
+    # if the sequence needs to be a homoduplex
     if complement.lower() == "homo":
         complementary_sequence = []
         list_of_chemistries = LFT2.retrieve_chemistry_list(sequence_list)
-
-        # The keys, meaning the nucleosides, from the complementary dictionary wil be parsed as a list
-        keys_of_dict = LFT3.codex_acidum_nucleicum.keys()
 
         # Get only the nucleosides of the same chemistry as the chemistry it will complement
         for chem_i in range(len(list_of_chemistries)):
@@ -169,23 +168,41 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[lis
 
         return complementary_sequence
 
+    # if the sequence needs to be a heteroduplex; import TFT to get the dictionary
+    import transmute_func_tools as TFT
+    NUC_DICT = list(TFT.nucleoside_dict.keys())
 
-    if complement.upper() == "DNA":
-        chemistry = "d"
+    if complement.upper() in NUC_DICT:
+        NUC_ID = TFT.nucleoside_dict[complement.upper()]
 
-        # Switch the bases the get their complementary base
-        comp_bases = LFT2.get_complementary_bases(bases, complementary_dictDNA)
-        complementary_sequence = LFT2.concatenate_chem_and_bases(chemistry, comp_bases)
-        return complementary_sequence
+        chemCode = LFT2.find_json_files_of_this_chemistry_and_return_chemistrycode(NUC_ID)
 
+        # If the key does not exist, this means that there is the uracil variant as the nucleobase of the chemistry
+        if chemCode + "T" in keys_of_dict :
+            comp_bases = LFT2.get_complementary_bases(bases, complementary_dictDNA)
+            complementary_sequence = LFT2.concatenate_chem_and_bases(chemCode, comp_bases)
+            return complementary_sequence
 
-    if complement.upper() == "RNA":
-        chemistry = "r"
-
-        # Switch the bases the get their complementary base
         comp_bases = LFT2.get_complementary_bases(bases, complementary_dictRNA)
-        complementary_sequence = LFT2.concatenate_chem_and_bases(chemistry, comp_bases)
+        complementary_sequence = LFT2.concatenate_chem_and_bases(chemCode, comp_bases)
         return complementary_sequence
+
+#    if complement.upper() == "DNA":
+#        chemistry = "d"
+#
+#        # Switch the bases the get their complementary base
+#        comp_bases = LFT2.get_complementary_bases(bases, complementary_dictDNA)
+#        complementary_sequence = LFT2.concatenate_chem_and_bases(chemistry, comp_bases)
+#        return complementary_sequence
+#
+#
+#    if complement.upper() == "RNA":
+#        chemistry = "r"
+#
+#        # Switch the bases the get their complementary base
+#        comp_bases = LFT2.get_complementary_bases(bases, complementary_dictRNA)
+#        complementary_sequence = LFT2.concatenate_chem_and_bases(chemistry, comp_bases)
+#        return complementary_sequence
 
     if True:
         # At this point, any input the user has prompted should have gone through a return statement. So if we reach this point, just stop the program. 
@@ -585,7 +602,6 @@ def orient_the_linker_moieties_better(CONF_LIST : list, LINK_LIST : list, leadin
         idx_lead += nextnuc.mol_length
 
 
-
     # COMPLEMENTARY STRAND
     compl_nuc = CONF_LIST[1]
     compl_link = LINK_LIST[1]
@@ -614,12 +630,7 @@ def orient_the_linker_moieties_better(CONF_LIST : list, LINK_LIST : list, leadin
 
         idx_link += 1
 
-
-
     return leading_array, compl_array
-
-
-
 
 
 def cap_nucleic_acid_strands(leading_array : np.ndarray, leading_sequence : list, complementary_array : np.ndarray, complementary_sequence : list) -> Union[np.ndarray, list]:

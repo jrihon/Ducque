@@ -7,7 +7,7 @@
     },
     "identity": "[\"Xylose Nucleic acid\", \"Xylo\", \"XA\", \"Adenosine\"]",
     "angles": {
-        "dihedrals": "{\"alpha\": 75.778, \"beta\": -115.693, \"gamma\": -114.601, \"delta\": -13.006, \"epsilon\": 100.964, \"zeta\": 95.965, \"chi\": -170.195}",
+        "dihedrals": "{\"alpha\": 75.778, \"beta\": -10.693, \"gamma\": -114.601, \"delta\": -13.006, \"epsilon\": 100.964, \"zeta\": 95.965, \"chi\": -170.195}",
         "bond_angles": "{\"alpha\": 101.654, \"beta\": 119.654, \"gamma\": 112.067, \"delta\": 110.353, \"epsilon\": 111.554, \"zeta\": 121.046, \"chi\": 125.594}"
     }
 }

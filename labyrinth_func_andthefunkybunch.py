@@ -297,6 +297,7 @@ def assert_rotation_of_bases_by_distance(array_nucs : list, v_directions: np.arr
     nuc1 = array_nucs[0]
     nuc2 = array_nucs[1]
 
+    # Two sets of distances to check
     if len(v_directions) == 2:
         v_direction1, v_direction2 = v_directions[0], v_directions[1]
         direction_of_rotation = np.array([[1,1], [1,-1], [-1, 1], [-1, -1]])
@@ -317,7 +318,7 @@ def assert_rotation_of_bases_by_distance(array_nucs : list, v_directions: np.arr
             tmp_nuc2 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc2, nuc2, nuc2[index_origin[1]])
 
             # Calculate the rotation
-            stored_distances[index] = LFT1.get_length_of_vector(tmp_nuc1[index_distances[0]], tmp_nuc2[index_distances[1]])
+            stored_distances[index] = LFT1.get_length_of_vector(tmp_nuc1[index_distances[1]], tmp_nuc2[index_distances[0]])
 
             index += 1
 
@@ -327,6 +328,7 @@ def assert_rotation_of_bases_by_distance(array_nucs : list, v_directions: np.arr
 
         return v_direction1 * v_directions[0], v_direction2 * v_directions[1]
 
+    # One set of distances to check
     if len(v_directions) == 1:
         v_direction1 = v_directions[0]
         direction_of_rotation = np.array([[1], [-1]])
@@ -344,7 +346,7 @@ def assert_rotation_of_bases_by_distance(array_nucs : list, v_directions: np.arr
             tmp_nuc2 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc, nuc2, nuc2[index_origin])
 
             # Calculate the rotation
-            stored_distances[index] = LFT1.get_length_of_vector(nuc1[index_distances[0]], tmp_nuc2[index_distances[1]])
+            stored_distances[index] = LFT1.get_length_of_vector(nuc1[index_distances[1]], tmp_nuc2[index_distances[0]])
 
             index += 1
 
@@ -395,6 +397,7 @@ def assert_rotation_of_bases_by_angle(array_nucs : list, v_directions : list,  i
             stored_angles[index] = LFT1.get_angle_of_rotation(v0, v1)
 
             index += 1
+
         # Find the angle with the lowest difference possible and use that specific set of rotations
         stored_angles = LFT1.smallest_difference(stored_angles, angle_to_fit)
         index_min = np.where(stored_angles == stored_angles.min())
@@ -510,9 +513,12 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linke
 
         ### DISTANCE
         idx_distance_between_nuc = [LFT2.retrieve_atom_index(compl_linker, APL[2]),
-                                    LFT2.retrieve_atom_index(prev_nuc, APL[3])]
+                                    LFT2.retrieve_atom_index(prev_nuc, APL[3]) + index_compl + prev_linker.mol_length]
+#        idx_distance_between_nuc = [LFT2.retrieve_atom_index(compl_linker, APL[2]),
+#                                    LFT2.retrieve_atom_index(prev_nuc, APL[3])]
 
-        v_direction = assert_rotation_of_bases_by_distance([prev_nuc.array, compl_nuc_arr], [v_direction], idx_compl_base_atoms1, idx_distance_between_nuc)
+        v_direction = assert_rotation_of_bases_by_distance([complementary_strand, compl_nuc_arr], [v_direction], idx_compl_base_atoms1, idx_distance_between_nuc)
+#        v_direction = assert_rotation_of_bases_by_distance([prev_nuc.array, compl_nuc_arr], [v_direction], idx_compl_base_atoms1, idx_distance_between_nuc)
 
         stored_distances = np.empty(len(array_of_rot_angles))
         for i in range(len(array_of_rot_angles)) :
@@ -527,9 +533,13 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linke
         ### ANGLE
         idx_angle_between_nuc = [LFT2.retrieve_atom_index(compl_nuc, APL[1]) + compl_linker.mol_length,
                                  LFT2.retrieve_atom_index(compl_linker, APL[2]),
-                                 LFT2.retrieve_atom_index(prev_nuc, APL[3])]
+                                 LFT2.retrieve_atom_index(prev_nuc, APL[3]) + index_compl + prev_linker.mol_length]
+#        idx_angle_between_nuc = [LFT2.retrieve_atom_index(compl_nuc, APL[1]) + compl_linker.mol_length,
+#                                 LFT2.retrieve_atom_index(compl_linker, APL[2]),
+#                                 LFT2.retrieve_atom_index(prev_nuc, APL[3])]
 
-        v_direction = assert_rotation_of_bases_by_angle([prev_nuc.array, compl_nuc_arr], [v_direction], idx_compl_base_atoms1, idx_angle_between_nuc, angle_to_fit)
+        v_direction = assert_rotation_of_bases_by_angle([complementary_strand, compl_nuc_arr], [v_direction], idx_compl_base_atoms1, idx_angle_between_nuc, angle_to_fit)
+#        v_direction = assert_rotation_of_bases_by_angle([prev_nuc.array, compl_nuc_arr], [v_direction], idx_compl_base_atoms1, idx_angle_between_nuc, angle_to_fit)
         idx0 = idx_angle_between_nuc[0]
         idx1 = idx_angle_between_nuc[1]
         idx2 = idx_angle_between_nuc[2]
@@ -541,7 +551,8 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linke
 
             # Normalise vectors
             v0 = LFT1.return_normalized(testnuc[idx0] - testnuc[idx1])
-            v1 = LFT1.return_normalized(prev_nuc.array[idx2] - testnuc[idx1])
+            v1 = LFT1.return_normalized(complementary_strand[idx2] - testnuc[idx1])
+#            v1 = LFT1.return_normalized(prev_nuc.array[idx2] - testnuc[idx1])
 
             # Calculate the rotation by the angle that the vectors form. The output of the angle is in radians
             stored_distances[i] = LFT1.get_angle_of_rotation(v0, v1)

@@ -1,5 +1,6 @@
 import numpy as np
 import json
+import os
 from typing import Union
 
 import labyrinth
@@ -136,6 +137,45 @@ def assess_possible_complementary_base(chemistry : str, leadingstrand_base : str
 
     # If it does not exist in the list, there is only one other option, which is the rna nucleoside variant
     return rna_nucleoside
+
+
+def find_json_files_of_this_chemistry_and_return_chemistrycode(identifier : str) -> str:
+
+    from sysDaedalus import return_DAEDALUS_home
+    dH = return_DAEDALUS_home()
+    dirJSON = os.listdir(dH + 'json/')
+
+    for json_file in dirJSON:
+        json_pathname = dH + 'json/' + json_file
+
+        with open(json_pathname, "r") as jsonf:
+            jsonContent = json.loads(json.load(jsonf)["identity"])[0]
+
+        if jsonContent == identifier:
+            file_of_chemistry = json_pathname
+            break
+
+
+#    print(os.path.basename(file_of_chemistry))
+    COMPL_CODEX = LFT3.conformations_codex
+    CHECK = False
+    while not CHECK:
+
+        # Iterate over the complementary codex
+        for key, value in COMPL_CODEX.items():
+            if isinstance(value, list):
+                for i in range(len(value)):
+                    if value[i] == file_of_chemistry:
+                        _KEY = key
+                        CHECK = True
+
+            else:
+                if value == file_of_chemistry:
+                    _KEY = key
+                    CHECK = True
+
+    # Return the chemistry code for the chemistry, without the nucleobase appendend
+    return _KEY[:-1]
 
 
 ######## FUNCTIONS USED TO CREATE THE INPUTS FOR THE EVENTUAL DATAFRAME THAT WILL EVENTUALLY BE WRITTEN TO A PDB FORMATTED FILE ########

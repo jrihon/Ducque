@@ -13,6 +13,7 @@ nucleoside_dict = {
         "2-OME-RNA" : "2-O-Methyl Ribonucleic acid",
         "CENA" : "Cylcohexenyl Nucleic acid",
         "DXYLO" : "deoxy Xylose Nucleic Acid",
+        "MNA" : "Morpholino Nucleic Acid",
         }
 
 linker_dict = {
@@ -24,6 +25,7 @@ linker_dict = {
         "2-OME-RNA" : "Phosphate",
         "CENA" : "Phosphate",
         "DXYLO" : "Phosphate",
+        "MNA" : "Phosphate",
         }
 
 

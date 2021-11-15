@@ -40,6 +40,10 @@ codex_acidum_nucleicum = {
 "dxG" : [dh + "json/dxylo_guanosine_3endo.json", dh + "json/dna_phosphate.json"],
 "dxC" : [dh + "json/dxylo_cytidine_3endo.json", dh + "json/dna_phosphate.json"],
 "dxT" : [dh + "json/dxylo_thymidine_3endo.json", dh + "json/dna_phosphate.json"],
+"mA" : [dh + "json/mna_adenosine_1-4chair.json", dh + "json/dna_phosphate.json"],
+"mG" : [dh + "json/mna_guanosine_1-4chair.json", dh + "json/dna_phosphate.json"],
+"mC" : [dh + "json/mna_cytidine_1-4chair.json", dh + "json/dna_phosphate.json"],
+"mT" : [dh + "json/mna_thymidine_1-4chair.json", dh + "json/dna_phosphate.json"],
 }
 
 
@@ -77,6 +81,10 @@ conformations_codex = {
 "dxG" : [dh + "json/dxylo_guanosine_3endo.json"],
 "dxC" : [dh + "json/dxylo_cytidine_3endo.json"],
 "dxT" : [dh + "json/dxylo_thymidine_3endo.json"],
+"mA" : [dh + "json/mna_adenosine_1-4chair.json"],
+"mG" : [dh + "json/mna_guanosine_1-4chair.json"],
+"mC" : [dh + "json/mna_cytidine_1-4chair.json"],
+"mT" : [dh + "json/mna_thymidine_1-4chair.json"],
 }
 
 
@@ -90,12 +98,14 @@ backbone_codex = {
 "2-OMe-RNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "CeNA" : ["O3'", "C3'", "C4'", "C7'", "O7'"],
 "dXylo" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
-}
+"MNA" : ["N3'", "C4'", "C5'", "C6'", "O6'"],
+
+                }
 
 linker_codex = {
-"Phosphate" : ["P", "OP2", "OP1"]
+"Phosphate" : ["P", "OP2", "OP1"],
 
-}
+                }
 
 def Atom_Parsing_List(prevnuc, link, nextnuc = None) -> list:
     """ Retrieves the atoms that correspond to the correct index of the array, with which we calculate with.
