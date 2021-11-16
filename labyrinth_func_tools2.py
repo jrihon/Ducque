@@ -115,9 +115,9 @@ def retrieve_homo_nucleosides(codex_dict_keys : list, chem_i : str, ln_str : int
     codex_dict_keys_SLICED = [ i[:ln_str] for i in codex_dict_keys]
 
     # Check which index of the values that correspond to the nucleoside you are looking for
-    for i in range(len(codex_dict_keys_SLICED)):
+    for i, key in enumerate(codex_dict_keys_SLICED):
         if codex_dict_keys_SLICED[i] == chem_i:
-            list_of_homo_nucleosides.append(list(codex_dict_keys)[i])
+            list_of_homo_nucleosides.append(codex_dict_keys[i])
 
     return list_of_homo_nucleosides
 
@@ -140,23 +140,31 @@ def assess_possible_complementary_base(chemistry : str, leadingstrand_base : str
 
 
 def find_json_files_of_this_chemistry_and_return_chemistrycode(identifier : str) -> str:
+    """ Go through the currently available files in the /Daedalus/json/ directory and read them in order to find the prompted identifier variable
+        in the 'identity' list.
 
+        Then parse the correct abbreviated chemistry identifier.
+        Example ; find 'Deoxy Ribonucleic Acid' --> returns 'd'     """
+
+    # Get the directory from the $HOME of Daedalus (where it is installed)
     from sysDaedalus import return_DAEDALUS_home
     dH = return_DAEDALUS_home()
     dirJSON = os.listdir(dH + 'json/')
 
+    # Read all the files in the json/ directory and find the identifier that was prompted, this way we can inambiguously find the abbreviated chemical code
     for json_file in dirJSON:
         json_pathname = dH + 'json/' + json_file
 
         with open(json_pathname, "r") as jsonf:
             jsonContent = json.loads(json.load(jsonf)["identity"])[0]
 
+        # if the identifier has been found, remember the name of the file we found it in
         if jsonContent == identifier:
             file_of_chemistry = json_pathname
             break
 
 
-#    print(os.path.basename(file_of_chemistry))
+    # Iterate over the complementary codex. If you find the filename, remember the abbreviated nucleic acid code of the file 
     COMPL_CODEX = LFT3.conformations_codex
     CHECK = False
     while not CHECK:
@@ -164,22 +172,22 @@ def find_json_files_of_this_chemistry_and_return_chemistrycode(identifier : str)
         # Iterate over the complementary codex
         for key, value in COMPL_CODEX.items():
             if isinstance(value, list):
-                for i in range(len(value)):
+                for i, item in enumerate(value):
                     if value[i] == file_of_chemistry:
                         _KEY = key
                         CHECK = True
 
             else:
-                if value == file_of_chemistry:
+                if item == file_of_chemistry:
                     _KEY = key
                     CHECK = True
 
-    # Return the chemistry code for the chemistry, without the nucleobase appendend
+    # Return the chemistry code for the chemistry, without the nucleobase appendend, so we can add the complementary bases to it later
     return _KEY[:-1]
 
 
 ######## FUNCTIONS USED TO CREATE THE INPUTS FOR THE EVENTUAL DATAFRAME THAT WILL EVENTUALLY BE WRITTEN TO A PDB FORMATTED FILE ########
-def LEAD_pdb_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : str) -> list:
+def return_PDB_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : str) -> list:
     """ Loads in the atom names from the json files
     The identifier is either the string "Atoms" or the string "ElementSymbol", which will parse the list of interest """
 
@@ -239,7 +247,7 @@ def LEAD_pdb_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : st
             atom_list = atom_list + tmp_atomlist
 
 
-def LEAD_pdb_Sequence(list_of_sequence : list, start_of_sequence : int = 0) -> np.array :
+def return_PDB_Sequence(list_of_sequence : list, start_of_sequence : int = 0) -> np.array :
     """ Determines the number in the sequence of the nucleotides in the strands based off on the shape of their array.
         The '+1' for the first and last nucleotide is to account for the capping of the nucleoside, here with a single hydrogen. """
 
@@ -311,7 +319,7 @@ def LEAD_pdb_Sequence(list_of_sequence : list, start_of_sequence : int = 0) -> n
             sequence_array = np.concatenate((sequence_array, tmp_seqarray), axis=None)
 
 
-def LEAD_pdb_Residuename(list_of_sequence : list) -> list:
+def return_PDB_Residuename(list_of_sequence : list) -> list:
 
     # Initialise an empty array
     resname_list = []

@@ -34,10 +34,26 @@ def check_if_nucleotides_are_valid(input_sequence : list) -> bool:
     for NA in input_sequence:
         if NA not in keys_of_dict:
             print_divide_between_command_and_output()
-            print("One or more of the nucleotides in the given sequence is invalid. Please check your input file : " + NA + "\n\n")
+            print(f"One or more of the nucleotides in the given sequence is invalid. Please check your input file : {NA} \n\n")
             return False
 
     return True
+
+
+def check_if_chemistry_is_valid(chemistry : str) -> list:
+    """ If the chemistry is invalid, stop the script.
+        If the chemistry is actually valid, return the keys of the dictionary as a list. """
+
+    from transmute_func_tools import nucleoside_dict
+
+    # Get the value from the transmute_func_tools nucleoside dictionary, to get the full name of the chemistry
+    try:
+        NUC_ID = nucleoside_dict[chemistry.upper()]
+    except KeyError:
+        print(f"The following key does not exist in the dictionary : {complement.upper()}.\nPlease revise your inputs.\n")
+        sys.exit(1)
+
+    return NUC_ID
 
 
 def daedalus(DaedalusInput, options):
@@ -59,7 +75,7 @@ def daedalus(DaedalusInput, options):
         # Check if flags are valid. If a given flag is not a valid one, shut it down
         if not arg[0] in list_of_valid_flags:
             print_divide_between_command_and_output()
-            print("The following flag is invalid : " + arg[0] + ". Please check your input file.\n\n\n")
+            print(f"\n\nThe following flag is invalid : {arg[0]}. Please check your input file.\n\n\n")
             #options.print_help()
             sys.exit(0)
 
@@ -110,7 +126,7 @@ def transmute(TransmuteInput, options):
         # Check if flags are valid. If a given flag is not a valid one, shut it down
         if not arg[0] in list_of_valid_flags:
             print_divide_between_command_and_output()
-            print("\n\nThe following flag is invalid : " + arg[0] + ". Please check your input file.\n\n\n")
+            print(f"\n\nThe following flag is invalid : {arg[0]}. Please check your input file.\n\n\n")
             #options.print_help()
             sys.exit(0)
 
@@ -138,13 +154,15 @@ def transmute(TransmuteInput, options):
 
 def randomise(RandomiseInput, options):
 
+    from transmute_func_tools import nucleoside_dict
+
     fileRandomise = remove_trailing_whitespace(list(map(lambda x: x.strip(), RandomiseInput.readlines())))
 
     # Check list of valid inputs 
     list_of_valid_flags = ["--chemistry", "--length", "--sequence", "--complement"]
-    if len(fileRandomise) != 2:
+    if len(fileRandomise) != 3:
         print_divide_between_command_and_output()
-        print("Only two arguments are required at one time, please check our input file.\n\n\n")
+        print("Only three arguments are required at one time, please check our input file.\n\n\n")
         options.print_help()
         sys.exit(0)
 
@@ -154,7 +172,7 @@ def randomise(RandomiseInput, options):
         # If a given flag is not a valid one, shut it down
         if not arg[0] in list_of_valid_flags:
             print_divide_between_command_and_output()
-            print("The following flag is invalid : " + arg[0] + ". Please check your input file.\n\n\n")
+            print(f"\n\nThe following flag is invalid : {arg[0]}. Please check your input file.\n\n\n")
             #options.print_help()
             sys.exit(0)
 
@@ -182,7 +200,7 @@ def randomise(RandomiseInput, options):
                     sys.exit(1)
 
             complement = arg[1]
-            compl_test_against = ["homo", "DNA", "RNA"]
+            compl_test_against = ["homo"] + list(nucleoside_dict.keys())
             if complement not in compl_test_against:
                 print("the variable in '--complement' is not a list and not one of the available inputs. Please revise your input for this flag.")
                 sys.exit(0)
@@ -217,7 +235,7 @@ def xyz_to_pdb(ConversionInput, options):
         # If a given flag is not a valid one, shut it down
         if not arg[0] in list_of_valid_flags:
             print_divide_between_command_and_output()
-            print("The following flag is invalid : " + arg[0] + ". Please check your input file.\n\n\n")
+            print(f"\n\nThe following flag is invalid : {arg[0]}. Please check your input file.\n\n\n")
             #options.print_help()
             sys.exit(0)
 
@@ -228,7 +246,7 @@ def xyz_to_pdb(ConversionInput, options):
                 os.path.isfile(fname_xyz)
             except FileNotFoundError:
                 print_divide_between_command_and_output()
-                print("File " + fname_xyz + "was not found. Please revise either its name or its location on your system.\n")
+                print(f"File {fname_xyz} was not found. Please revise either its name or its location on your system.\n")
                 sys.exit(0)
 
         if arg[0] == "--atomID":

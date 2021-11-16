@@ -131,9 +131,12 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[lis
     complementary_dictRNA = { "A" : "U", "T" : "A", "G" : "C", "C" : "G", "U" : "A" }
 
     # The keys, meaning the nucleosides, from the complementary dictionary wil be parsed as a list
-    keys_of_dict = LFT3.codex_acidum_nucleicum.keys()
+    keys_of_dict = list(LFT3.codex_acidum_nucleicum.keys())
 
+    # Get a list of the bases of the leading strand, to later build a complementary strand
     bases = LFT2.retrieve_bases_list(sequence_list)
+
+    ## IF THE INPUT OF THE COMPLEMENT IS A LIST
     if isinstance(complement, list):
         import fundaments
 
@@ -151,7 +154,8 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[lis
         # Reverse the prompted list
         return complementary_sequence[::-1]
 
-    # if the sequence needs to be a homoduplex
+
+    # IF THE SEQUENCE NEEDS TO BE A HOMODUPLEX
     if complement.lower() == "homo":
         complementary_sequence = []
         list_of_chemistries = LFT2.retrieve_chemistry_list(sequence_list)
@@ -168,44 +172,26 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[lis
 
         return complementary_sequence
 
-    # if the sequence needs to be a heteroduplex; import TFT to get the dictionary
-    import transmute_func_tools as TFT
-    NUC_DICT = list(TFT.nucleoside_dict.keys())
 
-    if complement.upper() in NUC_DICT:
-        NUC_ID = TFT.nucleoside_dict[complement.upper()]
+    # IF THE SEQUENCE NEEDS TO BE A HETERODUPLEX; CHECK THE VALIDITY OF THE PROMPTED CHEMISTRY AND RETURN A LIST WITH POSSIBLE ABBREVIATED CHEMISTRY CODES
+    NUC_ID = fundaments.check_if_chemistry_is_valid(complement)
 
-        chemCode = LFT2.find_json_files_of_this_chemistry_and_return_chemistrycode(NUC_ID)
+    # Return the abbreviated name of the chemistry
+    chemCode = LFT2.find_json_files_of_this_chemistry_and_return_chemistrycode(NUC_ID)
 
-        # If the key does not exist, this means that there is the uracil variant as the nucleobase of the chemistry
-        if chemCode + "T" in keys_of_dict :
-            comp_bases = LFT2.get_complementary_bases(bases, complementary_dictDNA)
-            complementary_sequence = LFT2.concatenate_chem_and_bases(chemCode, comp_bases)
-            return complementary_sequence
-
-        comp_bases = LFT2.get_complementary_bases(bases, complementary_dictRNA)
+    # If the key does not exist, this means that there is the uracil variant as the nucleobase of the chemistry
+    if chemCode + "T" in keys_of_dict :
+        comp_bases = LFT2.get_complementary_bases(bases, complementary_dictDNA)
         complementary_sequence = LFT2.concatenate_chem_and_bases(chemCode, comp_bases)
         return complementary_sequence
 
-#    if complement.upper() == "DNA":
-#        chemistry = "d"
-#
-#        # Switch the bases the get their complementary base
-#        comp_bases = LFT2.get_complementary_bases(bases, complementary_dictDNA)
-#        complementary_sequence = LFT2.concatenate_chem_and_bases(chemistry, comp_bases)
-#        return complementary_sequence
-#
-#
-#    if complement.upper() == "RNA":
-#        chemistry = "r"
-#
-#        # Switch the bases the get their complementary base
-#        comp_bases = LFT2.get_complementary_bases(bases, complementary_dictRNA)
-#        complementary_sequence = LFT2.concatenate_chem_and_bases(chemistry, comp_bases)
-#        return complementary_sequence
+    comp_bases = LFT2.get_complementary_bases(bases, complementary_dictRNA)
+    complementary_sequence = LFT2.concatenate_chem_and_bases(chemCode, comp_bases)
+    return complementary_sequence
 
+
+    # At this point, any input the user has prompted should have gone through a return statement. So if we reach this point, just stop the program. 
     if True:
-        # At this point, any input the user has prompted should have gone through a return statement. So if we reach this point, just stop the program. 
         raise ValueError("The variable you have prompted for the '--complement' flag is not correct. Please review your input file.\n")
         sys.exit(1)
 
@@ -671,18 +657,18 @@ def create_PDB_from_array_final(leading_array : np.ndarray, list_of_leading_sequ
 
     df_leading["RecName"] = ["ATOM" for x in range(leading_array.shape[0])]
     df_leading["AtomNum"] = np.arange(start=1, stop=leading_array.shape[0] + 1)
-    df_leading["AtomName"] = capping_names[0] + LFT2.LEAD_pdb_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Atoms") + capping_names[1]
+    df_leading["AtomName"] = capping_names[0] + LFT2.return_PDB_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Atoms") + capping_names[1]
     df_leading["AltLoc"] = " "
-    df_leading["ResName"] = LFT2.LEAD_pdb_Residuename(list_of_leading_sequence)
+    df_leading["ResName"] = LFT2.return_PDB_Residuename(list_of_leading_sequence)
     df_leading["Chain"] = "J"
-    df_leading["Sequence"] = LFT2.LEAD_pdb_Sequence(list_of_leading_sequence)
+    df_leading["Sequence"] = LFT2.return_PDB_Sequence(list_of_leading_sequence)
     df_leading["X_coord"] = list(map(lambda x: "{:.3f}".format(x), leading_array[:,0]))
     df_leading["Y_coord"] = list(map(lambda x: "{:.3f}".format(x), leading_array[:,1]))
     df_leading["Z_coord"] = list(map(lambda x: "{:.3f}".format(x), leading_array[:,2]))
     df_leading["Occupancy"] = "1.00"
     df_leading["Temp"] = "0.00"
     df_leading["SegmentID"] = str("   ")
-    df_leading["ElementSymbol"] = ["H"] + LFT2.LEAD_pdb_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Symbol") + ["H"]
+    df_leading["ElementSymbol"] = ["H"] + LFT2.return_PDB_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Symbol") + ["H"]
 
     # TER line between the single strands
     TER_line = pd.DataFrame({"RecName" : "TER", "AtomNum" : 69}, index=[69])
@@ -696,18 +682,18 @@ def create_PDB_from_array_final(leading_array : np.ndarray, list_of_leading_sequ
 
     df_complementary["RecName"] = ["ATOM" for x in range(complementary_array.shape[0])]
     df_complementary["AtomNum"] = np.arange(start=ln_lead + 1, stop=(ln_lead + complementary_array.shape[0] + 1))
-    df_complementary["AtomName"] = capping_names[2] + LFT2.LEAD_pdb_AtomNames_or_ElementSymbol(list_of_complementary_sequence, "Atoms") + capping_names[3]
+    df_complementary["AtomName"] = capping_names[2] + LFT2.return_PDB_AtomNames_or_ElementSymbol(list_of_complementary_sequence, "Atoms") + capping_names[3]
     df_complementary["AltLoc"] = " "
-    df_complementary["ResName"] = LFT2.LEAD_pdb_Residuename(list_of_complementary_sequence)
+    df_complementary["ResName"] = LFT2.return_PDB_Residuename(list_of_complementary_sequence)
     df_complementary["Chain"] = "R"
-    df_complementary["Sequence"] = LFT2.LEAD_pdb_Sequence(list_of_complementary_sequence, len(list_of_complementary_sequence))
+    df_complementary["Sequence"] = LFT2.return_PDB_Sequence(list_of_complementary_sequence, len(list_of_complementary_sequence))
     df_complementary["X_coord"] = list(map(lambda x: "{:.3f}".format(x), complementary_array[:,0]))
     df_complementary["Y_coord"] = list(map(lambda x: "{:.3f}".format(x), complementary_array[:,1]))
     df_complementary["Z_coord"] = list(map(lambda x: "{:.3f}".format(x), complementary_array[:,2]))
     df_complementary["Occupancy"] = "1.00"
     df_complementary["Temp"] = "0.00"
     df_complementary["SegmentID"] = str("   ")
-    df_complementary["ElementSymbol"] = ["H"] + LFT2.LEAD_pdb_AtomNames_or_ElementSymbol(list_of_complementary_sequence, "Symbol") + ["H"]
+    df_complementary["ElementSymbol"] = ["H"] + LFT2.return_PDB_AtomNames_or_ElementSymbol(list_of_complementary_sequence, "Symbol") + ["H"]
 
     # Concatenate the two dataframes
     duplex_df = pd.concat([df_leading, TER_line, df_complementary], ignore_index=True)

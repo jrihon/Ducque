@@ -100,7 +100,7 @@ def main():
     if arguments.transmute:
         print_divide_between_command_and_output()
         transmute.Transmutation(PDB_FILE, IDENTIFIER, MOIETY, DIHEDRALS, ANGLES, CONFORMATION)
-        print("Converting " + PDB_FILE + " to a json file.")
+        print(f"Converting {PDB_FILE} to a json file.")
 
     # Build nucleic acid duplex
     if arguments.Daedalus:
@@ -111,13 +111,13 @@ def main():
     # Output a randomised sequence
     if arguments.randomise:
         print_divide_between_command_and_output()
-        print("Randioli randioli, what is the spaghetolli?\n")
+        print("Randomisation of the given inputs!\n")
         randomise.randomiser(CHEMISTRY, LENGTH_SEQUENCE, SEQUENCE, COMPL_SEQ)
 
     # Convert an ORCA xyz-formatted molecule file to a pdb file
     if arguments.xyz_pdb:
         print_divide_between_command_and_output()
-        print("Converting " + FILENAME_XYZ + " to a .pdb format file.\n")
+        print("Converting {FILENAME_XYZ} to a .pdb format file.\n")
         transmute.convert_XYZ_to_PDB(FILENAME_XYZ, ATOM_ID, ATOMNAME_LIST)
 
     print("                         Time spent: %.5f seconds." % (time.time() - t0))
