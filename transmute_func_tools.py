@@ -39,33 +39,6 @@ base_dict = {
         }
 
 
-# The general backbone, whether it is a purine or a pyrimidine. This is a nested dictionary.
-# Used to parse the indices of the vectors in the molecule's array
-dihedral_dict = {
-        "DNA" : {"backbone" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
-                 "purine" : ["O4'", "C1'", "N9", "C4"],
-                 "pyrimidine" : ["O4'", "C1'","N1", "C2"]
-                 },
-        "RNA" : {"backbone" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
-                 "purine" : ["O4'", "C1'", "N9", "C4"],
-                 "pyrimidine" : ["O4'", "C1'","N1", "C2"]
-                 },
-        }
-
-
-# The general backbone, whether it is a purine or a pyrimidine. This is a nested dictionary.
-# Used to parse the indices of the vectors in the molecule's array
-angle_dict = {
-        "DNA" : {"backbone" : [""],
-                 "purine" : ["C1'", "N9", "C4"],
-                 "pyrimidine" : ["C1'","N1", "C2"],
-                 },
-        "RNA" : {"backbone" : [""],
-                 "purine" : ["C1'", "N9", "C4"],
-                 "pyrimidine" : ["C1'","N1", "C2"],
-                 }
-        }
-
 
 def get_base_type(base : str) -> str:
     """ Retrieve the type of base we will calculate with"""
@@ -91,3 +64,35 @@ def get_base_type(base : str) -> str:
                 + "NB: The last character of the string should end as the identifier of one of the five canonical bases.")
         sys.exit(0)
 
+
+
+
+
+#------------------------ DEPRECATED ----------------------------------------------------------
+# The general backbone, whether it is a purine or a pyrimidine. This is a nested dictionary.
+# Used to parse the indices of the vectors in the molecule's array
+#dihedral_dict = {
+#        "DNA" : {"backbone" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
+#                 "purine" : ["O4'", "C1'", "N9", "C4"],
+#                 "pyrimidine" : ["O4'", "C1'","N1", "C2"]
+#                 },
+#        "RNA" : {"backbone" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
+#                 "purine" : ["O4'", "C1'", "N9", "C4"],
+#                 "pyrimidine" : ["O4'", "C1'","N1", "C2"]
+#                 },
+#        }
+#
+#
+# The general backbone, whether it is a purine or a pyrimidine. This is a nested dictionary.
+# Used to parse the indices of the vectors in the molecule's array
+#angle_dict = {
+#        "DNA" : {"backbone" : [""],
+#                 "purine" : ["C1'", "N9", "C4"],
+#                 "pyrimidine" : ["C1'","N1", "C2"],
+#                 },
+#        "RNA" : {"backbone" : [""],
+#                 "purine" : ["C1'", "N9", "C4"],
+#                 "pyrimidine" : ["C1'","N1", "C2"],
+#                 }
+#        }
+#

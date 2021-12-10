@@ -174,21 +174,39 @@ def retrieve_atoms_for_positioning_of_complement1(base1 : str, base2 :str) -> Tu
     """ base1 belongs to the leading strand, base2 to the complementary base """
 
     # Set distance between the two bases (1)
-    distance = 1.81
+#    distance = 1.81
+#
+#    # BASE1
+#    if base1 == "A": atoms1 = ["N3", "C2", "N1"]
+#    if base1 == "C": atoms1 = ["N1", "C2", "N3"]
+#    if base1 == "G": atoms1 = ["C2", "N1", "H1"]
+#    if base1 == "T": atoms1 = ["C2", "N3", "H3"]
+#    if base1 == "U": atoms1 = ["C2", "N3", "H3"]
+#
+#    # BASE2
+#    if base2 == "A": atom2 = "N1"
+#    if base2 == "C": atom2 = "N3"
+#    if base2 == "G": atom2 = "H1"
+#    if base2 == "T": atom2 = "H3"
+#    if base2 == "U": atom2 = "H3"
+#
+#    return atoms1, atom2, distance
+#
+#
 
     # BASE1
-    if base1 == "A": atoms1 = ["N3", "C2", "N1"]
-    if base1 == "C": atoms1 = ["N1", "C2", "N3"]
-    if base1 == "G": atoms1 = ["C2", "N1", "H1"]
-    if base1 == "T": atoms1 = ["C2", "N3", "H3"]
-    if base1 == "U": atoms1 = ["C2", "N3", "H3"]
+    if base1 == "A": atoms1, distance = ["N3", "C2", "N1"], 2.90
+    if base1 == "C": atoms1, distance = ["N1", "C2", "N3"], 2.87
+    if base1 == "G": atoms1, distance = ["N3", "C2", "N1"], 2.87
+    if base1 == "T": atoms1, distance = ["N1", "C2", "N3"], 2.90
+    if base1 == "U": atoms1, distance = ["N1", "C2", "N3"], 2.90
 
     # BASE2
     if base2 == "A": atom2 = "N1"
     if base2 == "C": atom2 = "N3"
-    if base2 == "G": atom2 = "H1"
-    if base2 == "T": atom2 = "H3"
-    if base2 == "U": atom2 = "H3"
+    if base2 == "G": atom2 = "N1"
+    if base2 == "T": atom2 = "N3"
+    if base2 == "U": atom2 = "N3"
 
     return atoms1, atom2, distance
 
@@ -235,12 +253,15 @@ def retrieve_angles_and_dihedrals_for_initial_base_positioning(base1 : str) -> T
     to_rad = (np.pi / 180)
 
     #if base1 == "A": Q_angle, R_angle = 121.822 * to_rad, 178.802 * to_rad
-    if base1 == "A": Q_angle, R_angle = 121.822 * to_rad, 119.999 * to_rad
-    if base1 == "G": Q_angle, R_angle = 177.195 * to_rad, 123.466 * to_rad
+#    if base1 == "G": Q_angle, R_angle = 177.195 * to_rad, 123.466 * to_rad
     #if base1 == "C": Q_angle, R_angle = 117.050 * to_rad, 176.177 * to_rad
+#    if base1 == "T": Q_angle, R_angle = 178.359 * to_rad, 122.583 * to_rad
+#    if base1 == "U": Q_angle, R_angle = 178.359 * to_rad, 122.583 * to_rad
+    if base1 == "A": Q_angle, R_angle = 121.822 * to_rad, 119.999 * to_rad
+    if base1 == "G": Q_angle, R_angle = 119.185 * to_rad, 123.466 * to_rad
     if base1 == "C": Q_angle, R_angle = 117.050 * to_rad, 120.123 * to_rad
-    if base1 == "T": Q_angle, R_angle = 178.359 * to_rad, 122.583 * to_rad
-    if base1 == "U": Q_angle, R_angle = 178.359 * to_rad, 122.583 * to_rad
+    if base1 == "T": Q_angle, R_angle = 115.789 * to_rad, 122.583 * to_rad
+    if base1 == "U": Q_angle, R_angle = 115.789 * to_rad, 122.583 * to_rad
 
     return Q_angle, Q_dihedral, R_angle, R_dihedral
 

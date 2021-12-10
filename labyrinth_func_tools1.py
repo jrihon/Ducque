@@ -51,6 +51,27 @@ def get_length_of_vector(vector1 : np.array, vector2 : np.array) -> float:
     return LA.norm(vector2 - vector1)
 
 
+def TESTTHETAget_quaternion(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : np.array = np.array([0,0,1])) -> np.array:
+    """ Quaternion mathematics using the scipy.spatial.transform.Rotation library
+        Create the quaternion that is associated with the angle and axis of rotation
+        Apply it to the vector you want to rotate.  """
+    # axis has been normalised
+    axis = get_direction_of_rotation(vector_to_rotate_from, vector_to_rotate_onto)      # DIRECTION
+
+    # angle already in radians 
+    theta = np.pi / 4     # ANGLE
+
+    # Create the quaternion
+    qx = axis[0] * np.sin(theta)
+    qy = axis[1] * np.sin(theta)
+    qz = axis[2] * np.sin(theta)
+    qw = np.cos(theta)
+
+    quaternion = R.from_quat([qx, qy, qz, qw])
+
+    return quaternion
+
+
 def get_quaternion(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : np.array = np.array([0,0,1])) -> np.array:
     """ Quaternion mathematics using the scipy.spatial.transform.Rotation library
         Create the quaternion that is associated with the angle and axis of rotation

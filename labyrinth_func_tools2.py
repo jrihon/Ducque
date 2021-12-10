@@ -83,9 +83,9 @@ def retrieve_chemistry_list(sequence : list) -> list:
     return [x[:-1] for x in sequence]
 
 
-def get_complementary_bases(sequence : list, comp_dict : dict) -> list:
+def get_complementary_bases(sequence : list, complement_dict : dict) -> list:
     """ get the complementary strand """
-    return [comp_dict[x] for x in sequence]
+    return [complement_dict[x] for x in sequence]
 
 
 def concatenate_chem_and_bases(chemistry : Union[str, list], bases : list) -> list:
@@ -100,9 +100,9 @@ def concatenate_chem_and_bases(chemistry : Union[str, list], bases : list) -> li
         return nucleoside_list
 
 
-def retrieve_base(base : str) -> str:
-    """ retrieve the base denominator for this specific nucleoside """
-    return x[-1]
+#def retrieve_base(base : str) -> str:
+#    """ retrieve the base denominator for this specific nucleoside """
+#    return x[-1]
 
 
 def retrieve_homo_nucleosides(codex_dict_keys : list, chem_i : str, ln_str : int) -> list:
@@ -139,7 +139,7 @@ def assess_possible_complementary_base(chemistry : str, leadingstrand_base : str
     return rna_nucleoside
 
 
-def find_json_files_of_this_chemistry_and_return_chemistrycode(identifier : str) -> str:
+def return_chemistrycode(identifier : str) -> str:
     """ Go through the currently available files in the /Daedalus/json/ directory and read them in order to find the prompted identifier variable
         in the 'identity' list.
 

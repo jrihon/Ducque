@@ -3,14 +3,17 @@ import numpy as np
 import json, sys, os
 
 import transmute_func_tools as TFT
+import sysDaedalus
 
 class TransmuteToJson:
 
     def __init__(self, pdbfile):
         """ Initialise the object and create object properties"""
+        DAEDALUSHOME = sysDaedalus.return_DAEDALUS_home()
+
         self.splitted = pdbfile.split('.')[0]
         self.pdb_dataframe = pd.DataFrame()
-        self.filename = self.splitted + '.pdb'
+        self.filename = DAEDALUSHOME + "/" + self.splitted + ".pdb"
         self.array = np.array([])
 
 
@@ -37,14 +40,14 @@ class TransmuteToJson:
         Charge:           line 79 - 80
         """
         # Start new lists to append it all
-        AtomName, ResName, Xcoord, Ycoord, Zcoord, ElementSym = ([] for i in range(6))
+        AtomName, ResName, X_coords, Y_coords, Z_coords, ElementSymbol = ([] for i in range(6))
 
         # Check if file is in cwd or in the pdb directory
         pdbfname = self.filename
         try:
             os.path.isfile(pdbfname)
-        except FileNotFoundError as Err:
-            print("Could not find "+  pdbfname  +" in the directory.\n")
+        except FileNotFoundError:
+            print(f"Could not find {pdbfname} in the directory.\n")
 
         # Read the file and fill out the dataframe
         with open(pdbfname) as pdbfile:
@@ -58,26 +61,26 @@ class TransmuteToJson:
                     ResName.append(resname)
 
                     _Xcoord = line[30:38]
-                    Xcoord.append(_Xcoord)
+                    X_coords.append(_Xcoord)
 
                     _Ycoord = line[38:46]
-                    Ycoord.append(_Ycoord)
+                    Y_coords.append(_Ycoord)
 
                     _Zcoord = line[46:54]
-                    Zcoord.append(_Zcoord)
+                    Z_coords.append(_Zcoord)
 
                     ElemSym = line[76:78]
-                    ElementSym.append(ElemSym)
+                    ElementSymbol.append(ElemSym)
 
             self.pdb_dataframe['AtomName'] = AtomName
             self.pdb_dataframe['ResName'] = ResName
-            self.pdb_dataframe['X_Coord'] = Xcoord
-            self.pdb_dataframe['Y_Coord'] = Ycoord
-            self.pdb_dataframe['Z_Coord'] = Zcoord
-            self.pdb_dataframe['ElementSymbol'] = ElementSym
+            self.pdb_dataframe['X_Coord'] = X_coords
+            self.pdb_dataframe['Y_Coord'] = Y_coords
+            self.pdb_dataframe['Z_Coord'] = Z_coords
+            self.pdb_dataframe['ElementSymbol'] = ElementSymbol
 
             # Add the array as an attribute
-            self.array = np.array([Xcoord, Ycoord, Zcoord], dtype=float).T
+            self.array = np.array([X_coords, Y_coords, Z_coords], dtype=float).T
 
             # Add the atom name list as an attribute
             self.atom_list = list(map(lambda x : x.strip(), AtomName))
@@ -94,25 +97,27 @@ class TransmuteToJson:
 
     def get_atoms(self) -> list:
         """ Get atom names to a list, also strip any remaining whitespace in all the strings in the list."""
-        atomlist = self.pdb_dataframe['AtomName'].tolist()
-        return  list(map(lambda x: x.strip(), atomlist))
+        atomList = self.pdb_dataframe['AtomName'].tolist()
+        return  list(map(lambda x: x.strip(), atomList))
 
 
     def get_element_symbol(self):
         """ Get element symbol to a list, also strip any remaining whitespace in all the strings in the list."""
-        elementlist = self.pdb_dataframe['ElementSymbol'].tolist()
-        return  list(map(lambda x: x.strip(), elementlist))
+        elementList = self.pdb_dataframe['ElementSymbol'].tolist()
+        return  list(map(lambda x: x.strip(), elementList))
 
 
-    def get_ID(self) -> str:
+    def get_chemistry(self) -> str:
         """ Get the name of the residue, also strip any remaining whitespace in all the strings in the list. """
         return self.pdb_dataframe['ResName'][0].strip()
 
 
     def get_full_name(self, identifier : str, moiety) -> str:
-        """ Get the full name of the nucleic acid chemistry we want to convert to a json """
+        """ Get the full name of the nucleic acid chemistry or linker moiety we want to convert to a json """
+
         if moiety == "nucleoside":
             return TFT.nucleoside_dict[identifier.upper()]
+
         if moiety == "linker":
             return TFT.linker_dict[identifier.upper()]
 
@@ -141,7 +146,7 @@ class TransmuteToJson:
             # Check if all values are float
             for i in dihedrals_list:
                 if not isinstance(float(i), float):
-                    print("One or more of the dihedral angles is not a floating point number : " + i + ". Please reconsider the entries for the dihedrals.\n")
+                    print(f"One or more of the dihedral angles is not a floating point number : {i}. Please reconsider the entries for the dihedrals.\n")
                     sys.exit(0)
 
             # Check if size of the prompted dihedral values is the same as the amount of required dihedrals
@@ -164,13 +169,13 @@ class TransmuteToJson:
             # Check if all values are float
             for i in dihedrals_list:
                 if not isinstance(float(i), float):
-                    print("One or more of the dihedral angles is not a floating point number : " + i + ". Please reconsider the entries for the dihedrals.\n")
+                    print(f"One or more of the dihedral angles is not a floating point number : {i}. Please reconsider the entries for the dihedrals.\n")
                     sys.exit(0)
 
             # Initialise dictionary
             set_of_dihedrals = {}
-            set_of_dihedrals["OP2_dihedral"] = float(dihedrals_list[0])
-            set_of_dihedrals["OP1_dihedral"] = float(dihedrals_list[1])
+            set_of_dihedrals["dihedral_2"] = float(dihedrals_list[0])
+            set_of_dihedrals["dihedral_1"] = float(dihedrals_list[1])
             return set_of_dihedrals
 
 
@@ -185,7 +190,7 @@ class TransmuteToJson:
             # Check if all values are float
             for i in angles_list:
                 if not isinstance(float(i), float):
-                    print("One or more of the dihedral angles is not a floating point number : " + i + ". Please reconsider the entries for the dihedrals.\n")
+                    print(f"One or more of the dihedral angles is not a floating point number : {i}. Please reconsider the entries for the dihedrals.\n")
                     sys.exit(0)
 
             # Check if size of the prompted dihedral values is the same as the amount of required dihedrals
@@ -207,7 +212,7 @@ class TransmuteToJson:
             # Check if all values are float
             for i in angles_list:
                 if not isinstance(float(i), float):
-                    print("One or more of the dihedral angles is not a floating point number : " + i + ". Please reconsider the entries for the dihedrals.\n")
+                    print(f"One or more of the dihedral angles is not a floating point number : {i}. Please reconsider the entries for the dihedrals.\n")
                     sys.exit(0)
 
             # Initialise dictionary
@@ -273,7 +278,7 @@ class TransmuteToPdb:
 
         for atom in atomname_list:
             if len(atom) > 4:
-                print("The following atom has too many characters in the string " + atom +" . Maximum amount allowed is 4.\n")
+                print(f"The following atom has too many characters in the string {atom }. Maximum amount allowed is 4.\n")
                 sys.exit(0)
 
         return atomname_list
@@ -285,7 +290,7 @@ class TransmuteToPdb:
         if len(elements) == len(atomname_list):
             return True
         else :
-            print("Atomname_list length : " , len(atomname_list) , " . Coordinate array size : (" , len(elements) , ", 3 ).")
+            print(f"Atomname_list length : {len(atomname_list)}. Coordinate array size : ({len(elements)}, , 3 ).")
             return False
 
 
@@ -298,9 +303,9 @@ class TransmuteToPdb:
             if elements[atom] in list_of_two_character_valid_atoms:
                 atom_type = atomname_list[atom][:2]
                 if atom_type != elements[atom]:
-                    print("Check for capitalization of the prompted atom : " + atom_type + " .\n"
+                    print(f"Check for capitalization of the prompted atom : {atom_type}.\n"
                             "If that did not prompt the error, check for its validity as an atom.\n"
-                            "Here is the valid atom list : ", list_of_two_character_valid_atoms, " .\n"
+                            "Here is the valid atom list : {list_of_two_character_valid_atoms}.\n"
                             "Feel free to adjust this to your needs in the file : transmute_func.py ; elementsymbol_vs_atomname_list_compatibility() function.\n")
                     return False
 
@@ -308,7 +313,7 @@ class TransmuteToPdb:
             atom_type = atomname_list[atom][0]
 
             if atom_type != elements[atom]:
-                print("Atoms that do not match : Atom prompted - " + atom_type + ". Element parsed : " + elements[atom] + ". Position :" + str(atom + 1) + "\n")
+                print("Atoms that do not match : Atom prompted - {atom_type}. Element parsed : {elements[atom]}. Position {str(atom + 1)}\n")
                 return False
 
         return True

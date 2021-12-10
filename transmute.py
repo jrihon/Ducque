@@ -58,8 +58,8 @@ def Transmutation(pdb_file, nucleic_acid_chemistry : str, moiety : str, dihedral
         abbr = nucleic_acid_chemistry
         identity.append(abbr)
 
-        # molecule ID
-        molecule_residuename = nucleic_acid.get_ID()
+        # molecule chemistry
+        molecule_residuename = nucleic_acid.get_chemistry()
         identity.append(molecule_residuename)
 
         # Base of the nucleic acid
@@ -100,6 +100,7 @@ def Transmutation(pdb_file, nucleic_acid_chemistry : str, moiety : str, dihedral
     # Get Daedalus home
     DAEDALUSHOME = sysDaedalus.return_DAEDALUS_home()
 
+    # Write the inputfile to the Daedalus home directory
     with open(DAEDALUSHOME + "json/" + fname + ".json", "w") as filejson:
         json.dump(molecule, filejson, indent=4)
 
@@ -108,25 +109,25 @@ def convert_XYZ_to_PDB(xyz_file, atomID, atomname_list):
     """ the main function that convert an xyz formatted file to the required pdb format """
 
     # Instantiate the object
-    pdb_to_be = TF.TransmuteToPdb(xyz_file)
+    PDB_to_be = TF.TransmuteToPdb(xyz_file)
 
     # Parse all the required data from the xyz file
-    x_coords, y_coords, z_coords, elementsymbol = pdb_to_be.parse_xyz_and_elementsymbol()
+    X_coords, Y_coords, Z_coords, ElementSymbol = PDB_to_be.parse_xyz_and_ElementSymbol()
 
     # Process the inputted atomname list from a string to a list
-    atomname_list = pdb_to_be.return_processed_atomname_list(atomname_list)
+    AtomName_List = PDB_to_be.return_processed_atomname_list(atomname_list)
 
     # If the inputted atomname list and the array size do not match in size, exit the program
-    if not pdb_to_be.arraysize_vs_atomname_list_compatibility(elementsymbol, atomname_list) :
+    if not PDB_to_be.arraysize_vs_atomname_list_compatibility(ElementSymbol, AtomName_List) :
         print("The size of the prompted '--atomname_list' is not equal to the array of the cartesian coordinates, pertaining to the atoms of the molecule.\n"
                 "Please revise the prompted atomlist.")
         sys.exit(0)
 
-    if not pdb_to_be.elementsymbol_vs_atomname_list_compatibility(elementsymbol, atomname_list) :
-        print("The prompted '--atomname_list' do not match the order of the parsed elementsymbol list, pertaining to the atoms of the molecule.\n"
+    if not PDB_to_be.ElementSymbol_vs_atomname_list_compatibility(ElementSymbol, AtomName_List) :
+        print("The prompted '--atomname_list' do not match the order of the parsed ElementSymbol list, pertaining to the atoms of the molecule.\n"
                 "Please revise the prompted atomlist.")
         sys.exit(0)
 
-    pdb_to_be.fill_in_the_rest_of_the_pdb_dataframe_attribute(atomID, atomname_list, x_coords, y_coords, z_coords, elementsymbol)
+    PDB_to_be.fill_in_the_rest_of_the_pdb_dataframe_attribute(atomID, AtomName_List, X_coords, Y_coords, Z_coords, ElementSymbol)
 
-    pdb_to_be.write_to_pdb_formatted_file()
+    PDB_to_be.write_to_pdb_formatted_file()

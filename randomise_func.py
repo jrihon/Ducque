@@ -5,7 +5,7 @@ from typing import Union
 
 import numpy as np
 import fundaments
-from labyrinth_func_tools2 import find_json_files_of_this_chemistry_and_return_chemistrycode as chemCODe_fn
+from labyrinth_func_tools2 import return_chemistrycode
 from labyrinth_func_tools3 import codex_acidum_nucleicum
 
 CODEX = codex_acidum_nucleicum
@@ -23,7 +23,7 @@ def join_chemistry_with_sequence(chemistry : str, sequence) -> str:
     NUC_ID = fundaments.check_if_chemistry_is_valid(chemistry)
 
     # Get the abbreviated chemistry code
-    abbrCode = chemCODe_fn(NUC_ID)
+    abbrCode = return_chemistrycode(NUC_ID)
 
     return ", ".join(abbrCode + Base for Base in sequence)
 
@@ -32,7 +32,7 @@ def randomise_sequence(chemistry : str, length_seq : int) -> str:
     """ depends on the prompted chemistry and the length of the sequence """
 
     NUC_ID = fundaments.check_if_chemistry_is_valid(chemistry)
-    abbrCode = chemCODe_fn(NUC_ID)
+    abbrCode = return_chemistrycode(NUC_ID)
 
     all_abbrCodes = list(CODEX.keys())
 
@@ -51,11 +51,11 @@ def randomise_chemistry(chemistry : list, sequence : list) -> str:
     sequence = list(map(lambda x: x.strip(","), sequence))
     chemistry = list(map(lambda x: x.strip(","), chemistry))
 
-    # Include the different chemistries by parsing from the dictionary, taking the first option and then cutting out the base part.. leaving only the chemistry
+    # Include the different chemistries by parsing from the dictionary, taking the first option and then cutting out the base part. leaving only the chemistry
     list_of_chemistries = []
     for chem in chemistry:
         NUC_ID = fundaments.check_if_chemistry_is_valid(chem)
-        abbrCode = chemCODe_fn(NUC_ID)
+        abbrCode = return_chemistrycode(NUC_ID)
         list_of_chemistries.append(abbrCode)
 
 
@@ -77,7 +77,7 @@ def randomise_sequence_and_chemistry(chemistry : list, length_seq : int) -> str:
     list_of_chemistries = []
     for chem in chemistry:
         NUC_ID = fundaments.check_if_chemistry_is_valid(chem)
-        abbrCode = chemCODe_fn(NUC_ID)
+        abbrCode = return_chemistrycode(NUC_ID)
         list_of_chemistries.append(abbrCode)
 
     all_abbrCodes = list(CODEX.keys())

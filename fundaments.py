@@ -113,7 +113,7 @@ def transmute(TransmuteInput, options):
     fileTransmute = remove_trailing_whitespace(list(map(lambda x: x.strip(), TransmuteInput.readlines())))
 
     # Check if amount of inputs are valid
-    list_of_valid_flags = ["--pdb", "--id", "--moiety", "--conformation", "--dihedrals", "--bondangles"]
+    list_of_valid_flags = ["--pdb", "--chemistry", "--moiety", "--conformation", "--dihedrals", "--bondangles"]
     if not len(fileTransmute) == len(list_of_valid_flags) and not len(fileTransmute) == (len(list_of_valid_flags) - 1):
         print_divide_between_command_and_output()
         print("Only five/six arguments are required, please check your input file.\n\n\n")
@@ -134,8 +134,8 @@ def transmute(TransmuteInput, options):
         if arg[0] == "--pdb":
             pdb_file = arg[1]
 
-        if arg[0] == "--id":
-            identifier = arg[1]
+        if arg[0] == "--chemistry":
+            chemistry = arg[1]
 
         if arg[0] == "--conformation":
             conformation = arg[1]
@@ -149,7 +149,13 @@ def transmute(TransmuteInput, options):
         if arg[0] == "--bondangles":
             angles = arg[1:]
 
-    return pdb_file, identifier, moiety, dihedrals, angles, conformation
+        # if the conformation was not prompted, since it's an optional argument
+        try:
+            conformation
+        except:
+            conformation = False
+
+    return pdb_file, chemistry, moiety, dihedrals, angles, conformation
 
 
 def randomise(RandomiseInput, options):
@@ -199,6 +205,7 @@ def randomise(RandomiseInput, options):
                 if check_if_nucleotides_are_valid(complement):
                     sys.exit(1)
 
+            # Check if the complement flag contains either the 'homo' flag or a valid chemistry.
             complement = arg[1]
             compl_test_against = ["homo"] + list(nucleoside_dict.keys())
             if complement not in compl_test_against:

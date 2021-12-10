@@ -14,11 +14,11 @@ import labyrinth_func_andthefunkybunch as LFFB
 """ Labyrinth_func.py
 The script that contains the classes and all the functions that concatenate the workflow of consecutively adding the linker and nucleotides. """
 
-# Functions that are meant to concatenate and bypass the iterative coding in Labyrinth.py : Architecture() 
+
 def generate_vector_of_interest(angle : float, dihedral : float, atom_array : np.array) -> np.array:
     """ This function generates a single vector for which there exists only one angle and dihedral.
-    The atom_array contains the three first atoms in the sequence that make up the dihedral.
-    Example = if the sequence of a dihedral is C4' - C5' - O5' - P (beta backbone), then the atom_array is [O5', C5', C4'] """
+        The atom_array contains the three first atoms in the sequence that make up the dihedral.
+        Example = if the sequence of a dihedral is C4' - C5' - O5' - P (beta backbone), then the atom_array is [O5', C5', C4'] """
 
     # Get the vector to rotate the cone vector onto. This is done on the middle two atoms of the sequence
     # Example : [O5'] minus (-) [C5'] results in a vector that goes [C5' -> O5']
@@ -76,50 +76,50 @@ def position_phosphate_linker(nucleoside, nucl_array : np.ndarray, linker) -> np
 
     # Position the phosphate by moving the linker's center atom to the origin and then bringing to the location that was calculated for
     move_link_to = v2 + (single_vector1 * 1.6)
-    link = LFT1.move_vector_to_loc(linker.array - linker.array[id_v3], move_link_to)
+    link_array = LFT1.move_vector_to_loc(linker.array - linker.array[id_v3], move_link_to)
 
     ## We will rotate the linker twice, to get the correct orientation of the linker in 3D space
     # Dihedral C5' - O5' - P - OP2
-    v3 = link[id_v3]
+    v3 = link_array[id_v3]
 
-    single_vector2 = generate_vector_of_interest(linker.get_angle("OPO"), linker.get_dihedral("OP2_dihedral"), [v3, v2, v1])
+    single_vector2 = generate_vector_of_interest(linker.get_angle("OPO"), linker.get_dihedral("dihedral_2"), [v3, v2, v1])
 
     # This is the distance from the linker's atom to the origin
-    link_distance = link[id_v3]
+    link_distance = link_array[id_v3]
 
     # move the linker to the origin, by positioning the phosphorus at [0,0,0]
-    link_to_origin = LFT1.move_vector_to_origin(link, link_distance)
+    link_at_origin = LFT1.move_vector_to_origin(link_array, link_distance)
 
     # Rotate the linker a first time
     # Define the vector that goes from P to OP2 and normalize it
     id_v4 = LFT2.retrieve_atom_index(linker, APL[4])
-    v4 = link[id_v4]
+    v4 = link_array[id_v4]
     p3_4 = LFT1.return_normalized(v4 - v3)
 
     # Get quaternion to rotate the linker a first time and rotate it
     quaternion_P1 = LFT1.get_quaternion(single_vector2 , p3_4)
-    link = LFT1.rotate_with_quaternion(quaternion_P1, link_to_origin)
+    rotated_link_at_origin = LFT1.rotate_with_quaternion(quaternion_P1, link_at_origin)
 
     # Move the rotated linker back to the calculated position of the phosphorus atom
-    link = LFT1.move_vector_to_loc(link, link_distance)
+    link_array = LFT1.move_vector_to_loc(rotated_link_at_origin, link_distance)
 
-    # Rotate the linekr a second time, but now the vector P_OP2 is the direction axis
+    # Rotate the linker moiety a second time, but now the vector P_OP2 is the direction axis
     # Since we have rotated the linker, we need to override the vector again from the array 'link' we just overrided
-    v4 = link[id_v4]
+    v4 = link_array[id_v4]
 
     # Dihedral C5' - O5' - P - OP1
     id_v5 = LFT2.retrieve_atom_index(linker, APL[5])
-    v5 = link[id_v5]
+    v5 = link_array[id_v5]
 
     # Generate vector we want to rotate P_OP1 on to
-    single_vector3 = generate_vector_of_interest(linker.get_angle("OPO"), linker.get_dihedral("OP1_dihedral"), [v3, v2, v1])
+    single_vector3 = generate_vector_of_interest(linker.get_angle("OPO"), linker.get_dihedral("dihedral_1"), [v3, v2, v1])
 
     # normalize the single vector, multiply with the set distance (P-O) and replace it with the index of OP1 in the link array, making it the new vector for OP1
     distance_P_O = 1.48
-    link[id_v5] = (LFT1.return_normalized(single_vector3) * distance_P_O) + link[id_v3]
+    link_array[id_v5] = (LFT1.return_normalized(single_vector3) * distance_P_O) + link_array[id_v3]
 
     # Stack the arrays on top of each other
-    nucleotide = np.vstack((link, nucl_array))
+    nucleotide = np.vstack((link_array, nucl_array))
 
     return nucleotide
 
@@ -127,6 +127,7 @@ def position_phosphate_linker(nucleoside, nucl_array : np.ndarray, linker) -> np
 def generate_complementary_sequence(sequence_list : list, complement : Union[list, str]) -> list:
     """ sequence list is the given input.
         complement will specify what the complementary strand will look like. choices between homo - DNA - RNA """
+
     complementary_dictDNA = { "A" : "T", "T" : "A", "G" : "C", "C" : "G", "U" : "A" }
     complementary_dictRNA = { "A" : "U", "T" : "A", "G" : "C", "C" : "G", "U" : "A" }
 
@@ -146,8 +147,7 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[lis
         assert len(sequence_list) == len(complementary_sequence), "The length of the complementary strand does not match the length of the leading strand!"
 
         # Check if one of the nucleosides in the prompted list is wrong, i.e. not existing or wrongly prompted (misspelled)
-
-        # The keys, meaning the nucleosides, from the complementary dictionary wil be parsed as a list
+        # returns boolean
         if not fundaments.check_if_nucleotides_are_valid(keys_of_dict):
             sys.exit(0)
 
@@ -173,13 +173,14 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[lis
         return complementary_sequence
 
 
+    import fundaments
     # IF THE SEQUENCE NEEDS TO BE A HETERODUPLEX; CHECK THE VALIDITY OF THE PROMPTED CHEMISTRY AND RETURN A LIST WITH POSSIBLE ABBREVIATED CHEMISTRY CODES
     NUC_ID = fundaments.check_if_chemistry_is_valid(complement)
 
     # Return the abbreviated name of the chemistry
-    chemCode = LFT2.find_json_files_of_this_chemistry_and_return_chemistrycode(NUC_ID)
+    chemCode = LFT2.return_chemistrycode(NUC_ID)
 
-    # If the key does not exist, this means that there is the uracil variant as the nucleobase of the chemistry
+    # If the 'chemCode + T' does not exist as a nucleotide, this means that the the uracil variant is valid as the nucleobase of the chemistry
     if chemCode + "T" in keys_of_dict :
         comp_bases = LFT2.get_complementary_bases(bases, complementary_dictDNA)
         complementary_sequence = LFT2.concatenate_chem_and_bases(chemCode, comp_bases)
@@ -190,7 +191,7 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[lis
     return complementary_sequence
 
 
-    # At this point, any input the user has prompted should have gone through a return statement. So if we reach this point, just stop the program. 
+    # At this point, any input the user has prompted should have gone through a return statement. So if we reach this point, abort because something went wrong
     if True:
         raise ValueError("The variable you have prompted for the '--complement' flag is not correct. Please review your input file.\n")
         sys.exit(1)
@@ -211,10 +212,10 @@ def assert_leading_strand_nucleotide_conformation(conformations, prev_nucleoside
     prev_base_atoms, next_base_atoms = LFT3.retrieve_atoms_for_plane_rotation_of_complement(prev_base, next_base)
 
     # Parse the indexes of the atoms of interest
-    prev_base_indexes = LFT2.retrieve_atom_index_MULTIPLE(prev_nucleoside, prev_base_atoms, index_counter=prev_link.mol_length)
+    prev_base_atoms_indexes = LFT2.retrieve_atom_index_MULTIPLE(prev_nucleoside, prev_base_atoms, index_counter=prev_link.mol_length)
 
     # Previous nucleoside Cross Vector
-    cross_prev = LFFB.return_cross_vector_for_plane_rotation(leading_strand, prev_base_indexes)
+    cross_prev = LFFB.return_cross_vector_for_plane_rotation(leading_strand, prev_base_atoms_indexes)
 
     # Array of different cross vectors of the next nucleoside
     possible_cross_vectors = np.zeros(len(conformations), dtype=object)
@@ -225,8 +226,8 @@ def assert_leading_strand_nucleotide_conformation(conformations, prev_nucleoside
         # Position the nucleoside in place
         arrays_of_the_conformations = LFFB.position_next_nucleoside(nucleoside, prev_nucleoside, prev_link, leading_strand)
         # Parse the indexes of the atoms of interest
-        next_base_indexes = LFT2.retrieve_atom_index_MULTIPLE(next_nucleoside, next_base_atoms)
-        possible_cross_vectors[conf] = LFFB.return_cross_vector_for_plane_rotation(arrays_of_the_conformations, next_base_indexes)
+        next_base_atoms_indexes = LFT2.retrieve_atom_index_MULTIPLE(next_nucleoside, next_base_atoms)
+        possible_cross_vectors[conf] = LFFB.return_cross_vector_for_plane_rotation(arrays_of_the_conformations, next_base_atoms_indexes)
 
     # Calculate the scalar product of the two vectors, convert it to radians. The smallest value in the array corresponds to the dot(cross1, cross2) with the least amount of difference
     # In simple terms, it means both planes of the respective bases are parallel
@@ -237,10 +238,10 @@ def assert_leading_strand_nucleotide_conformation(conformations, prev_nucleoside
         radians_product_array[v] = np.arccos(scalar_product)
 
     stored_distances = LFT1.smallest_difference(radians_product_array, 1)
-    smallest_val = radians_product_array.min()
-    index_smallest_val = np.where(radians_product_array== smallest_val)[0][0]
+    smallest_distance = radians_product_array.min()
+    index_smallest_distance = np.where(radians_product_array == smallest_distance)[0][0]
 
-    return conformations[index_smallest_val]
+    return conformations[index_smallest_distance]
 
 
 def assert_starting_bases_of_complementary_strand(compl1_base_confs : list, compl2_base_confs : list, compl2_linker, lead_bases : list, leading_strand : np.ndarray, index_lead : int) -> np.ndarray :
@@ -453,10 +454,7 @@ def assert_possible_base_conformations_and_fit(leading_nuc, leading_array : np.n
         conf_n = initMolecule.Nucleoside(conformations[0])
         conf_n_arr = LFFB.position_complementary_base(leading_nuc, conf_n, leading_array, index_lead)
         conf_with_linker = position_phosphate_linker(conf_n, conf_n_arr, compl_linker)
-
-        #conf_n_final = LFFB.tilt_array_to_get_a_better_fit(conf_n, compl_linker, prev_compl_nuc, prev_compl_linker, conf_with_linker, complementary_strand, index_compl)
         conf_n.array = LFFB.tilt_array_to_get_a_better_fit(conf_n, compl_linker, prev_compl_nuc, prev_compl_linker, conf_with_linker, complementary_strand, index_compl)
-
         return conf_n
 
     ## Since there are multiple conformations available, we will need to sort out which one will fit the best.

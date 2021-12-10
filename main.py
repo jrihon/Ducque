@@ -63,12 +63,11 @@ else:
 
     # If we want to convert a pdb to a json file
     if arguments.transmute:
-
-        PDB_FILE, IDENTIFIER, MOIETY, DIHEDRALS, ANGLES, CONFORMATION = fundaments.transmute(arguments.transmute, options)
+        PDB_FILE, CHEMISTRY_T, MOIETY, DIHEDRALS, ANGLES, CONFORMATION = fundaments.transmute(arguments.transmute, options)
 
     # If we want to call for a randomised sequence
     if arguments.randomise:
-        CHEMISTRY, LENGTH_SEQUENCE, SEQUENCE, COMPL_SEQ = fundaments.randomise(arguments.randomise, options)
+        CHEMISTRY_R, LENGTH_SEQUENCE, SEQUENCE, COMPL_SEQ = fundaments.randomise(arguments.randomise, options)
 
     # If we want to convert XYZ file to PDB
     if arguments.xyz_pdb:
@@ -96,23 +95,19 @@ def main():
     # Print the Daedalus prompt
 #    print(explanation)
 
-    # Convert pdb to json
-    if arguments.transmute:
-        print_divide_between_command_and_output()
-        transmute.Transmutation(PDB_FILE, IDENTIFIER, MOIETY, DIHEDRALS, ANGLES, CONFORMATION)
-        print(f"Converting {PDB_FILE} to a json file.")
-
     # Build nucleic acid duplex
     if arguments.Daedalus:
         print_divide_between_command_and_output()
         print("Daedalus - Nucleic Acid Architecture initiated! Building sequence ...\n")
         labyrinth.Architecture(NUCLEIC_ACID_LIST, COMPLEMENT)
 
-    # Output a randomised sequence
-    if arguments.randomise:
+        print("                         Time spent: %.5f seconds." % (time.time() - t0))
+
+    # Convert pdb to json
+    if arguments.transmute:
         print_divide_between_command_and_output()
-        print("Randomisation of the given inputs!\n")
-        randomise.randomiser(CHEMISTRY, LENGTH_SEQUENCE, SEQUENCE, COMPL_SEQ)
+        transmute.Transmutation(PDB_FILE, CHEMISTRY_T, MOIETY, DIHEDRALS, ANGLES, CONFORMATION)
+        print(f"Converting {PDB_FILE} to a json file.")
 
     # Convert an ORCA xyz-formatted molecule file to a pdb file
     if arguments.xyz_pdb:
@@ -120,7 +115,12 @@ def main():
         print("Converting {FILENAME_XYZ} to a .pdb format file.\n")
         transmute.convert_XYZ_to_PDB(FILENAME_XYZ, ATOM_ID, ATOMNAME_LIST)
 
-    print("                         Time spent: %.5f seconds." % (time.time() - t0))
+    # Output a randomised sequence
+    if arguments.randomise:
+        print_divide_between_command_and_output()
+        print("Randomisation of the given inputs!\n")
+        randomise.randomiser(CHEMISTRY_R, LENGTH_SEQUENCE, SEQUENCE, COMPL_SEQ)
+
 
 
 ## ---------------------------------------- S T A R T   T H E   S H O W ---------------------------------------- ##

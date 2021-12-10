@@ -247,8 +247,6 @@ def position_complementary_base(leading_base, complementary_base, leading_array 
 
     # Get the required parameters for the rotations
     Q_angle, Q_dihedral, R_angle, R_dihedral = LFT3.retrieve_angles_and_dihedrals_for_initial_base_positioning(leadingBase)
-    #Q_dist_between_bases = 1.81
-    #R_dist_between_bases = 1.87
 
     ## Apply a translation to get the initial positioning
     Q_leadingBase_atoms, Q_complBase_atom, Q_distance = LFT3.retrieve_atoms_for_positioning_of_complement1(leadingBase, complBase)
@@ -286,6 +284,12 @@ def position_complementary_base(leading_base, complementary_base, leading_array 
     plane2_quaternion = LFT1.get_quaternion(j1, j2)
 
     return LFT1.move_to_origin_ROTATE_move_back_to_loc(plane2_quaternion, compl_nucleoside_array, R_vector)
+#    checknucarr = LFT1.move_to_origin_ROTATE_move_back_to_loc(plane2_quaternion, compl_nucleoside_array, R_vector)
+#
+#    vCross_complBase = return_cross_vector_for_plane_rotation(checknucarr, rotPlane_complBase_atoms_id)
+#    print(np.arccos(np.dot(vCross_complBase, vCross_leadingBase)) / (np.pi/180))
+
+#    return checknucarr
 
 
 def assert_rotation_of_bases_by_distance(array_nucs : list, v_directions: np.array, index_origin : Union[list, float], index_distances : list) -> np.ndarray:
@@ -318,7 +322,7 @@ def assert_rotation_of_bases_by_distance(array_nucs : list, v_directions: np.arr
             tmp_nuc2 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc2, nuc2, nuc2[index_origin[1]])
 
             # Calculate the rotation
-            stored_distances[index] = LFT1.get_length_of_vector(tmp_nuc1[index_distances[1]], tmp_nuc2[index_distances[0]])
+            stored_distances[index] = LFT1.get_length_of_vector(tmp_nuc1[index_distances[0]], tmp_nuc2[index_distances[1]])
 
             index += 1
 
