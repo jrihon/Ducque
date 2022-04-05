@@ -6,7 +6,7 @@ from typing import Union
 import numpy as np
 import fundaments
 from labyrinth_func_tools2 import return_chemistrycode
-from labyrinth_func_tools3 import codex_acidum_nucleicum
+from labyrinth_repository import codex_acidum_nucleicum
 
 CODEX = codex_acidum_nucleicum
 

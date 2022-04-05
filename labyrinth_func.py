@@ -1,13 +1,12 @@
-import numpy as np
-import pandas as pd
 import json, sys
 from typing import Union
 
 import initMolecule
 
+import numpy as np
 import labyrinth_func_tools1 as LFT1
 import labyrinth_func_tools2 as LFT2
-import labyrinth_func_tools3 as LFT3
+import labyrinth_repository as LabRepo
 import labyrinth_func_andthefunkybunch as LFFB
 
 
@@ -58,7 +57,7 @@ def position_phosphate_linker(nucleoside, nucl_array : np.ndarray, linker) -> np
     linker is a json object
     """
     # Atom parsing list : last ones of the nucleoside and the ones needed from the linker
-    APL = LFT3.Atom_Parsing_List(nucleoside, linker)
+    APL = LabRepo.Atom_Parsing_List(nucleoside, linker)
 
     # Retrieve the vectors of the atoms that make up the dihedral you research
     # Dihedral C4' - C5' - O5' - P
@@ -132,7 +131,7 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[lis
     complementary_dictRNA = { "A" : "U", "T" : "A", "G" : "C", "C" : "G", "U" : "A" }
 
     # The keys, meaning the nucleosides, from the complementary dictionary wil be parsed as a list
-    keys_of_dict = list(LFT3.codex_acidum_nucleicum.keys())
+    keys_of_dict = list(LabRepo.codex_acidum_nucleicum.keys())
 
     # Get a list of the bases of the leading strand, to later build a complementary strand
     bases = LFT2.retrieve_bases_list(sequence_list)
@@ -209,7 +208,7 @@ def assert_leading_strand_nucleotide_conformation(conformations, prev_nucleoside
 
     prev_base = prev_nucleoside.get_base_denominator()
     next_base = next_nucleoside.get_base_denominator()
-    prev_base_atoms, next_base_atoms = LFT3.retrieve_atoms_for_plane_rotation_of_complement(prev_base, next_base)
+    prev_base_atoms, next_base_atoms = LabRepo.retrieve_atoms_for_plane_rotation_of_complement(prev_base, next_base)
 
     # Parse the indexes of the atoms of interest
     prev_base_atoms_indexes = LFT2.retrieve_atom_index_MULTIPLE(prev_nucleoside, prev_base_atoms, index_counter=prev_link.mol_length)
@@ -304,7 +303,7 @@ def assert_starting_bases_of_complementary_strand(compl1_base_confs : list, comp
     index_lead -= size_of_lead_base2
 
     # Parse the index of the values we want. compl1 is the atom that is being attached to the linker of the previous nucleotide. compl2 is the last atom in the backbone of the linker.
-    APL1 = LFT3.Atom_Parsing_List(compl2_base, compl2_linker, compl1_base)
+    APL1 = LabRepo.Atom_Parsing_List(compl2_base, compl2_linker, compl1_base)
     id_dist_compl1 = LFT2.retrieve_atom_index(compl1_base, APL1[3])
     id_dist_compl2 = LFT2.retrieve_atom_index(compl2_linker, APL1[2]) + compl1_base.mol_length # Add object.mol_length because we parse from a single array that is a nucleoside
 
@@ -333,6 +332,7 @@ def assert_starting_bases_of_complementary_strand(compl1_base_confs : list, comp
         nuc2 = initMolecule.Nucleoside(compl2_base_confs[compl2_id])
         return complementary_strand, index_lead, nuc1, nuc2
 
+
     # Now that we have the best fit, just to be sure we instantiate the correct object for the correct json filem for atom parsing.
     # This is generally not necessary, if the only differences between the json files, of the conformations of the same nucleosides, is the atoms coordinates.
     compl1_nuc = initMolecule.Nucleoside(compl1_base_confs[compl1_id])
@@ -351,16 +351,20 @@ def assert_starting_bases_of_complementary_strand(compl1_base_confs : list, comp
     ## GET THE VECTORS AND THE INDEX OF THE ATOMS REQUIRED FOR THE ROTATIONS
     # NUCLEOTIDE 1
     nuc1_base = compl1_base.get_base_denominator()
-    nuc1_origin, _ = LFT3.retrieve_atoms_for_plane_rotation_of_complement(nuc1_base, nuc1_base)
-    nuc1_for_direction, _, __= LFT3.retrieve_atoms_for_positioning_of_complement1(nuc1_base, nuc1_base)
-    id_nuc1_origin = LFT2.retrieve_atom_index(compl1_nuc, nuc1_origin[0])
+#    nuc1_origin, _ = LabRepo.retrieve_atoms_for_plane_rotation_of_complement(nuc1_base, nuc1_base)
+    nuc1_origin = LabRepo.retrieve_atom_for_direction_axis(nuc1_base)
+    nuc1_for_direction, _, __= LabRepo.retrieve_atoms_for_positioning_of_complement1(nuc1_base, nuc1_base)
+#    id_nuc1_origin = LFT2.retrieve_atom_index(compl1_nuc, nuc1_origin[0])
+    id_nuc1_origin = LFT2.retrieve_atom_index(compl1_nuc, nuc1_origin)
     id_nuc1_for_direction = LFT2.retrieve_atom_index(compl1_nuc, nuc1_for_direction[2])
 
     # NUCLEOTIDE 2
     nuc2_base = compl2_base.get_base_denominator()
-    nuc2_origin, _ = LFT3.retrieve_atoms_for_plane_rotation_of_complement(nuc2_base, nuc2_base)
-    nuc2_for_direction, _ , __= LFT3.retrieve_atoms_for_positioning_of_complement1(nuc2_base, nuc2_base)
-    id_nuc2_origin = LFT2.retrieve_atom_index(compl2_nuc, nuc2_origin[0]) + compl2_linker.mol_length
+#    nuc2_origin, _ = LabRepo.retrieve_atoms_for_plane_rotation_of_complement(nuc2_base, nuc2_base)
+    nuc2_origin = LabRepo.retrieve_atom_for_direction_axis(nuc2_base)
+    nuc2_for_direction, _ , __= LabRepo.retrieve_atoms_for_positioning_of_complement1(nuc2_base, nuc2_base)
+#    id_nuc2_origin = LFT2.retrieve_atom_index(compl2_nuc, nuc2_origin[0]) + compl2_linker.mol_length
+    id_nuc2_origin = LFT2.retrieve_atom_index(compl2_nuc, nuc2_origin) + compl2_linker.mol_length
     id_nuc2_for_direction = LFT2.retrieve_atom_index(compl2_nuc, nuc2_for_direction[2]) + compl2_linker.mol_length
 
     # Initialise direction axis
@@ -376,6 +380,8 @@ def assert_starting_bases_of_complementary_strand(compl1_base_confs : list, comp
     # Generate angles of rotation. Make note that we won't go past a 15 degree angle, since that general will not be necessary to turn that much.
     array_of_rot_angles = np.linspace(2.5, 30, 16) * (np.pi/180)
 
+
+
     ### CALCULATIONS BASED ON DISTANCE
     v_direction1, v_direction2 = LFFB.assert_rotation_of_bases_by_distance(array_nucs, v_directions, index_origin, index_distance_between_nuc)
 
@@ -384,14 +390,18 @@ def assert_starting_bases_of_complementary_strand(compl1_base_confs : list, comp
         quat_nuc1 = LFT1.get_custom_quaternion(v_direction1, array_of_rot_angles[i])
         quat_nuc2 = LFT1.get_custom_quaternion(v_direction2, array_of_rot_angles[i])
 
-        testnuc1 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, arr_nuc1, arr_nuc1[id_nuc1_origin])
-        testnuc2 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc2, arr_nuc2, arr_nuc2[id_nuc2_origin])
+#        testnuc1 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, arr_nuc1, arr_nuc1[id_nuc1_origin])
+#        testnuc2 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc2, arr_nuc2, arr_nuc2[id_nuc2_origin])
+        testnuc1 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, arr_nuc1, arr_nuc1[id_nuc1_for_direction])
+        testnuc2 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc2, arr_nuc2, arr_nuc2[id_nuc2_for_direction])
 
         stored_distances[i] = LFT1.get_length_of_vector(testnuc1[id_dist_compl1], testnuc2[id_dist_compl2])
         # If the distance is suitable according to the boundaries, return the stack
         if LFT1.assert_length_of_vector(stored_distances[i]) :
             complementary_strand = np.vstack((testnuc1, testnuc2))
             return complementary_strand, index_lead, compl1_nuc, compl2_nuc
+
+
 
     ### CALCULATIONS BASED ON ANGLE
     idx_angle_between_nuc = [LFT2.retrieve_atom_index(compl2_nuc, APL1[1]) + compl2_linker.mol_length,
@@ -409,8 +419,10 @@ def assert_starting_bases_of_complementary_strand(compl1_base_confs : list, comp
         quat_nuc1 = LFT1.get_custom_quaternion(v_direction1, array_of_rot_angles[i])
         quat_nuc2 = LFT1.get_custom_quaternion(v_direction2, array_of_rot_angles[i])
 
-        testnuc1 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, arr_nuc1, arr_nuc1[id_nuc1_origin])
-        testnuc2 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc2, arr_nuc2, arr_nuc2[id_nuc2_origin])
+#        testnuc1 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, arr_nuc1, arr_nuc1[id_nuc1_origin])
+#        testnuc2 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc2, arr_nuc2, arr_nuc2[id_nuc2_origin])
+        testnuc1 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, arr_nuc1, arr_nuc1[id_nuc1_for_direction])
+        testnuc2 = LFT1.move_to_origin_ROTATE_move_back_to_loc(quat_nuc2, arr_nuc2, arr_nuc2[id_nuc2_for_direction])
 
         # Normalise vectors
         v0 = LFT1.return_normalized(testnuc2[idx0] - testnuc2[idx1])
@@ -454,6 +466,9 @@ def assert_possible_base_conformations_and_fit(leading_nuc, leading_array : np.n
         conf_n = initMolecule.Nucleoside(conformations[0])
         conf_n_arr = LFFB.position_complementary_base(leading_nuc, conf_n, leading_array, index_lead)
         conf_with_linker = position_phosphate_linker(conf_n, conf_n_arr, compl_linker)
+#        #REMOVE THIS LATER
+#        conf_n.array = conf_with_linker
+#        return conf_n
         conf_n.array = LFFB.tilt_array_to_get_a_better_fit(conf_n, compl_linker, prev_compl_nuc, prev_compl_linker, conf_with_linker, complementary_strand, index_compl)
         return conf_n
 
@@ -466,12 +481,12 @@ def assert_possible_base_conformations_and_fit(leading_nuc, leading_array : np.n
     nuc_data = initMolecule.Nucleoside(conformations[0])
 
     # The first atom in the backbone of the nucleoside the current nucleoside attaches to
-    atomOfInterest2 = LFT3.backbone_codex[json.loads(nuc_data.jsonObject["identity"])[1]][0]   # first value of the backbone_codex to parse. else make list(_VAL)[0]
+    atomOfInterest2 = LabRepo.backbone_codex[json.loads(nuc_data.jsonObject["identity"])[1]][0]   # first value of the backbone_codex to parse. else make list(_VAL)[0]
     bb_id = LFT2.retrieve_atom_index(prev_compl_nuc, atomOfInterest2) + index_compl + prev_compl_linker.mol_length
     bb_v = complementary_strand[bb_id]
 
     # The last atom in the backbone of the linker of the current nucleoside. 
-    atomOfInterest1 = LFT3.backbone_codex[json.loads(compl_linker.jsonObject["identity"])[0]][-1] # since it is the last of the backbone_codex that should be parsed. else make list(_VAL)[-1]
+    atomOfInterest1 = LabRepo.backbone_codex[json.loads(compl_linker.jsonObject["identity"])[0]][-1] # since it is the last of the backbone_codex that should be parsed. else make list(_VAL)[-1]
     link_id = LFT2.retrieve_atom_index(compl_linker, atomOfInterest1)
 
     ## First we assert the conformations without tilting by the base-plane
@@ -574,7 +589,7 @@ def orient_the_linker_moieties_better(CONF_LIST : list, LINK_LIST : list, leadin
         idx_lead -= (nuc.mol_length + link.mol_length + nextnuc.mol_length)
 
         # Parse the required atoms from AtomParsingList
-        lead_APL = LFT3.Atom_Parsing_List(nuc, link, nextnuc)
+        lead_APL = LabRepo.Atom_Parsing_List(nuc, link, nextnuc)
         ArrOfIdxBB, ArrOfIdxLink = LFFB.parse_indexes_of_the_array_for_linker_reorientation(lead_APL, nuc, link, nextnuc, idx_lead)
 
         # Based on the positioning, the linker moiety has or has not been rotated
@@ -601,7 +616,7 @@ def orient_the_linker_moieties_better(CONF_LIST : list, LINK_LIST : list, leadin
         prevnuc = initMolecule.Nucleoside(compl_nuc[nucleotide - 1])
 
         # Parse the required atoms from AtomParsingList
-        compl_APL = LFT3.Atom_Parsing_List(prevnuc, link, nuc)
+        compl_APL = LabRepo.Atom_Parsing_List(prevnuc, link, nuc)
         ArrOfIdxBB, ArrOfIdxLink = LFFB.parse_indexes_of_the_array_for_linker_reorientation(compl_APL, nuc, link, prevnuc, idx_compl)
 
         # Based on the positioning, the linker moiety has or has not been rotated
@@ -621,11 +636,11 @@ def cap_nucleic_acid_strands(leading_array : np.ndarray, leading_sequence : list
     """ Cap the nucleic acid strands with a hydrogen, to finish the build of the duplex
         We create two functions in LFFB that parse both the correct coordinates of the capping atoms and their names """
 
-    # Retrieve the backbone dictionary from LFT3, since we'll be needing it
-    backbone = LFT3.backbone_codex
+    # Retrieve the backbone dictionary from LabRepo, since we'll be needing it
+    backbone = LabRepo.backbone_codex
 
-    # Retrieve the dictionary for the nucleoside filenames from LFT3 as well
-    filenames = LFT3.codex_acidum_nucleicum
+    # Retrieve the dictionary for the nucleoside filenames from LabRepo as well
+    filenames = LabRepo.codex_acidum_nucleicum
 
     # Defines and returns the cartesian position of the hydrogens 
     atom_array = LFFB.capping_retrieve_atomarrays(leading_array, leading_sequence, complementary_array, complementary_sequence, backbone, filenames)
@@ -636,78 +651,160 @@ def cap_nucleic_acid_strands(leading_array : np.ndarray, leading_sequence : list
     return atom_array, atom_names
 
 
-def create_PDB_from_array_final(leading_array : np.ndarray, list_of_leading_sequence : list, complementary_array : np.ndarray, list_of_complementary_sequence : list):
-    """ Write out the data for the pdb filename
+def create_PDB_from_array_final(leadingArray : np.ndarray, listOfLeadingSequence : list, complementaryArray : np.ndarray, listOfComplementarySequence : list):
+    """ Write out the PDB formatted file
+
         https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/tutorials/framepdbintro.html"""
 
     # Reverse the sequence of this to parse the correct atoms along the array
-    list_of_leading_sequence = list_of_leading_sequence[::-1]
+    listOfLeadingSequence = listOfLeadingSequence[::-1]
 
     # Capping of the duplexes
     # First two elements belong to the leading strand, the last two elements belong to the complementary strand. A total of four elements per variable
-    capping_array, capping_names = cap_nucleic_acid_strands(leading_array, list_of_leading_sequence, complementary_array, list_of_complementary_sequence)
+    terminalArray, terminalAtomNames = cap_nucleic_acid_strands(leadingArray, listOfLeadingSequence, complementaryArray, listOfComplementarySequence)
 
     # Adjust leading strand's array for the capping
-    leading_array = np.vstack((capping_array[0], leading_array, capping_array[1]))
+    # For readability, I had added the completion of the array here and not in a backend function
+    leadingArray = np.vstack((terminalArray[0], leadingArray, terminalArray[1]))
+
 
     # LEADING STRAND
-    df_leading = pd.DataFrame()
+    leadingStrand = initMolecule.PdbInstance()
 
-    df_leading["RecName"] = ["ATOM" for x in range(leading_array.shape[0])]
-    df_leading["AtomNum"] = np.arange(start=1, stop=leading_array.shape[0] + 1)
-    df_leading["AtomName"] = capping_names[0] + LFT2.return_PDB_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Atoms") + capping_names[1]
-    df_leading["AltLoc"] = " "
-    df_leading["ResName"] = LFT2.return_PDB_Residuename(list_of_leading_sequence)
-    df_leading["Chain"] = "J"
-    df_leading["Sequence"] = LFT2.return_PDB_Sequence(list_of_leading_sequence)
-    df_leading["X_coord"] = list(map(lambda x: "{:.3f}".format(x), leading_array[:,0]))
-    df_leading["Y_coord"] = list(map(lambda x: "{:.3f}".format(x), leading_array[:,1]))
-    df_leading["Z_coord"] = list(map(lambda x: "{:.3f}".format(x), leading_array[:,2]))
-    df_leading["Occupancy"] = "1.00"
-    df_leading["Temp"] = "0.00"
-    df_leading["SegmentID"] = str("   ")
-    df_leading["ElementSymbol"] = ["H"] + LFT2.return_PDB_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Symbol") + ["H"]
+    leadingStrand.SetAtomNumber(leadingArray)
+    leadingStrand.SetAtomName(terminalAtomNames, listOfLeadingSequence, "lead")
+    leadingStrand.SetResidueName(listOfLeadingSequence)
+    leadingStrand.SetChainLetter("J")
+    leadingStrand.SetSequenceNumber(listOfLeadingSequence, "lead")
+    leadingStrand.SetAtomArray(terminalArray, leadingArray, "lead")
+    leadingStrand.SetElementSymbols(listOfLeadingSequence)
 
-    # TER line between the single strands
-    TER_line = pd.DataFrame({"RecName" : "TER", "AtomNum" : 69}, index=[69])
-    ln_lead = len(df_leading["AtomNum"])
 
-    # Adjust complementary strand's array for the capping
-    complementary_array = np.vstack((capping_array[2], complementary_array, capping_array[3]))
+    # Adjust leading strand's array for the capping.
+    # For readability, I had added the completion of the array here and not in a backend function
+    complementaryArray = np.vstack((terminalArray[2], complementaryArray, terminalArray[3]))
 
     # COMPLEMENTARY STRAND
-    df_complementary = pd.DataFrame()
+    complementaryStrand = initMolecule.PdbInstance()
 
-    df_complementary["RecName"] = ["ATOM" for x in range(complementary_array.shape[0])]
-    df_complementary["AtomNum"] = np.arange(start=ln_lead + 1, stop=(ln_lead + complementary_array.shape[0] + 1))
-    df_complementary["AtomName"] = capping_names[2] + LFT2.return_PDB_AtomNames_or_ElementSymbol(list_of_complementary_sequence, "Atoms") + capping_names[3]
-    df_complementary["AltLoc"] = " "
-    df_complementary["ResName"] = LFT2.return_PDB_Residuename(list_of_complementary_sequence)
-    df_complementary["Chain"] = "R"
-    df_complementary["Sequence"] = LFT2.return_PDB_Sequence(list_of_complementary_sequence, len(list_of_complementary_sequence))
-    df_complementary["X_coord"] = list(map(lambda x: "{:.3f}".format(x), complementary_array[:,0]))
-    df_complementary["Y_coord"] = list(map(lambda x: "{:.3f}".format(x), complementary_array[:,1]))
-    df_complementary["Z_coord"] = list(map(lambda x: "{:.3f}".format(x), complementary_array[:,2]))
-    df_complementary["Occupancy"] = "1.00"
-    df_complementary["Temp"] = "0.00"
-    df_complementary["SegmentID"] = str("   ")
-    df_complementary["ElementSymbol"] = ["H"] + LFT2.return_PDB_AtomNames_or_ElementSymbol(list_of_complementary_sequence, "Symbol") + ["H"]
+    complementaryStrand.SetAtomNumber(complementaryArray, len(leadingStrand.AtomNumber))
+    complementaryStrand.SetAtomName(terminalAtomNames, listOfComplementarySequence, "complementary")
+    complementaryStrand.SetResidueName(listOfComplementarySequence)
+    complementaryStrand.SetChainLetter("R")
+    complementaryStrand.SetSequenceNumber(listOfComplementarySequence, "complementary")
+    complementaryStrand.SetAtomArray(terminalArray, complementaryArray, "complementary")
+    complementaryStrand.SetElementSymbols(listOfComplementarySequence)
 
-    # Concatenate the two dataframes
-    duplex_df = pd.concat([df_leading, TER_line, df_complementary], ignore_index=True)
 
-    # Write out the pdb file
+    # Write out the *.pdb file
     filename = "testing_duplex.pdb"
-    with open(filename ,"w") as pdb:
-        for index, row in duplex_df.iterrows():
-            if row[0] == "TER":
-                TERline = row[0]
-                pdb.write("%-6s\n" % TERline)
-            if not row[0] == "TER":
-                split_line = [ row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13] ]
-                pdb.write("%-6s%5s%5s%s%3s%2s%5d  %8s%8s%9s%6s%7s%4s     %2s\n" % tuple(split_line))
-        pdb.write("END")
-        pdb.close()
+
+    with open(filename ,"w") as PDB:
+        # Write out Leading Strand
+        for idxL in range(len(leadingStrand.AtomNumber)):
+            line = [leadingStrand.RecordName,
+                    leadingStrand.AtomNumber[idxL],
+                    leadingStrand.AtomName[idxL],
+                    leadingStrand.ResidueName[idxL],
+                    leadingStrand.Chain,
+                    leadingStrand.SequenceNumber[idxL],
+                    leadingStrand.x[idxL], leadingStrand.y[idxL],leadingStrand.z[idxL],
+                    leadingStrand.Occupancy, leadingStrand.TempFactor,
+                    leadingStrand.ElementSymbol[idxL] ]
+
+            PDB.write("%-4s  %5d %-4s %3s %s%4d    %8s%8s%8s%6s%6s          %2s\n" % tuple(line))
+
+        # Add TER line in between the two strands
+        PDB.write("TER\n")
+
+        # Write out Complementary Strand
+        for idxC in range(len(complementaryStrand.AtomNumber)):
+            line = [complementaryStrand.RecordName,
+                    complementaryStrand.AtomNumber[idxC],
+                    complementaryStrand.AtomName[idxC],
+                    complementaryStrand.ResidueName[idxC],
+                    complementaryStrand.Chain,
+                    complementaryStrand.SequenceNumber[idxC],
+                    complementaryStrand.x[idxC], complementaryStrand.y[idxC],complementaryStrand.z[idxC],
+                    complementaryStrand.Occupancy, complementaryStrand.TempFactor,
+                    complementaryStrand.ElementSymbol[idxC] ]
+
+            PDB.write("%-4s  %5d %-4s %3s %s%4d    %8s%8s%8s%6s%6s          %2s\n" % tuple(line))
+
+        # Finalize the *.pdb file
+        PDB.write("END")
 
     print("\n\nWriting nucleic acid duplex to " + filename + ". \n\n")
 
+
+#
+#
+#
+#
+#
+#
+#
+#    # Adjust leading strand's array for the capping
+#    leadingArray = np.vstack((terminalArray[0], leading_array, terminalArray[1]))
+#
+#    # LEADING STRAND
+#    df_leading = pd.DataFrame()
+#
+#    df_leading["RecName"] = ["ATOM" for x in range(leading_array.shape[0])]
+#    df_leading["AtomNum"] = np.arange(start=1, stop=leading_array.shape[0] + 1)
+#    df_leading["AtomName"] = capping_names[0] + LFT2.return_PDB_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Atoms") + capping_names[1]
+#    df_leading["AltLoc"] = " "
+#    df_leading["ResName"] = LFT2.return_PDB_Residuename(list_of_leading_sequence)
+#    df_leading["Chain"] = "J"
+#    df_leading["Sequence"] = LFT2.return_PDB_Sequence(list_of_leading_sequence)
+#    df_leading["X_coord"] = list(map(lambda x: "{:.3f}".format(x), leading_array[:,0]))
+#    df_leading["Y_coord"] = list(map(lambda x: "{:.3f}".format(x), leading_array[:,1]))
+#    df_leading["Z_coord"] = list(map(lambda x: "{:.3f}".format(x), leading_array[:,2]))
+#    df_leading["Occupancy"] = "1.00"
+#    df_leading["Temp"] = "0.00"
+#    df_leading["SegmentID"] = str("   ")
+#    df_leading["ElementSymbol"] = ["H"] + LFT2.return_PDB_AtomNames_or_ElementSymbol(list_of_leading_sequence, "Symbol") + ["H"]
+#
+#    # TER line between the single strands
+#    TER_line = pd.DataFrame({"RecName" : "TER", "AtomNum" : 69}, index=[69])
+#    ln_lead = len(df_leading["AtomNum"])
+#
+#    # Adjust complementary strand's array for the capping
+#    complementary_array = np.vstack((capping_array[2], complementary_array, capping_array[3]))
+#
+#    # COMPLEMENTARY STRAND
+#    df_complementary = pd.DataFrame()
+#
+#    df_complementary["RecName"] = ["ATOM" for x in range(complementary_array.shape[0])]
+#    df_complementary["AtomNum"] = np.arange(start=ln_lead + 1, stop=(ln_lead + complementary_array.shape[0] + 1))
+#    df_complementary["AtomName"] = capping_names[2] + LFT2.return_PDB_AtomNames_or_ElementSymbol(list_of_complementary_sequence, "Atoms") + capping_names[3]
+#    df_complementary["AltLoc"] = " "
+#    df_complementary["ResName"] = LFT2.return_PDB_Residuename(list_of_complementary_sequence)
+#    df_complementary["Chain"] = "R"
+#    df_complementary["Sequence"] = LFT2.return_PDB_Sequence(list_of_complementary_sequence, len(list_of_complementary_sequence))
+#    df_complementary["X_coord"] = list(map(lambda x: "{:.3f}".format(x), complementary_array[:,0]))
+#    df_complementary["Y_coord"] = list(map(lambda x: "{:.3f}".format(x), complementary_array[:,1]))
+#    df_complementary["Z_coord"] = list(map(lambda x: "{:.3f}".format(x), complementary_array[:,2]))
+#    df_complementary["Occupancy"] = "1.00"
+#    df_complementary["Temp"] = "0.00"
+#    df_complementary["SegmentID"] = str("   ")
+#    df_complementary["ElementSymbol"] = ["H"] + LFT2.return_PDB_AtomNames_or_ElementSymbol(list_of_complementary_sequence, "Symbol") + ["H"]
+#
+#    # Concatenate the two dataframes
+#    duplex_df = pd.concat([df_leading, TER_line, df_complementary], ignore_index=True)
+#
+#    # Write out the pdb file
+#    filename = "testing_duplex.pdb"
+#    with open(filename ,"w") as pdb:
+#        for index, row in duplex_df.iterrows():
+#            if row[0] == "TER":
+#                TERline = row[0]
+#                pdb.write("%-6s\n" % TERline)
+#            if not row[0] == "TER":
+#                split_line = [ row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13] ]
+#                pdb.write("%-6s%5s%5s%s%3s%2s%5d  %8s%8s%9s%6s%7s%4s     %2s\n" % tuple(split_line))
+#        pdb.write("END")
+#        pdb.close()
+#
+#    print("\n\nWriting nucleic acid duplex to " + filename + ". \n\n")
+#

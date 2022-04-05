@@ -6,7 +6,7 @@ import initMolecule
 import labyrinth_func as LabF
 import labyrinth_func_tools1 as LFT1
 import labyrinth_func_tools2 as LFT2
-import labyrinth_func_tools3 as LFT3
+import labyrinth_repository as LabRepo
 
 
 
@@ -88,7 +88,7 @@ def position_next_nucleoside(next_nucleoside, prev_nucleoside, prev_linker, lead
     # Afterwards, we turn over the epsilon dihedral and by rotate the normal of the plane have to the plane we want; this positions everything!
 
     # Atom Parsing List (ATP) = Parse which linker and which nucleotide the previous one is
-    APL = LFT3.Atom_Parsing_List(prev_nucleoside, prev_linker, next_nucleoside)
+    APL = LabRepo.Atom_Parsing_List(prev_nucleoside, prev_linker, next_nucleoside)
     # Dihedral Parsing List (DPL) = Parse which dihedrals are required to rotate on and over
     # Angle Parsing List (AngPL)
     AngPL = DPL =  LFT2.retrieve_list_of_dihedrals_and_angles_to_build_with(next_nucleoside)
@@ -186,7 +186,7 @@ def position_next_nucleoside(next_nucleoside, prev_nucleoside, prev_linker, lead
 
 def assert_the_dihedral_of_interest(compl_nuc, compl_nuc_arr : np.ndarray, compl_linker, prev_nuc, complementary_strand : np.ndarray, index_compl, prev_linker) -> bool:
     # Atom Parsing List for the knowing which atoms to parse from the respective arrays ; for bond length and dihedral evaluation
-    APL = LFT3.Atom_Parsing_List(compl_nuc, compl_linker, prev_nuc)
+    APL = LabRepo.Atom_Parsing_List(compl_nuc, compl_linker, prev_nuc)
     dihedral = compl_nuc.get_dihedral("alpha")
     angle = compl_nuc.get_angle("alpha")
 
@@ -224,7 +224,7 @@ def position_complementary_base(leading_base, complementary_base, leading_array 
     # Parse the type of base from the nucleoside json object
     leadingBase = leading_base.get_base_denominator()
     complBase = complementary_base.get_base_denominator()
-    rotPlane_leadingBase_atoms, rotPlane_complBase_atoms = LFT3.retrieve_atoms_for_plane_rotation_of_complement(leadingBase, complBase)
+    rotPlane_leadingBase_atoms, rotPlane_complBase_atoms = LabRepo.retrieve_atoms_for_plane_rotation_of_complement(leadingBase, complBase)
     ## Get the proper vectors for the plane rotation
     # Leading base vector
     rotPlane_leadingBase_atoms_id = LFT2.retrieve_atom_index_MULTIPLE(leading_base, rotPlane_leadingBase_atoms, index_lead)
@@ -246,10 +246,10 @@ def position_complementary_base(leading_base, complementary_base, leading_array 
     compl_nucleoside_array = LFT1.rotate_with_quaternion(plane1_quaternion, tmp_compl_arr)
 
     # Get the required parameters for the rotations
-    Q_angle, Q_dihedral, R_angle, R_dihedral = LFT3.retrieve_angles_and_dihedrals_for_initial_base_positioning(leadingBase)
+    Q_angle, Q_dihedral, R_angle, R_dihedral = LabRepo.retrieve_angles_and_dihedrals_for_initial_base_positioning(leadingBase)
 
     ## Apply a translation to get the initial positioning
-    Q_leadingBase_atoms, Q_complBase_atom, Q_distance = LFT3.retrieve_atoms_for_positioning_of_complement1(leadingBase, complBase)
+    Q_leadingBase_atoms, Q_complBase_atom, Q_distance = LabRepo.retrieve_atoms_for_positioning_of_complement1(leadingBase, complBase)
     Q_leadingBase_atoms_id = LFT2.retrieve_atom_index_MULTIPLE(leading_base, Q_leadingBase_atoms, index_lead)
 
     # Calculate the position at which we want to the R positioning to be. See paper @Figure X to show what R positioning is.
@@ -267,7 +267,7 @@ def position_complementary_base(leading_base, complementary_base, leading_array 
     compl_nucleoside_array = LFT1.move_vector_to_loc(compl_nucleoside_array, move_to_Q)
 
     ### After positioning the planes and moving the nucleoside to Q, we now rotate the nucleoside's base to R
-    R_leadingBase_atoms, R_complBase_atom, R_distance = LFT3.retrieve_atoms_for_position_of_complement2(leadingBase, complBase)
+    R_leadingBase_atoms, R_complBase_atom, R_distance = LabRepo.retrieve_atoms_for_position_of_complement2(leadingBase, complBase)
     R_leadingBase_atoms_id = LFT2.retrieve_atom_index_MULTIPLE(leading_base, R_leadingBase_atoms, index_lead)
 
     R_position = return_position_for_complementary_base(R_angle, R_dihedral, leading_array, R_leadingBase_atoms_id, R_distance)
@@ -284,12 +284,6 @@ def position_complementary_base(leading_base, complementary_base, leading_array 
     plane2_quaternion = LFT1.get_quaternion(j1, j2)
 
     return LFT1.move_to_origin_ROTATE_move_back_to_loc(plane2_quaternion, compl_nucleoside_array, R_vector)
-#    checknucarr = LFT1.move_to_origin_ROTATE_move_back_to_loc(plane2_quaternion, compl_nucleoside_array, R_vector)
-#
-#    vCross_complBase = return_cross_vector_for_plane_rotation(checknucarr, rotPlane_complBase_atoms_id)
-#    print(np.arccos(np.dot(vCross_complBase, vCross_leadingBase)) / (np.pi/180))
-
-#    return checknucarr
 
 
 def assert_rotation_of_bases_by_distance(array_nucs : list, v_directions: np.array, index_origin : Union[list, float], index_distances : list) -> np.ndarray:
@@ -465,7 +459,7 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linke
     # The 'if necessary' will be depending on the length and the dihedral it makes
 
     # Atom Parsing List for the knowing which atoms to parse from the respective arrays ; for bond length and dihedral evaluation
-    APL = LFT3.Atom_Parsing_List(compl_nuc, compl_linker, prev_nuc)
+    APL = LabRepo.Atom_Parsing_List(compl_nuc, compl_linker, prev_nuc)
     dihedral = compl_nuc.get_dihedral("alpha")
     angle_to_fit = compl_nuc.get_angle("alpha")
 
@@ -505,12 +499,20 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linke
         # Retrieve which the denominator of the base that the nucleotide is
         compl_base = compl_nuc.get_base_denominator()
 
+#################################################################################################################################################### HOW DO WE ASSIGN THE DIRECTION AXIS TO ROTATE ON
         # Make a custom direction and angle. Not to worry, the direction is perpendicular to the movement
-        compl_base_atoms1, _ = LFT3.retrieve_atoms_for_plane_rotation_of_complement(compl_base, compl_base)
-        compl_base_atoms2, _ , __= LFT3.retrieve_atoms_for_positioning_of_complement1(compl_base, compl_base)
-        idx_compl_base_atoms1 = LFT2.retrieve_atom_index(compl_nuc, compl_base_atoms1[0]) + compl_linker.mol_length
-        idx_compl_base_atoms2 = LFT2.retrieve_atom_index(compl_nuc, compl_base_atoms2[2]) + compl_linker.mol_length
-        v_direction = LFT1.return_normalized(compl_nuc_arr[idx_compl_base_atoms2] - compl_nuc_arr[idx_compl_base_atoms1])
+        # First try
+#        compl_base_atoms1, _ = LabRepo.retrieve_atoms_for_plane_rotation_of_complement(compl_base, compl_base)
+#        compl_base_atoms2, _ , __= LabRepo.retrieve_atoms_for_positioning_of_complement1(compl_base, compl_base)
+#        idx_compl_base_atoms1 = LFT2.retrieve_atom_index(compl_nuc, compl_base_atoms1[0]) + compl_linker.mol_length
+#        idx_compl_base_atoms2 = LFT2.retrieve_atom_index(compl_nuc, compl_base_atoms2[2]) + compl_linker.mol_length
+#        v_direction = LFT1.return_normalized(compl_nuc_arr[idx_compl_base_atoms2] - compl_nuc_arr[idx_compl_base_atoms1])
+        # Second try
+        compl_base_atoms1, _ , __= LabRepo.retrieve_atoms_for_positioning_of_complement1(compl_base, compl_base)
+        compl_base_atom2 = LabRepo.retrieve_atom_for_direction_axis(compl_base)
+        idx_dir_base_atoms1 = LFT2.retrieve_atom_index(compl_nuc, compl_base_atoms1[2]) + compl_linker.mol_length
+        idx_dir_base_atoms2 = LFT2.retrieve_atom_index(compl_nuc, compl_base_atom2) + compl_linker.mol_length
+        v_direction = LFT1.return_normalized(compl_nuc_arr[idx_dir_base_atoms1] - compl_nuc_arr[idx_dir_base_atoms2])
 
         # rotations that need to be operated with
         array_of_rot_angles = np.linspace(2.5, 30, 16) * (np.pi/180)
@@ -521,13 +523,15 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linke
 #        idx_distance_between_nuc = [LFT2.retrieve_atom_index(compl_linker, APL[2]),
 #                                    LFT2.retrieve_atom_index(prev_nuc, APL[3])]
 
-        v_direction = assert_rotation_of_bases_by_distance([complementary_strand, compl_nuc_arr], [v_direction], idx_compl_base_atoms1, idx_distance_between_nuc)
+        v_direction = assert_rotation_of_bases_by_distance([complementary_strand, compl_nuc_arr], [v_direction], idx_dir_base_atoms2, idx_distance_between_nuc)
+#        v_direction = assert_rotation_of_bases_by_distance([complementary_strand, compl_nuc_arr], [v_direction], idx_compl_base_atoms1, idx_distance_between_nuc)
 #        v_direction = assert_rotation_of_bases_by_distance([prev_nuc.array, compl_nuc_arr], [v_direction], idx_compl_base_atoms1, idx_distance_between_nuc)
 
         stored_distances = np.empty(len(array_of_rot_angles))
         for i in range(len(array_of_rot_angles)) :
             nucD_quaternion = LFT1.get_custom_quaternion(v_direction, array_of_rot_angles[i])
-            testnuc = LFT1.move_to_origin_ROTATE_move_back_to_loc(nucD_quaternion, compl_nuc_arr, compl_nuc_arr[idx_compl_base_atoms1])
+            testnuc = LFT1.move_to_origin_ROTATE_move_back_to_loc(nucD_quaternion, compl_nuc_arr, compl_nuc_arr[idx_dir_base_atoms2])
+#            testnuc = LFT1.move_to_origin_ROTATE_move_back_to_loc(nucD_quaternion, compl_nuc_arr, compl_nuc_arr[idx_compl_base_atoms1])
             stored_distances[i] = LFT1.get_length_of_vector(testnuc[idx_v2], complementary_strand[idx_compl_strand])
 
             if LFT1.assert_length_of_vector(stored_distances[i]):
@@ -542,7 +546,8 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linke
 #                                 LFT2.retrieve_atom_index(compl_linker, APL[2]),
 #                                 LFT2.retrieve_atom_index(prev_nuc, APL[3])]
 
-        v_direction = assert_rotation_of_bases_by_angle([complementary_strand, compl_nuc_arr], [v_direction], idx_compl_base_atoms1, idx_angle_between_nuc, angle_to_fit)
+        v_direction = assert_rotation_of_bases_by_distance([complementary_strand, compl_nuc_arr], [v_direction], idx_dir_base_atoms2, idx_distance_between_nuc)
+#        v_direction = assert_rotation_of_bases_by_angle([complementary_strand, compl_nuc_arr], [v_direction], idx_compl_base_atoms1, idx_angle_between_nuc, angle_to_fit)
 #        v_direction = assert_rotation_of_bases_by_angle([prev_nuc.array, compl_nuc_arr], [v_direction], idx_compl_base_atoms1, idx_angle_between_nuc, angle_to_fit)
         idx0 = idx_angle_between_nuc[0]
         idx1 = idx_angle_between_nuc[1]
@@ -551,7 +556,8 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linke
         stored_angles = np.empty(len(array_of_rot_angles))
         for i in range(len(array_of_rot_angles)) :
             nucA_quaternion = LFT1.get_custom_quaternion(v_direction, array_of_rot_angles[i])
-            testnuc = LFT1.move_to_origin_ROTATE_move_back_to_loc(nucA_quaternion, compl_nuc_arr, compl_nuc_arr[idx_compl_base_atoms1])
+            testnuc = LFT1.move_to_origin_ROTATE_move_back_to_loc(nucA_quaternion, compl_nuc_arr, compl_nuc_arr[idx_dir_base_atoms2])
+#            testnuc = LFT1.move_to_origin_ROTATE_move_back_to_loc(nucA_quaternion, compl_nuc_arr, compl_nuc_arr[idx_compl_base_atoms1])
 
             # Normalise vectors
             v0 = LFT1.return_normalized(testnuc[idx0] - testnuc[idx1])
@@ -570,7 +576,8 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linke
         angle_of_rot = array_of_rot_angles[index_min]
         nuc1_quaternion = LFT1.get_custom_quaternion(v_direction, float(angle_of_rot))
 
-        return LFT1.move_to_origin_ROTATE_move_back_to_loc(nuc1_quaternion, compl_nuc_arr, compl_nuc_arr[idx_compl_base_atoms1])
+        return LFT1.move_to_origin_ROTATE_move_back_to_loc(nuc1_quaternion, compl_nuc_arr, compl_nuc_arr[idx_dir_base_atoms2])
+#        return LFT1.move_to_origin_ROTATE_move_back_to_loc(nuc1_quaternion, compl_nuc_arr, compl_nuc_arr[idx_compl_base_atoms1])
 
 
 def parse_indexes_of_the_array_for_linker_reorientation(APL : list, nuc, link, nucPN, idx : int = 0) -> Union[np.array, np.array]:
@@ -669,7 +676,7 @@ def capping_retrieve_atomnames(list_of_leading_sequence : list, list_of_compleme
     """ This should return the names of the capping atoms.
             i.e. ; if the H binds to O5', the atom name of the H should be HO5'
 
-        Parse the backbone atoms from the respective dictionaries over at labyrinth_func_tools3.py """
+        Parse the backbone atoms from the respective dictionaries over at labyrinth_repository.py """
     # Initiate a list with filler values
     list_lead_atom = [0, 0]
     list_compl_atom = [0, 0]

@@ -5,14 +5,14 @@ import initMolecule
 
 import labyrinth_func as LabF                       # Import all the functions to do with creating the nucleic acid duplex
 import labyrinth_func_andthefunkybunch as LFFB      # Import all smaller functions
-import labyrinth_func_tools3                        # Import the nucleic acid dictionaries
+import labyrinth_repository                         # Import the nucleic acid dictionaries
 
 
 """ Create dictionary of the filename and their molecule code """
 
-CODEX_AN = labyrinth_func_tools3.codex_acidum_nucleicum   # Creates an object of the nucleic acid dictionary for the leading strand
+CODEX_AN = labyrinth_repository.codex_acidum_nucleicum   # Creates an object of the nucleic acid dictionary for the leading strand
 
-CODEX_CONF = labyrinth_func_tools3.conformations_codex     # Creates an object of the nucleic acid dictionary for the complementary strand
+CODEX_CONF = labyrinth_repository.conformations_codex     # Creates an object of the nucleic acid dictionary for the complementary strand
 
 
 

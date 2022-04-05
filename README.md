@@ -195,7 +195,7 @@ In `transmute_func_tools.py` :
 3. This only serves the purpose of identifying the json file when opening it as the user. This information is not used in the generation of nucleic acid duplexes.
 
 BEFORE GENERATING A DUPLEX WITH THE NEW CHEMISTRY<br />
-In `labyrinth_func_tools3.py` :
+In `labyrinth_repository.py` :
 1.  Add to the `codex_acidum_nucleicum` the most stable conformation of the chemistry you're adding to the library.
 2.  Add to the `conformations_codex` all the conformations that you have at your disposal of the chemistry you're adding to the library. The key in both these abbreviated name of the nucleic acid chemistry.
 3.  Add to the `backbone_codex` the sugar linker backbone of the chemistry you're adding to the library.
@@ -210,11 +210,9 @@ Where path/to/program is the path to where you've installed Daedalus. (`$ pwd`) 
 ### Python
 To run this project, you will need to add the libraries to your **python env**
 
-`NumPy`, `SciPy`, `Pandas`
+`NumPy`, `SciPy`
 #
 `$ pip install numpy` | `$ conda install -c numpy `
-
-`$ pip install pandas` | `$ conda install -c pandas `
 
 `$ pip install scipy` | `$ conda install -c scipy `
 #

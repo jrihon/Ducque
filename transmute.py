@@ -1,12 +1,13 @@
-import transmute_func as TF
-import sysDaedalus
-
 import sys
 import json
 from typing import Union
 
+import sysDaedalus
+import transmute_func as TF
 
-def Transmutation(pdb_file, nucleic_acid_chemistry : str, moiety : str, dihedral_list : list, angles_list : list, conformation : Union[str, bool] = False ):
+
+
+def Transmutation(pdb_file, nucleicAcidChemistry : str, moiety : str, dihedralList : list, anglesList : list, conformation : Union[str, bool] = False ):
     """This function converts a pdb formatted file into a json file.
     Json files make for a much easier data parsing format, are computationally much more efficient and require less memory to be held.
 
@@ -19,13 +20,13 @@ def Transmutation(pdb_file, nucleic_acid_chemistry : str, moiety : str, dihedral
         identity:
             [the name of the chemistry, abbreviated name of the chemistry, residue name, type of base]
         Angle:
-            The dihedrals of the backbone and the anomeric carbon-base
+            The dihedrals of the backbone and the glycosidic dihedral
             The bond angles that correspond with the three last atoms of the respective dihedral
 
     """
     ## Read pdb and convert to dataframe
-    nucleic_acid = TF.TransmuteToJson(pdb_file)
-    nucleic_acid.pdb_to_dataframe()
+    nucleicAcid = TF.TransmuteToJson(pdb_file)
+    nucleicAcid.pdb_for_attributes()
 
 
     ## Initialise the main dictionary
@@ -36,14 +37,14 @@ def Transmutation(pdb_file, nucleic_acid_chemistry : str, moiety : str, dihedral
     pdb_properties = {}
 
     # Coordinates and Shape
-    pdb_properties["Coordinates"] = json.dumps(nucleic_acid.get_array())
-    pdb_properties["Shape"] = json.dumps(nucleic_acid.get_shape_array())
+    pdb_properties["Coordinates"] = json.dumps(nucleicAcid.get_array())
+    pdb_properties["Shape"] = json.dumps(nucleicAcid.get_shape_array())
 
     # Get Atom namelist             NB: json outputs double quotations as \" XX \" for strings, since there are apostrophes in the molecules
-    pdb_properties["Atoms"] = json.dumps(nucleic_acid.get_atoms())
+    pdb_properties["Atoms"] = json.dumps(nucleicAcid.get_atoms())
 
     # Get the element symbol
-    pdb_properties["Symbol"] = json.dumps(nucleic_acid.get_element_symbol())
+    pdb_properties["Symbol"] = json.dumps(nucleicAcid.get_element_symbol())
 
     #----------------------------------- IDENTITY -----------------------------------#
     # Initialise the identity list
@@ -51,39 +52,39 @@ def Transmutation(pdb_file, nucleic_acid_chemistry : str, moiety : str, dihedral
 
     if moiety == "nucleoside":
         # full name
-        fullname = nucleic_acid.get_full_name(nucleic_acid_chemistry, moiety)
-        identity.append(fullname)
+        _fullname = nucleicAcid.get_full_name(nucleicAcidChemistry, moiety)
+        identity.append(_fullname)
 
         # abbreviated name
-        abbr = nucleic_acid_chemistry
-        identity.append(abbr)
+        _abbr = nucleicAcidChemistry
+        identity.append(_abbr)
 
         # molecule chemistry
-        molecule_residuename = nucleic_acid.get_chemistry()
-        identity.append(molecule_residuename)
+        _molecule_residuename = nucleicAcid.get_chemistry()
+        identity.append(_molecule_residuename)
 
         # Base of the nucleic acid
-        base = nucleic_acid.get_base()
-        identity.append(base)
+        _base = nucleicAcid.get_base()
+        identity.append(_base)
 
     if moiety == "linker":
         # full name
-        fullname = nucleic_acid.get_full_name(nucleic_acid_chemistry, moiety)
-        identity.append(fullname)
+        _fullname = nucleicAcid.get_full_name(nucleicAcidChemistry, moiety)
+        identity.append(_fullname)
 
         # abbreviated name
-        abbr = nucleic_acid_chemistry
-        identity.append(abbr)
+        _abbr = nucleicAcidChemistry
+        identity.append(_abbr)
 
-    #------------------------------------- ANGLE ------------------------------------#
+    #------------------------------ DIHEDRALS AND ANGLES -----------------------------#
     # Initialise the dictionary for the dihedrals and the bond angles
     angle = {}
 
     # Get dihedrals
-    dihedrals = nucleic_acid.get_dihedrals(nucleic_acid_chemistry, moiety, dihedral_list)
+    dihedrals = nucleicAcid.get_dihedrals(nucleicAcidChemistry, moiety, dihedralList)
 
     # Get Bond angles
-    angles = nucleic_acid.get_angles(nucleic_acid_chemistry, moiety, angles_list)
+    angles = nucleicAcid.get_angles(nucleicAcidChemistry, moiety, anglesList)
 
     angle["dihedrals"] = json.dumps(dihedrals)
     angle["bond_angles"] = json.dumps(angles)
@@ -95,39 +96,48 @@ def Transmutation(pdb_file, nucleic_acid_chemistry : str, moiety : str, dihedral
 
     #----------------------------- WRITE OUT A JSON FILE ----------------------------#
     # The json dump() method always requires us to dump it to a file in the current directory
-    fname = nucleic_acid.get_output_name(nucleic_acid_chemistry, moiety, conformation)
+    _fname = nucleicAcid.get_output_name(nucleicAcidChemistry, moiety, conformation)
 
     # Get Daedalus home
     DAEDALUSHOME = sysDaedalus.return_DAEDALUS_home()
 
     # Write the inputfile to the Daedalus home directory
-    with open(DAEDALUSHOME + "json/" + fname + ".json", "w") as filejson:
+    with open(DAEDALUSHOME + "json/" + _fname + ".json", "w") as filejson:
         json.dump(molecule, filejson, indent=4)
 
 
-def convert_XYZ_to_PDB(xyz_file, atomID, atomname_list):
+
+def convert_XYZ_to_PDB(xyzFile, atomID : str, atomNameList : list):
     """ the main function that convert an xyz formatted file to the required pdb format """
 
     # Instantiate the object
-    PDB_to_be = TF.TransmuteToPdb(xyz_file)
+    PdbToBe = TF.TransmuteToPdb(xyzFile)
 
     # Parse all the required data from the xyz file
-    X_coords, Y_coords, Z_coords, ElementSymbol = PDB_to_be.parse_xyz_and_ElementSymbol()
+    PdbToBe.parse_xyz_and_elementsymbol()
+#    xCoords, yCoords, zCoords, elementSymbol = PDB_to_be.parse_xyz_and_elementsymbol()
 
     # Process the inputted atomname list from a string to a list
-    AtomName_List = PDB_to_be.return_processed_atomname_list(atomname_list)
+    PdbToBe.return_processed_atomname_list(atomNameList)
+#    atomNameList = PDB_to_be.return_processed_atomname_list()
 
     # If the inputted atomname list and the array size do not match in size, exit the program
-    if not PDB_to_be.arraysize_vs_atomname_list_compatibility(ElementSymbol, AtomName_List) :
+    if not PdbToBe.arraysize_vs_atomname_list_compatibility() :
         print("The size of the prompted '--atomname_list' is not equal to the array of the cartesian coordinates, pertaining to the atoms of the molecule.\n"
                 "Please revise the prompted atomlist.")
         sys.exit(0)
 
-    if not PDB_to_be.ElementSymbol_vs_atomname_list_compatibility(ElementSymbol, AtomName_List) :
+    # If the inputted atomname list and the elements do not match in atoms, exit the program
+    if not PdbToBe.elementsymbol_vs_atomname_list_compatibility() :
         print("The prompted '--atomname_list' do not match the order of the parsed ElementSymbol list, pertaining to the atoms of the molecule.\n"
                 "Please revise the prompted atomlist.")
         sys.exit(0)
 
-    PDB_to_be.fill_in_the_rest_of_the_pdb_dataframe_attribute(atomID, AtomName_List, X_coords, Y_coords, Z_coords, ElementSymbol)
+    # Write out the pdb file from all the gathered information
+    PdbToBe.write_to_pdb_format_file(atomID)
 
-    PDB_to_be.write_to_pdb_formatted_file()
+
+
+#    PdbToBe.fill_in_the_rest_of_the_pdb_dataframe_attribute(atomID, atomNameList, xCoords, yCoords, zCoords, elementSymbol)
+#
+#    PdbToBe.write_to_pdb_formatted_file()

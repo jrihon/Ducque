@@ -4,10 +4,10 @@ import os
 from typing import Union
 
 import labyrinth
-import labyrinth_func_tools3 as LFT3    # Parse the nucleic acid dictionaries
+import labyrinth_repository as LabRepo    # Parse the nucleic acid dictionaries
 """ This scripts makes data parsing much easier and makes labyrinth.py much more organised. """
 
-CODEX = LFT3.codex_acidum_nucleicum
+CODEX = LabRepo.codex_acidum_nucleicum
 
 def check_slope_of_array(arr : np.array) -> str:
     """ In labyrinth_func_tools1.py there is a function that retrieves the interpolated dihedral angle
@@ -165,7 +165,7 @@ def return_chemistrycode(identifier : str) -> str:
 
 
     # Iterate over the complementary codex. If you find the filename, remember the abbreviated nucleic acid code of the file 
-    COMPL_CODEX = LFT3.conformations_codex
+    COMPL_CODEX = LabRepo.conformations_codex
     CHECK = False
     while not CHECK:
 
@@ -335,6 +335,7 @@ def return_PDB_Residuename(list_of_sequence : list) -> list:
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
+            # Add one here, since we have the terminal HO5' hydrogen to append to the nucleoside array
             nuc_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + 1
             ID = json.loads(nucleoside["identity"])[2]
 
@@ -355,6 +356,7 @@ def return_PDB_Residuename(list_of_sequence : list) -> list:
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
+            # Add one here, since we have the terminal HO3' hydrogen to append to the nucleoside array
             nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0] + 1
             ID = json.loads(nucleoside["identity"])[2]
 
