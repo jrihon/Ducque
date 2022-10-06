@@ -1,10 +1,12 @@
 import numpy as np
 import json
 import os
-from typing import Union
+import sys
+from typing import Union, Tuple
 
-import labyrinth
+#import labyrinth
 import labyrinth_repository as LabRepo    # Parse the nucleic acid dictionaries
+from sysDaedalus import return_DAEDALUS_home
 """ This scripts makes data parsing much easier and makes labyrinth.py much more organised. """
 
 CODEX = LabRepo.codex_acidum_nucleicum
@@ -65,7 +67,7 @@ def retrieve_list_of_dihedrals_and_angles_to_build_with(next_nucleoside) -> list
 
 
 ######## FUNCTIONS USED TO GENERATE THE LIST OF THE COMPLEMENTARY NUCLEOSIDES ########
-def retrieve_chemistry(chemistry : str) -> str:
+def retrieve_chemistry(chemistry : str) -> Tuple[str, int] :
     """ Parse the chemistry denominator from the nucleoside string.
         Note that the last element in the string should always be the nucleobase denominator (A, C, G, T, U).
         That is why we can safely do this. """
@@ -115,7 +117,7 @@ def retrieve_homo_nucleosides(codex_dict_keys : list, chem_i : str, ln_str : int
     codex_dict_keys_SLICED = [ i[:ln_str] for i in codex_dict_keys]
 
     # Check which index of the values that correspond to the nucleoside you are looking for
-    for i, key in enumerate(codex_dict_keys_SLICED):
+    for i, _ in enumerate(codex_dict_keys_SLICED):
         if codex_dict_keys_SLICED[i] == chem_i:
             list_of_homo_nucleosides.append(codex_dict_keys[i])
 
@@ -145,11 +147,13 @@ def return_chemistrycode(identifier : str) -> str:
 
         Then parse the correct abbreviated chemistry identifier.
         Example ; find 'Deoxy Ribonucleic Acid' --> returns 'd'     """
+#    from itertools import chain
 
     # Get the directory from the $HOME of Daedalus (where it is installed)
-    from sysDaedalus import return_DAEDALUS_home
     dH = return_DAEDALUS_home()
     dirJSON = os.listdir(dH + 'json/')
+    COMPL_CODEX = LabRepo.conformations_codex
+#    KEYS_LIST = list(chain(*COMPL_CODEX.values())) # Flatten a possibly nested list
 
     # Read all the files in the json/ directory and find the identifier that was prompted, this way we can inambiguously find the abbreviated chemical code
     for json_file in dirJSON:
@@ -158,29 +162,35 @@ def return_chemistrycode(identifier : str) -> str:
         with open(json_pathname, "r") as jsonf:
             jsonContent = json.loads(json.load(jsonf)["identity"])[0]
 
+#        # Extra concern, check if the file is in the labyrinth_repository dictionary() ...
+#        if json_pathname not in KEYS_LIST :
+#            sys.exit(f"{json_pathname} has not been found in the conformations_codex in labyrinth_repository.py")
+#
         # if the identifier has been found, remember the name of the file we found it in
         if jsonContent == identifier:
             file_of_chemistry = json_pathname
             break
 
-
     # Iterate over the complementary codex. If you find the filename, remember the abbreviated nucleic acid code of the file 
-    COMPL_CODEX = LabRepo.conformations_codex
     CHECK = False
-    while not CHECK:
 
-        # Iterate over the complementary codex
-        for key, value in COMPL_CODEX.items():
-            if isinstance(value, list):
-                for i, item in enumerate(value):
-                    if value[i] == file_of_chemistry:
-                        _KEY = key
-                        CHECK = True
-
-            else:
-                if item == file_of_chemistry:
+    # Iterate over the complementary codex
+    for key, value in COMPL_CODEX.items():
+        if isinstance(value, list):
+            for i, item in enumerate(value):
+                if value[i] == file_of_chemistry:
                     _KEY = key
                     CHECK = True
+                    break
+
+        else:
+            if item == file_of_chemistry:
+                _KEY = key
+                CHECK = True
+                break
+
+    if not CHECK :
+        sys.exit(f"Could not find the identifier for the prompted chemistry in the repository of the complementary dictionary().\nIdentifier : {identifier}")
 
     # Return the chemistry code for the chemistry, without the nucleobase appendend, so we can add the complementary bases to it later
     return _KEY[:-1]

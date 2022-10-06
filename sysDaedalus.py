@@ -19,3 +19,8 @@ def return_DAEDALUS_home():
 
     return daedalus_home
 
+def exit_Daedalus():
+    """ Exit Daedalus with the following message : """
+    sys.exit("\nExitted Daedalus unsuccesfully ... \n\n")
+
+

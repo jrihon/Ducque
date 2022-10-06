@@ -1,8 +1,9 @@
+import sys, os
 import numpy as np
-import json, sys, os
+from typing import Union
 
-import transmute_func_tools as TFT
 import sysDaedalus
+import transmute_func_tools as TFT
 
 class TransmuteToJson:
     """ This class exists to convert any *.pdb type format to an appriopriate *.json type format.
@@ -12,7 +13,7 @@ class TransmuteToJson:
         --pdb `*.pdb read from`
         --chemistry `residue name`
         --conformation `pyranose or furanose or phi-psi conformation`
-        --moiety `nucleoside / linker`
+        --moietyType `nucleoside / linker`
         --bondangles `see Daedalus manual`
         --dihedrals `see Daedalus manual`
 
@@ -23,9 +24,8 @@ class TransmuteToJson:
         """ Initialise the object and create object properties"""
         DAEDALUSHOME = sysDaedalus.return_DAEDALUS_home()
 
-        self.rootname = pdbfile.split('.')[0]
-#        self.pdb_dataframe = pd.DataFrame()
-        self.filename = DAEDALUSHOME + "/" + self.rootname + ".pdb"
+        self.rootName = pdbfile.split('.')[0]
+        self.fileName = DAEDALUSHOME + "/" + self.rootName + ".pdb"
         self.array = np.array([])
         self.atomName = list()
         self.residueName = list()
@@ -57,7 +57,7 @@ class TransmuteToJson:
         atomName, resName, xCoords, yCoords, zCoords, elementSymbol = ([] for i in range(6))
 
         # Check if file is in cwd or in the pdb directory
-        pdbfname = self.filename
+        pdbfname = self.fileName
         try:
             os.path.isfile(pdbfname)
         except FileNotFoundError:
@@ -68,11 +68,11 @@ class TransmuteToJson:
             for line in pdbfile:
                 if line[:4] == 'ATOM' or line[:6] == 'HETATM':
 
-                    name = line[12:16]
-                    atomName.append(name)
+                    _name = line[12:16]
+                    atomName.append(_name)
 
-                    res = line[17:20]
-                    resName.append(res)
+                    _res = line[17:20]
+                    resName.append(_res)
 
                     _xcoord = line[30:38]
                     xCoords.append(_xcoord)
@@ -86,13 +86,6 @@ class TransmuteToJson:
                     elemSym = line[76:78]
                     elementSymbol.append(elemSym)
 
-#            self.pdb_dataframe['AtomName'] = AtomName
-#            self.pdb_dataframe['ResName'] = ResName
-#            self.pdb_dataframe['X_Coord'] = X_coords
-#            self.pdb_dataframe['Y_Coord'] = Y_coords
-#            self.pdb_dataframe['Z_Coord'] = Z_coords
-#            self.pdb_dataframe['ElementSymbol'] = ElementSymbol
-#
             self.atomName = atomName
             self.residueName = resName[0].strip()
             self.elementSymbol = elementSymbol
@@ -124,17 +117,17 @@ class TransmuteToJson:
 
 
     def get_chemistry(self) -> str:
-        """ Get the name of the residue, also strip any remaining whitespace in all the strings in the list. """
+        """ Get the chemistry of the nucleoside, also strip any remaining whitespace in all the strings in the list. """
         return self.residueName
 
 
-    def get_full_name(self, identifier : str, moiety) -> str:
-        """ Get the full name of the nucleic acid chemistry or linker moiety we want to convert to a json """
+    def get_full_name(self, identifier : str, moietyType):
+        """ Get the full name of the nucleic acid chemistry or linker moietyType we want to convert to a json """
 
-        if moiety == "nucleoside":
+        if moietyType == "nucleoside":
             return TFT.nucleoside_dict[identifier.upper()]
 
-        if moiety == "linker":
+        if moietyType == "linker":
             return TFT.linker_dict[identifier.upper()]
 
 
@@ -146,10 +139,10 @@ class TransmuteToJson:
         return TFT.base_dict[base]
 
 
-    def get_dihedrals(self, identifier : str, moiety : str,  dihedrals_list : list) -> dict:
-        """ List the dihedrals differently whether it belongs to a nucleoside or a linker moiety """
+    def get_dihedrals(self, identifier : str, moietyType : str,  dihedrals_list : list) -> dict:
+        """ List the dihedrals differently whether it belongs to a nucleoside or a linker moietyType """
 
-        if moiety == "nucleoside":
+        if moietyType == "nucleoside":
             # Strip the list of (for now) string values of their comma 
             dihedrals_list = list(map(lambda x: x.strip(","), dihedrals_list))
             if len(dihedrals_list) == 7:
@@ -175,7 +168,7 @@ class TransmuteToJson:
             return set_of_dihedrals
 
 
-        if moiety == "linker":
+        if moietyType == "linker":
             ## For now we hardcode this with the phospate linker, until we start broadening the linker space
 
             # Split the string into a list of strings
@@ -194,9 +187,9 @@ class TransmuteToJson:
             return set_of_dihedrals
 
 
-    def get_angles(self, identifier : str, moiety : str, angles_list : list) -> dict:
-        """ List the bond angles differently whether it belongs to a nucleoside or a linker moiety """
-        if moiety == "nucleoside":
+    def get_angles(self, identifier : str, moietyType : str, angles_list : list) -> dict:
+        """ List the bond angles differently whether it belongs to a nucleoside or a linker moietyType """
+        if moietyType == "nucleoside":
             angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "chi"]
 
             # Strip the list of (for now) string values of their comma 
@@ -219,7 +212,7 @@ class TransmuteToJson:
             return set_of_angles
 
 
-        if moiety == "linker":
+        if moietyType == "linker":
             ## For now we hardcode this with the phospate linker, until we start broadening the linker space
             # Strip the list of (for now) string values of their comma 
             angles_list = list(map(lambda x: x.strip(","), angles_list))
@@ -236,22 +229,26 @@ class TransmuteToJson:
             return set_of_angles
 
 
-    def get_output_name(self, identifier : str, moiety : str, conformation : str) -> str:
+    def get_output_name(self, identifier : str, moietyType : str, conformation : Union[str, bool]) -> str:
         """ Create the name of the file based on the identifier of the nucleic acid chemistry and its corresponding base """
-        if moiety == "nucleoside":
+        if moietyType == "nucleoside":
             name_of_chemistry = identifier.lower()
             name_of_base = self.get_base().lower()
 
-            if not conformation:
-                return name_of_chemistry + "_" + name_of_base
+            if isinstance(conformation, bool):
+                if not conformation:
+                    return name_of_chemistry + "_" + name_of_base
+            else :                                                      #is instance of string then
+                conformation = conformation.lower()
+                return name_of_chemistry + "_" + name_of_base + "_" + conformation
 
-            conformation = conformation.lower()
-            return name_of_chemistry + "_" + name_of_base + "_" + conformation
-
-        if moiety == "linker":
+        elif moietyType == "linker":
             name_of_chemistry = identifier.lower()
             name_of_linker = TFT.linker_dict[identifier].lower()
             return name_of_chemistry + "_" + name_of_linker
+
+        else :
+            sys.exit("The molecule is not annotated with either `nucleoside` or `linker`. Please revise the inputs")
 
 
 
@@ -270,9 +267,9 @@ class TransmuteToPdb:
 #        self.xyzname = self.basename + ".xyz"
 #        self.array = np.array([])
 #        self.pdb_dataframe = pd.DataFrame()
-        self.pathname = xyzfile
-        self.rootname = os.path.basename(xyzfile).split(".")[0]
-        self.pdbname = self.rootname + ".pdb"
+        self.pathName = xyzfile
+        self.rootName = os.path.basename(xyzfile).split(".")[0]
+        self.pdbName = self.rootName + ".pdb"
         self.x = list()
         self.y = list()
         self.z = list()
@@ -283,7 +280,7 @@ class TransmuteToPdb:
     def parse_xyz_and_elementsymbol(self):
         """ Reads the xyz datafile and returns the coordinates and the element symbol"""
         # read only the lines with x-y-z coordinates
-        with open(self.pathname, "r") as XYZ :
+        with open(self.pathName, "r") as XYZ :
             _fileList = [line.strip() for line in XYZ.readlines()[2:]]
 #            file = [line.strip() for line in file_list]
 #        file_n = open(self.pathname, "r")
@@ -309,7 +306,7 @@ class TransmuteToPdb:
 #        return x_coords, y_coords, z_coords, elements
 
 
-    def return_processed_atomname_list(self, atomNameList : list) -> list:
+    def return_processed_atomname_list(self, atomNameList : list):
         """ Returns a list of atom names in a well formatted list """
         atomNameList = list(map(lambda x : x.strip(","), atomNameList))
 
@@ -319,7 +316,6 @@ class TransmuteToPdb:
                 sys.exit(0)
 
         self.atomNameList = atomNameList
-#        return atomname_list
 
 
     def arraysize_vs_atomname_list_compatibility(self) -> bool:
@@ -328,7 +324,7 @@ class TransmuteToPdb:
         if len(self.elements) == len(self.atomNameList):
             return True
         else :
-            print(f"Atomname_list length : {len(atomNameList)}. Coordinate array size : ({len(elements)}, , 3 ).")
+            print(f"Atomname_list length : {len(self.atomNameList)}. Coordinate array size : ({len(self.elements)}, , 3 ).")
             return False
 
 
@@ -344,7 +340,7 @@ class TransmuteToPdb:
                 atom_type = self.atomNameList[i_atom][:2]
 
                 # if it does not belong to a valid element, either add to the list up here or change the element to something that exists
-                if atom_type != elements[i_atom]:
+                if atom_type != self.elements[i_atom]:
                     print(f"Check for capitalization of the prompted atom : {atom_type}.\n"
                             "If that did not prompt the error, check for its validity as an atom.\n"
                             "Here is the valid atom list : {list_of_two_character_valid_atoms}.\n"
@@ -371,9 +367,9 @@ class TransmuteToPdb:
         atomNumbers = np.linspace(1, len(self.elements), len(self.elements), dtype=int)
 
         # Write out the *.pdb file
-        filename = "testing_duplex.pdb"
+#        fileName = "testing_duplex.pdb"
 
-        with open(self.pdbname, "w") as pdb:
+        with open(self.pdbName, "w") as pdb:
             # Write out Leading Strand
             for idx in range(len(self.elements)):
                 line = ["ATOM",

@@ -16,7 +16,7 @@ CODEX_CONF = labyrinth_repository.conformations_codex     # Creates an object of
 
 
 
-def Architecture(lead_nucleic_acid_list, complement):
+def Architecture(lead_nucleic_acid_list, complement, outfile):
     """ This function contains all the functions to create the nucleic acid duplex.
 
     First up, a bottom-up approach is applied when building the nucleic acid single strand.
@@ -38,7 +38,7 @@ def Architecture(lead_nucleic_acid_list, complement):
     ## START THE LEADING STRAND
     # Parse dictionary for the correct filename; input(DT) - output(dna_thymidine.json). This also parses the correct linker.
     nucleoside = initMolecule.Nucleoside(CODEX_AN[nucleic_acid][0]) ; index_lead += nucleoside.mol_length
-    linker = initMolecule.Desmos(CODEX_AN[nucleic_acid][1]) ; index_lead += linker.mol_length
+    linker = initMolecule.Linker(CODEX_AN[nucleic_acid][1]) ; index_lead += linker.mol_length
     CONF_LIST[0].append(nucleoside.filename)    # Append name of file to list
     LINK_LIST[0].append(linker.filename)    # Append name of file to list
 
@@ -53,18 +53,18 @@ def Architecture(lead_nucleic_acid_list, complement):
         # Import the next nucleoside and create an object
         nextnuc_acid = lead_nucleic_acid_list[NA]
         #nextnuc = initMolecule.Nucleoside(CODEX_AN[nextnuc_acid][0]) ; index_lead += nextnuc.mol_length
-        #nextlink = initMolecule.Desmos(CODEX_AN[nextnuc_acid][1]) ; index_lead += nextlink.mol_length
+        #nextlink = initMolecule.Linker(CODEX_AN[nextnuc_acid][1]) ; index_lead += nextlink.mol_length
 
         # Parse the dictionary for the previous nucleotide, to append the next nucleotide onto.
         previous_nucleic_acid = lead_nucleic_acid_list[NA - 1]
         # Parse the correct nucleoside and linker and create them as objects
-        prevnuc, prevlink = initMolecule.Nucleoside(CODEX_AN[previous_nucleic_acid][0]), initMolecule.Desmos(CODEX_AN[previous_nucleic_acid][1])
+        prevnuc, prevlink = initMolecule.Nucleoside(CODEX_AN[previous_nucleic_acid][0]), initMolecule.Linker(CODEX_AN[previous_nucleic_acid][1])
 
         # Assert which conformation fits the strand better and take that one and use it build the nucleotide
         conformations = CODEX_CONF[nextnuc_acid]
         nextnuc_asserted_conf = LabF.assert_leading_strand_nucleotide_conformation(conformations, prevnuc, prevlink, leading_strand)
         nextnuc = initMolecule.Nucleoside(nextnuc_asserted_conf) ; index_lead += nextnuc.mol_length
-        nextlink = initMolecule.Desmos(CODEX_AN[nextnuc_acid][1]) ; index_lead += nextlink.mol_length
+        nextlink = initMolecule.Linker(CODEX_AN[nextnuc_acid][1]) ; index_lead += nextlink.mol_length
 
         CONF_LIST[0].append(nextnuc.filename)   # Append name of file to list
 
@@ -97,7 +97,7 @@ def Architecture(lead_nucleic_acid_list, complement):
 
     # Both compl1 and compl2 are a list of json filenames. These become instanced object in the function 'assert_starting_bases_..._strand()'
     compl1, compl2 = CODEX_CONF[compl_lead_nucleic_acid_list[0]], CODEX_CONF[compl_lead_nucleic_acid_list[1]]
-    compl2_linker = initMolecule.Desmos(CODEX_AN[compl_lead_nucleic_acid_list[1]][1])
+    compl2_linker = initMolecule.Linker(CODEX_AN[compl_lead_nucleic_acid_list[1]][1])
     complementary_strand, index_lead, compl1_nuc, compl2_nuc = LabF.assert_starting_bases_of_complementary_strand(compl1, compl2, compl2_linker, leading_nucleosides, leading_strand, index_lead)
 
     CONF_LIST[1].extend([compl1_nuc.filename, compl2_nuc.filename])
@@ -108,16 +108,16 @@ def Architecture(lead_nucleic_acid_list, complement):
     for cNA in range(2, len(compl_lead_nucleic_acid_list)):
         # Parse the information of the leading strand nucleotide we want to fit the complementary nucleoside against
         lead_nextnuc_acid = lead_nucleic_acid_list[cNA]
-        lead_nextnuc, lead_nextlinker = initMolecule.Nucleoside(CODEX_AN[lead_nextnuc_acid][0]), initMolecule.Desmos(CODEX_AN[lead_nextnuc_acid][1])
+        lead_nextnuc, lead_nextlinker = initMolecule.Nucleoside(CODEX_AN[lead_nextnuc_acid][0]), initMolecule.Linker(CODEX_AN[lead_nextnuc_acid][1])
         index_lead -= (lead_nextnuc.mol_length + lead_nextlinker.mol_length)
 
         # Parse the name of the files of the different conformations of the complementary nucleic acid
         compl_nextnuc_acid = compl_lead_nucleic_acid_list[cNA]
-        conformations, compl_nextlinker = CODEX_CONF[compl_nextnuc_acid], initMolecule.Desmos(CODEX_AN[compl_nextnuc_acid][1])
+        conformations, compl_nextlinker = CODEX_CONF[compl_nextnuc_acid], initMolecule.Linker(CODEX_AN[compl_nextnuc_acid][1])
 
         # Parse the previous complementary nucleic acid
         prev_compl_nextnuc_acid = compl_lead_nucleic_acid_list[cNA - 1]
-        prev_compl_nuc, prev_compl_linker = initMolecule.Nucleoside(CODEX_AN[prev_compl_nextnuc_acid][0]), initMolecule.Desmos(CODEX_AN[prev_compl_nextnuc_acid][1])
+        prev_compl_nuc, prev_compl_linker = initMolecule.Nucleoside(CODEX_AN[prev_compl_nextnuc_acid][0]), initMolecule.Linker(CODEX_AN[prev_compl_nextnuc_acid][1])
         index_compl -= (prev_compl_linker.mol_length + prev_compl_nuc.mol_length)
 
         #compl_nextnuc_arr = LabF.assert_possible_base_conformations_and_fit(lead_nextnuc, leading_strand, conformations, compl_nextlinker, complementary_strand,
@@ -138,6 +138,6 @@ def Architecture(lead_nucleic_acid_list, complement):
 
 
     #------------------------ CREATE THE PDB THAT GOES WITH ARRAY INPUTTED -------------------#
-    LabF.create_PDB_from_array_final(leading_strand, lead_nucleic_acid_list, complementary_strand, compl_lead_nucleic_acid_list)
+    LabF.create_PDB_from_array_final(outfile, leading_strand, lead_nucleic_acid_list, complementary_strand, compl_lead_nucleic_acid_list)
     print("\nNumber of nucleotides in the duplex :" , num_nucl, "\n")
 

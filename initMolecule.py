@@ -1,5 +1,9 @@
 import json
-from numpy import pi, asarray, arange, ndarray, vstack
+from typing import Union, List
+from numpy import pi, asarray, arange, ndarray
+
+
+from labyrinth_func import generate_complementary_sequence
 import labyrinth_func_tools2 as LFT2
 
 """ Initialise the molecules (nucleoside or linker) as json objects. These objects are used to parse the data of the nucleosides of interest """
@@ -36,7 +40,7 @@ class Nucleoside:
         return json.loads(self.jsonObject["identity"])[1]
 
 
-class Desmos(Nucleoside):
+class Linker(Nucleoside):
     """  We can just simply pass this in here for now, since we essentially copy the parent class """
 
     def get_nucleic_acid_code(self) -> str:
@@ -45,6 +49,16 @@ class Desmos(Nucleoside):
 
 
 
+
+
+class NucleotideSequence():
+    """ Create an object to hold all the information about the nucleic acid sequences being prompted by the user """
+
+    def __init__(self, leading_strand_sequence : List[str], complement : Union[List[str], str]):
+        """ Standard __init__ function"""
+
+        self.leadingStrandSequence = leading_strand_sequence[::-1]
+        self.complementaryStrandSequence = generate_complementary_sequence(self.leadingStrandSequence, complement)
 
 
 
@@ -92,7 +106,7 @@ class PdbInstance():
         self.ElementSymbol = list()
 
 
-    def SetAtomNumber(self, nucleotideArray : ndarray, addLength : int = 0) -> list :
+    def SetAtomNumber(self, nucleotideArray : ndarray, addLength : int = 0)  :
         """ Sets the AtomNumber column.
             If we fill in the complementary strand's AtomNumber column, then the variable startNum will not be zero, but equal to the
             length of the startNum of the leading strand's AtomNumber column. """
@@ -103,7 +117,7 @@ class PdbInstance():
 #        self.AtomNumber = [str(x) for x in rangeAtoms]
 
 
-    def SetAtomName(self, terminal_atomnames : list, nucleotideSequence : list, strandType : str) -> list :
+    def SetAtomName(self, terminal_atomnames : list, nucleotideSequence : list, strandType : str) :
         """  """
 
         if strandType == "lead" :
@@ -112,17 +126,17 @@ class PdbInstance():
             self.AtomName = terminal_atomnames[2] + LFT2.return_PDB_AtomNames_or_ElementSymbol(nucleotideSequence, "Atoms") + terminal_atomnames[3]
 
 
-    def SetResidueName(self, list_of_leading_sequence : list) -> list :
+    def SetResidueName(self, list_of_leading_sequence : list) :
         """  """
         self.ResidueName = LFT2.return_PDB_Residuename(list_of_leading_sequence)
 
 
-    def SetChainLetter(self, letter : str) -> str:
+    def SetChainLetter(self, letter : str):
         """  """
         self.Chain = letter
 
 
-    def SetSequenceNumber(self, nucleotide_sequence : list, strandType : str) -> list :
+    def SetSequenceNumber(self, nucleotide_sequence : list, strandType : str) :
         """  """
         if strandType == "lead" :
             self.SequenceNumber = LFT2.return_PDB_Sequence(nucleotide_sequence)
@@ -146,6 +160,6 @@ class PdbInstance():
             self.z = list(map(lambda x: "{:.3f}".format(x), nucleotideArray[:,2]))
 
 
-    def SetElementSymbols(self, nucleotideSequence : list) -> list:
+    def SetElementSymbols(self, nucleotideSequence : list) :
         """  """
         self.ElementSymbol = ["H"] + LFT2.return_PDB_AtomNames_or_ElementSymbol(nucleotideSequence, "Symbol") + ["H"]

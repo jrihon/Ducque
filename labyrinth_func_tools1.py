@@ -92,7 +92,7 @@ def get_quaternion(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : n
 
     return quaternion
 
-def get_custom_quaternion(axis : np.array, theta : float) -> np.array:
+def get_quaternion_custom_axis(axis : np.array, theta : float) -> np.array:
     """ Generate a customized quaternion. This is only succesful if the direction axis is perpendicular. """
     # Create the quaternion
     qx = axis[0] * np.sin(theta)
@@ -135,6 +135,35 @@ def generate_and_rotate_single_vector(interpolated_theta_angle : float, phi : fl
 
     return rotated_vector
 
+
+def assert_dot_product(_dotProduct : np.array) -> bool :
+    """ We have noticed that whenever two vectors (i.e. j1 and j2, where j1 is imposed upon j2) make a dot product of
+        -1 or -180 degrees, that the rotation of the quaternion spazzes out. To combat this, we will test whether or not
+        j1 and j2 have a dot product nearing this value.
+
+        If this is the case, we simply alter the orientation of the initial array by 45 degrees (arbritrary value) and then return this and reposition
+        the nucleoside array.
+
+        if the difference(-1, _dotProduct) is close to zero, then change the orientation. """
+    _testAgainst = - 1 - _dotProduct
+    #print(_testAgainst)
+
+    # Check if the asserted dot product is close to zero, from the negative range up
+    if -0.1 <= _testAgainst <= 0 :
+        return True
+    return False
+
+
+def reorient_nucleoside_array(complementary_array : np.array) -> np.ndarray :
+    """ Reorient the array that has the weird, gimmicky dotproduct equals -1 thing from up above.
+
+        What we did here is choose the standard x axis to rotate over, bring the nucleoside array by a random atom to the origin
+        and rotate it, only to put it back to its original location."""
+
+    # Custom axis and custom angle to rotate. We rotate over an angle of 45 degrees just because it rotates it enough to steer away from the point
+    _quaternion_custom = get_quaternion_custom_axis(np.array([1,0,0]), (np.pi/4))
+
+    return move_to_origin_ROTATE_move_back_to_loc(_quaternion_custom, complementary_array, complementary_array[0])
 
 #def apply_rotation_of_planes(quaternion : np.array, nucleoside_array : np.ndarray, index_of_vectors : list) -> np.ndarray :
 #    """ This functions applies a second rotation to the nucleoside. The problem here is that we cannot use a custom axis, since direction axises are always perpendicular to the two vectors.
@@ -216,15 +245,9 @@ def dihedral_single(first : float, second : float, third : float, fourth : float
     b1 = return_normalized(b1)
 
     ## vector rejections
-    # v = projection of b0 onto plane perpendicular to b1
-    #   = b0 minus component that aligns with b1
-    # w = projection of b2 onto plane perpendicular to b1
-    #   = b2 minus component that aligns with b1
     v = b0 - np.dot(b0, b1)*b1
     w = b2 - np.dot(b2, b1)*b1
 
-    # angle between v and w in a plane is the torsion angle
-    # v and w may not be normalized but that's fine since tan is y/x
     x = np.dot(v, w)
     y = np.dot(np.cross(b1, v), w)
 

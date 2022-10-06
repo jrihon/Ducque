@@ -4,44 +4,44 @@ import sys, os
 from typing import Union
 
 import numpy as np
-import fundaments
+import pre_processing
 from labyrinth_func_tools2 import return_chemistrycode
 from labyrinth_repository import codex_acidum_nucleicum
 
 CODEX = codex_acidum_nucleicum
 
-chemistry_dict = {
-        "DNA" : ["dA", "dC", "dG", "dT"],
-        "RNA" : ["rA", "rC", "rG", "rU"],
-        }
+#chemistry_dict = {
+#        "DNA" : ["dA", "dC", "dG", "dT"],
+#        "RNA" : ["rA", "rC", "rG", "rU"],
+#        }
 
 def join_chemistry_with_sequence(chemistry : str, sequence) -> str:
     """ For the lazy people, concatenate the chemistry with the sequence they want. Only works for single prompted chemistries"""
 
     sequence = list(map(lambda x: x.strip(","), sequence))
 
-    NUC_ID = fundaments.check_if_chemistry_is_valid(chemistry)
+    nucID = pre_processing.check_if_chemistry_is_valid(chemistry)
 
     # Get the abbreviated chemistry code
-    abbrCode = return_chemistrycode(NUC_ID)
+    abbrChemistry = return_chemistrycode(nucID)
 
-    return ", ".join(abbrCode + Base for Base in sequence)
+    return ", ".join(abbrChemistry + _base for _base in sequence)
 
 
-def randomise_sequence(chemistry : str, length_seq : int) -> str:
+def randomise_sequence(chemistry : str, lengthSequence : int) -> str:
     """ depends on the prompted chemistry and the length of the sequence """
 
-    NUC_ID = fundaments.check_if_chemistry_is_valid(chemistry)
-    abbrCode = return_chemistrycode(NUC_ID)
+    nucID = pre_processing.check_if_chemistry_is_valid(chemistry)
+    abbrChemistry = return_chemistrycode(nucID)
 
-    all_abbrCodes = list(CODEX.keys())
+    allCodexKeys = list(CODEX.keys())
 
-    list_of_possible_nucleotides = []
-    for i, code in enumerate(all_abbrCodes):
-        if code[:-1] == abbrCode:
-            list_of_possible_nucleotides.append(all_abbrCodes[i])
+    listOfPossibleNucleotides = []
+    for i, _code in enumerate(allCodexKeys):
+        if _code[:-1] == abbrChemistry:
+            listOfPossibleNucleotides.append(allCodexKeys[i])
 
-    return ", ".join(random.choice(list_of_possible_nucleotides) for i in range(length_seq))
+    return ", ".join(random.choice(listOfPossibleNucleotides) for i in range(lengthSequence))
 
 
 def randomise_chemistry(chemistry : list, sequence : list) -> str:
@@ -52,45 +52,45 @@ def randomise_chemistry(chemistry : list, sequence : list) -> str:
     chemistry = list(map(lambda x: x.strip(","), chemistry))
 
     # Include the different chemistries by parsing from the dictionary, taking the first option and then cutting out the base part. leaving only the chemistry
-    list_of_chemistries = []
-    for chem in chemistry:
-        NUC_ID = fundaments.check_if_chemistry_is_valid(chem)
-        abbrCode = return_chemistrycode(NUC_ID)
-        list_of_chemistries.append(abbrCode)
+    listOfChemistries = []
+    for _chem in chemistry:
+        nucID = pre_processing.check_if_chemistry_is_valid(_chem)
+        abbrChemistry = return_chemistrycode(nucID)
+        listOfChemistries.append(abbrChemistry)
 
 
     # Concatenate strings by adding a random chemistry, from the prompted list, 
-    tmpseq = []
+    tmpSequence = []
     for nucleotide in sequence:
-        nucl = random.choice(list_of_chemistries) + nucleotide
-        tmpseq.append(nucl)
+        _nucl = random.choice(listOfChemistries) + nucleotide
+        tmpSequence.append(_nucl)
 
-    return ", ".join(tmpseq)
+    return ", ".join(tmpSequence)
 
 
-def randomise_sequence_and_chemistry(chemistry : list, length_seq : int) -> str:
+def randomise_sequence_and_chemistry(chemistry : list, lengthSequence : int) -> str:
     """ randomise both the sequence and for a set of given chemistry """
     # Get the given chemistry without the comma's in the strings
     chemistry = list(map(lambda x: x.strip(","), chemistry))
 
     # Get all the abbreviated chemistry codes from the prompted chemistries you want to randomise
-    list_of_chemistries = []
-    for chem in chemistry:
-        NUC_ID = fundaments.check_if_chemistry_is_valid(chem)
-        abbrCode = return_chemistrycode(NUC_ID)
-        list_of_chemistries.append(abbrCode)
+    listOfChemistries = []
+    for _chem in chemistry:
+        nucID = pre_processing.check_if_chemistry_is_valid(_chem)
+        abbrChemistry = return_chemistrycode(nucID)
+        listOfChemistries.append(abbrChemistry)
 
-    all_abbrCodes = list(CODEX.keys())
+    allCodexKeys = list(CODEX.keys())
 
-    list_of_possible_nucleotides = []
-    for i, code in enumerate(all_abbrCodes):
-        slicedCode = code[:-1]
+    listOfPossibleNucleotides = []
+    for i, _code in enumerate(allCodexKeys):
+        _code = _code[:-1]
 
-        if slicedCode in list_of_chemistries:
-            list_of_possible_nucleotides.append(all_abbrCodes[i])
+        if _code in listOfChemistries:
+            listOfPossibleNucleotides.append(allCodexKeys[i])
 
 
-    return ", ".join(random.choice(list_of_possible_nucleotides) for i in range(length_seq))
+    return ", ".join(random.choice(listOfPossibleNucleotides) for i in range(lengthSequence))
 
 
 def write_out_complementary_sequence(compl_seq : Union[str, list]) -> str:
