@@ -1,5 +1,5 @@
 --pdb Pucker_data/dXylo/A/min02.pdb
---id dXylo
+--chemistry dXylo
 --conformation 3endo
 --moiety nucleoside
 --dihedrals 90.633, -145.887, -119.980, -42.206, 127.964, 77.775, -166.111 
