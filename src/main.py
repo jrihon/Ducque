@@ -2,11 +2,11 @@ import argparse
 import sys
 import time
 
-import labyrinth    # Build the duplex
-import transmute    # Convert a given pdb file to a custom json format
-import randomise    # Output a random sequence
-import pre_processing   # Exceptions and custom errors
-import sysDaedalus  # Retrieves system information from the machine
+import builder              # Build the duplex
+import transmute            # Convert a given pdb file to a custom json format
+import randomise            # Output a random sequence
+import process_CLI_inputs   # Exceptions and custom errors
+import sysDaedalus          # Retrieves system information from the machine
 
 def main():
     explanation = """
@@ -34,7 +34,7 @@ def main():
                                       add_help=False,
                                       formatter_class=argparse.RawTextHelpFormatter)
 
-    options.add_argument("--Daedalus", type=argparse.FileType("r"),
+    options.add_argument("--build", type=argparse.FileType("r"),
             help="Ask the software to build a nucleic acid duplex with a given sequence.")
 
     options.add_argument("--transmute", type=argparse.FileType("r"),
@@ -58,29 +58,29 @@ def main():
 
     else:
         # If we call the nucleic acid builder
-        if arguments.Daedalus:
-            NUCLEIC_ACID_LIST, COMPLEMENT, OUTFILE = pre_processing.daedalus(arguments.Daedalus, options)
+        if arguments.build:
+            NUCLEIC_ACID_LIST, COMPLEMENT, OUTFILE = process_CLI_inputs.build(arguments.build, options)
 
         # If we want to convert a pdb to a json file
         if arguments.transmute:
-            PDB_FNAME, CHEMISTRY_T, MOIETY, DIHEDRALS, ANGLES, CONFORMATION = pre_processing.transmute(arguments.transmute, options)
+            PDB_FNAME, CHEMISTRY_T, MOIETY, DIHEDRALS, ANGLES, CONFORMATION = process_CLI_inputs.transmute(arguments.transmute, options)
 
         # If we want to call for a randomised sequence
         if arguments.randomise:
-            CHEMISTRY_R, LENGTH_SEQUENCE, SEQUENCE, COMPL_SEQ, OUTFILE = pre_processing.randomise(arguments.randomise, options)
+            CHEMISTRY_R, LENGTH_SEQUENCE, SEQUENCE, COMPL_SEQ, OUTFILE = process_CLI_inputs.randomise(arguments.randomise, options)
 
         # If we want to convert XYZ file to PDB
         if arguments.xyz_pdb:
-            XYZ_FNAME, ATOM_ID, ATOMNAME_LIST = pre_processing.xyz_to_pdb(arguments.xyz_pdb, options)
+            XYZ_FNAME, ATOM_ID, ATOMNAME_LIST = process_CLI_inputs.xyz_to_pdb(arguments.xyz_pdb, options)
 
 
     # Try and see if any of the options are used together. 
     # Daedalus will not allow this to happen for the reason that I don't feel like complicating stuff too much.
     try:
         if arguments.Daedalus and arguments.transmute:
-            raise pre_processing.InputExclusivity
+            raise process_CLI_inputs.InputExclusivity
 
-    except pre_processing.InputExclusivity:
+    except process_CLI_inputs.InputExclusivity:
         print("InputExclusivity: These flags are mutually exclusive; --transmute --Daedalus ")
         sysDaedalus.exit_Daedalus()
 
@@ -93,7 +93,7 @@ def main():
 
     # Build nucleic acid duplex
     if arguments.Daedalus:
-        labyrinth.Architecture(NUCLEIC_ACID_LIST, COMPLEMENT, OUTFILE)
+        builder.Architecture(NUCLEIC_ACID_LIST, COMPLEMENT, OUTFILE)
 
         print(f"                         Time spent: %.5f seconds." % (time.time() - t0))
 

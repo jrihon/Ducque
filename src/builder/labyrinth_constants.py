@@ -1,49 +1,6 @@
-import json
 from typing import Tuple, List
 from numpy import pi
 
-
-from labyrinth_repository import backbone_codex, linker_codex
-
-
-
-
-
-def Atom_Parsing_List(prevnuc, link, nextnuc = None) -> List[str]:
-    """ Retrieves the atoms that correspond to the correct index of the array, with which we calculate with.
-    All variables are json object
-
-    By default, nextnuc is equal to None. If no json object has been parsed into nextnuc, that means you are positioning the following linker and not the following nucleoside. """
-
-    # For when adding the linker moiety to the nucleoside
-    if nextnuc == None:
-        prevChem = backbone_codex[json.loads(prevnuc.jsonObject["identity"])[1]]
-        linkChem = linker_codex[json.loads(link.jsonObject["identity"])[0]]
-
-        truncPrevChem = [prevChem[-3], prevChem[-2], prevChem[-1]]
-
-        return truncPrevChem + linkChem
-
-
-    # For when building a subsequent nucleoside to the current nucleotide
-    if not nextnuc == None:
-        prevChem = backbone_codex[json.loads(prevnuc.jsonObject["identity"])[1]]
-        linkChem = backbone_codex[json.loads(link.jsonObject["identity"])[0]]
-        nextChem = backbone_codex[json.loads(nextnuc.jsonObject["identity"])[1]]
-
-        if len(linkChem) == 1:
-            truncPrevChem = [prevChem[-2], prevChem[-1]]
-
-            return truncPrevChem + linkChem + nextChem
-
-        if len(linkChem) == 2:
-            truncPrevChem = [prevChem[-1]]
-
-            return truncPrevChem + linkChem + nextChem
-
-        if len(linkChem) == 3:
-
-            return linkChem + nextChem
 
 
 def retrieve_atoms_for_plane_rotation_of_complement(base1 : str, base2 : str) -> Tuple[list, list]:

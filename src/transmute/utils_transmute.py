@@ -3,7 +3,7 @@ import numpy as np
 from typing import Union
 
 import sysDaedalus
-import transmute_func_tools as TFT
+import transmute_constants as TC
 
 class TransmuteToJson:
     """ This class exists to convert any *.pdb type format to an appriopriate *.json type format.
@@ -125,10 +125,10 @@ class TransmuteToJson:
         """ Get the full name of the nucleic acid chemistry or linker moietyType we want to convert to a json """
 
         if moietyType == "nucleoside":
-            return TFT.nucleoside_dict[identifier.upper()]
+            return TC.nucleoside_dict[identifier.upper()]
 
         if moietyType == "linker":
-            return TFT.linker_dict[identifier.upper()]
+            return TC.linker_dict[identifier.upper()]
 
 
     def get_base(self) -> str:
@@ -136,7 +136,7 @@ class TransmuteToJson:
             look for it in the dictionary """
         base = str(self.residueName)[-1]
 
-        return TFT.base_dict[base]
+        return TC.base_dict[base]
 
 
     def get_dihedrals(self, identifier : str, moietyType : str,  dihedrals_list : list) -> dict:
@@ -244,7 +244,7 @@ class TransmuteToJson:
 
         elif moietyType == "linker":
             name_of_chemistry = identifier.lower()
-            name_of_linker = TFT.linker_dict[identifier].lower()
+            name_of_linker = TC.linker_dict[identifier].lower()
             return name_of_chemistry + "_" + name_of_linker
 
         else :

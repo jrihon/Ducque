@@ -1,26 +1,19 @@
-import json
 import random
-import sys, os
 from typing import Union
 
-import numpy as np
-import pre_processing
-from labyrinth_func_tools2 import return_chemistrycode
-from labyrinth_repository import codex_acidum_nucleicum
+import process_CLI_inputs
+from builder.parse_or_write import return_chemistrycode
+from builder.library_labyrinth import codex_acidum_nucleicum
 
 CODEX = codex_acidum_nucleicum
 
-#chemistry_dict = {
-#        "DNA" : ["dA", "dC", "dG", "dT"],
-#        "RNA" : ["rA", "rC", "rG", "rU"],
-#        }
 
 def join_chemistry_with_sequence(chemistry : str, sequence) -> str:
     """ For the lazy people, concatenate the chemistry with the sequence they want. Only works for single prompted chemistries"""
 
     sequence = list(map(lambda x: x.strip(","), sequence))
 
-    nucID = pre_processing.check_if_chemistry_is_valid(chemistry)
+    nucID = process_CLI_inputs.check_if_chemistry_is_valid(chemistry)
 
     # Get the abbreviated chemistry code
     abbrChemistry = return_chemistrycode(nucID)
@@ -31,7 +24,7 @@ def join_chemistry_with_sequence(chemistry : str, sequence) -> str:
 def randomise_sequence(chemistry : str, lengthSequence : int) -> str:
     """ depends on the prompted chemistry and the length of the sequence """
 
-    nucID = pre_processing.check_if_chemistry_is_valid(chemistry)
+    nucID = process_CLI_inputs.check_if_chemistry_is_valid(chemistry)
     abbrChemistry = return_chemistrycode(nucID)
 
     allCodexKeys = list(CODEX.keys())
@@ -41,7 +34,7 @@ def randomise_sequence(chemistry : str, lengthSequence : int) -> str:
         if _code[:-1] == abbrChemistry:
             listOfPossibleNucleotides.append(allCodexKeys[i])
 
-    return ", ".join(random.choice(listOfPossibleNucleotides) for i in range(lengthSequence))
+    return ", ".join(random.choice(listOfPossibleNucleotides) for _ in range(lengthSequence))
 
 
 def randomise_chemistry(chemistry : list, sequence : list) -> str:
@@ -54,7 +47,7 @@ def randomise_chemistry(chemistry : list, sequence : list) -> str:
     # Include the different chemistries by parsing from the dictionary, taking the first option and then cutting out the base part. leaving only the chemistry
     listOfChemistries = []
     for _chem in chemistry:
-        nucID = pre_processing.check_if_chemistry_is_valid(_chem)
+        nucID = process_CLI_inputs.check_if_chemistry_is_valid(_chem)
         abbrChemistry = return_chemistrycode(nucID)
         listOfChemistries.append(abbrChemistry)
 
@@ -76,7 +69,7 @@ def randomise_sequence_and_chemistry(chemistry : list, lengthSequence : int) -> 
     # Get all the abbreviated chemistry codes from the prompted chemistries you want to randomise
     listOfChemistries = []
     for _chem in chemistry:
-        nucID = pre_processing.check_if_chemistry_is_valid(_chem)
+        nucID = process_CLI_inputs.check_if_chemistry_is_valid(_chem)
         abbrChemistry = return_chemistrycode(nucID)
         listOfChemistries.append(abbrChemistry)
 
@@ -90,7 +83,7 @@ def randomise_sequence_and_chemistry(chemistry : list, lengthSequence : int) -> 
             listOfPossibleNucleotides.append(allCodexKeys[i])
 
 
-    return ", ".join(random.choice(listOfPossibleNucleotides) for i in range(lengthSequence))
+    return ", ".join(random.choice(listOfPossibleNucleotides) for _ in range(lengthSequence))
 
 
 def write_out_complementary_sequence(compl_seq : Union[str, list]) -> str:

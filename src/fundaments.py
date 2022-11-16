@@ -1,21 +1,19 @@
-import labyrinth_repository as LabRepo
-import sysDaedalus
+from builder import library_labyrinth as LIB
+import sys
 import os
 
 """ When the user prompts the wrong values or flags, this python script intercepts most errors that happen at the start """
-
-class InputExclusivity(Exception):
-    Except = " These flags are mutually exclusive; --transmute     --Daedalus "
-
-
-
 
 def print_divide_between_command_and_output():
     """ This function exists solely to split the Daedalus call command and its output."""
     print("-----------------------------------------------------------")
 
 
-def remove_blank_lines(fileList : list) -> list:
+class InputExclusivity(Exception):
+    Except = " These flags are mutually exclusive; --transmute     --Daedalus "
+
+
+def remove_trailing_whitespace(fileList : list) -> list:
 
     # intialise new list
     newList = []
@@ -30,11 +28,11 @@ def remove_blank_lines(fileList : list) -> list:
 def check_if_nucleotides_are_valid(input_sequence : list) -> bool:
     """ Check if any of the prompted nucleotides is not valid. """
     # Retrieve the keys of the dictionary from which we parse the data
-    keysOfDict = LabRepo.codex_acidum_nucleicum.keys()
+    keys_of_dict = LIB.codex_acidum_nucleicum.keys()
     # Check if any of the prompted nucleotides is not found in the sequence
 
     for NA in input_sequence:
-        if NA not in keysOfDict:
+        if NA not in keys_of_dict:
             print_divide_between_command_and_output()
             print(f"One or more of the nucleotides in the given sequence is invalid. Please check your input file : {NA} \n\n")
             return False
@@ -46,25 +44,30 @@ def check_if_chemistry_is_valid(chemistry : str) -> str:
     """ If the chemistry is invalid, stop the script.
         If the chemistry is actually valid, return the keys of the dictionary as a list. """
 
-    from transmute_func_tools import nucleoside_dict
+    from transmute.transmute_constants import nucleoside_dict
 
     # Get the value from the transmute_func_tools nucleoside dictionary, to get the full name of the chemistry
     try:
         NUC_ID = nucleoside_dict[chemistry.upper()]
     except KeyError:
         print(f"The following key does not exist in the dictionary : {chemistry.upper()}.\nPlease revise your inputs.\n")
-        sysDaedalus.exit_Daedalus()
+        sys.exit(1)
 
     return NUC_ID
 
 
-def daedalus(DAEDALUSINPUT, options):
-    print("-----------------------------------------------------------")
-    print("Daedalus - Nucleic Acid Architecture initiated! Building sequence ...\n")
+def daedalus(DaedalusInput, options):
 
-    list_of_valid_flags = ["--sequence", "--complement", "--out"]
+    list_of_valid_flags = ["--sequence", "--complement"]
     # Read the input file and create a list object of the sequence. Removes any whitespace.
-    fileDaedalus = remove_blank_lines(list(map(lambda x: x.strip(), DAEDALUSINPUT.readlines())))
+    fileDaedalus = remove_trailing_whitespace(list(map(lambda x: x.strip(), DaedalusInput.readlines())))
+
+    # Check if amount of inputs are valid
+    if len(fileDaedalus) != len(list_of_valid_flags):
+        print_divide_between_command_and_output()
+        print("Only two arguments are required, please check our input file.\n\n\n")
+        options.print_help()
+        sys.exit(0)
 
     for argument in fileDaedalus:
         arg = argument.split()
@@ -73,11 +76,11 @@ def daedalus(DAEDALUSINPUT, options):
         if not arg[0] in list_of_valid_flags:
             print_divide_between_command_and_output()
             print(f"\n\nThe following flag is invalid : {arg[0]}. Please check your input file.\n\n\n")
-            options.print_help()
-#            sysDaedalus.exit_Daedalus()
+            #options.print_help()
+            sys.exit(0)
 
         if arg[0] == "--sequence":
-            nucleicAcidList = list(map(lambda x: x.strip(","), arg[1:]))
+            nucleic_acid_list = list(map(lambda x: x.strip(","), arg[1:]))
 
         if arg[0] == "--complement":
             # If there is a input possibility at index 2, meaning more than one string have been inputted, then get the entire string as a list variable.
@@ -87,57 +90,36 @@ def daedalus(DAEDALUSINPUT, options):
             except:
                 print_divide_between_command_and_output()
                 print("You have forgotten to include an argument for the --complement flag! Please add this to your input file.")
-                sysDaedalus.exit_Daedalus()
+                sys.exit(0)
 
             try:
                 arg[2]
             except:
                 complement = arg[1]
             else:
-                complement =  list(map(lambda x: x.strip(","), arg[1:]))
-
-        if arg[0] == "--out" :
-            outFile = arg[1]
-
-    # If the variable outFile has not been prompted by the user, we default it ourselves by having it take on the name of the input file
-    try :
-        outFile
-    except :
-        outFile = DAEDALUSINPUT.name.split(".")[0]
-        list_of_valid_flags.remove("--out")
-
-    # Check if amount of inputs are valid
-    if len(fileDaedalus) != len(list_of_valid_flags):
-        print_divide_between_command_and_output()
-        print("Only two/three arguments are required, please check our input file.\n`--out` is an optional flag.\n\n\n")
-#        options.print_help()
-        sysDaedalus.exit_Daedalus()
+                complement = arg[1:]
 
     # If a given nucleotide is not in the list of valid nucleotides, stop the program
-    if not check_if_nucleotides_are_valid(nucleicAcidList):
+    if not check_if_nucleotides_are_valid(nucleic_acid_list):
         #options.print_help()
-        sysDaedalus.exit_Daedalus()
+        sys.exit(0)
 
-    if isinstance(complement, list) and len(complement) > 2 :
-        if not check_if_nucleotides_are_valid(complement):
-            #options.print_help()
-            sysDaedalus.exit_Daedalus()
-
-    return nucleicAcidList, complement, outFile
+    return nucleic_acid_list, complement
 
 
-def transmute(TRANSMUTEINPUT, options):
+def transmute(TransmuteInput, options):
 
     # Read the input file and create a list object of the sequence. Removes any whitespace.
-    fileTransmute = remove_blank_lines(list(map(lambda x: x.strip(), TRANSMUTEINPUT.readlines())))
+    fileTransmute = remove_trailing_whitespace(list(map(lambda x: x.strip(), TransmuteInput.readlines())))
 
     # Check if amount of inputs are valid
     list_of_valid_flags = ["--pdb", "--chemistry", "--moiety", "--conformation", "--dihedrals", "--bondangles"]
     if not len(fileTransmute) == len(list_of_valid_flags) and not len(fileTransmute) == (len(list_of_valid_flags) - 1):
         print_divide_between_command_and_output()
-        print("Only five/six arguments are required, please check your input file.\n`--conformation` is an optional flag.\n\n\n")
+        print("Only five/six arguments are required, please check your input file.\n\n\n")
+
         options.print_help()
-#        sysDaedalus.exit_Daedalus()
+        sys.exit(0)
 
     for argument in fileTransmute:
         arg = argument.split()
@@ -146,11 +128,11 @@ def transmute(TRANSMUTEINPUT, options):
             print_divide_between_command_and_output()
             print(f"\n\nThe following flag is invalid : {arg[0]}. Please check your input file.\n\n\n")
             #options.print_help()
-            sysDaedalus.exit_Daedalus()
+            sys.exit(0)
 
         # Save the prompted arguments according to the respective flags
         if arg[0] == "--pdb":
-            pdb_fname = arg[1]
+            pdb_file = arg[1]
 
         if arg[0] == "--chemistry":
             chemistry = arg[1]
@@ -170,17 +152,17 @@ def transmute(TRANSMUTEINPUT, options):
         # if the conformation was not prompted, since it's an optional argument
         try:
             conformation
-        except NameError:
+        except:
             conformation = False
 
-    return pdb_fname, chemistry, moiety, dihedrals, angles, conformation
+    return pdb_file, chemistry, moiety, dihedrals, angles, conformation
 
 
-def randomise(RANDOMISEINPUT, options):
+def randomise(RandomiseInput, options):
 
-    from transmute_func_tools import nucleoside_dict
+    from transmute.transmute_constants import nucleoside_dict
 
-    fileRandomise = remove_blank_lines(list(map(lambda x: x.strip(), RANDOMISEINPUT.readlines())))
+    fileRandomise = remove_trailing_whitespace(list(map(lambda x: x.strip(), RandomiseInput.readlines())))
 
     # Check list of valid inputs 
     list_of_valid_flags = ["--chemistry", "--length", "--sequence", "--complement"]
@@ -188,7 +170,7 @@ def randomise(RANDOMISEINPUT, options):
         print_divide_between_command_and_output()
         print("Only three arguments are required at one time, please check our input file.\n\n\n")
         options.print_help()
-#        sysDaedalus.exit_Daedalus()
+        sys.exit(0)
 
     # Check if flags are valid
     for argument in fileRandomise:
@@ -198,7 +180,7 @@ def randomise(RANDOMISEINPUT, options):
             print_divide_between_command_and_output()
             print(f"\n\nThe following flag is invalid : {arg[0]}. Please check your input file.\n\n\n")
             #options.print_help()
-            sysDaedalus.exit_Daedalus()
+            sys.exit(0)
 
         # Save the prompted arguments according to their respective flags
         if arg[0] == "--chemistry":
@@ -219,17 +201,16 @@ def randomise(RANDOMISEINPUT, options):
 
         if arg[0] == "--complement":
             if len(arg) > 2:
-                complement =  list(map(lambda x: x.strip(","), arg[1:]))
-                if not check_if_nucleotides_are_valid(complement):
-                    sysDaedalus.exit_Daedalus()
-                continue
+                complement = arg[1:]
+                if check_if_nucleotides_are_valid(complement):
+                    sys.exit(1)
 
             # Check if the complement flag contains either the 'homo' flag or a valid chemistry.
             complement = arg[1]
             compl_test_against = ["homo"] + list(nucleoside_dict.keys())
             if complement not in compl_test_against:
-                print("the input of '--complement' is not a valid list and not one of the possible inputs. Please revise your input for this flag.")
-                sysDaedalus.exit_Daedalus()
+                print("the variable in '--complement' is not a list and not one of the available inputs. Please revise your input for this flag.")
+                sys.exit(0)
 
     # If the variable chemistry has not been defined, then
     try:
@@ -238,15 +219,14 @@ def randomise(RANDOMISEINPUT, options):
         print_divide_between_command_and_output()
         print("No chemistry type was prompted! Revise your input file. \n")
         #options.print_help()
-        sysDaedalus.exit_Daedalus()
+        sys.exit(0)
 
-    outFile = RANDOMISEINPUT.name.split(".")[0]
-    return chemistry, length_sequence, sequence, complement, outFile
+    return chemistry, length_sequence, sequence, complement
 
 
-def xyz_to_pdb(CONVERSIONINPUT, options):
+def xyz_to_pdb(ConversionInput, options):
 
-    fileConversion = remove_blank_lines(list(map(lambda x: x.strip(), CONVERSIONINPUT.readlines())))
+    fileConversion = remove_trailing_whitespace(list(map(lambda x: x.strip(), ConversionInput.readlines())))
 
     # Check list of valid inputs 
     list_of_valid_flags = ["--xyz", "--atomID", "--atomname_list"]
@@ -254,7 +234,7 @@ def xyz_to_pdb(CONVERSIONINPUT, options):
         print_divide_between_command_and_output()
         print("Only three arguments are required at one time. Please check your input file. \n\n\n ")
         options.print_help()
-#        sysDaedalus.exit_Daedalus()
+        sys.exit(0)
 
     # Check if flags are valid
     for argument in fileConversion:
@@ -264,17 +244,17 @@ def xyz_to_pdb(CONVERSIONINPUT, options):
             print_divide_between_command_and_output()
             print(f"\n\nThe following flag is invalid : {arg[0]}. Please check your input file.\n\n\n")
             #options.print_help()
-            sysDaedalus.exit_Daedalus()
+            sys.exit(0)
 
         # Save the prompted arguments according to their respective flags
         if arg[0] == "--xyz":
-            xyz_fname = arg[1]
+            fname_xyz = arg[1]
             try:
-                os.path.isfile(xyz_fname)
+                os.path.isfile(fname_xyz)
             except FileNotFoundError:
                 print_divide_between_command_and_output()
-                print(f"File {xyz_fname} was not found. Please revise either its name or its location on your system.\n")
-                sysDaedalus.exit_Daedalus()
+                print(f"File {fname_xyz} was not found. Please revise either its name or its location on your system.\n")
+                sys.exit(0)
 
         if arg[0] == "--atomID":
             atomID = arg[1]
@@ -282,10 +262,10 @@ def xyz_to_pdb(CONVERSIONINPUT, options):
                 print_divide_between_command_and_output()
                 print("The argument '--atomID' requires up to three characters in its name.\n"
                         "Check your input of the atom identifier.\n")
-                sysDaedalus.exit_Daedalus()
+                sys.exit(0)
 
         if arg[0] == "--atomname_list":
             atomname_list = arg[1:]
 
-    return xyz_fname, atomID, atomname_list
+    return fname_xyz, atomID, atomname_list
 

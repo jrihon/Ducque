@@ -1,4 +1,4 @@
-import sys
+from sys import version_info, exit
 import os
 
 
@@ -7,20 +7,19 @@ import os
 
 def version_checker():
     """ Checks the version of Daedalus"""
-    import sys
-    if not sys.version_info.major == 3 and sys.version_info.minor >= 6:
+    if not version_info.major == 3 and version_info.minor >= 6:
 
         print("Python 3.6 or higher is required.")
-        sys.exit(1)
+        exit(1)
 
 def return_DAEDALUS_home():
     """ Return the home directory of Daedalus """
-    daedalus_home = os.path.dirname(os.path.realpath(__file__)) + "/"
+    DAEDALUS_HOME = os.path.dirname(os.path.realpath(__file__)) + "/"
 
-    return daedalus_home
+    return DAEDALUS_HOME
 
 def exit_Daedalus():
     """ Exit Daedalus with the following message : """
-    sys.exit("\nExitted Daedalus unsuccesfully ... \n\n")
+    exit("\nExitted Daedalus unsuccesfully ... \n\n")
 
 

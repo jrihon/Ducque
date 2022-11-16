@@ -1,13 +1,12 @@
 import numpy as np
 import numpy.linalg as LA
-from scipy.spatial.transform import Rotation as R
+from scipy.spatial.transform import Rotation
 
 from typing import Tuple
-import json
-import labyrinth_func_tools2 as LFT2
 
-"""     labyrinth_func_tools1 contains all the mathematical functions required, in python, to calculate for the rotations.  """
+"""     src/builder/mathematics contains all the baisc mathematical functions required for basic linalg operations.  """
 
+##-- BASIC LINEAR ALGEBRA ; ROTATION, NORMALISATION, DOT, CROSS ...
 def return_normalized(vector : np.ndarray) -> np.ndarray:
     """ returns a normalized vector """
     return vector / LA.norm(vector)
@@ -46,12 +45,12 @@ def get_angle_of_rotation(from_vector : np.ndarray, vector_to_rotate_onto : np.n
     return np.arccos(np.dot(from_vector, vector_to_rotate_onto))
 
 
-def get_length_of_vector(vector1 : np.array, vector2 : np.array) -> float:
+def get_length_of_vector(vector1 : np.ndarray, vector2 : np.ndarray) -> float:
     """ Uses the linear algebra module to return the length of the vector """
     return LA.norm(vector2 - vector1)
 
 
-def TESTTHETAget_quaternion(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : np.array = np.array([0,0,1])) -> np.array:
+def TESTTHETAget_quaternion(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : np.ndarray = np.array([0,0,1])) -> Rotation:
     """ Quaternion mathematics using the scipy.spatial.transform.Rotation library
         Create the quaternion that is associated with the angle and axis of rotation
         Apply it to the vector you want to rotate.  """
@@ -67,12 +66,12 @@ def TESTTHETAget_quaternion(vector_to_rotate_onto : np.ndarray, vector_to_rotate
     qz = axis[2] * np.sin(theta)
     qw = np.cos(theta)
 
-    quaternion = R.from_quat([qx, qy, qz, qw])
+    quaternion = Rotation.from_quat([qx, qy, qz, qw])
 
     return quaternion
 
 
-def get_quaternion(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : np.array = np.array([0,0,1])) -> np.array:
+def get_quaternion(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : np.ndarray = np.array([0,0,1])) -> Rotation:
     """ Quaternion mathematics using the scipy.spatial.transform.Rotation library
         Create the quaternion that is associated with the angle and axis of rotation
         Apply it to the vector you want to rotate.  """
@@ -88,11 +87,11 @@ def get_quaternion(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : n
     qz = axis[2] * np.sin(theta)
     qw = np.cos(theta)
 
-    quaternion = R.from_quat([qx, qy, qz, qw])
+    quaternion = Rotation.from_quat([qx, qy, qz, qw])
 
     return quaternion
 
-def get_quaternion_custom_axis(axis : np.array, theta : float) -> np.array:
+def get_quaternion_custom_axis(axis : np.ndarray, theta : float) -> Rotation:
     """ Generate a customized quaternion. This is only succesful if the direction axis is perpendicular. """
     # Create the quaternion
     qx = axis[0] * np.sin(theta)
@@ -100,7 +99,7 @@ def get_quaternion_custom_axis(axis : np.array, theta : float) -> np.array:
     qz = axis[2] * np.sin(theta)
     qw = np.cos(theta)
 
-    quaternion = R.from_quat([qx, qy, qz, qw])
+    quaternion = Rotation.from_quat([qx, qy, qz, qw])
 
     return quaternion
 
@@ -114,7 +113,7 @@ def get_normal_vector_of_plane(v_first : np.ndarray, v_second : np.ndarray) -> n
     return cross_product / LA.norm(cross_product)
 
 
-def rotate_with_quaternion(quaternion, vector : np.ndarray) -> np.ndarray:
+def rotate_with_quaternion(quaternion : Rotation, vector : np.ndarray) -> np.ndarray:
     """ Vector rotation through quaternion mathematics"""
 
     return quaternion.apply(vector)
@@ -136,7 +135,7 @@ def generate_and_rotate_single_vector(interpolated_theta_angle : float, phi : fl
     return rotated_vector
 
 
-def assert_dot_product(_dotProduct : np.array) -> bool :
+def assert_dot_product(dotProduct : np.ndarray) -> bool :
     """ We have noticed that whenever two vectors (i.e. j1 and j2, where j1 is imposed upon j2) make a dot product of
         -1 or -180 degrees, that the rotation of the quaternion spazzes out. To combat this, we will test whether or not
         j1 and j2 have a dot product nearing this value.
@@ -145,16 +144,16 @@ def assert_dot_product(_dotProduct : np.array) -> bool :
         the nucleoside array.
 
         if the difference(-1, _dotProduct) is close to zero, then change the orientation. """
-    _testAgainst = - 1 - _dotProduct
+    testAgainst = - 1 - dotProduct
     #print(_testAgainst)
 
     # Check if the asserted dot product is close to zero, from the negative range up
-    if -0.1 <= _testAgainst <= 0 :
+    if -0.1 <= testAgainst <= 0 :
         return True
     return False
 
 
-def reorient_nucleoside_array(complementary_array : np.array) -> np.ndarray :
+def reorient_nucleoside_array(complementary_array : np.ndarray) -> np.ndarray :
     """ Reorient the array that has the weird, gimmicky dotproduct equals -1 thing from up above.
 
         What we did here is choose the standard x axis to rotate over, bring the nucleoside array by a random atom to the origin
@@ -254,6 +253,36 @@ def dihedral_single(first : float, second : float, third : float, fourth : float
     return np.degrees(np.arctan2(y, x))
 
 
+
+
+
+##--- INTRAPOLATE DIHEDRAL FUNCTIONS
+def check_slope_of_array(arr : np.ndarray) -> str:
+    """ In labyrinth_func_tools1.py there is a function that retrieves the interpolated dihedral angle
+    But it works on whether or not the list is ascending or descending
+    That's what we need to figure out here now and return this """
+
+    slope_list = []
+    for i in range(len(arr)):
+        if i == (len(arr) - 1):
+            if arr[i] > arr[0]:
+                slope_list.append("D")
+            else:
+                slope_list.append("A")
+
+        elif arr[i] > arr[i+1]:
+            slope_list.append("D")
+        else:
+            slope_list.append("A")
+
+    descending = slope_list.count("D")
+    ascending = slope_list.count("A")
+
+    if ascending > descending:
+        return "ASCENDING"
+    else:
+        return "DESCENDING"
+
 def interpolate_dihedrals(tuple_dihr : Tuple[Tuple[float, float], Tuple[float, float]], angle_dihr : float) -> float:
     """     y = y1 + [ (x - x1) / (x2 - x1) * (y2 - y1) ]
 
@@ -294,7 +323,7 @@ def get_interpolated_dihedral(ls_dihedrals : np.ndarray, dihr_of_interest : floa
     theta = np.linspace(0, 2*np.pi, num=18, endpoint=False)
 
     # Determine if val(ls_dihedrals) is ascending or descending
-    slope = LFT2.check_slope_of_array(ls_dihedrals)
+    slope = check_slope_of_array(ls_dihedrals)
 
     if slope == "DESCENDING":
         ## Let's check the difference in between ls_dihedrals[i] and 180 or -180 is less than 20
@@ -373,18 +402,18 @@ def get_interpolated_dihedral(ls_dihedrals : np.ndarray, dihr_of_interest : floa
 
                 return interpolate_dihedrals(dihr_boundaries, dihr_of_interest)
 
-
-def move_vector_to_loc(array_of_molecules : np.ndarray, distance_to_loc : np.array) -> np.ndarray:
+##-- TRANSLATIONS
+def move_vector_to_loc(array_of_molecules : np.ndarray, distance_to_loc : np.ndarray) -> np.ndarray:
     """ Move the array of vectors from the origin to the place you want to have it"""
     return array_of_molecules + distance_to_loc
 
 
-def move_vector_to_origin(array_of_molecules : np.array, distance_to_origin : np.array) -> np.ndarray:
+def move_vector_to_origin(array_of_molecules : np.ndarray, distance_to_origin : np.ndarray) -> np.ndarray:
     """ Move the vector to the origin by the distance of a specific atom to that origin """
     return array_of_molecules - distance_to_origin
 
 
-def move_to_origin_ROTATE_move_back_to_loc(quaternion : np.ndarray, array_to_manipulate : np.ndarray, distance_to_move : np.array) -> np.ndarray:
+def move_to_origin_ROTATE_move_back_to_loc(quaternion : Rotation, array_to_manipulate : np.ndarray, distance_to_move : np.ndarray) -> np.ndarray:
     """ Takes out the iterative process of moving an array to the origin, rotating it and moving it back again to it's original spot """
     # move to origin
     array_to_origin = move_vector_to_origin(array_to_manipulate, distance_to_move)
@@ -394,6 +423,8 @@ def move_to_origin_ROTATE_move_back_to_loc(quaternion : np.ndarray, array_to_man
     return move_vector_to_loc(rotated_array, distance_to_move)
 
 
+
+##-- ASSERTIONS ON STRUCTURE BETWEEN ATOMS
 def assert_length_of_vector(length : float) -> bool:
     """ Check if length is roughly the correct size or if the nucleotide needs to be rotated """
     return 1.30 <= length <= 1.90
@@ -431,11 +462,15 @@ def assert_dihedral_of_nucleotide(calculated_dihedral : float, dihedral : float)
     return dihedral - offset_dihedral <= calculated_dihedral <= dihedral + offset_dihedral
 
 
-def smallest_difference(array : np.array, ref_value : float) -> np.array:
+def smallest_difference(array : np.ndarray, ref_value : float) -> np.ndarray:
     """ Returns the value in the array where the difference with the reference value is the smallest"""
     diff_array = array - ref_value
     return np.abs(diff_array)
 
+
+
+
+##-- GRAVEYARD
 #def check_phi_angle_of_vector(vectors : np.ndarray, axis : np.array = np.array([0,0,1])) :
 #    """ The dotproduct determines the angle of the vector with a given axis/vector.
 #    This function is mainly for debugging purposes and has no value for building duplexes.

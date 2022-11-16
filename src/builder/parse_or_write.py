@@ -4,47 +4,61 @@ import os
 import sys
 from typing import Union, Tuple
 
-#import labyrinth
-import labyrinth_repository as LabRepo    # Parse the nucleic acid dictionaries
+from library_labyrinth import backbone_codex, linker_codex
+
+import library_labyrinth as LIB    # Parse the nucleic acid dictionaries
 from sysDaedalus import return_DAEDALUS_home
 """ This scripts makes data parsing much easier and makes labyrinth.py much more organised. """
 
-CODEX = LabRepo.codex_acidum_nucleicum
-
-def check_slope_of_array(arr : np.array) -> str:
-    """ In labyrinth_func_tools1.py there is a function that retrieves the interpolated dihedral angle
-    But it works on whether or not the list is ascending or descending
-    That's what we need to figure out here now and return this """
-
-    slope_list = []
-    for i in range(len(arr)):
-        if i == (len(arr) - 1):
-            if arr[i] > arr[0]:
-                slope_list.append("D")
-            else:
-                slope_list.append("A")
-
-        elif arr[i] > arr[i+1]:
-            slope_list.append("D")
-        else:
-            slope_list.append("A")
-
-    descending = slope_list.count("D")
-    ascending = slope_list.count("A")
-
-    if ascending > descending:
-        return "ASCENDING"
-    else:
-        return "DESCENDING"
+CODEX = LIB.codex_acidum_nucleicum
 
 
+##-- Parse atoms from the queried JSON object files
+def Atom_Parsing_List(prevnuc, link, nextnuc = None) -> list[str]:
+    """ Retrieves the atoms that correspond to the correct index of the array, with which we calculate with.
+    All variables are json object
+
+    By default, nextnuc is equal to None. If no json object has been parsed into nextnuc, that means you are positioning the following linker and not the following nucleoside. """
+
+    # For when adding the linker moiety to the nucleoside
+    if nextnuc == None:
+        prevChem = backbone_codex[json.loads(prevnuc.jsonObject["identity"])[1]]
+        linkChem = linker_codex[json.loads(link.jsonObject["identity"])[0]]
+
+        truncPrevChem = [prevChem[-3], prevChem[-2], prevChem[-1]]
+
+        return truncPrevChem + linkChem
+
+
+    # For when building a subsequent nucleoside to the current nucleotide
+    else :
+        prevChem = backbone_codex[json.loads(prevnuc.jsonObject["identity"])[1]]
+        linkChem = backbone_codex[json.loads(link.jsonObject["identity"])[0]]
+        nextChem = backbone_codex[json.loads(nextnuc.jsonObject["identity"])[1]]
+
+        if len(linkChem) == 1:
+            truncPrevChem = [prevChem[-2], prevChem[-1]]
+
+            return truncPrevChem + linkChem + nextChem
+
+        if len(linkChem) == 2:
+            truncPrevChem = [prevChem[-1]]
+
+            return truncPrevChem + linkChem + nextChem
+
+        if len(linkChem) == 3:
+
+            return linkChem + nextChem
+
+
+##-- GET INDEX OF ASSOCIATED ATOM IN THE ARRAY
 def retrieve_atom_index(json_object, atom : str, index_counter : int = 0) -> int :
     """ Retrieves the index in the json_object.array of the atom of interest
     This integer will be used to retrieve the vector of the atom of interest """
     return json_object.atom_list.index(atom) + index_counter
 
 
-def retrieve_atom_index_MULTIPLE(json_object, atoms : list, index_counter : int = 0) -> np.array :
+def retrieve_atom_index_MULTIPLE(json_object, atoms : list, index_counter : int = 0) -> list[int] :
     """ Retrieves the index in the json_object.array of the atom of interest
         This integer will be used to retrieve the vector of the atom of interest """
     array_of_indexes = np.zeros(len(atoms), dtype=int)
@@ -52,7 +66,7 @@ def retrieve_atom_index_MULTIPLE(json_object, atoms : list, index_counter : int 
     for i in range(len(atoms)):
         array_of_indexes[i] = json_object.atom_list.index(atoms[i]) + index_counter
 
-    return array_of_indexes
+    return list(array_of_indexes)
 
 
 def retrieve_list_of_dihedrals_and_angles_to_build_with(next_nucleoside) -> list:
@@ -66,7 +80,13 @@ def retrieve_list_of_dihedrals_and_angles_to_build_with(next_nucleoside) -> list
     return list_of_dihedrals
 
 
-######## FUNCTIONS USED TO GENERATE THE LIST OF THE COMPLEMENTARY NUCLEOSIDES ########
+
+
+
+
+
+
+##-- FUNCTIONS USED TO GENERATE THE LIST OF THE COMPLEMENTARY NUCLEOSIDES
 def retrieve_chemistry(chemistry : str) -> Tuple[str, int] :
     """ Parse the chemistry denominator from the nucleoside string.
         Note that the last element in the string should always be the nucleobase denominator (A, C, G, T, U).
@@ -152,7 +172,7 @@ def return_chemistrycode(identifier : str) -> str:
     # Get the directory from the $HOME of Daedalus (where it is installed)
     dH = return_DAEDALUS_home()
     dirJSON = os.listdir(dH + 'json/')
-    COMPL_CODEX = LabRepo.conformations_codex
+    COMPL_CODEX = LIB.conformations_codex
 #    KEYS_LIST = list(chain(*COMPL_CODEX.values())) # Flatten a possibly nested list
 
     # Read all the files in the json/ directory and find the identifier that was prompted, this way we can inambiguously find the abbreviated chemical code
@@ -196,8 +216,11 @@ def return_chemistrycode(identifier : str) -> str:
     return _KEY[:-1]
 
 
-######## FUNCTIONS USED TO CREATE THE INPUTS FOR THE EVENTUAL DATAFRAME THAT WILL EVENTUALLY BE WRITTEN TO A PDB FORMATTED FILE ########
-def return_PDB_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : str) -> list:
+
+
+
+##-- FUNCTIONS USED TO FILIB IN THE COLUMNS OF THE PDB FILE TO-BE-WRITTEN
+def return_PDB_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : str) -> list[str]:
     """ Loads in the atom names from the json files
     The identifier is either the string "Atoms" or the string "ElementSymbol", which will parse the list of interest """
 
@@ -236,7 +259,7 @@ def return_PDB_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : 
 
             atom_list = atom_list + tmp_atomlist
 
-            return atom_list
+#            return atom_list
 
         if not i == 0 and not (i+1) == len(list_of_sequence):
             # since this is not the last one or the first one, just carry on as usual
@@ -257,7 +280,7 @@ def return_PDB_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : 
             atom_list = atom_list + tmp_atomlist
 
 
-def return_PDB_Sequence(list_of_sequence : list, start_of_sequence : int = 0) -> np.array :
+def return_PDB_Sequence(list_of_sequence : list, start_of_sequence : int = 0) -> np.ndarray :
     """ Determines the number in the sequence of the nucleotides in the strands based off on the shape of their array.
         The '+1' for the first and last nucleotide is to account for the capping of the nucleoside, here with a single hydrogen. """
 
@@ -329,7 +352,7 @@ def return_PDB_Sequence(list_of_sequence : list, start_of_sequence : int = 0) ->
             sequence_array = np.concatenate((sequence_array, tmp_seqarray), axis=None)
 
 
-def return_PDB_Residuename(list_of_sequence : list) -> list:
+def return_PDB_Residuename(list_of_sequence : list) -> list[str]:
 
     # Initialise an empty array
     resname_list = []
@@ -370,7 +393,7 @@ def return_PDB_Residuename(list_of_sequence : list) -> list:
             nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0] + 1
             ID = json.loads(nucleoside["identity"])[2]
 
-            tmp_resname = [ID for i in range(nucleotide_shape)]
+            tmp_resname = [ID for _ in range(nucleotide_shape)]
             resname_list = resname_list + tmp_resname
             # Return the output of the atom_list, as this is the last nucleotide in the sequence
             return resname_list
@@ -393,11 +416,11 @@ def return_PDB_Residuename(list_of_sequence : list) -> list:
             nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0]
             ID = json.loads(nucleoside["identity"])[2]
 
-            tmp_resname = [ID for i in range(nucleotide_shape)]
+            tmp_resname = [ID for _ in range(nucleotide_shape)]
             resname_list = resname_list + tmp_resname
 
 
- #### TEMPORARILY NOT IN USE
+##-- GRAVEYARD
 #def COMPLEMENTARY_pdb_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : str) -> list:
 #    """ Loads in the atom names from the json files
 #    The identifier is either the string "Atoms" or the string "ElementSymbol", which will parse the list of interest """

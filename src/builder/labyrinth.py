@@ -1,18 +1,18 @@
-import sys, os, json
+#import sys, os, json
 import numpy as np
 
 import initMolecule
 
-import labyrinth_func as LabF                       # Import all the functions to do with creating the nucleic acid duplex
-import labyrinth_func_andthefunkybunch as LFFB      # Import all smaller functions
-import labyrinth_repository                         # Import the nucleic acid dictionaries
+import utils_labyrinth as UL                        # Import all the functions to do with creating the nucleic acid duplex
+import utils_of_utils_labyrinth as utilsUL          # Import all smaller functions
+import library_labyrinth as LIB                     # Import the nucleic acid dictionaries
 
 
 """ Create dictionary of the filename and their molecule code """
 
-CODEX_AN = labyrinth_repository.codex_acidum_nucleicum   # Creates an object of the nucleic acid dictionary for the leading strand
+CODEX_AN = LIB.codex_acidum_nucleicum   # Creates an object of the nucleic acid dictionary for the leading strand
 
-CODEX_CONF = labyrinth_repository.conformations_codex     # Creates an object of the nucleic acid dictionary for the complementary strand
+CODEX_CONF = LIB.conformations_codex     # Creates an object of the nucleic acid dictionary for the complementary strand
 
 
 
@@ -43,7 +43,7 @@ def Architecture(lead_nucleic_acid_list, complement, outfile):
     LINK_LIST[0].append(linker.filename)    # Append name of file to list
 
     # Position the linker moiety on the nucleoside.
-    leading_strand = LabF.position_phosphate_linker(nucleoside, nucleoside.array, linker)
+    leading_strand = UL.position_phosphate_linker(nucleoside, nucleoside.array, linker)
 
     num_nucl = 1 # Initiate a building block counter
 
@@ -62,19 +62,19 @@ def Architecture(lead_nucleic_acid_list, complement, outfile):
 
         # Assert which conformation fits the strand better and take that one and use it build the nucleotide
         conformations = CODEX_CONF[nextnuc_acid]
-        nextnuc_asserted_conf = LabF.assert_leading_strand_nucleotide_conformation(conformations, prevnuc, prevlink, leading_strand)
+        nextnuc_asserted_conf = UL.assert_leading_strand_nucleotide_conformation(conformations, prevnuc, prevlink, leading_strand)
         nextnuc = initMolecule.Nucleoside(nextnuc_asserted_conf) ; index_lead += nextnuc.mol_length
         nextlink = initMolecule.Linker(CODEX_AN[nextnuc_acid][1]) ; index_lead += nextlink.mol_length
 
         CONF_LIST[0].append(nextnuc.filename)   # Append name of file to list
 
         # Position the following nucleoside in the sequence
-        next_nucleoSIDE_positioned = LFFB.position_next_nucleoside(nextnuc, prevnuc, prevlink, leading_strand)
+        next_nucleoSIDE_positioned = utilsUL.position_next_nucleoside(nextnuc, prevnuc, prevlink, leading_strand)
 
         # Position the following linker to create a nucleotide array
         if not (NA + 1) == len(lead_nucleic_acid_list):
             # If this is not the last nucleoside in the sequence, build a linker onto it.
-            next_nucleoTIDE_positioned = LabF.position_phosphate_linker(nextnuc, next_nucleoSIDE_positioned, nextlink)
+            next_nucleoTIDE_positioned = UL.position_phosphate_linker(nextnuc, next_nucleoSIDE_positioned, nextlink)
             LINK_LIST[0].append(nextlink.filename)   # Append name of file to list
 
             # Create a tuple of the two arrays and stack them. This becomes the leading strand upon which we continue appending nucleotides.
@@ -90,7 +90,7 @@ def Architecture(lead_nucleic_acid_list, complement, outfile):
 
     ### GENERATE THE COMPLEMENTARY STRAND
     # a list of complementary nucleotides
-    compl_lead_nucleic_acid_list = LabF.generate_complementary_sequence(lead_nucleic_acid_list, complement)
+    compl_lead_nucleic_acid_list = UL.generate_complementary_sequence(lead_nucleic_acid_list, complement)
 
     # Import the first two leading strand nucleosides, but as a list
     leading_nucleosides = [CODEX_AN[lead_nucleic_acid_list[0]], CODEX_AN[lead_nucleic_acid_list[1]]]
@@ -98,7 +98,7 @@ def Architecture(lead_nucleic_acid_list, complement, outfile):
     # Both compl1 and compl2 are a list of json filenames. These become instanced object in the function 'assert_starting_bases_..._strand()'
     compl1, compl2 = CODEX_CONF[compl_lead_nucleic_acid_list[0]], CODEX_CONF[compl_lead_nucleic_acid_list[1]]
     compl2_linker = initMolecule.Linker(CODEX_AN[compl_lead_nucleic_acid_list[1]][1])
-    complementary_strand, index_lead, compl1_nuc, compl2_nuc = LabF.assert_starting_bases_of_complementary_strand(compl1, compl2, compl2_linker, leading_nucleosides, leading_strand, index_lead)
+    complementary_strand, index_lead, compl1_nuc, compl2_nuc = UL.assert_starting_bases_of_complementary_strand(compl1, compl2, compl2_linker, leading_nucleosides, leading_strand, index_lead)
 
     CONF_LIST[1].extend([compl1_nuc.filename, compl2_nuc.filename])
     LINK_LIST[1].append(compl2_linker.filename)
@@ -120,9 +120,9 @@ def Architecture(lead_nucleic_acid_list, complement, outfile):
         prev_compl_nuc, prev_compl_linker = initMolecule.Nucleoside(CODEX_AN[prev_compl_nextnuc_acid][0]), initMolecule.Linker(CODEX_AN[prev_compl_nextnuc_acid][1])
         index_compl -= (prev_compl_linker.mol_length + prev_compl_nuc.mol_length)
 
-        #compl_nextnuc_arr = LabF.assert_possible_base_conformations_and_fit(lead_nextnuc, leading_strand, conformations, compl_nextlinker, complementary_strand,
+        #compl_nextnuc_arr = UL.assert_possible_base_conformations_and_fit(lead_nextnuc, leading_strand, conformations, compl_nextlinker, complementary_strand,
         #                                                                                          prev_compl_nuc, prev_compl_linker, index_lead, index_compl)
-        fitted_nextnuc = LabF.assert_possible_base_conformations_and_fit(lead_nextnuc, leading_strand, conformations, compl_nextlinker, complementary_strand,
+        fitted_nextnuc = UL.assert_possible_base_conformations_and_fit(lead_nextnuc, leading_strand, conformations, compl_nextlinker, complementary_strand,
                                                                                                   prev_compl_nuc, prev_compl_linker, index_lead, index_compl)
         #complementary_strand = np.vstack((complementary_strand, compl_nextnuc_arr))
         complementary_strand = np.vstack((complementary_strand, fitted_nextnuc.array))
@@ -134,10 +134,10 @@ def Architecture(lead_nucleic_acid_list, complement, outfile):
 
 
     # Orient the linker moieties better in each nucleotide
-    leading_array, compl_array = LabF.orient_the_linker_moieties_better(CONF_LIST, LINK_LIST, leading_strand, complementary_strand)
+    leading_strand, complementary_strand = UL.orient_the_linker_moieties_better(CONF_LIST, LINK_LIST, leading_strand, complementary_strand)
 
 
     #------------------------ CREATE THE PDB THAT GOES WITH ARRAY INPUTTED -------------------#
-    LabF.create_PDB_from_array_final(outfile, leading_strand, lead_nucleic_acid_list, complementary_strand, compl_lead_nucleic_acid_list)
+    UL.create_PDB_from_array_final(outfile, leading_strand, lead_nucleic_acid_list, complementary_strand, compl_lead_nucleic_acid_list)
     print("\nNumber of nucleotides in the duplex :" , num_nucl, "\n")
 

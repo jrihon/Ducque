@@ -3,7 +3,7 @@ import json
 from typing import Union
 
 import sysDaedalus
-import transmute_func as TF
+import utils_transmute as UT
 
 
 
@@ -25,7 +25,7 @@ def Transmutation(pdb_fname, nucleicAcidChemistry : str, moietyType : str, dihed
 
     """
     ## Read pdb and convert to dataframe
-    nucleicAcid = TF.TransmuteToJson(pdb_fname)
+    nucleicAcid = UT.TransmuteToJson(pdb_fname)
     nucleicAcid.pdb_for_attributes()
 
 
@@ -111,7 +111,7 @@ def convert_XYZ_to_PDB(xyzFname : str, atomID : str, atomNameList : list):
     """ the main function that convert an xyz formatted file to the required pdb format """
 
     # Instantiate the object
-    PdbToBe = TF.TransmuteToPdb(xyzFname)
+    PdbToBe = UT.TransmuteToPdb(xyzFname)
 
     # Parse all the required data from the xyz file
     PdbToBe.parse_xyz_and_elementsymbol()

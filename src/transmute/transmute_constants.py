@@ -68,7 +68,7 @@ def get_base_type(base : str) -> str:
 
 
 
-#------------------------ DEPRECATED ----------------------------------------------------------
+#------------------------ GRAVEYARD OF IDEAS ----------------------------------------------------
 # The general backbone, whether it is a purine or a pyrimidine. This is a nested dictionary.
 # Used to parse the indices of the vectors in the molecule's array
 #dihedral_dict = {

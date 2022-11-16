@@ -3,8 +3,8 @@ from typing import Union, List
 from numpy import pi, asarray, arange, ndarray
 
 
-from labyrinth_func import generate_complementary_sequence
-import labyrinth_func_tools2 as LFT2
+from builder.utils_labyrinth import generate_complementary_sequence
+import builder.parse_or_write as PARSE
 
 """ Initialise the molecules (nucleoside or linker) as json objects. These objects are used to parse the data of the nucleosides of interest """
 
@@ -121,14 +121,14 @@ class PdbInstance():
         """  """
 
         if strandType == "lead" :
-            self.AtomName = terminal_atomnames[0] + LFT2.return_PDB_AtomNames_or_ElementSymbol(nucleotideSequence, "Atoms") + terminal_atomnames[1]
+            self.AtomName = terminal_atomnames[0] + PARSE.return_PDB_AtomNames_or_ElementSymbol(nucleotideSequence, "Atoms") + terminal_atomnames[1]
         elif strandType == "complementary" :
-            self.AtomName = terminal_atomnames[2] + LFT2.return_PDB_AtomNames_or_ElementSymbol(nucleotideSequence, "Atoms") + terminal_atomnames[3]
+            self.AtomName = terminal_atomnames[2] + PARSE.return_PDB_AtomNames_or_ElementSymbol(nucleotideSequence, "Atoms") + terminal_atomnames[3]
 
 
     def SetResidueName(self, list_of_leading_sequence : list) :
         """  """
-        self.ResidueName = LFT2.return_PDB_Residuename(list_of_leading_sequence)
+        self.ResidueName = PARSE.return_PDB_Residuename(list_of_leading_sequence)
 
 
     def SetChainLetter(self, letter : str):
@@ -139,9 +139,9 @@ class PdbInstance():
     def SetSequenceNumber(self, nucleotide_sequence : list, strandType : str) :
         """  """
         if strandType == "lead" :
-            self.SequenceNumber = LFT2.return_PDB_Sequence(nucleotide_sequence)
+            self.SequenceNumber = PARSE.return_PDB_Sequence(nucleotide_sequence)
         if strandType == "complementary" :
-            self.SequenceNumber = LFT2.return_PDB_Sequence(nucleotide_sequence, len(nucleotide_sequence))
+            self.SequenceNumber = PARSE.return_PDB_Sequence(nucleotide_sequence, len(nucleotide_sequence))
 
 
 
@@ -162,4 +162,4 @@ class PdbInstance():
 
     def SetElementSymbols(self, nucleotideSequence : list) :
         """  """
-        self.ElementSymbol = ["H"] + LFT2.return_PDB_AtomNames_or_ElementSymbol(nucleotideSequence, "Symbol") + ["H"]
+        self.ElementSymbol = ["H"] + PARSE.return_PDB_AtomNames_or_ElementSymbol(nucleotideSequence, "Symbol") + ["H"]
