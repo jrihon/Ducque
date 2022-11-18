@@ -6,12 +6,6 @@
 **A Software for the purpose of building native and synthetic nucleic acid duplexes.**
     
 
-Software created and written by Doctorandus Rihon, Jérôme
-
-Supervisor &emsp;&nbsp;&nbsp;prof. dr. Eveline Lescrinier <br />
-Co-promotors &nbsp;prof. dr. Vitor Bernardes Pinheiro<br />
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;    prof. dr. Matheus Froeyen</br>
-
 Ducque stands for :</br>
 **D** Acronyms</br>
 **U** Are</br>
@@ -218,6 +212,10 @@ Jérôme Rihon ([@jrihon](https://www.github.com/jrihon) )
 
   
 ## Acknowledgements
+Supervisor &emsp;&nbsp;&nbsp;prof. dr. Eveline Lescrinier <br />
+Co-promotors &nbsp;prof. dr. Vitor Bernardes Pinheiro<br />
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;    prof. dr. Matheus Froeyen</br>
+
 dr. Rinaldo Wander Montalvao for his guidance on the fundamentals of linear algebra.<br />
 dr. Charles-Alexandre Mattelaer for his guidance on Quantum Mechanics and without his <br />
 &emsp;experimental work, Ducque could have never been conceived.
