@@ -128,7 +128,7 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[Lis
     """ sequence list is the given input.
         complement will specify what the complementary strand will look like. choices between homo - DNA - RNA """
 
-    from .. import process_CLI_inputs
+    import process_CLI_inputs
     complementary_dictDNA = { "A" : "T", "T" : "A", "G" : "C", "C" : "G", "U" : "A" }
     complementary_dictRNA = { "A" : "U", "T" : "A", "G" : "C", "C" : "G", "U" : "A" }
 
@@ -302,7 +302,7 @@ def assert_starting_bases_of_complementary_strand(compl1_base_confs : list, comp
     index_lead -= size_of_lead_base2
 
     # Parse the index of the values we want. compl1 is the atom that is being attached to the linker of the previous nucleotide. compl2 is the last atom in the backbone of the linker.
-    APL1 = CONSTANTS.Atom_Parsing_List(compl2_base, compl2_linker, compl1_base)
+    APL1 = PARSE.Atom_Parsing_List(compl2_base, compl2_linker, compl1_base)
 
     _idxDistCompl1 = PARSE.retrieve_atom_index(compl1_base, APL1[3])
     _idxDistCompl2 = PARSE.retrieve_atom_index(compl2_linker, APL1[2]) + compl1_base.mol_length # Add object.mol_length because we parse from a single array that is a nucleoside

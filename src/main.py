@@ -41,7 +41,7 @@ def main():
             help="Input the *.pdb of the nucleic acid you want to convert to *.json.\n")
 
     options.add_argument("--randomise", type=argparse.FileType("r"),
-            help="Given a set of parameters, write out a random sequence that can be prompted to --Ducque.")
+            help="Given a set of parameters, write out a random sequence that can be prompted to --build.")
 
     options.add_argument("--xyz_pdb", type=argparse.FileType("r"),
             help="Convert the inputted *.xyz file to a properly formatted *.pdb file.")
@@ -77,7 +77,7 @@ def main():
     # Try and see if any of the options are used together. 
     # Ducque will not allow this to happen for the reason that I don't feel like complicating stuff too much.
     try:
-        if arguments.Ducque and arguments.transmute:
+        if arguments.build and arguments.transmute:
             raise process_CLI_inputs.InputExclusivity
 
     except process_CLI_inputs.InputExclusivity:
@@ -92,7 +92,7 @@ def main():
 #    print(explanation)
 
     # Build nucleic acid duplex
-    if arguments.Ducque:
+    if arguments.build:
         builder.Architecture(NUCLEIC_ACID_LIST, COMPLEMENT, OUTFILE)
 
         print(f"                         Time spent: %.5f seconds." % (time.time() - t0))

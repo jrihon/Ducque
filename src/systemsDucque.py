@@ -14,7 +14,9 @@ def version_checker():
 
 def return_DUCQUEHOME():
     """ Return the home directory of Ducque """
-    DUCQUEHOME = os.path.dirname(os.path.realpath(__file__)) + "/"
+    DUCQUEHOME = os.path.dirname(
+                        os.path.dirname(os.path.realpath(__file__))     #retrieve path of called module
+                                ) + "/"
 
     return DUCQUEHOME
 

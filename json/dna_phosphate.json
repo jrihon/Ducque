@@ -7,7 +7,7 @@
     },
     "identity": "[\"Phosphate\", \"DNA\"]",
     "angles": {
-        "dihedrals": "{\"OP2_dihedral\": -155.047, \"OP1_dihedral\": 76.677}",
+        "dihedrals": "{\"dihedral_2\": -155.047, \"dihedral_1\": 76.677}",
         "bond_angles": "{\"OPO\": 109.77}"
     }
 }

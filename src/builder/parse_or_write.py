@@ -220,7 +220,7 @@ def return_chemistrycode(identifier : str) -> str:
 
 
 ##-- FUNCTIONS USED TO FILIB IN THE COLUMNS OF THE PDB FILE TO-BE-WRITTEN
-def return_PDB_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : str):
+def return_PDB_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : str) -> list:
     """ Loads in the atom names from the json files
     The identifier is either the string "Atoms" or the string "ElementSymbol", which will parse the list of interest """
 
@@ -259,7 +259,7 @@ def return_PDB_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : 
 
             atom_list = atom_list + tmp_atomlist
 
-#            return atom_list
+            return atom_list
 
         if not i == 0 and not (i+1) == len(list_of_sequence):
             # since this is not the last one or the first one, just carry on as usual
@@ -352,7 +352,7 @@ def return_PDB_Sequence(list_of_sequence : list, start_of_sequence : int = 0) ->
             sequence_array = np.concatenate((sequence_array, tmp_seqarray), axis=None)
 
 
-def return_PDB_Residuename(list_of_sequence : list):
+def return_PDB_Residuename(list_of_sequence : list) -> list:
 
     # Initialise an empty array
     resname_list = []

@@ -6,7 +6,7 @@
 **A Software for the purpose of building native and synthetic nucleic acid duplexes.**
     
 
-Ducque stands for :</br>
+Ducque (phonetically `IPA : /dʌk/`) stands for :</br>
 **D** Acronyms</br>
 **U** Are</br>
 **C** Rather</br>
