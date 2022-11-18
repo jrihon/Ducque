@@ -6,31 +6,27 @@
 **A Software for the purpose of building native and synthetic nucleic acid duplexes.**
     
 
-#### All rights reserved to the Laboratory of Medicinal Chemistry @Rega Institute of Medical Research, Herestraat 49, 3000 Leuven, Belgium. Katholieke Universiteit Leuven (KUL).
 Software created and written by Doctorandus Rihon, Jérôme
 
 Supervisor &emsp;&nbsp;&nbsp;prof. dr. Eveline Lescrinier <br />
 Co-promotors &nbsp;prof. dr. Vitor Bernardes Pinheiro<br />
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;    prof. dr. Matheus Froeyen</br>
 
-Acknowledgement:<br />
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp; dr. Rinaldo Wander Montalvao for his guidance on the fundamentals of linear algebra.<br />
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp; dr. Charles-Alexandre Mattelaer for his guidance on Quantum Mechanics and without his <br />
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;experimental work, Ducque could have never been conceived.
+Ducque stands for :</br>
+**D** Acronyms</br>
+**U** Are</br>
+**C** Rather</br>
+**Q** </br>
+**U** </br>
+**E** Tedious</br>
 
-
+## Documentation
 Ducque has four (4) main functions:
-- `--Ducque` : the nucleic acid builder
+- `--build` : the nucleic acid builder
 - `--transmute` : converts a given pdb file to the correct json format.
 - `--xyz_pdb` : converts a given xyz file to the proper pdb format.
 - `--randomise` : returns a randomised sequence to the user.
 
-## Authors
-
-[@jrihon](https://www.github.com/jrihon)
-
-  
-## Documentation
 ### Functions:
 - #### Build:
 
@@ -208,18 +204,23 @@ Where path/to/program is the path to where you've installed Ducque. (`$ pwd`) in
 `export PATH=$PATH:path/to/program/Ducque/bin`
 
 ### Python
-To run this project, you will need to add the libraries to your **python env**
-
-`NumPy`, `SciPy`
-#
+To run this project, you will need to add the libraries to your **python env** : `NumPy`, `SciPy`
+#### Installation (conda or pip)
 `$ pip install numpy` | `$ conda install -c numpy `
 
 `$ pip install scipy` | `$ conda install -c scipy `
-#
-Ducque also employs `sys`, `os` and `json`. These are built-in libraries, so no need to install these additionally.
-The other python scripts are accompagnied when installing **Ducque**.
+</br>
+</br>
+Ducque also employs `sys`, `os`, `tkinter` and `json`. These are built-in libraries, so no need to install these additionally.
+  
+## Authors
+Jérôme Rihon ([@jrihon](https://www.github.com/jrihon) )
+
   
 ## Acknowledgements
-This README.md has been written with the help of [readme.so](https://readme.so) and [iamcco/markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim)
+dr. Rinaldo Wander Montalvao for his guidance on the fundamentals of linear algebra.<br />
+dr. Charles-Alexandre Mattelaer for his guidance on Quantum Mechanics and without his <br />
+&emsp;experimental work, Ducque could have never been conceived.
 
+**All rights reserved to the Laboratory of Medicinal Chemistry Rega Institute of Medical Research Herestraat 49, 3000 Leuven, Belgium. Katholieke Universiteit Leuven (KUL).**
 
