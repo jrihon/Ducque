@@ -2,8 +2,8 @@ import sys
 import json
 from typing import Union
 
-import sysDaedalus
-import utils_transmute as UT
+import systemsDucque
+import transmute.utils_transmute as UT
 
 
 
@@ -98,11 +98,11 @@ def Transmutation(pdb_fname, nucleicAcidChemistry : str, moietyType : str, dihed
     # The json dump() method always requires us to dump it to a file in the current directory
     _fname = nucleicAcid.get_output_name(nucleicAcidChemistry, moietyType, conformation)
 
-    # Get Daedalus home
-    DAEDALUSHOME = sysDaedalus.return_DAEDALUS_home()
+    # Get Ducque home
+    DUCQUEHOME = systemsDucque.return_DUCQUEHOME()
 
-    # Write the inputfile to the Daedalus home directory
-    with open(DAEDALUSHOME + "json/" + _fname + ".json", "w") as filejson:
+    # Write the inputfile to the Ducque home directory
+    with open(DUCQUEHOME + "json/" + _fname + ".json", "w") as filejson:
         json.dump(molecule, filejson, indent=4)
 
 

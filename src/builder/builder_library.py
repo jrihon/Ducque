@@ -1,9 +1,9 @@
-import sysDaedalus
+import systemsDucque
 
 """ This script will function as a repository for all the atoms, angles and dihedrals that need to be parsed to build up the nucleic acid duplex"""
 
 # LEAVE THE `DH` VARIABLE ALONE
-DH = sysDaedalus.return_DAEDALUS_home()
+DH = systemsDucque.return_DUCQUEHOME()
 
 
 

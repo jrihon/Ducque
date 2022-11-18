@@ -2,11 +2,11 @@ import argparse
 import sys
 import time
 
-import builder              # Build the duplex
-import transmute            # Convert a given pdb file to a custom json format
-import randomise            # Output a random sequence
-import process_CLI_inputs   # Exceptions and custom errors
-import sysDaedalus          # Retrieves system information from the machine
+from builder import builder             # Build the duplex
+from transmute import transmute         # Convert a given pdb file to a custom json format
+from randomise import randomise         # Output a random sequence
+import process_CLI_inputs               # Exceptions and custom errors
+import systemsDucque                    # Retrieves system information from the machine
 
 def main():
     explanation = """
@@ -27,7 +27,7 @@ def main():
     t0 = time.time()
 
     # Check if the version of python is at least python3.6
-    sysDaedalus.version_checker()
+    systemsDucque.version_checker()
 
     ## -------------------------------------------------- P A R S E  A R G U M E N T S --------------------------------------- ##
     options = argparse.ArgumentParser(description=explanation,
@@ -41,20 +41,20 @@ def main():
             help="Input the *.pdb of the nucleic acid you want to convert to *.json.\n")
 
     options.add_argument("--randomise", type=argparse.FileType("r"),
-            help="Given a set of parameters, write out a random sequence that can be prompted to --Daedalus.")
+            help="Given a set of parameters, write out a random sequence that can be prompted to --Ducque.")
 
     options.add_argument("--xyz_pdb", type=argparse.FileType("r"),
             help="Convert the inputted *.xyz file to a properly formatted *.pdb file.")
 
     options.add_argument("--help", action="help",
-            help="Prompt Daedalus's help message to appear")
+            help="Prompt Ducque's help message to appear")
 
     arguments = options.parse_args()
 
 
     if len(sys.argv) == 1:
         options.print_help()
-        sysDaedalus.exit_Daedalus()
+        systemsDucque.exit_Ducque()
 
     else:
         # If we call the nucleic acid builder
@@ -75,24 +75,24 @@ def main():
 
 
     # Try and see if any of the options are used together. 
-    # Daedalus will not allow this to happen for the reason that I don't feel like complicating stuff too much.
+    # Ducque will not allow this to happen for the reason that I don't feel like complicating stuff too much.
     try:
-        if arguments.Daedalus and arguments.transmute:
+        if arguments.Ducque and arguments.transmute:
             raise process_CLI_inputs.InputExclusivity
 
     except process_CLI_inputs.InputExclusivity:
-        print("InputExclusivity: These flags are mutually exclusive; --transmute --Daedalus ")
-        sysDaedalus.exit_Daedalus()
+        print("InputExclusivity: These flags are mutually exclusive; --transmute --build ")
+        systemsDucque.exit_Ducque()
 
 
     ## -------------------------------------------------- M A I N -------------------------------------------------- ##
 
 
-    # Print the Daedalus prompt
+    # Print the Ducque prompt
 #    print(explanation)
 
     # Build nucleic acid duplex
-    if arguments.Daedalus:
+    if arguments.Ducque:
         builder.Architecture(NUCLEIC_ACID_LIST, COMPLEMENT, OUTFILE)
 
         print(f"                         Time spent: %.5f seconds." % (time.time() - t0))

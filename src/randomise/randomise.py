@@ -1,6 +1,6 @@
 from typing import Union
 
-import utils_randomise as UR
+import randomise.utils_randomise as UR
 
 
 """ This script is used to randomise an outputted sequence based on a given input of parameters. """
@@ -15,7 +15,7 @@ def write_sequence_to_file(outFile : str, outputSequence : str, complement : str
 
 
 def randomiser(chemistry : Union[str, list], lengthSequence : int, sequence : list, complementSequence : list, outFile : str):
-    """ the 'MAIN' function in the Daedalus.randomise script """
+    """ the 'MAIN' function in the Ducque.randomise script """
 
     # RANDOMISE A SEQUENCE FOR A SINGLE CHEMISTRY
     if isinstance(chemistry, str) and lengthSequence:

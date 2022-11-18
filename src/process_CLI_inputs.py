@@ -1,17 +1,17 @@
-from builder import library_labyrinth as LIB
-import sysDaedalus
+from builder import builder_library as LIB
+import systemsDucque
 import os
 
 """ When the user prompts the wrong values or flags, this python script intercepts most errors that happen at the start """
 
 class InputExclusivity(Exception):
-    Except = " These flags are mutually exclusive; --transmute     --Daedalus "
+    Except = " These flags are mutually exclusive; --transmute     --build "
 
 
 
 
 def print_divide_between_command_and_output():
-    """ This function exists solely to split the Daedalus call command and its output."""
+    """ This function exists solely to split the Ducque call command and its output."""
     print("-----------------------------------------------------------")
 
 
@@ -53,20 +53,20 @@ def check_if_chemistry_is_valid(chemistry : str) -> str:
         NUC_ID = nucleoside_dict[chemistry.upper()]
     except KeyError:
         print(f"The following key does not exist in the dictionary : {chemistry.upper()}.\nPlease revise your inputs.\n")
-        sysDaedalus.exit_Daedalus()
+        systemsDucque.exit_Ducque()
 
     return NUC_ID
 
 
 def build(BUILDINPUT, options):
     print("-----------------------------------------------------------")
-    print("Daedalus - Nucleic Acid Architecture initiated! Building sequence ...\n")
+    print("Ducque - Nucleic Acid Architecture initiated! Building sequence ...\n")
 
     list_of_valid_flags = ["--sequence", "--complement", "--out"]
     # Read the input file and create a list object of the sequence. Removes any whitespace.
-    fileDaedalus = remove_blank_lines(list(map(lambda x: x.strip(), BUILDINPUT.readlines())))
+    fileDucque = remove_blank_lines(list(map(lambda x: x.strip(), BUILDINPUT.readlines())))
 
-    for argument in fileDaedalus:
+    for argument in fileDucque:
         arg = argument.split()
 
         # Check if flags are valid. If a given flag is not a valid one, shut it down
@@ -74,7 +74,6 @@ def build(BUILDINPUT, options):
             print_divide_between_command_and_output()
             print(f"\n\nThe following flag is invalid : {arg[0]}. Please check your input file.\n\n\n")
             options.print_help()
-#            sysDaedalus.exit_Daedalus()
 
         if arg[0] == "--sequence":
             nucleicAcidList = list(map(lambda x: x.strip(","), arg[1:]))
@@ -87,7 +86,7 @@ def build(BUILDINPUT, options):
             except:
                 print_divide_between_command_and_output()
                 print("You have forgotten to include an argument for the --complement flag! Please add this to your input file.")
-                sysDaedalus.exit_Daedalus()
+                systemsDucque.exit_Ducque()
 
             try:
                 arg[2]
@@ -107,21 +106,18 @@ def build(BUILDINPUT, options):
         list_of_valid_flags.remove("--out")
 
     # Check if amount of inputs are valid
-    if len(fileDaedalus) != len(list_of_valid_flags):
+    if len(fileDucque) != len(list_of_valid_flags):
         print_divide_between_command_and_output()
         print("Only two/three arguments are required, please check our input file.\n`--out` is an optional flag.\n\n\n")
-#        options.print_help()
-        sysDaedalus.exit_Daedalus()
+        systemsDucque.exit_Ducque()
 
     # If a given nucleotide is not in the list of valid nucleotides, stop the program
     if not check_if_nucleotides_are_valid(nucleicAcidList):
-        #options.print_help()
-        sysDaedalus.exit_Daedalus()
+        systemsDucque.exit_Ducque()
 
     if isinstance(complement, list) and len(complement) > 2 :
         if not check_if_nucleotides_are_valid(complement):
-            #options.print_help()
-            sysDaedalus.exit_Daedalus()
+            systemsDucque.exit_Ducque()
 
     return nucleicAcidList, complement, outFile
 
@@ -137,7 +133,6 @@ def transmute(TRANSMUTEINPUT, options):
         print_divide_between_command_and_output()
         print("Only five/six arguments are required, please check your input file.\n`--conformation` is an optional flag.\n\n\n")
         options.print_help()
-#        sysDaedalus.exit_Daedalus()
 
     for argument in fileTransmute:
         arg = argument.split()
@@ -146,7 +141,7 @@ def transmute(TRANSMUTEINPUT, options):
             print_divide_between_command_and_output()
             print(f"\n\nThe following flag is invalid : {arg[0]}. Please check your input file.\n\n\n")
             #options.print_help()
-            sysDaedalus.exit_Daedalus()
+            systemsDucque.exit_Ducque()
 
         # Save the prompted arguments according to the respective flags
         if arg[0] == "--pdb":
@@ -188,7 +183,6 @@ def randomise(RANDOMISEINPUT, options):
         print_divide_between_command_and_output()
         print("Only three arguments are required at one time, please check our input file.\n\n\n")
         options.print_help()
-#        sysDaedalus.exit_Daedalus()
 
     # Check if flags are valid
     for argument in fileRandomise:
@@ -198,7 +192,7 @@ def randomise(RANDOMISEINPUT, options):
             print_divide_between_command_and_output()
             print(f"\n\nThe following flag is invalid : {arg[0]}. Please check your input file.\n\n\n")
             #options.print_help()
-            sysDaedalus.exit_Daedalus()
+            systemsDucque.exit_Ducque()
 
         # Save the prompted arguments according to their respective flags
         if arg[0] == "--chemistry":
@@ -221,7 +215,7 @@ def randomise(RANDOMISEINPUT, options):
             if len(arg) > 2:
                 complement =  list(map(lambda x: x.strip(","), arg[1:]))
                 if not check_if_nucleotides_are_valid(complement):
-                    sysDaedalus.exit_Daedalus()
+                    systemsDucque.exit_Ducque()
                 continue
 
             # Check if the complement flag contains either the 'homo' flag or a valid chemistry.
@@ -229,7 +223,7 @@ def randomise(RANDOMISEINPUT, options):
             compl_test_against = ["homo"] + list(nucleoside_dict.keys())
             if complement not in compl_test_against:
                 print("the input of '--complement' is not a valid list and not one of the possible inputs. Please revise your input for this flag.")
-                sysDaedalus.exit_Daedalus()
+                systemsDucque.exit_Ducque()
 
     # If the variable chemistry has not been defined, then
     try:
@@ -238,7 +232,7 @@ def randomise(RANDOMISEINPUT, options):
         print_divide_between_command_and_output()
         print("No chemistry type was prompted! Revise your input file. \n")
         #options.print_help()
-        sysDaedalus.exit_Daedalus()
+        systemsDucque.exit_Ducque()
 
     outFile = RANDOMISEINPUT.name.split(".")[0]
     return chemistry, length_sequence, sequence, complement, outFile
@@ -254,7 +248,6 @@ def xyz_to_pdb(CONVERSIONINPUT, options):
         print_divide_between_command_and_output()
         print("Only three arguments are required at one time. Please check your input file. \n\n\n ")
         options.print_help()
-#        sysDaedalus.exit_Daedalus()
 
     # Check if flags are valid
     for argument in fileConversion:
@@ -264,7 +257,7 @@ def xyz_to_pdb(CONVERSIONINPUT, options):
             print_divide_between_command_and_output()
             print(f"\n\nThe following flag is invalid : {arg[0]}. Please check your input file.\n\n\n")
             #options.print_help()
-            sysDaedalus.exit_Daedalus()
+            systemsDucque.exit_Ducque()
 
         # Save the prompted arguments according to their respective flags
         if arg[0] == "--xyz":
@@ -274,7 +267,7 @@ def xyz_to_pdb(CONVERSIONINPUT, options):
             except FileNotFoundError:
                 print_divide_between_command_and_output()
                 print(f"File {xyz_fname} was not found. Please revise either its name or its location on your system.\n")
-                sysDaedalus.exit_Daedalus()
+                systemsDucque.exit_Ducque()
 
         if arg[0] == "--atomID":
             atomID = arg[1]
@@ -282,7 +275,7 @@ def xyz_to_pdb(CONVERSIONINPUT, options):
                 print_divide_between_command_and_output()
                 print("The argument '--atomID' requires up to three characters in its name.\n"
                         "Check your input of the atom identifier.\n")
-                sysDaedalus.exit_Daedalus()
+                systemsDucque.exit_Ducque()
 
         if arg[0] == "--atomname_list":
             atomname_list = arg[1:]

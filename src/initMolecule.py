@@ -3,7 +3,7 @@ from typing import Union, List
 from numpy import pi, asarray, arange, ndarray
 
 
-from builder.utils_labyrinth import generate_complementary_sequence
+from builder.utils_builder import generate_complementary_sequence
 import builder.parse_or_write as PARSE
 
 """ Initialise the molecules (nucleoside or linker) as json objects. These objects are used to parse the data of the nucleosides of interest """
@@ -64,10 +64,10 @@ class NucleotideSequence():
 
 
 class PdbInstance():
-    """ A class created to remove the slow Pandas library from the Daedalus software
-        Daedalus used to have the Pandas library because it made it easy to code writing out a *.pdb file.
+    """ A class created to remove the slow Pandas library from the Ducque software
+        Ducque used to have the Pandas library because it made it easy to code writing out a *.pdb file.
 
-        I want to get rid of it to improve the speed of Daedalus itself. Instantiating a dataframe and adding to the columns significantly increases the uptime.
+        I want to get rid of it to improve the speed of Ducque itself. Instantiating a dataframe and adding to the columns significantly increases the uptime.
 
         Reads the name of the file and converts the entire file into a workable dataframe.
         By convention of the columns, below, the dataframe is set up like this.

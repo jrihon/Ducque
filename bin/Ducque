@@ -1,0 +1,8 @@
+#!/bin/sh
+
+export DUCQUEHOME="$(dirname "$(cd "$(dirname "$0")" && pwd)")"     # returns parent directory of the Ducque program
+
+export PYTHONPATH=PYTHONPATH:"$DUCQUEHOME/src"
+                                                                    # only way to make importing modules easier in python ...
+#echo $DUCQUEHOME
+python3 $DUCQUEHOME/src/main.py "$@"

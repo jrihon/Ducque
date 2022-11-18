@@ -3,14 +3,14 @@ from typing import Union
 
 import initMolecule
 
-import utils_labyrinth as UL
-import mathematics as MATH
-import parse_or_write as PARSE
-import labyrinth_constants as CONSTANTS
+import builder.utils_builder as UB
+import builder.mathematics as MATH
+import builder.parse_or_write as PARSE
+import builder.builder_constants as CONSTANTS
 
 
 
-""" This file is used to refactor some of the code from labyrinth_func.py, to make a more legible. """
+""" This file is used to refactor some of the code from utils_builder.py, to make a more legible. """
 
 def retrieve_index_of_best_conformation(stored_bb_distances, stored_bb_bools):
 
@@ -74,7 +74,7 @@ def return_position_for_complementary_base(angle : float, dihedral : float, stra
     v2 = strand_array[atom_list_id[2]]
 
     # Generate a vector of interest, here in the context of positioning the complementary nucleoside's base
-    v_position_for_complement = UL.generate_vector_of_interest(angle, dihedral, [v2, v1, v0])
+    v_position_for_complement = UB.generate_vector_of_interest(angle, dihedral, [v2, v1, v0])
     return MATH.return_normalized(v_position_for_complement) * vector_size
 
 
@@ -109,7 +109,7 @@ def position_next_nucleoside(next_nucleoside, prev_nucleoside, prev_linker, lead
     alpha_dihr = next_nucleoside.get_dihedral(DPL[0])
 
     ## We position the nextnuc by the position of O3'
-    single_vector1 = UL.generate_vector_of_interest(alpha_angle, alpha_dihr, [v2, v1, v0])
+    single_vector1 = UB.generate_vector_of_interest(alpha_angle, alpha_dihr, [v2, v1, v0])
     linker_nuc_distance = 1.6
     # Add single_vector1 to v2, so that we define the location of ATP[3]
     v3 = MATH.move_vector_to_loc(MATH.return_normalized(single_vector1) * linker_nuc_distance, v2)
@@ -137,7 +137,7 @@ def position_next_nucleoside(next_nucleoside, prev_nucleoside, prev_linker, lead
             angle_N = next_nucleoside.get_angle(AngPL[i])
             dihedral_N = next_nucleoside.get_dihedral(DPL[i])
 
-            single_vector_N = UL.generate_vector_of_interest(angle_N, dihedral_N, [vC, vB, vA])
+            single_vector_N = UB.generate_vector_of_interest(angle_N, dihedral_N, [vC, vB, vA])
 
             # Retrieve the next atom vector in the sequence, required for rotation
             id_vD = PARSE.retrieve_atom_index(next_nucleoside, APL[i + 3])
@@ -170,7 +170,7 @@ def position_next_nucleoside(next_nucleoside, prev_nucleoside, prev_linker, lead
         angle_N = next_nucleoside.get_angle(AngPL[i])
         dihedral_N = next_nucleoside.get_dihedral(DPL[i])
 
-        single_vector_N = UL.generate_vector_of_interest(angle_N, dihedral_N, [vC, vB, vA])
+        single_vector_N = UB.generate_vector_of_interest(angle_N, dihedral_N, [vC, vB, vA])
 
         # Retrieve the appropriate quaternion for the rotation 
         id_vD = PARSE.retrieve_atom_index(next_nucleoside, APL[i + 3])
@@ -314,7 +314,7 @@ def assess_complX_id(compl1_id : int, compl2_id : int) -> bool :
     """ If the defaulted values of the the variables remain as `-1`, that means the function was not passed a different value.
         This means that the variable complX_id was never assigned a proper index value for the array to begin with. This should not happen.
 
-        Instead, we short circuit the Daedalus program and ask the user to input different input parameters of the dihedrals, to see if the fits better."""
+        Instead, we short circuit the Ducque program and ask the user to input different input parameters of the dihedrals, to see if the fits better."""
 
     try :
         if compl1_id == -1 or compl2_id == -1 :
@@ -857,8 +857,8 @@ def capping_retrieve_atomarrays(leading_array : np.ndarray, list_of_leading_sequ
             c2 = complementary_array[compl_atom_indexes[-1]]
 
             # Now calculate the would be dihedral and retrieve the H position in xyz
-            vector_lead = UL.generate_vector_of_interest(angle, dihedral, [l2, l1, l0])
-            vector_compl = UL.generate_vector_of_interest(angle, dihedral, [c2, c1, c0])
+            vector_lead = UB.generate_vector_of_interest(angle, dihedral, [l2, l1, l0])
+            vector_compl = UB.generate_vector_of_interest(angle, dihedral, [c2, c1, c0])
 
             # Correct the length, add the vector to the array and store it in H_vectors
             H_vectors[0] = (MATH.return_normalized(vector_lead) * 1.2) + l2
@@ -886,8 +886,8 @@ def capping_retrieve_atomarrays(leading_array : np.ndarray, list_of_leading_sequ
             c2 = complementary_array[compl_atom_indexes[2]]
 
             # Now calculate the would be dihedral and retrieve the H position in xyz
-            vector_lead = UL.generate_vector_of_interest(angle, dihedral, [l0, l1, l2])
-            vector_compl = UL.generate_vector_of_interest(angle, dihedral, [c0, c1, c2])
+            vector_lead = UB.generate_vector_of_interest(angle, dihedral, [l0, l1, l2])
+            vector_compl = UB.generate_vector_of_interest(angle, dihedral, [c0, c1, c2])
 
             # Correct the length, add the vector to the array and store it in H_vectors
             H_vectors[1] = (MATH.return_normalized(vector_lead) * 1.2) + l0

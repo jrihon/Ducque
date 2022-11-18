@@ -4,17 +4,17 @@ import os
 import sys
 from typing import Union, Tuple
 
-from library_labyrinth import backbone_codex, linker_codex
+from builder.builder_library import backbone_codex, linker_codex
 
-import library_labyrinth as LIB    # Parse the nucleic acid dictionaries
-from sysDaedalus import return_DAEDALUS_home
-""" This scripts makes data parsing much easier and makes labyrinth.py much more organised. """
+import builder.builder_library as LIB    # Parse the nucleic acid dictionaries
+from systemsDucque import return_DUCQUEHOME
+""" This scripts makes data parsing much easier and makes builder.py much more organised. """
 
 CODEX = LIB.codex_acidum_nucleicum
 
 
 ##-- Parse atoms from the queried JSON object files
-def Atom_Parsing_List(prevnuc, link, nextnuc = None) -> list[str]:
+def Atom_Parsing_List(prevnuc, link, nextnuc = None):
     """ Retrieves the atoms that correspond to the correct index of the array, with which we calculate with.
     All variables are json object
 
@@ -58,7 +58,7 @@ def retrieve_atom_index(json_object, atom : str, index_counter : int = 0) -> int
     return json_object.atom_list.index(atom) + index_counter
 
 
-def retrieve_atom_index_MULTIPLE(json_object, atoms : list, index_counter : int = 0) -> list[int] :
+def retrieve_atom_index_MULTIPLE(json_object, atoms : list, index_counter : int = 0) :
     """ Retrieves the index in the json_object.array of the atom of interest
         This integer will be used to retrieve the vector of the atom of interest """
     array_of_indexes = np.zeros(len(atoms), dtype=int)
@@ -162,15 +162,15 @@ def assess_possible_complementary_base(chemistry : str, leadingstrand_base : str
 
 
 def return_chemistrycode(identifier : str) -> str:
-    """ Go through the currently available files in the /Daedalus/json/ directory and read them in order to find the prompted identifier variable
+    """ Go through the currently available files in the /Ducque/json/ directory and read them in order to find the prompted identifier variable
         in the 'identity' list.
 
         Then parse the correct abbreviated chemistry identifier.
         Example ; find 'Deoxy Ribonucleic Acid' --> returns 'd'     """
 #    from itertools import chain
 
-    # Get the directory from the $HOME of Daedalus (where it is installed)
-    dH = return_DAEDALUS_home()
+    # Get the directory from the $HOME of Ducque (where it is installed)
+    dH = return_DUCQUEHOME()
     dirJSON = os.listdir(dH + 'json/')
     COMPL_CODEX = LIB.conformations_codex
 #    KEYS_LIST = list(chain(*COMPL_CODEX.values())) # Flatten a possibly nested list
@@ -220,7 +220,7 @@ def return_chemistrycode(identifier : str) -> str:
 
 
 ##-- FUNCTIONS USED TO FILIB IN THE COLUMNS OF THE PDB FILE TO-BE-WRITTEN
-def return_PDB_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : str) -> list[str]:
+def return_PDB_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : str):
     """ Loads in the atom names from the json files
     The identifier is either the string "Atoms" or the string "ElementSymbol", which will parse the list of interest """
 
@@ -352,7 +352,7 @@ def return_PDB_Sequence(list_of_sequence : list, start_of_sequence : int = 0) ->
             sequence_array = np.concatenate((sequence_array, tmp_seqarray), axis=None)
 
 
-def return_PDB_Residuename(list_of_sequence : list) -> list[str]:
+def return_PDB_Residuename(list_of_sequence : list):
 
     # Initialise an empty array
     resname_list = []

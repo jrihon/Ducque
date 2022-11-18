@@ -2,8 +2,8 @@ import sys, os
 import numpy as np
 from typing import Union
 
-import sysDaedalus
-import transmute_constants as TC
+import systemsDucque
+import transmute.transmute_constants as TC
 
 class TransmuteToJson:
     """ This class exists to convert any *.pdb type format to an appriopriate *.json type format.
@@ -14,18 +14,18 @@ class TransmuteToJson:
         --chemistry `residue name`
         --conformation `pyranose or furanose or phi-psi conformation`
         --moietyType `nucleoside / linker`
-        --bondangles `see Daedalus manual`
-        --dihedrals `see Daedalus manual`
+        --bondangles `see Ducque manual`
+        --dihedrals `see Ducque manual`
 
         The other flags are easily parsed from the input file.  """
 
 
     def __init__(self, pdbfile):
         """ Initialise the object and create object properties"""
-        DAEDALUSHOME = sysDaedalus.return_DAEDALUS_home()
+        DUCQUEHOME = systemsDucque.return_DUCQUEHOME()
 
         self.rootName = pdbfile.split('.')[0]
-        self.fileName = DAEDALUSHOME + "/" + self.rootName + ".pdb"
+        self.fileName = DUCQUEHOME + "/" + self.rootName + ".pdb"
         self.array = np.array([])
         self.atomName = list()
         self.residueName = list()
@@ -253,11 +253,11 @@ class TransmuteToJson:
 
 
 class TransmuteToPdb:
-    """ This class is used to convert the *.xyz files from ORCA to *.pdb files. Later on, these *.pdb files are prompted into Daedalus to convert to *.json files.
+    """ This class is used to convert the *.xyz files from ORCA to *.pdb files. Later on, these *.pdb files are prompted into Ducque to convert to *.json files.
 
         --xyz `*.xyz`
         --atomID `Residue Name`
-        --atomname_list `see Daedalus manual`               """
+        --atomname_list `see Ducque manual`               """
 
 
     def __init__(self, xyzfile):

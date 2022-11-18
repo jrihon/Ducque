@@ -1,4 +1,4 @@
-# Daedalus
+# Ducque
 
 <p align='center'> There are no mistakes, only happy little accidents. </p>
 <br />
@@ -16,11 +16,11 @@ Co-promotors &nbsp;prof. dr. Vitor Bernardes Pinheiro<br />
 Acknowledgement:<br />
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp; dr. Rinaldo Wander Montalvao for his guidance on the fundamentals of linear algebra.<br />
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp; dr. Charles-Alexandre Mattelaer for his guidance on Quantum Mechanics and without his <br />
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;experimental work, Daedalus could have never been conceived.
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;experimental work, Ducque could have never been conceived.
 
 
-Daedalus has four (4) main functions:
-- `--Daedalus` : the nucleic acid builder
+Ducque has four (4) main functions:
+- `--Ducque` : the nucleic acid builder
 - `--transmute` : converts a given pdb file to the correct json format.
 - `--xyz_pdb` : converts a given xyz file to the proper pdb format.
 - `--randomise` : returns a randomised sequence to the user.
@@ -32,12 +32,12 @@ Daedalus has four (4) main functions:
   
 ## Documentation
 ### Functions:
-- #### Daedalus:
+- #### Build:
 
-        $ python Daedalus --Daedalus INPUTFILE
+        $ Ducque --build INPUTFILE
 
         The inputfile is read in and the sequence is built accordingly.
-        At any given time, there are two (2) flags in total that should be involved in the Daedalus - Nucleic Acid Builder.
+        At any given time, there are two (2) flags in total that should be involved in the Ducque - Nucleic Acid Builder.
         
         --sequence SEQUENCE
             Only valid input in the file just a string of the required nucleotides, separated by a comma and then a space.
@@ -52,7 +52,7 @@ Daedalus has four (4) main functions:
 
 - #### Transmute:
 
-        $ python Daedalus --transmute INPUTFILE
+        $ Ducque --transmute INPUTFILE
 
         The inputfile is read in and the json file is formatted accordingly.
         There are five (5) flags total involved in the transmutation of a pdb structure to a json file
@@ -88,7 +88,7 @@ Daedalus has four (4) main functions:
 
 
 - #### XYZ_PDB:
-        $ python Daedalus --xyz_pdb INPUTFILE
+        $ Ducque --xyz_pdb INPUTFILE
         The inputfile is read, the xyz file used as an input to output a well formatted pdb.
 
         There are three (3) flags total involved in the conversion of a xyz coordinate file to a pdb structure file.
@@ -98,23 +98,23 @@ Daedalus has four (4) main functions:
 
         --atomID ATOMID
             The identifier for the molecule, typically named the 'Residue name' column. Right before the 'Chain' column. Typically a three-letter code, but can also be two or one.
-            NB : Daedalus does not allow custom nucleic acid chemistries with an atomID unequal to three!
+            NB : Ducque does not allow custom nucleic acid chemistries with an atomID unequal to three!
                 (in this example, dXA is equal to deoxy Xylose nucleic acid with an adenine base)
                 Example: --atomID dXY
 
         --atomname_list ATOMNAME_LIST
             The ordered list of atoms that belong in the 'Atom name' column in a pdb file. Typically the third column, after the atom numbers.
             The order needs to so that it follows the order of the atoms from the xyz file. 
-            Daedalus has a built-in method to check whether the order is correct by element, but the responsability is with the end-user to see everything is correct.
+            Ducque has a built-in method to check whether the order is correct by element, but the responsability is with the end-user to see everything is correct.
                 Example: --atomname_list O5', C5', H5'1, H5'2, C4' ··· , O3' 
 
 
 
 - #### Randomise:
 
-        $ python Daedalus --randomise INPUTFILE
+        $ Ducque --randomise INPUTFILE
 
-        The inputfile is read in and --Daedalus inputfile is generated.
+        The inputfile is read in and --Ducque inputfile is generated.
         At any given time, there are two (2) flags in total that should be involved in the randomisation at all time.
             Using --length and --sequence at the same time is not possible, as this would not make sense; MUTUALLY EXCLUSIVE
 
@@ -134,7 +134,7 @@ Daedalus has four (4) main functions:
 
         --complement COMPLEMENT
             This flag is added so that the --complement flag is immediately filled in and the inputfile is ready to go.
-            See the '--complement' flag of the '--Daedalus' function.
+            See the '--complement' flag of the '--Ducque' function.
 
 
         NB: Both a single (SINGLE) or multiple (LIST) chemistries can be prompted
@@ -203,9 +203,9 @@ In `labyrinth_repository.py` :
 ## Environment
 
 ### Shell
-To access the Daedalus software from anywhere on your machine, add the following line to your `~/.bashrc` .<br />
-Where path/to/program is the path to where you've installed Daedalus. (`$ pwd`) inside the Daedalus directory if you're unsure.
-`export PATH=$PATH:path/to/program/Daedalus/bin`
+To access the Ducque software from anywhere on your machine, add the following line to your `~/.bashrc` .<br />
+Where path/to/program is the path to where you've installed Ducque. (`$ pwd`) inside the Ducque directory if you're unsure.
+`export PATH=$PATH:path/to/program/Ducque/bin`
 
 ### Python
 To run this project, you will need to add the libraries to your **python env**
@@ -216,8 +216,8 @@ To run this project, you will need to add the libraries to your **python env**
 
 `$ pip install scipy` | `$ conda install -c scipy `
 #
-Daedalus also employs `sys`, `os` and `json`. These are built-in libraries, so no need to install these additionally.
-The other python scripts are accompagnied when installing **Daedalus**.
+Ducque also employs `sys`, `os` and `json`. These are built-in libraries, so no need to install these additionally.
+The other python scripts are accompagnied when installing **Ducque**.
   
 ## Acknowledgements
 This README.md has been written with the help of [readme.so](https://readme.so) and [iamcco/markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim)

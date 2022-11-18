@@ -3,7 +3,7 @@ from typing import Union
 
 import process_CLI_inputs
 from builder.parse_or_write import return_chemistrycode
-from builder.library_labyrinth import codex_acidum_nucleicum
+from builder.builder_library import codex_acidum_nucleicum
 
 CODEX = codex_acidum_nucleicum
 

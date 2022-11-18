@@ -1,9 +1,0 @@
-#!/bin/sh
-
-export DAEDALUSHOME="$(dirname "$(cd "$(dirname "$0")" && pwd)")"   # returns parent directory of the Daedaus program
-
-export PYTHONPATH=$PYTHONPATH:$DAEDALUSHOME/src/builder             # only way to make importing modules easier in python ...
-                                                                    # for some reason, only PATHing one submodule fixed all issues?
-
-#echo $DAEDALUSHOME
-python3 $DAEDALUSHOME/src/main.py "$@"
