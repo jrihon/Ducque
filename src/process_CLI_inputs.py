@@ -67,18 +67,18 @@ def build(BUILDINPUT, options):
     fileDucque = remove_blank_lines(list(map(lambda x: x.strip(), BUILDINPUT.readlines())))
 
     for argument in fileDucque:
-        arg = argument.split()
+        arg = argument.split()[0]
 
         # Check if flags are valid. If a given flag is not a valid one, shut it down
-        if not arg[0] in list_of_valid_flags:
+        if not arg in list_of_valid_flags:
             print_divide_between_command_and_output()
-            print(f"\n\nThe following flag is invalid : {arg[0]}. Please check your input file.\n\n\n")
+            print(f"\n\nThe following flag is invalid : {arg}. Please check your input file.\n\n\n")
             options.print_help()
 
-        if arg[0] == "--sequence":
+        if arg == "--sequence":
             nucleicAcidList = list(map(lambda x: x.strip(","), arg[1:]))
 
-        if arg[0] == "--complement":
+        if arg == "--complement":
             # If there is a input possibility at index 2, meaning more than one string have been inputted, then get the entire string as a list variable.
             # If there is not an input possibility at index 2, this means there is only one input after the flag available and that means it is just a string.
             try:
@@ -135,31 +135,31 @@ def transmute(TRANSMUTEINPUT, options):
         options.print_help()
 
     for argument in fileTransmute:
-        arg = argument.split()
+        arg = argument.split()[0]
         # Check if flags are valid. If a given flag is not a valid one, shut it down
-        if not arg[0] in list_of_valid_flags:
+        if not arg in list_of_valid_flags:
             print_divide_between_command_and_output()
-            print(f"\n\nThe following flag is invalid : {arg[0]}. Please check your input file.\n\n\n")
+            print(f"\n\nThe following flag is invalid : {arg}. Please check your input file.\n\n\n")
             #options.print_help()
             systemsDucque.exit_Ducque()
 
         # Save the prompted arguments according to the respective flags
-        if arg[0] == "--pdb":
+        if arg == "--pdb":
             pdb_fname = arg[1]
 
-        if arg[0] == "--chemistry":
+        if arg == "--chemistry":
             chemistry = arg[1]
 
-        if arg[0] == "--conformation":
+        if arg == "--conformation":
             conformation = arg[1]
 
-        if arg[0] == "--moiety":
+        if arg == "--moiety":
             moiety = arg[1]
 
-        if arg[0] == "--dihedrals":
+        if arg == "--dihedrals":
             dihedrals = arg[1:]
 
-        if arg[0] == "--bondangles":
+        if arg == "--bondangles":
             angles = arg[1:]
 
         # if the conformation was not prompted, since it's an optional argument
@@ -186,16 +186,16 @@ def randomise(RANDOMISEINPUT, options):
 
     # Check if flags are valid
     for argument in fileRandomise:
-        arg = argument.split()
+        arg = argument.split()[0]
         # If a given flag is not a valid one, shut it down
-        if not arg[0] in list_of_valid_flags:
+        if not arg in list_of_valid_flags:
             print_divide_between_command_and_output()
-            print(f"\n\nThe following flag is invalid : {arg[0]}. Please check your input file.\n\n\n")
+            print(f"\n\nThe following flag is invalid : {arg}. Please check your input file.\n\n\n")
             #options.print_help()
             systemsDucque.exit_Ducque()
 
         # Save the prompted arguments according to their respective flags
-        if arg[0] == "--chemistry":
+        if arg == "--chemistry":
             # If multiple chemistries are prompted
             if len(arg) > 2:
                 chemistry = arg[1:]
@@ -203,15 +203,15 @@ def randomise(RANDOMISEINPUT, options):
             elif len(arg) == 2:
                 chemistry = arg[1]
 
-        if arg[0] == "--length":
+        if arg == "--length":
             length_sequence = int(arg[1])
             sequence = None
 
-        if arg[0] == "--sequence":
+        if arg == "--sequence":
             sequence = arg[1:]
             length_sequence = 0
 
-        if arg[0] == "--complement":
+        if arg == "--complement":
             if len(arg) > 2:
                 complement =  list(map(lambda x: x.strip(","), arg[1:]))
                 if not check_if_nucleotides_are_valid(complement):
@@ -251,11 +251,11 @@ def xyz_to_pdb(CONVERSIONINPUT, options):
 
     # Check if flags are valid
     for argument in fileConversion:
-        arg = argument.split()
+        arg = argument.split()[0]
         # If a given flag is not a valid one, shut it down
-        if not arg[0] in list_of_valid_flags:
+        if not arg in list_of_valid_flags:
             print_divide_between_command_and_output()
-            print(f"\n\nThe following flag is invalid : {arg[0]}. Please check your input file.\n\n\n")
+            print(f"\n\nThe following flag is invalid : {arg}. Please check your input file.\n\n\n")
             #options.print_help()
             systemsDucque.exit_Ducque()
 
@@ -282,3 +282,13 @@ def xyz_to_pdb(CONVERSIONINPUT, options):
 
     return xyz_fname, atomID, atomname_list
 
+def gui_module(GUIINPUT, options): 
+
+    list_of_valid_flags = ["build", "transmute", "randomise", "xyz_pdb"]
+
+    if not GUIINPUT in list_of_valid_flags:
+        print_divide_between_command_and_output()
+        print(f"\n\nThe following flag is invalid : {GUIINPUT}. Please check the prompted arguments.\n\n\n")
+        systemsDucque.exit_Ducque()
+
+    return GUIINPUT

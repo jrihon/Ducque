@@ -46,6 +46,9 @@ def main():
     options.add_argument("--xyz_pdb", type=argparse.FileType("r"),
             help="Convert the inputted *.xyz file to a properly formatted *.pdb file.")
 
+    options.add_argument("--gui", type=str,
+            help="Call the Ducque's GUI to perform actions instead of using CLI.")
+
     options.add_argument("--help", action="help",
             help="Prompt Ducque's help message to appear")
 
@@ -72,6 +75,10 @@ def main():
         # If we want to convert XYZ file to PDB
         if arguments.xyz_pdb:
             XYZ_FNAME, ATOM_ID, ATOMNAME_LIST = process_CLI_inputs.xyz_to_pdb(arguments.xyz_pdb, options)
+
+        # If we want to use the GUI ...
+        if arguments.gui :
+            GUI_OPT = process_CLI_inputs.gui_module(arguments.gui, options)
 
 
     # Try and see if any of the options are used together. 
@@ -114,6 +121,15 @@ def main():
         print("-----------------------------------------------------------")
         print("Randomisation of the given inputs!\n")
         randomise.randomiser(CHEMISTRY_R, LENGTH_SEQUENCE, SEQUENCE, COMPL_SEQ, OUTFILE)
+
+    # Use the GUI module. This gets loaded at the back because GUI users do not mind efficiency
+    if arguments.gui:
+        from ducqueGUI import ducqueGUI 
+        print("-----------------------------------------------------------")
+        print(" <^)         Ducque ...")
+        print(" ( 3 )   Calling GUI module ...\n")
+        ducqueGUI.gui_window(GUI_OPT)
+
 
 
 
