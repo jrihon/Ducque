@@ -68,6 +68,7 @@ def build(BUILDINPUT, options):
 
     for argument in fileDucque:
         arg = argument.split()[0]
+        print(arg)
 
         # Check if flags are valid. If a given flag is not a valid one, shut it down
         if not arg in list_of_valid_flags:
@@ -95,9 +96,8 @@ def build(BUILDINPUT, options):
             else:
                 complement =  list(map(lambda x: x.strip(","), arg[1:]))
 
-        if arg[0] == "--out" :
+        if arg == "--out" :
             outFile = arg[1]
-
     # If the variable outFile has not been prompted by the user, we default it ourselves by having it take on the name of the input file
     try :
         outFile

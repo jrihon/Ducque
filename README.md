@@ -205,8 +205,13 @@ To run this project, you will need to add the libraries to your **python env** :
 `$ pip install scipy` | `$ conda install -c scipy `
 </br>
 </br>
-Ducque also employs `sys`, `os`, and `json`. These are built-in libraries, so no need to install these additionally.
-Depending on your `python3` version, you might have to install `tkinter`.
+Ducque also employs `sys`, `os`, `tkinter` and `json`. These are built-in libraries, so no need to install these additionally.</br>
+</br>
+Depending on your `python3` version, you might have to install `tkinter` separately.
+```shell
+# Check if you have tkinter installed
+$ python3 -m tkinter
+```
   
 ## Authors
 Jérôme Rihon ([@jrihon](https://www.github.com/jrihon) )

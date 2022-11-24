@@ -1,6 +1,30 @@
-import tkinter as tk
-from tkinter import ttk
-from ducqueGUI.gui_kinds import baseline_Window
+from ducqueGUI.gui_kinds import BuildApp
+
+
+def run(title):
+
+    buildapp = BuildApp(title)
+    buildapp.mainloop()         # ... RUN DUH DUUUH DUNDUNDUDUNUDDDUUNNN
+
+
+
+
+def gui_window(cli_argument):
+    if cli_argument == "build" :
+        run(cli_argument)
+
+#    if cli_argument == "transmute" :
+#        run(cli_argument)
+#
+#    if cli_argument == "randomise" :
+#        run(cli_argument)
+#
+#    if cli_argument == "xyz_pdb" :
+#        run(cli_argument)
+#
+#
+
+
 
 #class App(tk.Frame):
 #    def __init__(self, master):
@@ -26,24 +50,3 @@ from ducqueGUI.gui_kinds import baseline_Window
 #        print("Hi. The current entry content is:",
 #              self.contents.get())
 #
-def run(title, num_of_flags):
-    root = tk.Tk()
-    baseline_Window(root, title)
-    root.mainloop()
-
-
-
-def gui_window(cli_argument):
-    if cli_argument == "build" :
-        run(cli_argument, 3)
-
-    if cli_argument == "transmute" :
-        run(cli_argument, 5)
-
-    if cli_argument == "randomise" :
-        run(cli_argument, 3)
-
-    if cli_argument == "xyz_pdb" :
-        run(cli_argument, 3)
-
-
