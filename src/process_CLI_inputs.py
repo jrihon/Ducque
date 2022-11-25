@@ -32,7 +32,6 @@ def check_if_nucleotides_are_valid(input_sequence : list) -> bool:
     # Retrieve the keys of the dictionary from which we parse the data
     keysOfDict = LIB.codex_acidum_nucleicum.keys()
     # Check if any of the prompted nucleotides is not found in the sequence
-
     for NA in input_sequence:
         if NA not in keysOfDict:
             print_divide_between_command_and_output()
@@ -67,8 +66,7 @@ def build(BUILDINPUT, options):
     fileDucque = remove_blank_lines(list(map(lambda x: x.strip(), BUILDINPUT.readlines())))
 
     for argument in fileDucque:
-        arg = argument.split()[0]
-        print(arg)
+        arg = argument.split() # split the string into separate values
 
         # Check if flags are valid. If a given flag is not a valid one, shut it down
         if not arg in list_of_valid_flags:
@@ -76,10 +74,10 @@ def build(BUILDINPUT, options):
             print(f"\n\nThe following flag is invalid : {arg}. Please check your input file.\n\n\n")
             options.print_help()
 
-        if arg == "--sequence":
+        if arg[0] == "--sequence":
             nucleicAcidList = list(map(lambda x: x.strip(","), arg[1:]))
 
-        if arg == "--complement":
+        if arg[0] == "--complement":
             # If there is a input possibility at index 2, meaning more than one string have been inputted, then get the entire string as a list variable.
             # If there is not an input possibility at index 2, this means there is only one input after the flag available and that means it is just a string.
             try:
@@ -96,7 +94,7 @@ def build(BUILDINPUT, options):
             else:
                 complement =  list(map(lambda x: x.strip(","), arg[1:]))
 
-        if arg == "--out" :
+        if arg[0] == "--out" :
             outFile = arg[1]
     # If the variable outFile has not been prompted by the user, we default it ourselves by having it take on the name of the input file
     try :

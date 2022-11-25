@@ -1,23 +1,23 @@
-from ducqueGUI.gui_kinds import BuildApp
+from ducqueGUI.gui_kinds import BuildApp, RandomiseApp
 
 
-def run(title):
-
-    buildapp = BuildApp(title)
-    buildapp.mainloop()         # ... RUN DUH DUUUH DUNDUNDUDUNUDDDUUNNN
+def run(App, title : str):
+    """ Run the tkinter GUI Application """
+    app = App(title)
+    app.mainloop()         # ... RUN DUH DUUUH DUNDUNDUDUNUDDDUUNNN
 
 
 
 
 def gui_window(cli_argument):
     if cli_argument == "build" :
-        run(cli_argument)
+        run(BuildApp, cli_argument)
 
 #    if cli_argument == "transmute" :
 #        run(cli_argument)
 #
-#    if cli_argument == "randomise" :
-#        run(cli_argument)
+    if cli_argument == "randomise" :
+        run(RandomiseApp, cli_argument)
 #
 #    if cli_argument == "xyz_pdb" :
 #        run(cli_argument)
