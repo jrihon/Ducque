@@ -9,14 +9,15 @@ import process_CLI_inputs               # Exceptions and custom errors
 import systemsDucque                    # Retrieves system information from the machine
 
 def main():
+
     explanation = """
-                                                                   AUG   TCC        TCG   TTC        TAT   TCG
-                             ____                 _       _        :::C A:::G      A:::G T:::A      A:::T C:::G
-                            |  _ \  __ _  ___  __| | __ _| |_   _ ___  G:::::A    G:::::T:::::G    G:::::G:::::C         :
-                            | | | |/ _` |/ _ \/ _` |/ _` | | | | / __|  T:::::G  T:::::C A:::::T  G:::::A G:::::T   G   :G
-                            | |_| | (_| |  __/ (_| | (_| | | |_| \__ \   A:::::TC:::::C   A:::::AT:::::A   A:::::AGA:  :A
-                            |____/ \__,_|\___|\__,_|\__,_|_|\__,_|___/    G::::CG::::G     G::::TA::::T     C::::TC::::T
-                                                                           GCTC  AGTA       GGCA  CCTA       CCGA  TCTA
+                                                          AUG   TCC        TCG   TTC        TAT   TCG
+                             ____                         :::C A:::G      A:::G T:::A      A:::T C:::G
+                            |  _ \ _   _  ___ __ _ _   _  ___ G:::::A    G:::::T:::::G    G:::::G:::::C         :
+                            | | | | | | |/ __/ _` | | | |/ _ \ T:::::G  T:::::C A:::::T  G:::::A G:::::T   G   :G
+                            | |_| | |_| | (_| (_| | |_| |  __/  A:::::TC:::::C   A:::::AT:::::A   A:::::AGA:  :A
+                            |____/ \__,_|\___\__, |\__,_|\___|   G::::CG::::G     G::::TA::::T     C::::TC::::T
+                                                |_|               GCTC  AGTA       GGCA  CCTA       CCGA  TCTA
 
     Project to generate and customize DNA, RNA, XNA duplex molecules
 
@@ -46,14 +47,13 @@ def main():
     options.add_argument("--xyz_pdb", type=argparse.FileType("r"),
             help="Convert the inputted *.xyz file to a properly formatted *.pdb file.")
 
-    options.add_argument("--gui", type=str,
+    options.add_argument("--gui", type=str, nargs='?', action="append", const="NO_FLAG",
             help="Call the Ducque's GUI to perform actions instead of using CLI.")
 
     options.add_argument("--help", action="help",
             help="Prompt Ducque's help message to appear")
 
     arguments = options.parse_args()
-
 
     if len(sys.argv) == 1:
         options.print_help()
@@ -101,18 +101,17 @@ def main():
     # Build nucleic acid duplex
     if arguments.build:
         builder.Architecture(NUCLEIC_ACID_LIST, COMPLEMENT, OUTFILE)
-
         print(f"                         Time spent: %.5f seconds." % (time.time() - t0))
 
     # Convert pdb to json
     if arguments.transmute:
-        print("-----------------------------------------------------------")
+#        print("-----------------------------------------------------------")
         print(f"Converting {PDB_FNAME} to a json file.")
         transmute.Transmutation(PDB_FNAME, CHEMISTRY_T, MOIETY, DIHEDRALS, ANGLES, CONFORMATION)
 
     # Convert an ORCA xyz-formatted molecule file to a pdb file
     if arguments.xyz_pdb:
-        print("-----------------------------------------------------------")
+#        print("-----------------------------------------------------------")
         print(f"Converting {XYZ_FNAME} to a .pdb format file.\n")
         transmute.convert_XYZ_to_PDB(XYZ_FNAME, ATOM_ID, ATOMNAME_LIST)
 
@@ -123,12 +122,12 @@ def main():
         randomise.randomiser(CHEMISTRY_R, LENGTH_SEQUENCE, SEQUENCE, COMPL_SEQ, OUTFILE)
 
     # Use the GUI module. This gets loaded at the back because GUI users do not mind efficiency
-    if arguments.gui:
+    if arguments.gui :
         from ducqueGUI import ducqueGUI 
-        print("-----------------------------------------------------------")
+#        print("-----------------------------------------------------------")
         print(" <^)         Ducque ...")
         print(" ( 3 )   Calling GUI module ...\n")
-        ducqueGUI.gui_window(GUI_OPT)
+        ducqueGUI.select_window(GUI_OPT)
 
 
 

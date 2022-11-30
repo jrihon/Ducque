@@ -282,6 +282,12 @@ def xyz_to_pdb(CONVERSIONINPUT, options):
 
 def gui_module(GUIINPUT, options): 
 
+    # Take GUIINPUT out of the list
+    GUIINPUT = GUIINPUT[0]
+
+    if GUIINPUT == "NO_FLAG" : 
+        return GUIINPUT
+
     list_of_valid_flags = ["build", "transmute", "randomise", "xyz_pdb"]
 
     if not GUIINPUT in list_of_valid_flags:
