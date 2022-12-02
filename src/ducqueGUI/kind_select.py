@@ -1,18 +1,21 @@
 import tkinter as tk
 from tkinter import ttk
 
-from ducqueGUI.grid_geometry import GridGeometry as GG
+from ducqueGUI.grid_geometry import GridGeometry
+import ducqueGUI.kind_build as KB
+import ducqueGUI.kind_rand as KR
+import ducqueGUI.kind_xyzpdb as KX
 
 #  +--------------------------------------------------+
-#  |                    BUILD                         |
+#  |                   SELECT                         |
 #  +--------------------------------------------------+
 class SelectApp(tk.Tk):
 
-    def __init__(self, title):
+    def __init__(self, title : str): #master
         # baseline stuff
-        super().__init__()
+        super().__init__() #master
         self.title("Ducque : " + title)
-        self.geometry(GG.window_size)
+        self.geometry(GridGeometry.window_size)
 
         # Set Parent Frame
         self.content = ttk.Frame(self)
@@ -29,16 +32,41 @@ class SelectApp(tk.Tk):
         # place all the widgets
         self.place_widgets()
 
+    def start(self):
+        self.mainloop()
+
     def set_labels(self): 
-        self.label_title = ttk.Label(self.content, textvariable=self.title)
+        self.label_title = ttk.Label(self.content, text="Choose one of the following modules : ")
 
     def set_buttons(self):
-        self.yeppers = ttk.Button(self.content, text="yeppers", command=self.start_module)
+        self.yeppers = ttk.Button(self.content, text="yeppers", command=self.on_destroy)
 
-#    def start_module(self):
-#        self.destroy()
-#        module = self.module_choices.get()
-#        gui_window(module)
+    def on_destroy(self):
+        self.module_kind = self.module_choices.get()
+        print(self.module_kind)
+        self.destroy()
+        self.module = self.gui_module(self.module_kind)
+
+    def start_module(self, App, module):
+        self.app = App(module)
+        self.mainloop()         # ... RUN ! DUH DUUUH DUNDUNDUDUNUDDDUUNNN
+
+    def gui_module(self, module):
+        if module == "build" :
+            self.start_module(KB.BuildApp, module)
+
+        if module == "randomise" :
+            self.start_module(KR.RandomiseApp, module)
+
+#        if module == "transmute" :
+#            self.start_module(KT.TransmuteApp, module)
+#
+#
+        if module == "xyz_pdb" :
+            self.start_module(KX.FormatPdbApp, module)
+
+
+
 
     def set_omenu(self):
         self.module_choices = tk.StringVar()

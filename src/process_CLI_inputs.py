@@ -241,7 +241,7 @@ def xyz_to_pdb(CONVERSIONINPUT, options):
     fileConversion = remove_blank_lines(list(map(lambda x: x.strip(), CONVERSIONINPUT.readlines())))
 
     # Check list of valid inputs 
-    list_of_valid_flags = ["--xyz", "--atomID", "--atomname_list"]
+    list_of_valid_flags = ["--xyz", "--residue", "--atomname_list"]
     if len(fileConversion) != 3:
         print_divide_between_command_and_output()
         print("Only three arguments are required at one time. Please check your input file. \n\n\n ")
