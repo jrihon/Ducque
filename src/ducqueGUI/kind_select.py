@@ -5,6 +5,7 @@ from ducqueGUI.grid_geometry import GridGeometry
 import ducqueGUI.kind_build as KB
 import ducqueGUI.kind_rand as KR
 import ducqueGUI.kind_xyzpdb as KX
+import ducqueGUI.kind_transmute as KT
 
 #  +--------------------------------------------------+
 #  |                   SELECT                         |
@@ -43,7 +44,7 @@ class SelectApp(tk.Tk):
 
     def on_destroy(self):
         self.module_kind = self.module_choices.get()
-        print(self.module_kind)
+        print("Initiating " + self.module_kind + " module ...")
         self.destroy()
         self.module = self.gui_module(self.module_kind)
 
@@ -58,10 +59,10 @@ class SelectApp(tk.Tk):
         if module == "randomise" :
             self.start_module(KR.RandomiseApp, module)
 
-#        if module == "transmute" :
-#            self.start_module(KT.TransmuteApp, module)
-#
-#
+        if module == "transmute" :
+            self.start_module(KT.TransmuteApp, module)
+
+
         if module == "xyz_pdb" :
             self.start_module(KX.FormatPdbApp, module)
 

@@ -58,12 +58,13 @@ class FormatPdbApp(tk.Tk):
         self.label_resname.grid(column=0, row=4)
         self.label_atomlist.grid(column=0, row=5)
 
-    def set_flag_entries(self): 
+    def set_flag_entries(self, file_queried): 
 
         self.ent_fname = tk.StringVar()
+        self.ent_fname.set(file_queried)
         self.ent_resname = tk.StringVar()
 
-        self.entry_fname = ttk.Entry(self.content, textvariable=self.ent_fname)
+        self.entry_fname = ttk.Entry(self.content, textvariable=self.ent_fname, width=len(file_queried))
         self.entry_resname = ttk.Entry(self.content, textvariable=self.ent_resname)
 
         self.entry_fname.grid(column=1, row=3)
@@ -106,7 +107,7 @@ class FormatPdbApp(tk.Tk):
         self.atom_entry.grid(column=1, row=5, columnspan=3)
 
         self.set_flag_labels()
-        self.set_flag_entries()
+        self.set_flag_entries(file_queried)
 
 
     def print_entries(self):
