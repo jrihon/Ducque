@@ -121,7 +121,7 @@ class FormatPdbApp(tk.Tk):
 
         self.content.grid(column=0,row=0)
 
-        self.open_files_btn = ttk.Button(self.content, text="OPEN FILES", command=self.file_dialog)
+        self.open_files_btn = ttk.Button(self.content, text="Import file", command=self.file_dialog)
         self.open_files_btn.grid(column=1, row=2)
 
         self.xyztoptext.grid(column=1, columnspan=2, row=1)
