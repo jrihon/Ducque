@@ -7,7 +7,7 @@ from os import getcwd
 #from subprocess import run # Run Ducque
 
 from builder.builder_library import backbone_codex # import possibilities to build complementary strand
-#from ducqueGUI.grid_geometry import GridGeometry as GG
+from dgui.grid_geometry import Geometry as G
 
 #  +--------------------------------------------------+
 #  |                    TRANSMUTE                     |
@@ -19,7 +19,7 @@ class TransmuteApp(tk.Tk):
         # baseline stuff
         super().__init__()
         self.title("Ducque : " + title)
-        self.geometry("1500x512")
+        self.geometry(G.window_size_TRANSMUTE)
         self.cwd = getcwd()
 
         # Set Parent Frame

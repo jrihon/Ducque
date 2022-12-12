@@ -1,11 +1,11 @@
 import tkinter as tk
 from tkinter import ttk
 
-from ducqueGUI.grid_geometry import GridGeometry
-import ducqueGUI.kind_build as KB
-import ducqueGUI.kind_rand as KR
-import ducqueGUI.kind_xyzpdb as KX
-import ducqueGUI.kind_transmute as KT
+from dgui.grid_geometry import Geometry as G
+import dgui.kind_build as KB
+import dgui.kind_rand as KR
+import dgui.kind_xyzpdb as KX
+import dgui.kind_transmute as KT
 
 #  +--------------------------------------------------+
 #  |                   SELECT                         |
@@ -16,7 +16,7 @@ class SelectApp(tk.Tk):
         # baseline stuff
         super().__init__() #master
         self.title("Ducque : " + title)
-        self.geometry(GridGeometry.window_size)
+        self.geometry(G.window_size_SELECT)
 
         # Set Parent Frame
         self.content = ttk.Frame(self)
@@ -39,8 +39,11 @@ class SelectApp(tk.Tk):
     def set_labels(self): 
         self.label_title = ttk.Label(self.content, text="Choose one of the following modules : ")
 
+        self.label_empty = ttk.Label(self.content, text="")
+
     def set_buttons(self):
-        self.yeppers = ttk.Button(self.content, text="yeppers", command=self.on_destroy)
+        self.Launch = ttk.Button(self.content, text="Launch", command=self.on_destroy)
+        self.Launch.configure(width=G.SELECT_launch)
 
     def on_destroy(self):
         self.module_kind = self.module_choices.get()
@@ -74,15 +77,17 @@ class SelectApp(tk.Tk):
         module_opts = ["build", "transmute", "randomise", "xyz_pdb"]
         self.module_choices.set("build") # default value
         self.omenu_module = tk.OptionMenu(self.content, self.module_choices, *module_opts)
+        self.omenu_module.configure(width=G.SELECT_optmenu)
 
     def place_widgets(self): 
 
         self.content.grid(column=0,row=0)
         # labels
         self.label_title.grid(column=1, row=1, columnspan=2)
+#        self.label_empty.grid(column=0, row=1)
 
         # option menu
         self.omenu_module.grid(column=1, row=2, columnspan=2)
 
         # button
-        self.yeppers.grid(column=1, row=3)
+        self.Launch.grid(column=1, row=3, columnspan=2)

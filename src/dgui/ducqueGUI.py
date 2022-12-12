@@ -1,9 +1,9 @@
-from ducqueGUI.kind_select import SelectApp
+from dgui.kind_select import SelectApp
 
-from ducqueGUI.kind_rand import RandomiseApp
-from ducqueGUI.kind_build import BuildApp
-from ducqueGUI.kind_xyzpdb import FormatPdbApp
-from ducqueGUI.kind_transmute import TransmuteApp
+from dgui.kind_rand import RandomiseApp
+from dgui.kind_build import BuildApp
+from dgui.kind_xyzpdb import FormatPdbApp
+from dgui.kind_transmute import TransmuteApp
 
 
 def run(App, title : str):

@@ -5,7 +5,7 @@ from shutil import which   # Run Ducque
 from subprocess import run # Run Ducque
 
 from builder.builder_library import backbone_codex # import possibilities to build complementary strand
-from ducqueGUI.grid_geometry import GridGeometry as GG
+from dgui.grid_geometry import Geometry as G
 
 #  +--------------------------------------------------+
 #  |                    RANDOMISE                     |
@@ -17,7 +17,7 @@ class RandomiseApp(tk.Tk):
         # baseline stuff
         super().__init__()
         self.title("Ducque : " + title)
-        self.geometry(GG.window_size)
+        self.geometry(G.window_size_RANDOMISE)
 
         # Set Parent Frame
         self.content = ttk.Frame(self)

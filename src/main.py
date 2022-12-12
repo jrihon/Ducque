@@ -123,7 +123,7 @@ def main():
 
     # Use the GUI module. This gets loaded at the back because GUI users do not mind efficiency
     if arguments.gui :
-        from ducqueGUI import ducqueGUI 
+        from dgui import ducqueGUI 
 #        print("-----------------------------------------------------------")
         print(" <^)         Ducque ...")
         print(" ( 3 )   Calling GUI module ...\n")
