@@ -1,8 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import filedialog
 
 from shutil import which   # Run Ducque
 from subprocess import run # Run Ducque
+from os import getcwd
 
 from builder.builder_library import backbone_codex # import possibilities to build complementary strand
 from dgui.grid_geometry import Geometry as G
@@ -17,7 +19,9 @@ class BuildApp(tk.Tk):
         super().__init__()
         self.title("Ducque : " + title)
         self.geometry(G.window_size_BUILD)
+        self.cwd = getcwd()
 
+        self.padding = {"padx" : G.padx, "pady" : G.pady}
         # Set Parent Frame
         self.content = ttk.Frame(self)
 
@@ -38,12 +42,11 @@ class BuildApp(tk.Tk):
 
     def set_labels(self):
 
-        E = "e"   # align labels to east
         # labels
         self.label_title = ttk.Label(self.content, text="Build a sequence of your choice")
-        self.lab_seq = ttk.Label(self.content, text="--sequence", anchor=E, width=12)
-        self.lab_com = ttk.Label(self.content, text="--complement", anchor=E, width=12)
-        self.lab_out = ttk.Label(self.content, text="--out", anchor=E, width=12)
+        self.lab_seq = ttk.Label(self.content, text="--sequence", anchor=G.E, width=G.BUILD_label)
+        self.lab_com = ttk.Label(self.content, text="--complement", anchor=G.E, width=G.BUILD_label)
+        self.lab_out = ttk.Label(self.content, text="--out", anchor=G.E, width=G.BUILD_label)
 
     def set_checkbutton(self):
 
@@ -54,11 +57,11 @@ class BuildApp(tk.Tk):
 
         self.fname_str = tk.StringVar()
         self.entry_fname = ttk.Entry(self.content, textvariable=self.fname_str, state='disabled')
-        self.entry_fname.grid(column=1, row=5)
+        self.entry_fname.grid(column=1, row=6)
 
         # Checkbutton to toggle a list of possible chemistries from the `--complement`
         self.chem_btn = tk.IntVar()
-        self.checkbtn_chemistries = ttk.Checkbutton(self.content, variable=self.chem_btn, command=self.set_and_place_optionmenu,
+        self.checkbtn_chemistries = ttk.Checkbutton(self.content, text="toggle list", variable=self.chem_btn, command=self.set_and_place_optionmenu,
                                                 onvalue=1, offvalue=0)
 
     def toggle_fname_checkbutton(self):
@@ -77,14 +80,15 @@ class BuildApp(tk.Tk):
             chemlist = self.reveal_chemistry_keys()
             self.chem_choices.set("homo") # default value
             self.omenu_chem = tk.OptionMenu(self.content, self.chem_choices, *chemlist)
+            self.omenu_chem.configure(width=15)
             self.com_str.set('')
             self.entry_com.destroy()
-            self.omenu_chem.grid(column=1, row=3)
+            self.omenu_chem.grid(column=1, row=4)
         else :
             self.omenu_chem.destroy()
             self.com_str = tk.StringVar()
             self.entry_com = ttk.Entry(self.content, textvariable=self.com_str)
-            self.entry_com.grid(column=1, row=3)
+            self.entry_com.grid(column=1, row=4, **self.padding)
             
 
     def reveal_chemistry_keys(self):
@@ -92,6 +96,48 @@ class BuildApp(tk.Tk):
         chemistries = list(backbone_codex.keys())
         chemistries[chemistries.index("Phosphate")] = "homo" # replace the phosphate key with the `homoduplex` key
         return chemistries
+
+    def populate_entries(self):
+
+        filetypes = (("All files", "*.*"), ("input-files", "*.in*"))
+
+        select_files = filedialog.askopenfilenames(
+                                        title="Import files : " + self.cwd,
+                                        initialdir= self.cwd,
+                                        filetypes=filetypes
+                                        )
+
+        try :
+            file_queried = select_files[0]
+        except IndexError:
+            print("No file selected. Please try again")
+            return
+
+        with open(file_queried, "r") as inputfile :
+            file_content = inputfile.readlines()
+
+        sizeline = 0
+        for line in file_content :
+            flag , inp = line.split(" ", maxsplit=1)
+
+            if flag == "--sequence" : 
+                self.entry_seq.configure(width=len(inp))
+                self.seq_str.set(inp.strip())
+
+                sizeline = 15 * len(inp)
+                if sizeline > 470 :
+                    sizeline = 470
+
+            if flag == "--complement" :
+                self.com_str.set(inp.strip())
+                self.entry_com.configure(width=G.BUILD_label)
+
+            if flag == "--out" :
+                self.out_str.set(inp.strip())
+                self.entry_out.configure(width=G.BUILD_label)
+
+        self.geometry(str(sizeline + 512) + "x300")
+#        self.geometry("975x300")
 
     def set_buttons(self):
         # buttons
@@ -116,22 +162,27 @@ class BuildApp(tk.Tk):
         # labels
         self.label_title.grid(column=1, row=1, columnspan=2)
 
-        self.lab_seq.grid(column=0, row=2)
-        self.lab_com.grid(column=0, row=3)
-        self.lab_out.grid(column=0, row=4)
+        # file dialog
+        self.open_files_btn = ttk.Button(self.content, text="Import input file", command=self.populate_entries)
+        self.open_files_btn.grid(column=2, row=2)
+
+        self.lab_seq.grid(column=0, row=3)
+        self.lab_com.grid(column=0, row=4)
+        self.lab_out.grid(column=0, row=5)
 
         # buttons
-        self.btn_write.grid(column=2, row=6)
-        self.btn_build.grid(column=2, row=7)
+        self.btn_write.grid(column=2, row=7, **self.padding)
+        self.btn_build.grid(column=2, row=8, **self.padding)
 
         # entries
-        self.entry_seq.grid(column=1, row=2)
-        self.entry_com.grid(column=1, row=3)
-        self.entry_out.grid(column=1, row=4)
+        self.entry_seq.grid(column=1, row=3, **self.padding)
+        self.entry_com.grid(column=1, row=4, **self.padding)
+        self.entry_out.grid(column=1, row=5, **self.padding)
 
         # checkbutton
-        self.checkbtn_fname.grid(column=0, row=5)
-        self.checkbtn_chemistries.grid(column=2, row=3)
+        self.checkbtn_fname.grid(column=0, row=6, **self.padding)
+        self.checkbtn_chemistries.grid(column=2, row=4)
+
 
 
     def write_inputfile(self):

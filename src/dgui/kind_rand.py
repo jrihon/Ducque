@@ -42,8 +42,6 @@ class RandomiseApp(tk.Tk):
         E = "e"   # align labels to east
         # labels
         self.label_title = ttk.Label(self.content, text="Randomise a sequence of your choice")
-#        self.lab_len = ttk.Label(self.content, text="--length", anchor=E, width=12)
-#        self.lab_seq = ttk.Label(self.content, text="--sequence", anchor=E, width=12)
         self.lab_chm = ttk.Label(self.content, text="--chemistry : ", anchor=E, width=12)
 
     def set_checkbutton(self):

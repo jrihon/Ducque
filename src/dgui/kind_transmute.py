@@ -21,6 +21,7 @@ class TransmuteApp(tk.Tk):
         self.title("Ducque : " + title)
         self.geometry(G.window_size_TRANSMUTE)
         self.cwd = getcwd()
+        self.padding = {"padx" : 3, "pady" : G.pady}
 
         # Set Parent Frame
         self.content = ttk.Frame(self)
@@ -64,14 +65,30 @@ class TransmuteApp(tk.Tk):
         if self.int_zeta.get() == 1 : 
             self.ent_ang_z.config(state="enabled")
             self.ent_dihr_z.config(state="enabled")
+        elif self.int_zeta.get() == 0  and self.int_nu.get() == 1: 
+            print(" Cannot have a η-dihedral without a ζ-dihedral!\n "
+                    "For reference on the 1983 IUPAC on Nucleic Acids : ` 1983 Mar 1;131(1):9-15. doi: 10.1111/j.1432-1033.1983.tb07225.x.`\n "
+                    "https://pubmed.ncbi.nlm.nih.gov/6832147/\n")
+
+            self.ent_ang_z.config(state="enabled")
+            self.ent_dihr_z.config(state="enabled")
+            self.int_zeta.set(1)
         else :
             self.ent_ang_z.config(state="disabled")
             self.ent_dihr_z.config(state="disabled")
 
     def toggle_nu(self):
-        if self.int_nu.get() == 1 : 
+        if self.int_nu.get() == 1  and self.int_zeta.get() == 1: 
             self.ent_ang_n.config(state="enabled")
             self.ent_dihr_n.config(state="enabled")
+        elif self.int_nu.get() == 1  and self.int_zeta.get() == 0: 
+            print(" Cannot have a η-dihedral without a ζ-dihedral!\n "
+                    "For reference on the 1983 IUPAC on Nucleic Acids : ` 1983 Mar 1;131(1):9-15. doi: 10.1111/j.1432-1033.1983.tb07225.x.`\n "
+                    "https://pubmed.ncbi.nlm.nih.gov/6832147/\n")
+
+            self.ent_ang_n.config(state="disabled")
+            self.ent_dihr_n.config(state="disabled")
+            self.int_nu.set(0)
         else :
             self.ent_ang_n.config(state="disabled")
             self.ent_dihr_n.config(state="disabled")
@@ -145,11 +162,13 @@ class TransmuteApp(tk.Tk):
         opt_chems = list(backbone_codex.keys())
         self.opt_chems = ["..."] + sorted([x for x in opt_chems if x != "Phosphate"], key=str.casefold) # replace the phosphate key with the `...` key and sort
         self.omenu_chem = ttk.OptionMenu(self.content, self.choice_chem, *self.opt_chems)
+        self.omenu_chem.configure(width=15)
 
         # moiety
         self.choice_moi = tk.StringVar()
         self.opt_moi = ["...", "nucleoside", "linker"]
         self.omenu_moi= ttk.OptionMenu(self.content, self.choice_moi, *self.opt_moi)
+        self.omenu_moi.configure(width=15)
 
     def file_dialog(self):
 
@@ -174,12 +193,13 @@ class TransmuteApp(tk.Tk):
             flag , inp = line.split(" ", maxsplit=1)
 
             if flag == "--pdb" : 
-                self.entr_pdbfname.configure(width=len(inp))
+                self.entr_pdbfname.configure()
                 self.str_pdbfname.set(inp.strip())
 
-            if flag == "--id" :
-                if inp.strip() in list(backbone_codex.keys()) : self.choice_chem.set(inp.strip())
-                else : print(f"{inp} is not an available type for `--id`. ")
+            if flag == "--chemistry" :
+                opt = inp.strip()
+                if opt in list(backbone_codex.keys()) : self.choice_chem.set(inp.strip())
+                else : print(f"`{opt}` is not an available type for `--chemistry`. ")
 
             if flag == "--conformation" :
                 self.str_conformation.set(inp.strip())
@@ -201,53 +221,55 @@ class TransmuteApp(tk.Tk):
 
         self.label_words = ttk.Label(self.content, text="Convert your `pdb` to an input for Ducque")
         self.label_words.grid(column=1, row=1, columnspan=2)
-        # set labels
-        self.label_pdbfname.grid(column=0, row=2)
-        self.label_chemistry.grid(column=0, row=3)
-        self.label_conformation.grid(column=0, row=4)
-        self.label_moiety.grid(column=0, row=5)
-
-        # alphabet
-        self.label_alpha.grid(column=1, row=6)
-        self.label_beta.grid(column=2, row=6)
-        self.label_gamma.grid(column=3, row=6)
-        self.label_delta.grid(column=4, row=6)
-        self.label_epsilon.grid(column=5, row=6)
-        self.chkbtn_zeta.grid(column=6, row=6)
-        self.chkbtn_nu.grid(column=7, row=6)
-        self.label_chi.grid(column=8, row=6)
-
-        self.label_bondangles.grid(column=0, row=7)
-        self.label_dihedrals.grid(column=0, row=8)
-
-        # bondangles
-        self.ent_ang_a.grid(column=1, row=7)
-        self.ent_ang_b.grid(column=2, row=7)
-        self.ent_ang_g.grid(column=3, row=7)
-        self.ent_ang_d.grid(column=4, row=7)
-        self.ent_ang_e.grid(column=5, row=7)
-        self.ent_ang_z.grid(column=6, row=7)
-        self.ent_ang_n.grid(column=7, row=7)
-        self.ent_ang_x.grid(column=8, row=7)
-
-        # dihedrals
-        self.ent_dihr_a.grid(column=1, row=8)
-        self.ent_dihr_b.grid(column=2, row=8)
-        self.ent_dihr_g.grid(column=3, row=8)
-        self.ent_dihr_d.grid(column=4, row=8)
-        self.ent_dihr_e.grid(column=5, row=8)
-        self.ent_dihr_z.grid(column=6, row=8)
-        self.ent_dihr_n.grid(column=7, row=8)
-        self.ent_dihr_x.grid(column=8, row=8)
-
-        # set entries
-        self.entr_pdbfname.grid(column=1, row=2)
-        self.entr_conformation.grid(column=1, row=4)
-
-        # set optionmenu
-        self.omenu_chem.grid(column=1, row=3)
-        self.omenu_moi.grid(column=1, row=5)
 
         # set filedialog
         self.open_files_btn = ttk.Button(self.content, text="Import input file", command=self.file_dialog)
-        self.open_files_btn.grid(column=2, row=10)
+        self.open_files_btn.grid(column=2, row=2)
+
+        # set labels
+        self.label_pdbfname.grid(column=0, row=3, **self.padding)
+        self.label_chemistry.grid(column=0, row=4, **self.padding)
+        self.label_conformation.grid(column=0, row=5, **self.padding)
+        self.label_moiety.grid(column=0, row=6, **self.padding)
+
+        # alphabet
+        self.label_alpha.grid(column=1, row=7)
+        self.label_beta.grid(column=2, row=7)
+        self.label_gamma.grid(column=3, row=7)
+        self.label_delta.grid(column=4, row=7)
+        self.label_epsilon.grid(column=5, row=7)
+        self.chkbtn_zeta.grid(column=6, row=7)
+        self.chkbtn_nu.grid(column=7, row=7)
+        self.label_chi.grid(column=8, row=7)
+
+        self.label_bondangles.grid(column=0, row=8, **self.padding)
+        self.label_dihedrals.grid(column=0, row=9, **self.padding)
+
+        # bondangles
+        self.ent_ang_a.grid(column=1, row=8, **self.padding)
+        self.ent_ang_b.grid(column=2, row=8, **self.padding)
+        self.ent_ang_g.grid(column=3, row=8, **self.padding)
+        self.ent_ang_d.grid(column=4, row=8, **self.padding)
+        self.ent_ang_e.grid(column=5, row=8, **self.padding)
+        self.ent_ang_z.grid(column=6, row=8, **self.padding)
+        self.ent_ang_n.grid(column=7, row=8, **self.padding)
+        self.ent_ang_x.grid(column=8, row=8, **self.padding)
+
+        # dihedrals
+        self.ent_dihr_a.grid(column=1, row=9, **self.padding)
+        self.ent_dihr_b.grid(column=2, row=9, **self.padding)
+        self.ent_dihr_g.grid(column=3, row=9, **self.padding)
+        self.ent_dihr_d.grid(column=4, row=9, **self.padding)
+        self.ent_dihr_e.grid(column=5, row=9, **self.padding)
+        self.ent_dihr_z.grid(column=6, row=9, **self.padding)
+        self.ent_dihr_n.grid(column=7, row=9, **self.padding)
+        self.ent_dihr_x.grid(column=8, row=9, **self.padding)
+
+        # set entries
+        self.entr_pdbfname.grid(column=1, row=3, **self.padding)
+        self.entr_conformation.grid(column=1, row=5, **self.padding)
+
+        # set optionmenu
+        self.omenu_chem.grid(column=1, row=4, **self.padding)
+        self.omenu_moi.grid(column=1, row=6, **self.padding)
+
