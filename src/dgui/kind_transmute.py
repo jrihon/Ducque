@@ -208,12 +208,111 @@ class TransmuteApp(tk.Tk):
                 if inp.strip() in ["nucleoside", "linker"]: self.choice_moi.set(inp.strip())
                 else : print(f"{inp} is not an available type for `--moiety`. ")
 
-            if flag == "--bondangles" : pass
-            if flag == "--dihedrals" : pass
+            if flag == "--bondangles" : 
+                angs = list(map(lambda x: x.strip(), inp.split(",")))
+                if len(angs) <= 5 : 
+                    print("Not enough queries to properly fill the `--bondangles` entry")
+                    return
+                if len(angs) == 6 :
+                    self.int_zeta.set(0)
+                    self.ent_ang_z.config(state="disabled")
+                    self.ent_dihr_z.config(state="disabled")
+                    self.int_nu.set(0)
+                    self.ent_ang_n.config(state="disabled")
+                    self.ent_dihr_n.config(state="disabled")
+
+                    self.str_ang_a.set(angs[0])
+                    self.str_ang_b.set(angs[1])
+                    self.str_ang_g.set(angs[2])
+                    self.str_ang_d.set(angs[3])
+                    self.str_ang_e.set(angs[4])
+                    self.str_ang_x.set(angs[5])
+                if len(angs) == 7 :
+
+                    self.int_zeta.set(1)
+                    self.ent_ang_z.config(state="enabled")
+                    self.ent_dihr_z.config(state="enabled")
+                    self.int_nu.set(0)
+                    self.ent_ang_n.config(state="disabled")
+                    self.ent_dihr_n.config(state="disabled")
+
+                    self.str_ang_a.set(angs[0])
+                    self.str_ang_b.set(angs[1])
+                    self.str_ang_g.set(angs[2])
+                    self.str_ang_d.set(angs[3])
+                    self.str_ang_e.set(angs[4])
+                    self.str_ang_z.set(angs[5])
+                    self.str_ang_x.set(angs[6])
+                if len(angs) == 8 :
+                    self.int_zeta.set(1)
+                    self.ent_ang_z.config(state="enabled")
+                    self.ent_dihr_z.config(state="enabled")
+                    self.int_nu.set(1)
+                    self.ent_ang_n.config(state="enabled")
+                    self.ent_dihr_n.config(state="enabled")
+
+                    self.str_ang_a.set(angs[0])
+                    self.str_ang_b.set(angs[1])
+                    self.str_ang_g.set(angs[2])
+                    self.str_ang_d.set(angs[3])
+                    self.str_ang_e.set(angs[4])
+                    self.str_ang_z.set(angs[5])
+                    self.str_ang_n.set(angs[6])
+                    self.str_ang_x.set(angs[7])
+
+            if flag == "--dihedrals" :
+                dihrs = list(map(lambda x: x.strip(), inp.split(",")))
+                if len(dihrs) <= 5 : 
+                    print("Not enough queries to properly fill the `--dihedrals` entry")
+                    return
+                if len(dihrs) == 6 :
+                    self.int_zeta.set(0)
+                    self.ent_ang_z.config(state="disabled")
+                    self.ent_dihr_z.config(state="disabled")
+                    self.int_nu.set(0)
+                    self.ent_ang_n.config(state="disabled")
+                    self.ent_dihr_n.config(state="disabled")
+
+                    self.str_dihr_a.set(dihrs[0])
+                    self.str_dihr_b.set(dihrs[1])
+                    self.str_dihr_g.set(dihrs[2])
+                    self.str_dihr_d.set(dihrs[3])
+                    self.str_dihr_e.set(dihrs[4])
+                    self.str_dihr_x.set(dihrs[5])
+                if len(dihrs) == 7 :
+
+                    self.int_zeta.set(1)
+                    self.ent_ang_z.config(state="enabled")
+                    self.ent_dihr_z.config(state="enabled")
+                    self.int_nu.set(0)
+                    self.ent_ang_n.config(state="disabled")
+                    self.ent_dihr_n.config(state="disabled")
+
+                    self.str_dihr_a.set(dihrs[0])
+                    self.str_dihr_b.set(dihrs[1])
+                    self.str_dihr_g.set(dihrs[2])
+                    self.str_dihr_d.set(dihrs[3])
+                    self.str_dihr_e.set(dihrs[4])
+                    self.str_dihr_z.set(dihrs[5])
+                    self.str_dihr_x.set(dihrs[6])
+                if len(dihrs) == 8 :
+                    self.int_zeta.set(1)
+                    self.ent_ang_z.config(state="enabled")
+                    self.ent_dihr_z.config(state="enabled")
+                    self.int_nu.set(1)
+                    self.ent_ang_n.config(state="enabled")
+                    self.ent_dihr_n.config(state="enabled")
+
+                    self.str_dihr_a.set(dihrs[0])
+                    self.str_dihr_b.set(dihrs[1])
+                    self.str_dihr_g.set(dihrs[2])
+                    self.str_dihr_d.set(dihrs[3])
+                    self.str_dihr_e.set(dihrs[4])
+                    self.str_dihr_z.set(dihrs[5])
+                    self.str_dihr_n.set(dihrs[6])
+                    self.str_dihr_x.set(dihrs[7])
 
 
-#        self.set_flag_labels()
-#        self.set_flag_entries(file_queried)
 
     def place_widgets(self):
 
