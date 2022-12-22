@@ -10,7 +10,7 @@ class Geometry:
     window_size_RANDOMISE = "512x300"
     window_size_BUILD = "512x300"
     window_size_XYZ = "512x300"
-    window_size_TRANSMUTE = "1500x350"
+    window_size_TRANSMUTE = "1500x375"
 
     padx = 5
     pady = 6

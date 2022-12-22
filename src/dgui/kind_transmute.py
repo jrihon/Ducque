@@ -2,9 +2,10 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 
-from os import getcwd
-#from shutil import which   # Run Ducque
-#from subprocess import run # Run Ducque
+from os import getcwd 
+from os.path import isfile
+from shutil import which   # Run Ducque
+from subprocess import run # Run Ducque
 
 from builder.builder_library import backbone_codex # import possibilities to build complementary strand
 from dgui.grid_geometry import Geometry as G
@@ -30,7 +31,7 @@ class TransmuteApp(tk.Tk):
         self.set_labels()
 
         # set buttons
-#        self.set_buttons()
+        self.set_buttons()
 
         # set entries
         self.set_entries()
@@ -51,6 +52,7 @@ class TransmuteApp(tk.Tk):
         self.label_moiety = ttk.Label(self.content, text="--moiety")
         self.label_bondangles = ttk.Label(self.content, text="--bondangles")
         self.label_dihedrals = ttk.Label(self.content, text="--dihedrals")
+        self.label_nucleobase = ttk.Label(self.content, text="--nucleobase")
 
         self.label_alpha = ttk.Label(self.content, text="α")
         self.label_beta = ttk.Label(self.content, text="β")
@@ -60,6 +62,12 @@ class TransmuteApp(tk.Tk):
         self.label_zeta = ttk.Label(self.content, text="ζ")
         self.label_nu = ttk.Label(self.content, text="η")
         self.label_chi = ttk.Label(self.content, text="χ")
+
+
+    def set_buttons(self):
+        self.btn_write = ttk.Button(self.content, text="Write input file", command=self.write_inputfile, width=20)
+        self.btn_transmute = ttk.Button(self.content, text="Transmute!", command=self.transmute_input, width=20)
+
 
     def toggle_zeta(self):
         if self.int_zeta.get() == 1 : 
@@ -107,12 +115,18 @@ class TransmuteApp(tk.Tk):
         self.ent_ang_n.config(state="disabled")
         self.ent_dihr_n.config(state="disabled")
 
+        self.int_overwrite = tk.IntVar()
+        self.int_overwrite.set(0)
+        self.chkbtn_overwrite = ttk.Checkbutton(self.content, variable=self.int_overwrite, text="Overwrite", onvalue=1, offvalue=0)
+
     def set_entries(self):
         self.str_pdbfname = tk.StringVar()
         self.str_conformation = tk.StringVar()
+        self.str_nucleobase = tk.StringVar()
         
         self.entr_pdbfname = ttk.Entry(self.content, textvariable=self.str_pdbfname)
         self.entr_conformation = ttk.Entry(self.content, textvariable=self.str_conformation)
+        self.entr_nucleobase = ttk.Entry(self.content, textvariable=self.str_nucleobase)
 
         # bondangles
         self.str_ang_a = tk.StringVar() # alpha
@@ -151,10 +165,6 @@ class TransmuteApp(tk.Tk):
         self.ent_dihr_z = ttk.Entry(self.content, textvariable=self.str_dihr_z) # zeta
         self.ent_dihr_n = ttk.Entry(self.content, textvariable=self.str_dihr_n) # nu
         self.ent_dihr_x = ttk.Entry(self.content, textvariable=self.str_dihr_x) # chi
-    
-#    def populate_angles(self, angles_list):
-#
-#        ln = len(angles_list)
 
     def set_optionmenu(self):
         # chemistries
@@ -167,7 +177,7 @@ class TransmuteApp(tk.Tk):
         # moiety
         self.choice_moi = tk.StringVar()
         self.opt_moi = ["...", "nucleoside", "linker"]
-        self.omenu_moi= ttk.OptionMenu(self.content, self.choice_moi, *self.opt_moi)
+        self.omenu_moi = ttk.OptionMenu(self.content, self.choice_moi, *self.opt_moi)
         self.omenu_moi.configure(width=15)
 
     def file_dialog(self):
@@ -210,8 +220,8 @@ class TransmuteApp(tk.Tk):
 
             if flag == "--bondangles" : 
                 angs = list(map(lambda x: x.strip(), inp.split(",")))
-                if len(angs) <= 5 : 
-                    print("Not enough queries to properly fill the `--bondangles` entry")
+                if len(angs) <= 5 or len(angs) >= 9 : 
+                    print("Incorrect amount of queries to properly fill the `--bondangles` entry")
                     return
                 if len(angs) == 6 :
                     self.int_zeta.set(0)
@@ -262,9 +272,10 @@ class TransmuteApp(tk.Tk):
 
             if flag == "--dihedrals" :
                 dihrs = list(map(lambda x: x.strip(), inp.split(",")))
-                if len(dihrs) <= 5 : 
-                    print("Not enough queries to properly fill the `--dihedrals` entry")
+                if len(dihrs) <= 5 or len(dihrs) >= 9 : 
+                    print("Incorrect amount of queries to properly fill the `--dihedrals` entry")
                     return
+                #
                 if len(dihrs) == 6 :
                     self.int_zeta.set(0)
                     self.ent_ang_z.config(state="disabled")
@@ -279,8 +290,8 @@ class TransmuteApp(tk.Tk):
                     self.str_dihr_d.set(dihrs[3])
                     self.str_dihr_e.set(dihrs[4])
                     self.str_dihr_x.set(dihrs[5])
+                #
                 if len(dihrs) == 7 :
-
                     self.int_zeta.set(1)
                     self.ent_ang_z.config(state="enabled")
                     self.ent_dihr_z.config(state="enabled")
@@ -295,6 +306,7 @@ class TransmuteApp(tk.Tk):
                     self.str_dihr_e.set(dihrs[4])
                     self.str_dihr_z.set(dihrs[5])
                     self.str_dihr_x.set(dihrs[6])
+                #
                 if len(dihrs) == 8 :
                     self.int_zeta.set(1)
                     self.ent_ang_z.config(state="enabled")
@@ -330,6 +342,7 @@ class TransmuteApp(tk.Tk):
         self.label_chemistry.grid(column=0, row=4, **self.padding)
         self.label_conformation.grid(column=0, row=5, **self.padding)
         self.label_moiety.grid(column=0, row=6, **self.padding)
+        self.label_nucleobase.grid(column=2, row=5, **self.padding)
 
         # alphabet
         self.label_alpha.grid(column=1, row=7)
@@ -367,8 +380,94 @@ class TransmuteApp(tk.Tk):
         # set entries
         self.entr_pdbfname.grid(column=1, row=3, **self.padding)
         self.entr_conformation.grid(column=1, row=5, **self.padding)
+        self.entr_nucleobase.grid(column=3, row=5, **self.padding)
 
         # set optionmenu
         self.omenu_chem.grid(column=1, row=4, **self.padding)
         self.omenu_moi.grid(column=1, row=6, **self.padding)
+
+        # set buttons
+        self.btn_write.grid(column=7, row=10, **self.padding)
+        self.btn_transmute.grid(column=7, row=11, **self.padding)
+        self.chkbtn_overwrite.grid(column=8, row=11, **self.padding)
+
+
+    def write_inputfile(self):
+        import re
+
+        def format_angle(name_angle : str, angle : str):
+
+            if len(angle.strip()) == 0 :
+                print(f"Angle {name_angle} is empty ")
+                return ""
+
+            a = re.sub(",", ".", angle) # replace any commas with points 
+            try :
+                float(a)
+            except ValueError: 
+                print(f"Could not convert the angle {name_angle} to a float; {angle} ")
+                return "NA"
+            else :
+                return a
+
+
+
+        # Handle empty inputs for these fields
+        for i in [self.str_pdbfname, self.str_conformation, self.str_nucleobase, self.choice_chem, self.choice_moi] :
+            if len(i.get()) == 0 or i.get() == "..." : 
+                print("Not all fields have been filled in. Please complete any remaining entries.")
+                return
+
+        # Sort of handle numerical inputs
+        list_ang = [ format_angle("alpha", self.str_ang_a.get()),
+                     format_angle("beta", self.str_ang_b.get()),
+                     format_angle("gamme", self.str_ang_g.get()),
+                     format_angle("delta", self.str_ang_d.get()),
+                     format_angle("epsilon", self.str_ang_e.get()),
+                    ]
+        list_dih = [ format_angle("alpha", self.str_dihr_a.get()),
+                     format_angle("beta", self.str_dihr_b.get()),
+                     format_angle("gamme", self.str_dihr_g.get()),
+                     format_angle("delta", self.str_dihr_d.get()),
+                     format_angle("epsilon", self.str_dihr_e.get()),
+                    ]
+        if self.int_zeta.get() == 1 :
+            list_ang.append(format_angle("zeta", self.str_ang_z.get()))
+            list_dih.append(format_angle("zeta", self.str_dihr_z.get()))
+        if self.int_nu.get() == 1 :
+            list_ang.append(format_angle("nu", self.str_ang_n.get()))
+            list_dih.append(format_angle("nu", self.str_dihr_n.get()))
+
+        list_ang.append(format_angle("chi", self.str_ang_x.get()))
+        list_dih.append(format_angle("chi", self.str_dihr_x.get()))
+
+
+        input_fname = "input_" + self.choice_chem.get().lower() + self.str_nucleobase.get().lower() +  "_" + self.str_conformation.get().lower() + "_transmute.in"
+
+        with open("./" + input_fname , "w") as fileto :
+            fileto.write("--pdb " + self.str_pdbfname.get() + "\n"
+                        "--chemistry" + self.choice_chem.get() + " \n"  
+                        "--conformation" + self.str_conformation.get() + " \n"
+                        "--moiety" + self.choice_moi.get() + " \n"
+                        "--bondangles" + ", ".join(list_ang) + " \n"
+                        "--dihedrals" + ", ".join(list_dih) + " \n"
+                    )
+
+        print("File written to : " + input_fname + ".in")
+
+
+    def transmute_input(self):
+
+        input_fname = "input_" + self.choice_chem.get().lower() + self.str_nucleobase.get().lower() +  "_" + self.str_conformation.get().lower() + "_transmute.in"
+
+        if self.int_overwrite.get() == 1 :
+            # At this point, this would not be necessary, but better safe than sorry
+            if not which("Ducque"): 
+                print("Ducque not found in the $PATH. Please add `Ducque` to the search path.\n")
+
+            run(["Ducque", "--transmute", input_fname])
+
+
+        elif isfile(input_fname) and self.int_overwrite.get() == 0 :
+            print(f"Writing to file has been blocked. {input_fname} exists in this directory.\n")
 

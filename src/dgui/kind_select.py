@@ -66,15 +66,19 @@ class SelectApp(tk.Tk):
             self.start_module(KT.TransmuteApp, module)
 
 
-        if module == "xyz_pdb" :
-            self.start_module(KX.FormatPdbApp, module)
-
-
+        # This module has been disabled for the GUI
+        # if module == "xyz_pdb" :
+        #     self.start_module(KX.FormatPdbApp, module)
 
 
     def set_omenu(self):
         self.module_choices = tk.StringVar()
-        module_opts = ["build", "transmute", "randomise", "xyz_pdb"]
+        module_opts = ["build",
+                        "transmute",
+                        "randomise",
+                        # "xyz_pdb" # This module has been disabled for the GUI
+                        ]
+
         self.module_choices.set("build") # default value
         self.omenu_module = tk.OptionMenu(self.content, self.module_choices, *module_opts)
         self.omenu_module.configure(width=G.SELECT_optmenu)
