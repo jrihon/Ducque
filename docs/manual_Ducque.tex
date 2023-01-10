@@ -1,0 +1,99 @@
+\documentclass[a4paper, 11pt]{article}      % Documentclass article
+\usepackage[utf8]{inputenc}                 % Type of encoding of the letters
+\usepackage[T1]{fontenc}
+\usepackage{fullpage}                       % The margins of the page are smaller
+\usepackage{titling}                        % Flush left the title and the authors
+\usepackage{authblk}                        % Used for the author affiliations.
+\usepackage{natbib}                         % Used for styling citations
+\usepackage{graphicx}                       % Used to import graphic documents, in pdf and png mostly
+\usepackage{amsmath}                        % Mathematical package
+\usepackage{bm}                             % Use to make things in bold
+\usepackage{siunitx}                        % Used to converts floats as SI units
+\usepackage{wrapfig}                        % Use this to wrap text around a figure
+\usepackage[superscript]{cite}              % Used to superscript the numbers for the citations in the text
+\usepackage[super]{nth}                     % To superscript when counting up numbers
+\usepackage{float}                          % float package for the [H] option to the figure
+\usepackage{hyperref}                       % Make hyperlink references
+\usepackage{lmodern}                        % To be able to use any fontsize
+\usepackage{verbatim}                       % verbatim coding examples
+%\usepackage[most]{tcolorbox}
+\usepackage{booktabs}                       % For controlling the width of \hrule
+\usepackage{colortbl}                       % to colour in a cell in a table
+\usepackage{multirow}                       % same as multicolumn
+\usepackage{lipsum}                         % lorem ipsum filler text
+\usepackage{epigraph}                       % display quotes
+\usepackage{tipa}                           % IPA phonetic language characters
+\usepackage{enumitem}                       % to make list envs not indented
+%\usepackage[usenames,dvipsnames]{color}     % create coloured backgrounds in text
+
+
+% Make the paper in sans-serif font
+\renewcommand{\familydefault}{\sfdefault}
+% Set up the way you show a url or href command
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan}
+
+% TITLE
+\title{\textbf{\Huge The manual to Ducque}}
+
+% LIST OF AUTHORS
+\author[1,*]{Jérôme Rihon}
+
+% AFFILIATIONS
+\affil[1]{\small KU Leuven, Rega Institute for Medical Research, Medicinal Chemistry, Herestraat 49 - Box 1041, 3000 Leuven, Belgium}
+\affil[*]{\small \textit{Corresponding author, maintainer}}
+
+% makes the date{} empty and does not take up extra whitespace
+\date{}
+\predate{} 
+\postdate{}
+
+% define colors
+\definecolor{gray1}{gray}{0.8}
+% ------------------------------------
+%               START
+% ------------------------------------
+\begin{document}
+
+\maketitle
+
+
+% ---------------
+%   ToC
+% ---------------
+\pagebreak
+\tableofcontents
+
+% ---------------
+%   Voorblad
+% ---------------
+% TODO Make a front cover for the manual
+
+% ---------------
+%   Contents
+% ---------------
+\input{introduction/introduction.tex}
+
+\input{usage/build.tex}
+\input{usage/transmute.tex}
+\input{usage/randomise.tex}
+\input{usage/xyz_pdb.tex}
+\input{usage/gui.tex}
+
+
+% ---------------
+%   BIBLIOGRAPHY
+% ---------------
+\pagebreak
+% add bibliography as a section to the Table Of Contents and name it `References`
+\addcontentsline{toc}{section}{References}
+\renewcommand{\bibfont}{\small}
+\renewcommand{\refname}{\textbf{References}}
+\bibliographystyle{unsrt}
+\bibliography{references/references.bib}
+
+
+        
+% ------------------------------------
+%               END
+% ------------------------------------
+\end{document}
