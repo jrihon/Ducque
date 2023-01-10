@@ -270,6 +270,7 @@ class TransmuteToPdb:
         self.pathName = xyzfile
         self.rootName = os.path.basename(xyzfile).split(".")[0]
         self.pdbName = self.rootName + ".pdb"
+        self.fullPathTo = os.getcwd() + "/" + os.path.dirname(xyzfile)
         self.x = list()
         self.y = list()
         self.z = list()
@@ -357,7 +358,7 @@ class TransmuteToPdb:
         return True
 
 
-    def write_to_pdb_format_file(self, atomID) :
+    def write_to_pdb_format_file(self, residue) :
 
         # Just create a random integer for the sequenceNumber, just needs to be filled in
         from random import randint
@@ -366,16 +367,15 @@ class TransmuteToPdb:
 
         atomNumbers = np.linspace(1, len(self.elements), len(self.elements), dtype=int)
 
-        # Write out the *.pdb file
-#        fileName = "testing_duplex.pdb"
-
-        with open(self.pdbName, "w") as pdb:
+        # Write out the `*.pdb` file
+        write_to_file = self.fullPathTo + "/" + self.pdbName
+        with open(write_to_file, "w") as pdb:
             # Write out Leading Strand
             for idx in range(len(self.elements)):
                 line = ["ATOM",
                         atomNumbers[idx],
                         self.atomNameList[idx],
-                        atomID,
+                        residue,
                         "A",
                         randomised_integer_for_sequence_number,
                         self.x[idx], self.y[idx],self.z[idx],
@@ -384,6 +384,7 @@ class TransmuteToPdb:
 
                 pdb.write("%-4s  %5d %-4s %3s %s%4d    %8s%8s%8s%6s%6s          %2s\n" % tuple(line))
 
+        print(f"Written to {write_to_file}!")
 
 
 #    def fill_in_the_rest_of_the_pdb_dataframe_attribute(self, atomID, atomname_list, x_coords, y_coords, z_coords, elements):

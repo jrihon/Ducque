@@ -1,4 +1,4 @@
---pdb Pucker_data/b-homoDNA/C/min01.pdb
+--pdb puckerdata/b-homoDNA/C/min01.pdb
 --id b-homoDNA
 --conformation 1-4chair
 --moiety nucleoside

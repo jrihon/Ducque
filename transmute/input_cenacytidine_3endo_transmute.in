@@ -1,4 +1,4 @@
---pdb Pucker_data/CeNA/C/min02.pdb
+--pdb puckerdata/CeNA/C/min02.pdb
 --id CeNA
 --conformation 3endo
 --moiety nucleoside

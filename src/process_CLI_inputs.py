@@ -66,36 +66,37 @@ def build(BUILDINPUT, options):
     fileDucque = remove_blank_lines(list(map(lambda x: x.strip(), BUILDINPUT.readlines())))
 
     for argument in fileDucque:
-        arg = argument.split() # split the string into separate values
+        flag = argument.split()[0]
+        args = argument.split() # split the string into separate values
 
         # Check if flags are valid. If a given flag is not a valid one, shut it down
-        if not arg in list_of_valid_flags:
+        if not flag in list_of_valid_flags:
             print_divide_between_command_and_output()
-            print(f"\n\nThe following flag is invalid : {arg}. Please check your input file.\n\n\n")
+            print(f"\n\nThe following flag is invalid : {flag}. Please check your input file.\n\n\n")
             options.print_help()
 
-        if arg[0] == "--sequence":
-            nucleicAcidList = list(map(lambda x: x.strip(","), arg[1:]))
+        if flag == "--sequence":
+            nucleicAcidList = list(map(lambda x: x.strip(","), args[1:]))
 
-        if arg[0] == "--complement":
+        if flag == "--complement":
             # If there is a input possibility at index 2, meaning more than one string have been inputted, then get the entire string as a list variable.
             # If there is not an input possibility at index 2, this means there is only one input after the flag available and that means it is just a string.
             try:
-                arg[1]
+                args[1]
             except:
                 print_divide_between_command_and_output()
                 print("You have forgotten to include an argument for the --complement flag! Please add this to your input file.")
                 systemsDucque.exit_Ducque()
 
             try:
-                arg[2]
+                args[2]
             except:
-                complement = arg[1]
+                complement = args[1]
             else:
-                complement =  list(map(lambda x: x.strip(","), arg[1:]))
+                complement =  list(map(lambda x: x.strip(","), args[1:]))
 
-        if arg[0] == "--out" :
-            outFile = arg[1]
+        if flag == "--out" :
+            outFile = args[1]
     # If the variable outFile has not been prompted by the user, we default it ourselves by having it take on the name of the input file
     try :
         outFile
@@ -133,7 +134,7 @@ def transmute(TRANSMUTEINPUT, options):
         options.print_help()
 
     for argument in fileTransmute:
-        arg = argument.split()[0]
+        arg = argument.split()
         # Check if flags are valid. If a given flag is not a valid one, shut it down
         if not arg in list_of_valid_flags:
             print_divide_between_command_and_output()
@@ -184,40 +185,41 @@ def randomise(RANDOMISEINPUT, options):
 
     # Check if flags are valid
     for argument in fileRandomise:
-        arg = argument.split()[0]
+        flag = argument.split()[0]
+        args = argument.split()
         # If a given flag is not a valid one, shut it down
-        if not arg in list_of_valid_flags:
+        if not flag in list_of_valid_flags:
             print_divide_between_command_and_output()
-            print(f"\n\nThe following flag is invalid : {arg}. Please check your input file.\n\n\n")
+            print(f"\n\nThe following flag is invalid : {flag}. Please check your input file.\n\n\n")
             #options.print_help()
             systemsDucque.exit_Ducque()
 
         # Save the prompted arguments according to their respective flags
-        if arg == "--chemistry":
+        if flag == "--chemistry":
             # If multiple chemistries are prompted
-            if len(arg) > 2:
-                chemistry = arg[1:]
+            if len(flag) > 2:
+                chemistry = args[1:]
             # If one chemistry is prompted
-            elif len(arg) == 2:
-                chemistry = arg[1]
+            elif len(flag) == 2:
+                chemistry = args[1]
 
-        if arg == "--length":
-            length_sequence = int(arg[1])
+        if flag == "--length":
+            length_sequence = int(args[1])
             sequence = None
 
-        if arg == "--sequence":
-            sequence = arg[1:]
+        if flag == "--sequence":
+            sequence = args[1:]
             length_sequence = 0
 
-        if arg == "--complement":
-            if len(arg) > 2:
-                complement =  list(map(lambda x: x.strip(","), arg[1:]))
+        if flag == "--complement":
+            if len(args) > 2:
+                complement =  list(map(lambda x: x.strip(","), args[1:]))
                 if not check_if_nucleotides_are_valid(complement):
                     systemsDucque.exit_Ducque()
                 continue
 
             # Check if the complement flag contains either the 'homo' flag or a valid chemistry.
-            complement = arg[1]
+            complement = args[1]
             compl_test_against = ["homo"] + list(nucleoside_dict.keys())
             if complement not in compl_test_against:
                 print("the input of '--complement' is not a valid list and not one of the possible inputs. Please revise your input for this flag.")
@@ -249,17 +251,18 @@ def xyz_to_pdb(CONVERSIONINPUT, options):
 
     # Check if flags are valid
     for argument in fileConversion:
-        arg = argument.split()[0]
+        flag = argument.split()[0]
+        args = argument.split()
         # If a given flag is not a valid one, shut it down
-        if not arg in list_of_valid_flags:
+        if not flag in list_of_valid_flags:
             print_divide_between_command_and_output()
-            print(f"\n\nThe following flag is invalid : {arg}. Please check your input file.\n\n\n")
+            print(f"\n\nThe following flag is invalid : {flag}. Please check your input file.\n\n\n")
             #options.print_help()
             systemsDucque.exit_Ducque()
 
         # Save the prompted arguments according to their respective flags
-        if arg[0] == "--xyz":
-            xyz_fname = arg[1]
+        if flag == "--xyz":
+            xyz_fname = args[1]
             try:
                 os.path.isfile(xyz_fname)
             except FileNotFoundError:
@@ -267,16 +270,16 @@ def xyz_to_pdb(CONVERSIONINPUT, options):
                 print(f"File {xyz_fname} was not found. Please revise either its name or its location on your system.\n")
                 systemsDucque.exit_Ducque()
 
-        if arg[0] == "--atomID":
-            atomID = arg[1]
+        if flag == "--residue":
+            atomID = args[1]
             if len(atomID) > 4:
                 print_divide_between_command_and_output()
                 print("The argument '--atomID' requires up to three characters in its name.\n"
                         "Check your input of the atom identifier.\n")
                 systemsDucque.exit_Ducque()
 
-        if arg[0] == "--atomname_list":
-            atomname_list = arg[1:]
+        if flag == "--atomname_list":
+            atomname_list = args[1:]
 
     return xyz_fname, atomID, atomname_list
 

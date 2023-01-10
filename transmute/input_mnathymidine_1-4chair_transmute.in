@@ -1,4 +1,4 @@
---pdb Pucker_data/MNA/T/min01.pdb
+--pdb puckerdata/MNA/T/min01.pdb
 --id MNA
 --conformation 1-4chair
 --moiety nucleoside

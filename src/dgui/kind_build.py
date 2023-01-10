@@ -187,10 +187,14 @@ class BuildApp(tk.Tk):
 
     def write_inputfile(self):
 
-        # If else clause to check if it exists
+        # Fname
+        if self.out_str.get().strip() == "" :
+            print("No name for the output `.pdb` has been prompted.")
+            return
+
         if self.fname_btn.get() == 1 :
             fname = self.entry_fname.get()
-        else : # what to do if it does not exist
+        else : 
             fname = self.out_str.get()
 
         # try except clause are stupid, because python is a dumb language

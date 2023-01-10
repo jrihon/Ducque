@@ -107,7 +107,7 @@ def Transmutation(pdb_fname, nucleicAcidChemistry : str, moietyType : str, dihed
 
 
 
-def convert_XYZ_to_PDB(xyzFname : str, atomID : str, atomNameList : list):
+def convert_XYZ_to_PDB(xyzFname : str, residue : str, atomNameList : list):
     """ the main function that convert an xyz formatted file to the required pdb format """
 
     # Instantiate the object
@@ -133,4 +133,4 @@ def convert_XYZ_to_PDB(xyzFname : str, atomID : str, atomNameList : list):
         sys.exit(0)
 
     # Write out the pdb file from all the gathered information
-    PdbToBe.write_to_pdb_format_file(atomID)
+    PdbToBe.write_to_pdb_format_file(residue)

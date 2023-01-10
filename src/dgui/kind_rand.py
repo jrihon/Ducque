@@ -57,7 +57,7 @@ class RandomiseApp(tk.Tk):
 
         # Checkbutton to toggle a list of possible chemistries from the `--complement`
         self.compl_btn_toggle = tk.IntVar()
-        self.checkbtn_compl_chems = ttk.Checkbutton(self.content, variable=self.compl_btn_toggle, command=self.set_and_place_optionmenu,
+        self.checkbtn_compl_chems = ttk.Checkbutton(self.content, variable=self.compl_btn_toggle, command=self.set_and_place_optionmenu_complement,
                                                 onvalue=1, offvalue=0, text="toggle list")
         self.checkbtn_compl_chems.config(state="disabled")
 
@@ -65,6 +65,12 @@ class RandomiseApp(tk.Tk):
         self.com_int = tk.IntVar()
         self.checkbtn_com = ttk.Checkbutton(self.content, variable=self.com_int, width=G.BUILD_label, text="--complement : ",
                                                             command=self.toggle_compl_checkbutton, onvalue=1, offvalue=0)
+
+        # Checkbutton to toggle a list of possible chemistries from the `--complement`
+        self.chem_btn_toggle = tk.IntVar()
+        self.checkbtn_chem_chems = ttk.Checkbutton(self.content, variable=self.chem_btn_toggle, command=self.set_and_place_optionmenu_chemistry,
+                                                onvalue=1, offvalue=0, text="toggle list")
+        self.checkbtn_chem_chems.config(state="enabled")
 
         # Toggles for sequence and for length
         self.seq_toggle_int = tk.IntVar()
@@ -142,28 +148,49 @@ class RandomiseApp(tk.Tk):
             self.entry_com.grid(column=1, row=5, **self.padding)
             self.checkbtn_compl_chems.config(state="disabled")  # checkbutton for the optionmenu disabled
 
-    def set_and_place_optionmenu(self):
+    def set_and_place_optionmenu_complement(self):
         """ Set the list for all the possible chemistries for the `--complement` flag"""
 
         if self.compl_btn_toggle.get() == 1 :
+            self.compl_choices = tk.StringVar()
+            compllist = self.reveal_chemistry_keys()
+            self.compl_choices.set("homo") # default value
+            self.omenu_compl = tk.OptionMenu(self.content, self.compl_choices, *compllist)
+            self.omenu_compl.configure(width=16)
+
+            self.com_str.set("")
+            self.entry_com.destroy()
+
+            self.omenu_compl.grid(column=1, row=5)
+
+        else :
+            self.compl_choices.set('')
+            self.omenu_compl.destroy()
+
+            self.entry_com = ttk.Entry(self.content, textvariable=self.com_str, state="enabled")
+            self.entry_com.grid(column=1, row=5, **self.padding)
+            
+    def set_and_place_optionmenu_chemistry(self):
+        """ Set the list for all the possible chemistries for the `--complement` flag"""
+
+        if self.chem_btn_toggle.get() == 1 :
             self.chem_choices = tk.StringVar()
             chemlist = self.reveal_chemistry_keys()
             self.chem_choices.set("homo") # default value
             self.omenu_chem = tk.OptionMenu(self.content, self.chem_choices, *chemlist)
             self.omenu_chem.configure(width=16)
 
-            self.com_str.set("")
-            self.entry_com.destroy()
+            self.chm_str.set("")
+            self.entry_chm.destroy()
 
-            self.omenu_chem.grid(column=1, row=5)
+            self.omenu_chem.grid(column=1, row=2)
 
         else :
             self.chem_choices.set('')
             self.omenu_chem.destroy()
 
-            self.entry_com = ttk.Entry(self.content, textvariable=self.com_str, state="enabled")
-            self.entry_com.grid(column=1, row=5, **self.padding)
-            
+            self.entry_chm = ttk.Entry(self.content, textvariable=self.com_str, state="enabled")
+            self.entry_chm.grid(column=1, row=2, **self.padding)
 
     def reveal_chemistry_keys(self):
 
@@ -220,6 +247,7 @@ class RandomiseApp(tk.Tk):
         self.checkbtn_com.grid(column=0, row=5, sticky=tk.W)
         self.checkbtn_fname.grid(column=0, row=6, sticky=tk.W)
         self.checkbtn_compl_chems.grid(column=2, row=5, sticky=tk.W)
+        self.checkbtn_chem_chems.grid(column=2, row=2, sticky=tk.W)
 
         # set default
         self.len_toggle_int.set(1)
@@ -227,25 +255,37 @@ class RandomiseApp(tk.Tk):
 
     def write_inputfile(self):
 
-        # If else clause to check if it exists
+        # Filename
         if self.fname_btn.get() == 1 :
             fname = self.entry_fname.get()
-        else : # what to do if it does not exist
+        else : 
             fname = "randomised_sequence"
 
         # `--sequence` and `--length` are exclusive flags
         with open("./" + fname + ".in", "w") as fileto :
-            fileto.write("--chemistry " + self.chm_str.get() )
 
+
+            ## Chemistry
+            if self.chem_btn_toggle.get() == 1 :
+                fileto.write("--chemistry " + self.chem_choices.get() )
+            else :
+                fileto.write("--chemistry " + self.chm_str.get() )
+
+            ## Sequence
             if self.seq_toggle_int.get() == 1 :
                 fileto.write("\n--sequence " + self.seq_str.get() )
 
+            ## Length
             if self.len_toggle_int.get() == 1 :
                 fileto.write("\n--length " + self.len_str.get() )
 
-                fileto.write("\n--complement " + self.com_str.get()
+            ## Complement
+            if self.com_int.get() == 1 :
+                if self.compl_btn_toggle.get() == 1 :
+                    fileto.write("\n--complement " + self.compl_choices.get() )
+                else :
+                    fileto.write("\n--complement " + self.com_str.get() )
 
-                        )
 
         print("File written to : " + fname + ".in")
 
