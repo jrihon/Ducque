@@ -10,6 +10,7 @@ import builder.builder_constants as CONSTANTS
 import builder.builder_library as LIB
 import builder.utils_of_utils_builder as utilsUB
 
+import systemsDucque as SD
 
 """ utils_builder.py
 The script that contains the classes and all the functions that concatenate the workflow of consecutively adding the linker and nucleotides. """
@@ -750,6 +751,4 @@ def create_PDB_from_array_final(outfile : str, leadingArray : np.ndarray, listOf
         # Finalize the *.pdb file
         PDB.write("END")
 
-    print("\n\nWriting nucleic acid duplex to " + outfile + ". \n\n")
-
-
+    SD.print_writing(outfile)

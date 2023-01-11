@@ -7,6 +7,8 @@ from subprocess import run # Run Ducque
 from builder.builder_library import backbone_codex # import possibilities to build complementary strand
 from dgui.grid_geometry import Geometry as G
 
+import systemsDucque as SD
+
 #  +--------------------------------------------------+
 #  |                    RANDOMISE                     |
 #  +--------------------------------------------------+
@@ -176,7 +178,8 @@ class RandomiseApp(tk.Tk):
         if self.chem_btn_toggle.get() == 1 :
             self.chem_choices = tk.StringVar()
             chemlist = self.reveal_chemistry_keys()
-            self.chem_choices.set("homo") # default value
+            chemlist.remove("homo")
+            self.chem_choices.set("DNA") # default value
             self.omenu_chem = tk.OptionMenu(self.content, self.chem_choices, *chemlist)
             self.omenu_chem.configure(width=16)
 
@@ -259,10 +262,10 @@ class RandomiseApp(tk.Tk):
         if self.fname_btn.get() == 1 :
             fname = self.entry_fname.get()
         else : 
-            fname = "randomised_sequence"
+            fname = "randomised_sequence.rinp"
 
         # `--sequence` and `--length` are exclusive flags
-        with open("./" + fname + ".in", "w") as fileto :
+        with open("./" + fname + ".rinp", "w") as fileto :
 
 
             ## Chemistry
@@ -287,7 +290,7 @@ class RandomiseApp(tk.Tk):
                     fileto.write("\n--complement " + self.com_str.get() )
 
 
-        print("File written to : " + fname + ".in")
+        SD.print_writing(fname + ".rinp")
 
 
     def randomise_set_of_inputs(self):
@@ -300,6 +303,6 @@ class RandomiseApp(tk.Tk):
 
         # At this point, this would not be necessary, but better safe than sorry
         if not which("Ducque"): 
-            print("Ducque not found in the $PATH. Please add `Ducque` to the search path.\n")
+            SD.print_cant_find_Ducque()
 
-        run(["Ducque", "--randomise", fname + ".in"])
+        run(["Ducque", "--randomise", fname + ".rinp"])

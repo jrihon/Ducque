@@ -6,7 +6,7 @@ from builder import builder             # Build the duplex
 from transmute import transmute         # Convert a given pdb file to a custom json format
 from randomise import randomise         # Output a random sequence
 import process_CLI_inputs               # Exceptions and custom errors
-import systemsDucque                    # Retrieves system information from the machine
+import systemsDucque as SD              # Retrieves system information from the machine
 
 def main():
 
@@ -28,10 +28,11 @@ def main():
     t0 = time.time()
 
     # Check if the version of python is at least python3.6
-    systemsDucque.version_checker()
+    SD.version_checker()
 
     ## -------------------------------------------------- P A R S E  A R G U M E N T S --------------------------------------- ##
-    options = argparse.ArgumentParser(description=explanation,
+    options = argparse.ArgumentParser(
+                                      description=explanation,
                                       add_help=False,
                                       formatter_class=argparse.RawTextHelpFormatter)
 
@@ -57,76 +58,73 @@ def main():
 
     if len(sys.argv) == 1:
         options.print_help()
-        systemsDucque.exit_Ducque()
+        SD.exit_Ducque()
 
     else:
         # If we call the nucleic acid builder
         if arguments.build:
-            NUCLEIC_ACID_LIST, COMPLEMENT, OUTFILE = process_CLI_inputs.build(arguments.build, options)
+            NUCLEIC_ACID_LIST, COMPLEMENT, OUTFILE = process_CLI_inputs.build(arguments.build)
 
         # If we want to convert a pdb to a json file
         if arguments.transmute:
-            PDB_FNAME, CHEMISTRY_T, MOIETY, DIHEDRALS, ANGLES, CONFORMATION = process_CLI_inputs.transmute(arguments.transmute, options)
+            PDB_FNAME, CHEMISTRY_T, MOIETY, DIHEDRALS, ANGLES, CONFORMATION = process_CLI_inputs.transmute(arguments.transmute)
 
         # If we want to call for a randomised sequence
         if arguments.randomise:
-            CHEMISTRY_R, LENGTH_SEQUENCE, SEQUENCE, COMPL_SEQ, OUTFILE = process_CLI_inputs.randomise(arguments.randomise, options)
+            CHEMISTRY_R, LENGTH_SEQUENCE, SEQUENCE, COMPL_SEQ, OUTFILE = process_CLI_inputs.randomise(arguments.randomise)
 
         # If we want to convert XYZ file to PDB
         if arguments.xyz_pdb:
-            XYZ_FNAME, ATOM_ID, ATOMNAME_LIST = process_CLI_inputs.xyz_to_pdb(arguments.xyz_pdb, options)
+            XYZ_FNAME, ATOM_ID, ATOMNAME_LIST = process_CLI_inputs.xyz_to_pdb(arguments.xyz_pdb)
 
         # If we want to use the GUI ...
         if arguments.gui :
-            GUI_OPT = process_CLI_inputs.gui_module(arguments.gui, options)
+            GUI_OPT = process_CLI_inputs.gui_module(arguments.gui)
 
 
     # Try and see if any of the options are used together. 
     # Ducque will not allow this to happen for the reason that I don't feel like complicating stuff too much.
-    try:
-        if arguments.build and arguments.transmute:
-            raise process_CLI_inputs.InputExclusivity
-
-    except process_CLI_inputs.InputExclusivity:
-        print("InputExclusivity: These flags are mutually exclusive; --transmute --build ")
-        systemsDucque.exit_Ducque()
-
-
-    ## -------------------------------------------------- M A I N -------------------------------------------------- ##
+#    try:
+#        if arguments.build and arguments.transmute:
+#            raise process_CLI_inputs.InputExclusivity
+#
+#    except process_CLI_inputs.InputExclusivity:
+#        print("InputExclusivity: These flags are mutually exclusive; --transmute --build ")
+#        SD.exit_Ducque()
 
 
-    # Print the Ducque prompt
-#    print(explanation)
+## -------------------------------------------------- M A I N -------------------------------------------------- ##
 
     # Build nucleic acid duplex
     if arguments.build:
+        SD.print_build()
         builder.Architecture(NUCLEIC_ACID_LIST, COMPLEMENT, OUTFILE)
-        print(f"                         Time spent: %.5f seconds." % (time.time() - t0))
+        SD.print_time(time.time(), t0)
+        sys.exit(0)
 
     # Convert pdb to json
     if arguments.transmute:
-#        print("-----------------------------------------------------------")
-        print(f"Converting {PDB_FNAME} to a json file.")
+        SD.print_transmute(PDB_FNAME)
         transmute.Transmutation(PDB_FNAME, CHEMISTRY_T, MOIETY, DIHEDRALS, ANGLES, CONFORMATION)
+        sys.exit(0)
 
-    # Convert an ORCA xyz-formatted molecule file to a pdb file
+    # Convert an xyz coordinate file to a pdb file
     if arguments.xyz_pdb:
-#        print("-----------------------------------------------------------")
-        print(f"Converting {XYZ_FNAME} to a .pdb format file.\n")
+        SD.print_xyz(XYZ_FNAME)
         transmute.convert_XYZ_to_PDB(XYZ_FNAME, ATOM_ID, ATOMNAME_LIST)
+        sys.exit(0)
 
     # Output a randomised sequence
     if arguments.randomise:
-        print("-----------------------------------------------------------")
-        print("Randomisation of the given inputs!\n")
+        SD.print_rand()
         randomise.randomiser(CHEMISTRY_R, LENGTH_SEQUENCE, SEQUENCE, COMPL_SEQ, OUTFILE)
+        sys.exit(0)
 
     # Use the GUI module. This gets loaded at the back because GUI users do not mind efficiency
     if arguments.gui :
         from dgui import ducqueGUI 
-#        print("-----------------------------------------------------------")
-        print(" <^)         Ducque ...")
-        print(" ( 3 )   Calling GUI module ...\n")
+        print(" <^)    Ducque")
+        print(" ( 3 )   [GUI]")
         ducqueGUI.select_window(GUI_OPT)
 
 

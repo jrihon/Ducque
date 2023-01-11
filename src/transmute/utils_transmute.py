@@ -2,7 +2,7 @@ import sys, os
 import numpy as np
 from typing import Union
 
-import systemsDucque
+import systemsDucque as SD
 import transmute.transmute_constants as TC
 
 class TransmuteToJson:
@@ -22,7 +22,7 @@ class TransmuteToJson:
 
     def __init__(self, pdbfile):
         """ Initialise the object and create object properties"""
-        DUCQUEHOME = systemsDucque.return_DUCQUEHOME()
+        DUCQUEHOME = SD.return_DUCQUEHOME()
 
         self.rootName = pdbfile.split('.')[0]
         self.fileName = DUCQUEHOME + "/" + self.rootName + ".pdb"
@@ -229,18 +229,21 @@ class TransmuteToJson:
             return set_of_angles
 
 
-    def get_output_name(self, identifier : str, moietyType : str, conformation : Union[str, bool]) -> str:
+    def get_output_name(self, identifier : str, moietyType : str, conformation : str) -> str:
         """ Create the name of the file based on the identifier of the nucleic acid chemistry and its corresponding base """
         if moietyType == "nucleoside":
             name_of_chemistry = identifier.lower()
             name_of_base = self.get_base().lower()
 
-            if isinstance(conformation, bool):
-                if not conformation:
-                    return name_of_chemistry + "_" + name_of_base
-            else :                                                      #is instance of string then
-                conformation = conformation.lower()
-                return name_of_chemistry + "_" + name_of_base + "_" + conformation
+            conformation = conformation.lower()
+            return name_of_chemistry + "_" + name_of_base + "_" + conformation
+#           When conformation was an optional str
+#            if isinstance(conformation, bool):
+#                if not conformation:
+#                    return name_of_chemistry + "_" + name_of_base
+#            else :                                                      #is instance of string then
+#                conformation = conformation.lower()
+#                return name_of_chemistry + "_" + name_of_base + "_" + conformation
 
         elif moietyType == "linker":
             name_of_chemistry = identifier.lower()
@@ -384,7 +387,7 @@ class TransmuteToPdb:
 
                 pdb.write("%-4s  %5d %-4s %3s %s%4d    %8s%8s%8s%6s%6s          %2s\n" % tuple(line))
 
-        print(f"Written to {write_to_file}!")
+        SD.print_writing(write_to_file)
 
 
 #    def fill_in_the_rest_of_the_pdb_dataframe_attribute(self, atomID, atomname_list, x_coords, y_coords, z_coords, elements):

@@ -1,13 +1,12 @@
 import sys
 import json
-from typing import Union
 
 import systemsDucque
 import transmute.utils_transmute as UT
 
 
 
-def Transmutation(pdb_fname, nucleicAcidChemistry : str, moietyType : str, dihedralList : list, anglesList : list, conformation : Union[str, bool] = False ):
+def Transmutation(pdb_fname, nucleicAcidChemistry : str, moietyType : str, dihedralList : list, anglesList : list, conformation : str ):
     """This function converts a pdb formatted file into a json file.
     Json files make for a much easier data parsing format, are computationally much more efficient and require less memory to be held.
 

@@ -6,6 +6,7 @@ import builder.utils_builder as UB                        # Import all the funct
 import builder.utils_of_utils_builder as utilsUB          # Import all smaller functions
 import builder.builder_library as LIB                     # Import the nucleic acid dictionaries
 
+import systemsDucque as SD
 
 """ Create dictionary of the filename and their molecule code """
 
@@ -138,5 +139,5 @@ def Architecture(lead_nucleic_acid_list, complement, outfile):
 
     #------------------------ CREATE THE PDB THAT GOES WITH ARRAY INPUTTED -------------------#
     UB.create_PDB_from_array_final(outfile, leading_strand, lead_nucleic_acid_list, complementary_strand, compl_lead_nucleic_acid_list)
-    print("\nNumber of nucleotides in the duplex :" , num_nucl, "\n")
+    SD.print_dupl_ln(num_nucl)
 

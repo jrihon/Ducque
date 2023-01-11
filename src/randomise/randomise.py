@@ -1,17 +1,17 @@
 from typing import Union
 
 import randomise.utils_randomise as UR
-
+import systemsDucque as SD
 
 """ This script is used to randomise an outputted sequence based on a given input of parameters. """
 
 def write_sequence_to_file(outFile : str, outputSequence : str, complement : str):
 
-    fname = outFile + ".random_in"
+    fname = outFile + ".binp"
     with open("./" + fname, "w") as seq:
         seq.write(f"--sequence {outputSequence}\n--complement {complement}\n")
 
-    print(f"Writing to {fname} . \n\n")
+    SD.print_writing(fname)
 
 
 def randomiser(chemistry : Union[str, list], lengthSequence : int, sequence : list, complementSequence : list, outFile : str):

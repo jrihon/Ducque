@@ -463,7 +463,7 @@ class TransmuteApp(tk.Tk):
         if self.int_overwrite.get() == 1 :
             # At this point, this would not be necessary, but better safe than sorry
             if not which("Ducque"): 
-                print("Ducque not found in the $PATH. Please add `Ducque` to the search path.\n")
+                SD.print_cant_find_Ducque()
 
             run(["Ducque", "--transmute", input_fname])
 

@@ -8,6 +8,7 @@ from os import getcwd
 
 from builder.builder_library import backbone_codex # import possibilities to build complementary strand
 from dgui.grid_geometry import Geometry as G
+import systemsDucque as SD
 
 #  +--------------------------------------------------+
 #  |                    BUILD                         |
@@ -108,12 +109,12 @@ class BuildApp(tk.Tk):
                                         )
 
         try :
-            file_queried = select_files[0]
+            self.file_queried = select_files[0]
         except IndexError:
-            print("No file selected. Please try again")
+            SD.print_empty_querty()
             return
 
-        with open(file_queried, "r") as inputfile :
+        with open(self.file_queried, "r") as inputfile :
             file_content = inputfile.readlines()
 
         sizeline = 0
@@ -187,15 +188,25 @@ class BuildApp(tk.Tk):
 
     def write_inputfile(self):
 
-        # Fname
+        # If else clause if we imported a file
+        try : 
+            self.file_queried
+        except : 
+            if self.fname_btn.get() == 1 :
+                self.outputfname = self.entry_fname.get()
+            else :
+                print("Consider adding a filename.")
+                return
+        else :
+            self.outputfname = self.file_queried.split(".")[0]
+
+        
         if self.out_str.get().strip() == "" :
-            print("No name for the output `.pdb` has been prompted.")
+            SD.print_empty_querty()
             return
 
         if self.fname_btn.get() == 1 :
-            fname = self.entry_fname.get()
-        else : 
-            fname = self.out_str.get()
+            self.outputfname = getcwd() + "/" + self.entry_fname.get()
 
         # try except clause are stupid, because python is a dumb language
         # Rust for the win! 
@@ -205,25 +216,19 @@ class BuildApp(tk.Tk):
             complement = self.com_str.get()
 
 
-        with open("./" + fname + ".in", "w") as fileto :
+        with open(self.outputfname + ".binp", "w") as fileto :
             fileto.write("--sequence " + self.seq_str.get() +
                         "\n--complement " + complement + 
                         "\n--out " + self.out_str.get() + "\n"
                     )
 
-        print("File written to : " + fname + ".in")
+        SD.print_writing(self.outputfname + ".binp")
 
 
     def build_structure(self):
 
-        # If else clause to check if it exists
-        if self.fname_btn.get() == 1 :
-            fname = self.entry_fname.get()
-        else : # what to do if it does not exist
-            fname = self.out_str.get()
-
         # At this point, this would not be necessary, but better safe than sorry
         if not which("Ducque"): 
-            print("Ducque not found in the $PATH. Please add `Ducque` to the search path.\n")
+            SD.print_cant_find_Ducque()
 
-        run(["Ducque", "--build", fname + ".in"])
+        run(["Ducque", "--build", self.outputfname + ".binp"])
