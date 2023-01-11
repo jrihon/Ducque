@@ -1,0 +1,22 @@
+
+\pagebreak
+\section{Installation}
+\subsection{Set-up}
+To access the Ducque software from anywhere on your machine, add the following line to your \textbf{\$HOME/.bashrc}.
+Where path/to/program is the path to where you've installed Ducque. \$pwd inside the Ducque directory if you're unsure.
+\begin{verbatim}
+export PATH=\$PATH:path/to/program/Ducque/bin
+\end{verbatim}
+
+\subsection{Environment}
+To run this project, you will need to add the libraries to your PythonEnv : `NumPy`, `SciPy`\\
+Installation (conda or pip)\\
+`\$ pip install numpy` | `\$ conda install -c numpy `\\
+
+`\$ pip install scipy` | `\$ conda install -c scipy `\\
+\\
+Ducque also employs `sys`, `os`, `tkinter` and `json`. These are built-in libraries, so no need to install these additionally.\\
+Depending on your `python3` version, you might have to install `tkinter` separately.\\
+\\
+Check if you have tkinter installed : `\$ python3 -m tkinter`
+```

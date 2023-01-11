@@ -1,2 +1,33 @@
 \pagebreak
 \subsection{Randomise}
+
+
+
+
+\small
+\begin{verbatim}
+$ Ducque --randomise INPUTFILE
+
+The inputfile is read in and --Ducque inputfile is generated.
+Only two (2) flags should be queried for the randomisation.
+    Using --length and --sequence are mutually exclusive.
+
+--chemistry CHEMISTRY
+    The chemistry that defines the prompted nucleotide's
+        Example: --chemistry DNA
+        Example: --chemistry DNA, RNA, TNA
+    
+--length LENGTH
+    The length, in amount of nucleotides, of the sequence the user wants to generate.
+        Example: --length 30
+
+--sequence SEQUENCE
+    Provide the file with a sequence. Only the bases are required.
+    The values are comma-delimited :
+        Example: --sequence A, C, T, G, G, A, A, T, C, A
+
+--complement COMPLEMENT (Optional)
+    Fills in the `--complement` flag in the input file to build.
+    See the '--complement' flag of the '--Ducque' function.
+\end{verbatim}
+\normalsize

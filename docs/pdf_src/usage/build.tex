@@ -2,5 +2,22 @@
 \section{Usage}
 \subsection{Build}
 
+\small
+\begin{verbatim}
+$ Ducque --build INPUTFILE
 
-Testing a reference\cite{IUPAC1983}.
+The inputfile is read in and the sequence is built accordingly.
+At any given time, there are two (2) flags in total that should be involved in the Ducque.
+
+--sequence SEQUENCE
+    Only valid input in the file just a string of the required nucleotides (comma-delimited).
+        Example: --sequence dT, dC, dA, dA, dC, dG, dG, dT, dA
+
+--complement COMPLEMENT
+    The complement flag denotes the structure of the complementary strand
+    A list of nucleotides is also a valid input, if one wants a specific complementary strand. 
+        Example: --complement homo
+        Example: --complement dT, dA, dC, dC, dG, dT, dT, dG, dA
+    
+\end{verbatim}
+\normalsize

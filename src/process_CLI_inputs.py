@@ -204,8 +204,13 @@ def randomise(RANDOMISEINPUT, options):
                 chemistry = args[1]
 
         if flag == "--length":
-            length_sequence = int(args[1])
-            sequence = None
+            try : 
+                int(args[1])
+            except :
+                print("Argument for `--length` is not an integer type. Try again.")
+            else :
+                length_sequence = int(args[1])
+                sequence = None
 
         if flag == "--sequence":
             sequence = args[1:]

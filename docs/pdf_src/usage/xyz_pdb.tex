@@ -1,2 +1,28 @@
 \pagebreak
 \subsection{XYZ to PDB}
+
+\small
+\begin{verbatim}
+$ Ducque --xyz_pdb INPUTFILE
+The inputfile is read, the xyz file used as an input to output a well formatted pdb.
+
+There are three (3) flags involved in converting a `xyz` coordinate file to a `pdb` file.
+--xyz XYZ
+    The name of the file of the molecule you want to convert to pdb
+       Example --xyz dna_2endo.xyz
+
+--residue RESIDUE
+    The identifier of the nucleo(s)(t)ide.
+    See the PDB format %link-to-pdb-format.
+    NB : Ducque does not allow custom nucleic acid chemistries with a RESIDUE unequal to three!
+        (in this example, dXA is equal to deoxy Xylose nucleic acid with an adenine base)
+        Example: --atomID dXY
+
+--atomname_list ATOMNAME_LIST
+    The ordered list of atoms that belong in the 'Atom name' column in a pdb file.
+    See the PDB format %link-to-pdb-format.
+    The order needs to so that it follows the order of the atoms from the xyz file. 
+    DISCLAIMER : the responsability is with the end-user to see everything is correct.
+        Example: --atomname_list O5', C5', H5'1, H5'2, C4' ··· , O3' 
+\end{verbatim}
+\normalsize

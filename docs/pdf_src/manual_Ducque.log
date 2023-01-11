@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2022.11.7)  10 JAN 2023 17:40
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2022.11.7)  11 JAN 2023 12:13
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -535,64 +535,130 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <5> on input line 58.
 LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <10> not available
 (Font)              Font shape `T1/lmss/m/sl' tried instead on input line 58.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <9> on input line 63.
+LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <9> not available
+(Font)              Font shape `T1/lmss/m/sl' tried instead on input line 63.
  [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] (./manual_Ducque.toc)
 \tf@toc=\write4
 \openout4 = `manual_Ducque.toc'.
 
- (./introduction/introduction.tex [2]
-LaTeX Font Info:    Trying to load font information for T3+lmss on input line 12.
-LaTeX Font Info:    No file T3lmss.fd. on input line 12.
+ (./introduction/introduction.tex [2] [3]
+LaTeX Font Info:    Trying to load font information for T3+lmss on input line 29.
+LaTeX Font Info:    No file T3lmss.fd. on input line 29.
 
 
 LaTeX Font Warning: Font shape `T3/lmss/m/n' undefined
-(Font)              using `T3/cmr/m/n' instead on input line 12.
+(Font)              using `T3/cmr/m/n' instead on input line 29.
 
-LaTeX Font Info:    Trying to load font information for TS1+lmss on input line 14.
+LaTeX Font Info:    Trying to load font information for TS1+lmss on input line 31.
 (/usr/share/texmf/tex/latex/lm/ts1lmss.fd
 File: ts1lmss.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <10.95> not available
-(Font)              Font shape `T1/lmss/m/sl' tried instead on input line 27.
+(Font)              Font shape `T1/lmss/m/sl' tried instead on input line 44.
 
-Underfull \hbox (badness 10000) in paragraph at lines 24--29
+Underfull \hbox (badness 10000) in paragraph at lines 41--46
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 41--46
+
+ []
+
+) (./usage/build.tex [4]
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 6.
+ (/usr/share/texmf/tex/latex/lm/t1lmtt.fd
+File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+Overfull \hbox (19.53073pt too wide) in paragraph at lines 10--10
+[]\T1/lmtt/m/n/10 At any given time, there are two (2) flags in total that should be involved in the Ducque.[] 
+ []
+
+
+Overfull \hbox (35.28069pt too wide) in paragraph at lines 13--13
+[]    \T1/lmtt/m/n/10 Only valid input in the file just a string of the required nucleotides (comma-delimited).[] 
+ []
+
+
+Overfull \hbox (40.53067pt too wide) in paragraph at lines 18--18
+[]    \T1/lmtt/m/n/10 A list of nucleotides is also a valid input, if one wants a specific complementary strand.[] 
+ []
+
+) (./usage/transmute.tex [5]
+Overfull \hbox (24.78072pt too wide) in paragraph at lines 36--36
+[]        \T1/lmtt/m/n/10 Example: --bondangles 101.407, 118.980, 110.017, 115.788, 111.943, 119.045, 126.013[] 
+ []
+
+
+Overfull \hbox (19.53073pt too wide) in paragraph at lines 41--41
+[]        \T1/lmtt/m/n/10 Example: --dihedrals -39.246, -151.431, 30.929, 156.517, 159.171, -98.922, -99.315[] 
+ []
+
+LaTeX Font Info:    Trying to load font information for TS1+lmtt on input line 52.
+(/usr/share/texmf/tex/latex/lm/ts1lmtt.fd
+File: ts1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
+) [6]) (./usage/randomise.tex [7]) (./usage/xyz_pdb.tex [8]
+Overfull \hbox (14.28075pt too wide) in paragraph at lines 9--9
+[]\T1/lmtt/m/n/10 There are three (3) flags involved in converting a `xyz` coordinate file to a `pdb` file.[] 
+ []
+
+
+Overfull \hbox (45.78065pt too wide) in paragraph at lines 17--17
+[]    \T1/lmtt/m/n/10 NB : Ducque does not allow custom nucleic acid chemistries with a RESIDUE unequal to three![] 
+ []
+
+
+Overfull \hbox (14.28075pt too wide) in paragraph at lines 18--18
+[]        \T1/lmtt/m/n/10 (in this example, dXA is equal to deoxy Xylose nucleic acid with an adenine base)[] 
+ []
+
+) (./usage/gui.tex [9]) (./usage/userimplement.tex [10]) (./usage/environment.tex [11]
+Underfull \hbox (badness 10000) in paragraph at lines 12--15
+
+ []
+
+)
+Underfull \hbox (badness 10000) in paragraph at lines 16--89
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 24--29
+Underfull \hbox (badness 10000) in paragraph at lines 16--89
 
  []
 
-) (./usage/build.tex [3]) (./usage/transmute.tex [4]) (./usage/randomise.tex [5]) (./usage/xyz_pdb.tex [6]) (./usage/gui.tex [7]) [8] (./manual_Ducque.bbl)
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 99.
- [9]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 99.
+[12] (./manual_Ducque.bbl)
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 108.
+ [13]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 108.
  (./manual_Ducque.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 99.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 99.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 108.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 108.
 Package rerunfilecheck Info: File `manual_Ducque.out' has not changed.
-(rerunfilecheck)             Checksum: 374B0512044C07C2712ABEF798149A98;501.
+(rerunfilecheck)             Checksum: 2C98DBD9D3A5457B218B82449C0176EF;759.
 
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 99.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 108.
  ) 
 Here is how much of TeX's memory you used:
- 11527 strings out of 481239
- 208802 string characters out of 5920377
- 604989 words of memory out of 5000000
- 26465 multiletter control sequences out of 15000+600000
- 631510 words of font info for 103 fonts, out of 8000000 for 9000
+ 11647 strings out of 481239
+ 210479 string characters out of 5920377
+ 607989 words of memory out of 5000000
+ 26547 multiletter control sequences out of 15000+600000
+ 648377 words of font info for 117 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 38i,6n,40p,651b,713s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc}</usr/share/texmf/fonts/type1/public/lm/lmss10.pfb></usr/share/texmf/fonts/type1/public/lm/lmss12.pfb></usr/share/texmf/fonts/type1/public/lm/lmss8.pfb></usr/share/texmf/fonts/type1/public/lm/lmssbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsso10.pfb></usr/share/texmf/fonts/type1/fkr/tipa/tipa10.pfb>
-Output written on manual_Ducque.pdf (9 pages, 114499 bytes).
+ 38i,8n,40p,651b,858s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/share/texmf/fonts/enc/dvips/lm/lm-ts1.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc}</usr/share/texmf/fonts/type1/public/lm/lmss10.pfb></usr/share/texmf/fonts/type1/public/lm/lmss12.pfb></usr/share/texmf/fonts/type1/public/lm/lmss8.pfb></usr/share/texmf/fonts/type1/public/lm/lmssbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsso10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsso9.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></usr/share/texmf/fonts/type1/fkr/tipa/tipa10.pfb>
+Output written on manual_Ducque.pdf (13 pages, 178142 bytes).
 PDF statistics:
- 133 PDF objects out of 1000 (max. 8388607)
- 114 compressed objects within 2 object streams
- 28 named destinations out of 1000 (max. 500000)
- 73 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 192 PDF objects out of 1000 (max. 8388607)
+ 167 compressed objects within 2 object streams
+ 42 named destinations out of 1000 (max. 500000)
+ 105 words of extra memory for PDF output out of 10000 (max. 10000000)
 

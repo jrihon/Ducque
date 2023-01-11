@@ -1,0 +1,20 @@
+\pagebreak
+
+
+\subsection{User implementation of custom nucleic acids}
+\textbf{Before adding a new chemistry}\\
+In \$TRANSMUTETOOLS :
+\begin{enumerate}
+    \item Add to the \$NUCLEOSIDEDICT the type of chemistry it is. The key should be in all caps.
+    \item Add to the \$LINKERDICT the type of linker it corresponds with. The key should be in all caps.
+    \item This only serves the purpose of identifying the json file when opening it as the user. This information is not used in the generation of nucleic acid duplexes.
+    
+\end{enumerate}
+\textbf{Before generating a duplex with the new chemistry}\\
+In \$REPOSITORY :
+\begin{enumerate}
+    \item Add to the \$CHEMCODEX the most stable conformation of the chemistry you're adding to the library.
+    \item Add to the \$CONFCODEX all the conformations that you have at your disposal of the chemistry you're adding to the library. The key in both these abbreviated name of the nucleic acid chemistry.
+    \item Add to the \$BACKBONECODEX the sugar linker backbone of the chemistry you're adding to the library.
+\end{enumerate}
+
