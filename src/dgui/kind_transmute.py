@@ -358,18 +358,18 @@ class TransmuteApp(tk.Tk):
 
     def set_build_button(self):
         # set filedialog for build option
-        self.build_files_btn = ttk.Button(self.content, text="Import build file", command=self.builder_dialog)
-        self.build_files_btn.grid(column=2, row=12)
+        self.build_files_btn = ttk.Button(self.content, text="Import build file", command=self.builder_dialog, width=19)
+        self.build_files_btn.grid(column=2, row=12, **self.padding)
 
-        self.build_run_btn = ttk.Button(self.content, text="Build!", command=self.build_command)
-        self.build_run_btn.grid(column=3, row=12)
+        self.build_run_btn = ttk.Button(self.content, text="Build!", command=self.build_command, width=19)
+        self.build_run_btn.grid(column=3, row=12, **self.padding)
 
     def build_command(self):
 
         try : 
             self.buildinput
         except : 
-            SD.print_empty_query("Build button")
+            SD.print_empty_query("IMPORT BUILD FILE")
             return
 
         # At this point, this would not be necessary, but better safe than sorry
@@ -399,13 +399,13 @@ class TransmuteApp(tk.Tk):
                 self.buildlabel
             except :
                 self.buildinput = file_queried
-                self.buildlabel = ttk.Label(self.content, text=file_queried)
-                self.buildlabel.grid(column=3, row=12, columnspan=8)
+                self.buildlabel = ttk.Label(self.content, text= "Input file :  " + self.buildinput)
+                self.buildlabel.grid(column=4, row=12, columnspan=7)
             else :
                 self.buildlabel.destroy()
                 self.buildinput = file_queried
-                self.buildlabel = ttk.Label(self.content, text=file_queried)
-                self.buildlabel.grid(column=3, row=12, columnspan=8)
+                self.buildlabel = ttk.Label(self.content, text= "Input file :  " + self.buildinput)
+                self.buildlabel.grid(column=4, row=12, columnspan=7)
 
 
         if self.int_build.get() == 0:
