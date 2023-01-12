@@ -1,5 +1,5 @@
 --pdb puckerdata/CeNA/A/min02.pdb
---id CeNA
+--chemistry CeNA
 --conformation 3endo
 --moiety nucleoside
 --dihedrals -61.121, -179.876, 47.467, 83.439, -151.663, -73.665, -156.690

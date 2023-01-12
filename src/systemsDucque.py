@@ -23,6 +23,7 @@ def return_DUCQUEHOME():
 def exit_Ducque():
     """ Exit Ducque with the following message : """
     exit("\033[1;31m[ Exitted Ducque unsuccesfully ... ]\033[39m")
+    # prints the text in red colors and follows it up with a revert to the original terminal text color (white)
 
 
 
@@ -42,7 +43,6 @@ def print_insufficient_flag(amount : int):
     print(f"[INVALID QUERY]    : Insufficient amount of arguments. Required amount : {amount}.")
     exit_Ducque()
 
-
 def check_for_empty_string(string : str) -> bool:
 
     try :
@@ -59,15 +59,22 @@ def check_for_empty_string(string : str) -> bool:
             return False
         return True
 
+def angle_exclusivity():
+    print(" Cannot have a η-dihedral without a ζ-dihedral!\n "
+        "For reference on the 1983 IUPAC on Nucleic Acids : ` 1983 Mar 1;131(1):9-15. doi: 10.1111/j.1432-1033.1983.tb07225.x.`\n "
+        "https://pubmed.ncbi.nlm.nih.gov/6832147/\n")
 
-def print_build():                  print(f"[BUILD]           : Generating duplex.")
+
+def print_build():                  print(f"\033[96m[BUILD]           : Generating duplex.\033[39m")
 def print_time(t1, t0):             print(f"[TIME]            : %.4f seconds." % (t1 - t0))
-def print_transmute(PDB_FNAME) :    print(f"[TRANSMUTE]       : Converting {PDB_FNAME} to a json file.")
-def print_xyz(XYZ_FNAME):           print(f"[XYZ -> PDB]      : Converting {XYZ_FNAME} to a .pdb format file.")
-def print_rand():                   print(f"[RANDOMISE]       : Randomisation of the given inputs!")
+def print_transmute(PDB_FNAME) :    print(f"\033[96m[TRANSMUTE]       : Converting {PDB_FNAME} to a json file.\033[39m")
+def print_xyz(XYZ_FNAME):           print(f"\033[96m[XYZ -> PDB]      : Converting {XYZ_FNAME} to a .pdb format file.\033[39m")
+def print_rand():                   print(f"\033[96m[RANDOMISE]       : Randomisation of the given inputs!\033[39m")
 def print_dupl_ln(num_nucl):        print(f"[DUPLEX LENGTH]   : {num_nucl} nucleotides.")
-def print_writing(outfile):         print(f"[WRITE FILE]      : {outfile} .")
+def print_writing(outfile):         print(f"\033[94m[WRITE FILE]      : {outfile} .\033[39m")
 def print_invalid_chemistry(chem):  print(f"[INVALID QUERY]   : `{chem}`. Please revise your inputs.")
 def print_invalid_nucleoside(NA):   print(f"[INVALID QUERY]   : One or more of the nucleotides in the given sequence is invalid `{NA}`")
-def print_empty_querty() :          print(f"[EMPTY QUERY]     : revisit your inputs")
+def print_empty_query(flag) :       print(f"[EMPTY QUERY]     : No input found for `{flag}`.")
 def print_cant_find_Ducque():       print(f"[NOT FOUND]       : Ducque not found in the $PATH. Please add `Ducque` to the search path.")
+def print_insuf_amount(flag):       print(f"[INVALID AMOUNT]  : Incorrect amount of queries to properly fill the `{flag}` entry")
+def print_conversion_err(name, x):  print(f"[CONVERSION ERROR]: Could not convert the angle `{name}` to a float `{x}` ")

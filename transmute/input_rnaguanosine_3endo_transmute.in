@@ -1,5 +1,5 @@
 --pdb rna_guanosine_3endo.pdb
---id RNA
+--chemistry RNA
 --conformation 3endo
 --moiety nucleoside
 --dihedrals -62.089, -179.877, 47.435, 83.456, -151.711, -73.586, -165.821

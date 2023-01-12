@@ -1,5 +1,5 @@
 --pdb dna_thymidine_2endo.pdb
---id DNA
+--chemistry DNA
 --conformation 2endo
 --moiety nucleoside
 --dihedrals -39.264, -151.434, 30.883, 156.504, 159.121, -98.887, -99.638

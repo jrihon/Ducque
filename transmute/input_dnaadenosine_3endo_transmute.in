@@ -1,5 +1,5 @@
 --pdb dna_adenosine_3endo.pdb
---id DNA
+--chemistry DNA
 --conformation 3endo
 --moiety nucleoside
 --dihedrals -83.686, -152.082, 45.447, 84.275, 179.489, -49.085, -154.170

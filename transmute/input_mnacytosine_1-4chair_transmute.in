@@ -1,5 +1,5 @@
 --pdb puckerdata/MNA/C/min01.pdb
---id MNA
+--chemistry MNA
 --conformation 1-4chair
 --moiety nucleoside
 --dihedrals -137.246, 140.334, 58.729, 64.866, -80.768, -145.332, -153.414

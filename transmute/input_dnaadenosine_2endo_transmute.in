@@ -1,5 +1,5 @@
 --pdb dna_adenosine_2endo.pdb
---id DNA
+--chemistry DNA
 --conformation 2endo
 --moiety nucleoside
 --dihedrals -39.246, -151.431, 30.929, 156.517, 159.171, -98.922, -99.315

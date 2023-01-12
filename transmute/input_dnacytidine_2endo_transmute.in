@@ -1,5 +1,5 @@
 --pdb dna_cytidine_2endo.pdb
---id DNA
+--chemistry DNA
 --conformation 2endo
 --moiety nucleoside
 --dihedrals -39.202, -151.478, 30.883, 156.504, 159.121, -98.887, -99.370

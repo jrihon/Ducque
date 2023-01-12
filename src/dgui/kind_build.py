@@ -47,7 +47,7 @@ class BuildApp(tk.Tk):
         self.label_title = ttk.Label(self.content, text="Build a sequence of your choice")
         self.lab_seq = ttk.Label(self.content, text="--sequence", anchor=G.E, width=G.BUILD_label)
         self.lab_com = ttk.Label(self.content, text="--complement", anchor=G.E, width=G.BUILD_label)
-        self.lab_out = ttk.Label(self.content, text="--out", anchor=G.E, width=G.BUILD_label)
+        self.lab_out = ttk.Label(self.content, text="--pdbname", anchor=G.E, width=G.BUILD_label)
 
     def set_checkbutton(self):
 
@@ -100,7 +100,7 @@ class BuildApp(tk.Tk):
 
     def populate_entries(self):
 
-        filetypes = (("All files", "*.*"), ("input-files", "*.in*"))
+        filetypes = (("All files", "*.*"), ("input-files", "*.binp"))
 
         select_files = filedialog.askopenfilenames(
                                         title="Import files : " + self.cwd,
@@ -111,12 +111,13 @@ class BuildApp(tk.Tk):
         try :
             self.file_queried = select_files[0]
         except IndexError:
-            SD.print_empty_querty()
+            SD.print_empty_query("IMPORT INPUT FILE")
             return
 
         with open(self.file_queried, "r") as inputfile :
             file_content = inputfile.readlines()
 
+        self.outputfname = self.file_queried
         sizeline = 0
         for line in file_content :
             flag , inp = line.split(" ", maxsplit=1)
@@ -133,8 +134,8 @@ class BuildApp(tk.Tk):
                 self.com_str.set(inp.strip())
                 self.entry_com.configure(width=G.BUILD_label)
 
-            if flag == "--out" :
-                self.out_str.set(inp.strip())
+            if flag == "--pdbname" :
+                self.pdb_str.set(inp.strip())
                 self.entry_out.configure(width=G.BUILD_label)
 
         self.geometry(str(sizeline + 512) + "x300")
@@ -153,8 +154,8 @@ class BuildApp(tk.Tk):
         self.com_str = tk.StringVar()
         self.entry_com = ttk.Entry(self.content, textvariable=self.com_str)
         # set output file
-        self.out_str = tk.StringVar()
-        self.entry_out = ttk.Entry(self.content, textvariable=self.out_str)
+        self.pdb_str = tk.StringVar()
+        self.entry_out = ttk.Entry(self.content, textvariable=self.pdb_str)
 
 
     def place_widgets(self):
@@ -195,21 +196,20 @@ class BuildApp(tk.Tk):
             if self.fname_btn.get() == 1 :
                 self.outputfname = self.entry_fname.get()
             else :
-                print("Consider adding a filename.")
+                print(f"[EMPTY QUERY]     : Consider adding a filename")
                 return
         else :
             self.outputfname = self.file_queried.split(".")[0]
 
         
-        if self.out_str.get().strip() == "" :
-            SD.print_empty_querty()
+        if self.pdb_str.get().strip() == "" :
+            SD.print_empty_query("--pdb")
             return
 
         if self.fname_btn.get() == 1 :
             self.outputfname = getcwd() + "/" + self.entry_fname.get()
 
         # try except clause are stupid, because python is a dumb language
-        # Rust for the win! 
         if self.chem_btn.get() == 1 :
             complement = self.chem_choices.get()
         else :
@@ -219,16 +219,34 @@ class BuildApp(tk.Tk):
         with open(self.outputfname + ".binp", "w") as fileto :
             fileto.write("--sequence " + self.seq_str.get() +
                         "\n--complement " + complement + 
-                        "\n--out " + self.out_str.get() + "\n"
+                        "\n--pdbname " + self.pdb_str.get() + "\n"
                     )
 
-        SD.print_writing(self.outputfname + ".binp")
+
+        if not self.outputfname.endswith(".binp"): 
+            self.outputfname += ".binp"
+
+        try : 
+            self.file_queried
+        except : 
+            SD.print_writing(self.outputfname)
+        else : 
+            if self.file_queried == self.outputfname :
+                SD.print_writing(self.outputfname + ". Overwritten ..")
+            else : 
+                SD.print_writing(self.outputfname)
 
 
     def build_structure(self):
+
+        try : 
+            self.outputfname
+        except : 
+            SD.print_empty_query("IMPORT INPUT FILE")
+            return 
 
         # At this point, this would not be necessary, but better safe than sorry
         if not which("Ducque"): 
             SD.print_cant_find_Ducque()
 
-        run(["Ducque", "--build", self.outputfname + ".binp"])
+        run(["Ducque", "--build", self.outputfname])

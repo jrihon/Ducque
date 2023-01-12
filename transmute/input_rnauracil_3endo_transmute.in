@@ -1,5 +1,5 @@
 --pdb rna_uracil_3endo.pdb
---id RNA
+--chemistry RNA
 --conformation 3endo
 --moiety nucleoside
 --dihedrals -62.130, -179.872, 47.433, 83.473, -151.700, -73.639, -165.774

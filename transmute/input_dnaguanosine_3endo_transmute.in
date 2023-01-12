@@ -1,5 +1,5 @@
 --pdb dna_guanosine_3endo.pdb
---id DNA
+--chemistry DNA
 --conformation 3endo
 --moiety nucleoside
 --dihedrals -83.867, -152.082, 45.466, 84.287, 179.460, -49.103, -154.283

@@ -53,7 +53,7 @@ def build(BUILDINPUT):
         SD.print_inputfile("`--build`", "`.binp`")
 
 
-    list_of_valid_flags = ["--sequence", "--complement", "--out"]
+    list_of_valid_flags = ["--sequence", "--complement", "--pdbname"]
     # Read the input file and create a list object of the sequence. Removes any whitespace.
     fileDucque = remove_blank_lines(list(map(lambda x: x.strip(), BUILDINPUT.readlines())))
 
@@ -83,14 +83,9 @@ def build(BUILDINPUT):
             else:
                 complement =  list(map(lambda x: x.strip(","), args[1:]))
 
-        if flag == "--out" :
-            outFile = args[1]
-    # If the variable outFile has not been prompted by the user, we default it ourselves by having it take on the name of the input file
-    try :
-        outFile
-    except :
-        outFile = BUILDINPUT.name.split(".")[0]
-        list_of_valid_flags.remove("--out")
+        if flag == "--pdbname" :
+            pdbName = args[1]
+
 
     # If the leading strand is valid
     if not check_if_nucleotides_are_valid(nucleicAcidList):
@@ -101,7 +96,7 @@ def build(BUILDINPUT):
         if not check_if_nucleotides_are_valid(complement):
             SD.exit_Ducque()
 
-    return nucleicAcidList, complement, outFile
+    return nucleicAcidList, complement, pdbName
 
 
 

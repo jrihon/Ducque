@@ -1,5 +1,5 @@
 --pdb puckerdata/HNA/A/min01.pdb
---id HNA
+--chemistry HNA
 --conformation 1-4chair
 --moiety nucleoside
 --dihedrals -61.246, 165.334, 58.729, 64.866, -174.768, -84.332, -149.414

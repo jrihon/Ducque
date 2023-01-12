@@ -1,5 +1,5 @@
 --pdb puckerdata/Xylo/C/min02.pdb
---id Xylo
+--chemistry Xylo
 --conformation 3endo
 --moiety nucleoside
 --dihedrals 75.057, -115.473, -90.152, -12.252, 100.544, 95.442, 170.948 

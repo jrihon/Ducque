@@ -10,6 +10,8 @@ from subprocess import run # Run Ducque
 from builder.builder_library import backbone_codex # import possibilities to build complementary strand
 from dgui.grid_geometry import Geometry as G
 
+import systemsDucque as SD
+
 #  +--------------------------------------------------+
 #  |                    TRANSMUTE                     |
 #  +--------------------------------------------------+
@@ -52,7 +54,7 @@ class TransmuteApp(tk.Tk):
         self.label_moiety = ttk.Label(self.content, text="--moiety")
         self.label_bondangles = ttk.Label(self.content, text="--bondangles")
         self.label_dihedrals = ttk.Label(self.content, text="--dihedrals")
-        self.label_nucleobase = ttk.Label(self.content, text="--nucleobase")
+        self.label_nucleobase = ttk.Label(self.content, text="nucleobase :")
 
         self.label_alpha = ttk.Label(self.content, text="α")
         self.label_beta = ttk.Label(self.content, text="β")
@@ -74,9 +76,7 @@ class TransmuteApp(tk.Tk):
             self.ent_ang_z.config(state="enabled")
             self.ent_dihr_z.config(state="enabled")
         elif self.int_zeta.get() == 0  and self.int_nu.get() == 1: 
-            print(" Cannot have a η-dihedral without a ζ-dihedral!\n "
-                    "For reference on the 1983 IUPAC on Nucleic Acids : ` 1983 Mar 1;131(1):9-15. doi: 10.1111/j.1432-1033.1983.tb07225.x.`\n "
-                    "https://pubmed.ncbi.nlm.nih.gov/6832147/\n")
+            SD.angle_exclusivity()
 
             self.ent_ang_z.config(state="enabled")
             self.ent_dihr_z.config(state="enabled")
@@ -90,9 +90,7 @@ class TransmuteApp(tk.Tk):
             self.ent_ang_n.config(state="enabled")
             self.ent_dihr_n.config(state="enabled")
         elif self.int_nu.get() == 1  and self.int_zeta.get() == 0: 
-            print(" Cannot have a η-dihedral without a ζ-dihedral!\n "
-                    "For reference on the 1983 IUPAC on Nucleic Acids : ` 1983 Mar 1;131(1):9-15. doi: 10.1111/j.1432-1033.1983.tb07225.x.`\n "
-                    "https://pubmed.ncbi.nlm.nih.gov/6832147/\n")
+            SD.angle_exclusivity()
 
             self.ent_ang_n.config(state="disabled")
             self.ent_dihr_n.config(state="disabled")
@@ -100,7 +98,6 @@ class TransmuteApp(tk.Tk):
         else :
             self.ent_ang_n.config(state="disabled")
             self.ent_dihr_n.config(state="disabled")
-
 
 
     def set_checkbutton(self):
@@ -118,6 +115,9 @@ class TransmuteApp(tk.Tk):
         self.int_overwrite = tk.IntVar()
         self.int_overwrite.set(0)
         self.chkbtn_overwrite = ttk.Checkbutton(self.content, variable=self.int_overwrite, text="Overwrite", onvalue=1, offvalue=0)
+
+        self.int_build = tk.IntVar()
+        self.chkbtn_build = ttk.Checkbutton(self.content, variable=self.int_build, command=self.build_toggle, text="Build module", onvalue=1, offvalue=0)
 
     def set_entries(self):
         self.str_pdbfname = tk.StringVar()
@@ -166,6 +166,7 @@ class TransmuteApp(tk.Tk):
         self.ent_dihr_n = ttk.Entry(self.content, textvariable=self.str_dihr_n) # nu
         self.ent_dihr_x = ttk.Entry(self.content, textvariable=self.str_dihr_x) # chi
 
+
     def set_optionmenu(self):
         # chemistries
         self.choice_chem = tk.StringVar()
@@ -180,6 +181,7 @@ class TransmuteApp(tk.Tk):
         self.omenu_moi = ttk.OptionMenu(self.content, self.choice_moi, *self.opt_moi)
         self.omenu_moi.configure(width=15)
 
+
     def file_dialog(self):
 
         filetypes = (("All files", "*.*"), ("input-files", "*.in*"))
@@ -190,13 +192,29 @@ class TransmuteApp(tk.Tk):
                                         filetypes=filetypes
                                         )
 
-        try :
-            file_queried = select_files[0]
-        except IndexError:
-            print("No file selected. Please try again")
-            return
+        # This is why Python will never live up to the standards of Rust
+        # This is an unreadable block of code but it works and I dislike it
 
-        with open(file_queried, "r") as inputfile :
+        try :   # see if self.file_queried exists
+            self.file_queried 
+        except IndexError :
+            SD.print_empty_query("IMPORT INPUT FILE")
+            return
+        except :   # if it does not exist yet, create it with whatever has been queried in the file dialog
+            try :
+                self.file_queried = select_files[0]  # try to parse from the file dialog
+            except IndexError:                       # if the list does not exist, return early
+                SD.print_empty_query("IMPORT INPUT FILE")
+                return
+        else :  # if self.file_queried already exists, parse from the given list or do nothing if nothing has been queried
+            try :
+                self.file_queried = select_files[0]  # try to parse from the list
+            except : pass
+
+
+
+
+        with open(self.file_queried, "r") as inputfile :
             file_content = inputfile.readlines()
 
         for line in file_content :
@@ -209,19 +227,19 @@ class TransmuteApp(tk.Tk):
             if flag == "--chemistry" :
                 opt = inp.strip()
                 if opt in list(backbone_codex.keys()) : self.choice_chem.set(inp.strip())
-                else : print(f"`{opt}` is not an available type for `--chemistry`. ")
+                else : SD.print_invalid_argument(opt, "`--chemistry`")
 
             if flag == "--conformation" :
                 self.str_conformation.set(inp.strip())
             
             if flag == "--moiety" :
                 if inp.strip() in ["nucleoside", "linker"]: self.choice_moi.set(inp.strip())
-                else : print(f"{inp} is not an available type for `--moiety`. ")
+                else : SD.print_invalid_argument(inp, "`--moiety`")
 
             if flag == "--bondangles" : 
                 angs = list(map(lambda x: x.strip(), inp.split(",")))
                 if len(angs) <= 5 or len(angs) >= 9 : 
-                    print("Incorrect amount of queries to properly fill the `--bondangles` entry")
+                    SD.print_insuf_amount("--bondangles")
                     return
                 if len(angs) == 6 :
                     self.int_zeta.set(0)
@@ -273,7 +291,7 @@ class TransmuteApp(tk.Tk):
             if flag == "--dihedrals" :
                 dihrs = list(map(lambda x: x.strip(), inp.split(",")))
                 if len(dihrs) <= 5 or len(dihrs) >= 9 : 
-                    print("Incorrect amount of queries to properly fill the `--dihedrals` entry")
+                    SD.print_insuf_amount("--dihedrals")
                     return
                 #
                 if len(dihrs) == 6 :
@@ -325,6 +343,73 @@ class TransmuteApp(tk.Tk):
                     self.str_dihr_x.set(dihrs[7])
 
 
+    def build_toggle(self):
+
+        if self.int_build.get() == 1:
+            self.set_build_button()
+
+        else : 
+            self.build_files_btn.destroy()
+            self.build_run_btn.destroy()
+            try :
+                self.buildlabel
+            except : pass
+            else : self.buildlabel.destroy()
+
+    def set_build_button(self):
+        # set filedialog for build option
+        self.build_files_btn = ttk.Button(self.content, text="Import build file", command=self.builder_dialog)
+        self.build_files_btn.grid(column=2, row=12)
+
+        self.build_run_btn = ttk.Button(self.content, text="Build!", command=self.build_command)
+        self.build_run_btn.grid(column=3, row=12)
+
+    def build_command(self):
+
+        try : 
+            self.buildinput
+        except : 
+            SD.print_empty_query("Build button")
+            return
+
+        # At this point, this would not be necessary, but better safe than sorry
+        if not which("Ducque"): 
+            SD.print_cant_find_Ducque()
+
+        run(["Ducque", "--build", self.buildinput])
+
+    def builder_dialog(self):
+
+        if self.int_build.get() == 1:
+            build_filetypes = (("All files", "*.*"), ("input-files", "*.binp"))
+
+            select_files = filedialog.askopenfilenames(
+                                            title="Import files : " + self.cwd,
+                                            initialdir= self.cwd,
+                                            filetypes=build_filetypes
+                                            )
+
+            try :
+                file_queried = select_files[0]
+            except IndexError:
+                SD.print_empty_query("IMPORT BUILD (`.binp`) FILE")
+                return
+
+            try :
+                self.buildlabel
+            except :
+                self.buildinput = file_queried
+                self.buildlabel = ttk.Label(self.content, text=file_queried)
+                self.buildlabel.grid(column=3, row=12, columnspan=8)
+            else :
+                self.buildlabel.destroy()
+                self.buildinput = file_queried
+                self.buildlabel = ttk.Label(self.content, text=file_queried)
+                self.buildlabel.grid(column=3, row=12, columnspan=8)
+
+
+        if self.int_build.get() == 0:
+            pass
 
     def place_widgets(self):
 
@@ -391,6 +476,8 @@ class TransmuteApp(tk.Tk):
         self.btn_transmute.grid(column=7, row=11, **self.padding)
         self.chkbtn_overwrite.grid(column=8, row=11, **self.padding)
 
+        self.chkbtn_build.grid(column=1, row=12, **self.padding)
+
 
     def write_inputfile(self):
         import re
@@ -398,15 +485,15 @@ class TransmuteApp(tk.Tk):
         def format_angle(name_angle : str, angle : str):
 
             if len(angle.strip()) == 0 :
-                print(f"Angle {name_angle} is empty ")
+                SD.print_empty_query(name_angle)
                 return ""
 
-            a = re.sub(",", ".", angle) # replace any commas with points 
+            a = re.sub(",", ".", angle) # replace any commas with points for each angle entry
             try :
                 float(a)
             except ValueError: 
-                print(f"Could not convert the angle {name_angle} to a float; {angle} ")
-                return "NA"
+                SD.print_conversion_err(name_angle, angle)
+                return ""
             else :
                 return a
 
@@ -415,50 +502,64 @@ class TransmuteApp(tk.Tk):
         # Handle empty inputs for these fields
         for i in [self.str_pdbfname, self.str_conformation, self.str_nucleobase, self.choice_chem, self.choice_moi] :
             if len(i.get()) == 0 or i.get() == "..." : 
-                print("Not all fields have been filled in. Please complete any remaining entries.")
+                SD.print_empty_query("multiple entries")
+#                print("Not all fields have been filled in. Please complete any remaining entries.")
                 return
 
         # Sort of handle numerical inputs
-        list_ang = [ format_angle("alpha", self.str_ang_a.get()),
-                     format_angle("beta", self.str_ang_b.get()),
-                     format_angle("gamme", self.str_ang_g.get()),
-                     format_angle("delta", self.str_ang_d.get()),
-                     format_angle("epsilon", self.str_ang_e.get()),
+        list_ang = [ format_angle("angle(alpha)", self.str_ang_a.get()),
+                     format_angle("angle(beta)", self.str_ang_b.get()),
+                     format_angle("angle(gamma)", self.str_ang_g.get()),
+                     format_angle("angle(delta)", self.str_ang_d.get()),
+                     format_angle("angle(epsilon)", self.str_ang_e.get()),
                     ]
-        list_dih = [ format_angle("alpha", self.str_dihr_a.get()),
-                     format_angle("beta", self.str_dihr_b.get()),
-                     format_angle("gamme", self.str_dihr_g.get()),
-                     format_angle("delta", self.str_dihr_d.get()),
-                     format_angle("epsilon", self.str_dihr_e.get()),
+        list_dih = [ format_angle("dihedral(alpha", self.str_dihr_a.get()),
+                     format_angle("dihedral(beta", self.str_dihr_b.get()),
+                     format_angle("dihedral(gamme", self.str_dihr_g.get()),
+                     format_angle("dihedral(delta", self.str_dihr_d.get()),
+                     format_angle("dihedral(epsilon", self.str_dihr_e.get()),
                     ]
         if self.int_zeta.get() == 1 :
-            list_ang.append(format_angle("zeta", self.str_ang_z.get()))
-            list_dih.append(format_angle("zeta", self.str_dihr_z.get()))
+            list_ang.append(format_angle("angle(zeta)", self.str_ang_z.get()))
+            list_dih.append(format_angle("dihedral(zeta)", self.str_dihr_z.get()))
         if self.int_nu.get() == 1 :
-            list_ang.append(format_angle("nu", self.str_ang_n.get()))
-            list_dih.append(format_angle("nu", self.str_dihr_n.get()))
+            list_ang.append(format_angle("angle(nu)", self.str_ang_n.get()))
+            list_dih.append(format_angle("dihedral(nu)", self.str_dihr_n.get()))
 
-        list_ang.append(format_angle("chi", self.str_ang_x.get()))
-        list_dih.append(format_angle("chi", self.str_dihr_x.get()))
+        list_ang.append(format_angle("angle(chi)", self.str_ang_x.get()))
+        list_dih.append(format_angle("dihedral(chi)", self.str_dihr_x.get()))
 
+        # Check if any angles are empty, if so, return early
+        if "" in list_ang or "" in list_dih:
+            return
 
         input_fname = "input_" + self.choice_chem.get().lower() + self.str_nucleobase.get().lower() +  "_" + self.str_conformation.get().lower() + "_transmute.in"
 
-        with open("./" + input_fname , "w") as fileto :
+        with open(input_fname , "w") as fileto :
             fileto.write("--pdb " + self.str_pdbfname.get() + "\n"
-                        "--chemistry" + self.choice_chem.get() + " \n"  
-                        "--conformation" + self.str_conformation.get() + " \n"
-                        "--moiety" + self.choice_moi.get() + " \n"
-                        "--bondangles" + ", ".join(list_ang) + " \n"
-                        "--dihedrals" + ", ".join(list_dih) + " \n"
+                        "--chemistry " + self.choice_chem.get() + " \n"  
+                        "--conformation " + self.str_conformation.get() + " \n"
+                        "--moiety " + self.choice_moi.get() + " \n"
+                        "--bondangles " + ", ".join(list_ang) + " \n"
+                        "--dihedrals " + ", ".join(list_dih) + " \n"
                     )
 
-        print("File written to : " + input_fname + ".in")
+        SD.print_writing(input_fname)
 
 
     def transmute_input(self):
 
+        for string in [self.choice_chem.get().lower() , self.str_nucleobase.get().lower() , self.str_conformation.get().lower()]:
+            if len(string) == 0 :
+                SD.print_empty_query("multiple entries")
+                return
+
+        # filename for the transmute file
         input_fname = "input_" + self.choice_chem.get().lower() + self.str_nucleobase.get().lower() +  "_" + self.str_conformation.get().lower() + "_transmute.in"
+
+        if not isfile(input_fname):
+            SD.print_empty_query("transmute input file")
+            return
 
         if self.int_overwrite.get() == 1 :
             # At this point, this would not be necessary, but better safe than sorry
@@ -470,4 +571,3 @@ class TransmuteApp(tk.Tk):
 
         elif isfile(input_fname) and self.int_overwrite.get() == 0 :
             print(f"Writing to file has been blocked. {input_fname} exists in this directory.\n")
-
