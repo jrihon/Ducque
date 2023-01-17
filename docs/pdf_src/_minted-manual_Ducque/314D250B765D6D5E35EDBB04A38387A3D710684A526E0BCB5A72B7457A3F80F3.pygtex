@@ -1,5 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYGZdl{} \PYG{n+nb}{cd} path/to/Ducque   \PYG{c+c1}{\PYGZsh{} Go to the Ducque directory, where you installed it}
-\PYGZdl{} chmod +x setup.sh   \PYG{c+c1}{\PYGZsh{} Give permission to run as an executable script}
-\PYGZdl{} ./setup.sh          \PYG{c+c1}{\PYGZsh{} Run the setup.sh script}
-\end{Verbatim}

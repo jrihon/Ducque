@@ -1,3 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n+nb}{export} \PYG{n+nv}{PATH}\PYG{o}{=}\PYG{n+nv}{\PYGZdl{}PATH}:path/to/program/Ducque/bin \PYG{c+c1}{\PYGZsh{} in the \PYGZdl{}HOME/.bashrc}
-\end{Verbatim}
