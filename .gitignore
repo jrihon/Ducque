@@ -1,5 +1,6 @@
 __pycache__
-ff/src_pdf/articles/
+ff/src_pdf/
+docs/src_pdf/
 input_sequences/
 tests/
 puckerdata/
