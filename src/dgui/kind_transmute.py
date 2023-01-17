@@ -11,6 +11,7 @@ from builder.builder_library import backbone_codex # import possibilities to bui
 from dgui.grid_geometry import Geometry as G
 
 import systemsDucque as SD
+from transmute.transmute_constants import base_dict
 
 #  +--------------------------------------------------+
 #  |                    TRANSMUTE                     |
@@ -124,7 +125,7 @@ class TransmuteApp(tk.Tk):
         self.str_conformation = tk.StringVar()
         self.str_nucleobase = tk.StringVar()
         
-        self.entr_pdbfname = ttk.Entry(self.content, textvariable=self.str_pdbfname)
+        self.entr_pdbfname = ttk.Entry(self.content, textvariable=self.str_pdbfname, width=42)
         self.entr_conformation = ttk.Entry(self.content, textvariable=self.str_conformation)
         self.entr_nucleobase = ttk.Entry(self.content, textvariable=self.str_nucleobase)
 
@@ -179,6 +180,7 @@ class TransmuteApp(tk.Tk):
         self.choice_moi = tk.StringVar()
         self.opt_moi = ["...", "nucleoside", "linker"]
         self.omenu_moi = ttk.OptionMenu(self.content, self.choice_moi, *self.opt_moi)
+        self.choice_moi.set("nucleoside")
         self.omenu_moi.configure(width=15)
 
 
@@ -384,8 +386,8 @@ class TransmuteApp(tk.Tk):
             build_filetypes = (("All files", "*.*"), ("input-files", "*.binp"))
 
             select_files = filedialog.askopenfilenames(
-                                            title="Import files : " + self.cwd,
-                                            initialdir= self.cwd,
+                                            title="Import files : " + self.cwd, # OR the $DUCQUE/transmute directory
+                                            initialdir= self.cwd,               # OR the $DUCQUE/transmute directory
                                             filetypes=build_filetypes
                                             )
 
@@ -463,7 +465,7 @@ class TransmuteApp(tk.Tk):
         self.ent_dihr_x.grid(column=8, row=9, **self.padding)
 
         # set entries
-        self.entr_pdbfname.grid(column=1, row=3, **self.padding)
+        self.entr_pdbfname.grid(column=1, row=3, columnspan=2, **self.padding)
         self.entr_conformation.grid(column=1, row=5, **self.padding)
         self.entr_nucleobase.grid(column=3, row=5, **self.padding)
 
@@ -480,6 +482,7 @@ class TransmuteApp(tk.Tk):
 
 
     def write_inputfile(self):
+
         import re
 
         def format_angle(name_angle : str, angle : str):
@@ -497,10 +500,26 @@ class TransmuteApp(tk.Tk):
             else :
                 return a
 
+        # get key from the nucleobase
+        try :
+            self.str_nucleobase.get()
+        except :
+            SD.print_empty_query("nucleobase"); return
+
+        try :
+            B = self.str_nucleobase.get().upper()
+            base_dict[B]
+        except :
+            B = self.str_nucleobase.get().upper()
+            SD.print_invalid_chemistry(B); return
+        else :
+            B = self.str_nucleobase.get().upper()
+            self.base = base_dict[B]
+
 
 
         # Handle empty inputs for these fields
-        for i in [self.str_pdbfname, self.str_conformation, self.str_nucleobase, self.choice_chem, self.choice_moi] :
+        for i in [self.str_pdbfname, self.str_conformation, self.choice_chem, self.choice_moi] :
             if len(i.get()) == 0 or i.get() == "..." : 
                 SD.print_empty_query("multiple entries")
 #                print("Not all fields have been filled in. Please complete any remaining entries.")
@@ -533,8 +552,17 @@ class TransmuteApp(tk.Tk):
         if "" in list_ang or "" in list_dih:
             return
 
-        input_fname = "input_" + self.choice_chem.get().lower() + self.str_nucleobase.get().lower() +  "_" + self.str_conformation.get().lower() + "_transmute.in"
+        # This means that when we import a file to be read in by the GUI, that we will have it start out in the current directory
+        # OR the $DUCQUE/transmute directory
+        input_fname = "input_" + self.choice_chem.get().lower() + self.base.lower() +  "_" + self.str_conformation.get().lower() + "_transmute.in"
 
+
+        if not self.int_overwrite.get() == 1 and isfile(input_fname) :
+            SD.print_no_overwrite(input_fname, getcwd())
+            return
+
+            
+        # This file has to be generated in the $DUCQUEHOME/transmute/* folder and not in the current one
         with open(input_fname , "w") as fileto :
             fileto.write("--pdb " + self.str_pdbfname.get() + "\n"
                         "--chemistry " + self.choice_chem.get() + " \n"  
@@ -549,21 +577,43 @@ class TransmuteApp(tk.Tk):
 
     def transmute_input(self):
 
-        for string in [self.choice_chem.get().lower() , self.str_nucleobase.get().lower() , self.str_conformation.get().lower()]:
+
+        # get key from the nucleobase
+        try :
+            self.str_nucleobase.get()
+        except :
+            SD.print_empty_query("nucleobase"); return
+
+        try :
+            B = self.str_nucleobase.get().upper()
+            base_dict[B]
+        except :
+            B = self.str_nucleobase.get().upper()
+            SD.print_invalid_chemistry(B); return
+        else :
+            B = self.str_nucleobase.get().upper()
+            self.base = base_dict[B]
+
+        for string in [self.choice_chem.get().lower() , self.str_conformation.get().lower()]:
             if len(string) == 0 :
                 SD.print_empty_query("multiple entries")
                 return
 
         # filename for the transmute file
-        input_fname = "input_" + self.choice_chem.get().lower() + self.str_nucleobase.get().lower() +  "_" + self.str_conformation.get().lower() + "_transmute.in"
+        json_fname = self.choice_chem.get().lower() + "_" + self.base.lower() + "_" + self.str_conformation.get().lower() + ".json"
+        input_fname = "input_" + self.choice_chem.get().lower() + self.base.lower() +  "_" + self.str_conformation.get().lower() + "_transmute.in"
 
         if not isfile(input_fname):
             SD.print_empty_query("transmute input file")
             return
 
+        json_dir = SD.return_DUCQUEHOME() + "json/"
+        if self.int_overwrite.get() == 0 and isfile(json_dir + json_fname) :
+            SD.print_no_overwrite(json_fname, json_dir)
+            return
+
         if self.int_overwrite.get() == 1 :
-            # At this point, this would not be necessary, but better safe than sorry
-            if not which("Ducque"): 
+            if not which("Ducque"):  # At this point, this would not be necessary, but better safe than sorry
                 SD.print_cant_find_Ducque()
 
             run(["Ducque", "--transmute", input_fname])

@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+import systemsDucque as SD
 from dgui.grid_geometry import Geometry as G
 import dgui.kind_build as KB
 import dgui.kind_rand as KR
@@ -47,7 +48,7 @@ class SelectApp(tk.Tk):
 
     def on_destroy(self):
         self.module_kind = self.module_choices.get()
-        print("Initiating " + self.module_kind + " module ...")
+        SD.print_launch(self.module_kind)
         self.destroy()
         self.module = self.gui_module(self.module_kind)
 
@@ -74,9 +75,9 @@ class SelectApp(tk.Tk):
     def set_omenu(self):
         self.module_choices = tk.StringVar()
         module_opts = ["build",
-                        "transmute",
-                        "randomise",
-                        # "xyz_pdb" # This module has been disabled for the GUI
+                       "transmute",
+                       "randomise",
+                     # "xyz_pdb" # This module has been disabled for the GUI
                         ]
 
         self.module_choices.set("build") # default value
@@ -88,7 +89,6 @@ class SelectApp(tk.Tk):
         self.content.grid(column=0,row=0)
         # labels
         self.label_title.grid(column=1, row=1, columnspan=2)
-#        self.label_empty.grid(column=0, row=1)
 
         # option menu
         self.omenu_module.grid(column=1, row=2, columnspan=2)

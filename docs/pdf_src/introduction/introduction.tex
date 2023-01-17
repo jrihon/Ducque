@@ -43,6 +43,10 @@ At the time of development, I had different name for Ducque. During one of my ev
 I would probably not get enough traction, since Google searches gaves millions of results. Given that fact, I tried coming up with a new name for the model builder.\\
 Weeks later, as I was working, my hat that was resting on my desk in front of me caught my eye. You see, my hat has a tiny duck embroided on the front. With this idea, I \textit{"researched"} ways to rewrite the word and get as little search engine results as possible, without degenerating the word itself and keeping it phonetically somewhat correct. Thusly, Ducque was born (a second time).\\
 \\
+
+
+
+%%%%
 \subsection{Modules}
 Ducque has five modules the user can access.
 \begin{enumerate}[leftmargin=*]
@@ -54,3 +58,33 @@ Ducque has five modules the user can access.
     \item To be able to convert `xyz` formatted molecule structures to a `pdb` format, I have included a \textbf{xyz\_pdb} module. Since I am an avid ORCA user and the `xyz` format is often outputted, I wanted to make it more managable to format a `pdb` file for myself during development.
     \item To have clickable objects for the standard non-terminal user, there is a simple \textbf{gui} that can be used to employ the following modules : build, transmute and randomise. The reason that the xyz\_pdb is not included is because I did not find a nice way to design a simple gui. Secondly, other QM programs might have different outputs of molecule structures, the `xyz` format can be rather niche and therefor not worth to effort to design a good gui for. Chimera and PyMol can definitely convert from one format to the other if one cannot work through the CLI.
 \end{enumerate}
+
+
+
+
+
+
+%%%%
+\pagebreak
+\subsection{Package structure}
+%
+%
+\textbf{path/to/Ducque/}
+\begin{itemize}[leftmargin=*]
+    \setlength\itemsep{-1mm}
+    \item[$\rightarrow$]\textbf{bin/} : contains executable to run Ducque
+    \item[$\rightarrow$]\textbf{docs/}: contains this pdf and its \LaTeX src
+    \item[$\rightarrow$]\textbf{json/}: contains building blocks requires by Ducque to build duplex sequences.
+        The name for the json file is derived from the inputs of the -{}-transmute \textit{INPUTFILE}. The filename is there for classification and is thereby non-trivial.
+    \item[$\rightarrow$]\textbf{pdb/} : \textit{delete this dir}
+    \item[$\rightarrow$]\textbf{puckerdata/} : contains all optimised xyz and pdb files, needed by -{}-transmute to be converted to json
+    \item[$\rightarrow$]\textbf{src/} : contains all the Ducque source code
+    \item[$\rightarrow$]\textbf{tests/}: testing module
+    \item[$\rightarrow$]\textbf{transmute/}: contains the -{}-transmute input files, just as an example. The name of the file itself is trivial.
+    \item[$\rightarrow$]\textbf{xyz/} : contains the -{}-xyz\_pdb input files, just as an example. The name of the file itself is trivial.
+    \item[$\rightarrow$]LICENSE : GPL2 License to ensure FOSS!
+    \item[$\rightarrow$]README.md : github readme
+    \item[$\rightarrow$]setup.sh : required to make Ducque executable by default
+
+    
+\end{itemize}

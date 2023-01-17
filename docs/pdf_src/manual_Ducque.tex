@@ -25,12 +25,15 @@
 \usepackage{tipa}                           % IPA phonetic language characters
 \usepackage{enumitem}                       % to make list envs not indented
 %\usepackage[usenames,dvipsnames]{color}     % create coloured backgrounds in text
+\usepackage{minted}                         % syntax highlighting for code in latex; https://www.overleaf.com/learn/latex/Code_Highlighting_with_minted
 
 
 % Make the paper in sans-serif font
 \renewcommand{\familydefault}{\sfdefault}
 % Set up the way you show a url or href command
 \hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan}
+% set up pygmentize style
+\usemintedstyle{murphy}
 
 % TITLE
 \title{\textbf{\Huge The manual to Ducque}}

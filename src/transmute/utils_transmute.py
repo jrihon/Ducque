@@ -1,6 +1,6 @@
 import sys, os
 import numpy as np
-from typing import Union
+#from typing import Union
 
 import systemsDucque as SD
 import transmute.transmute_constants as TC
@@ -23,12 +23,13 @@ class TransmuteToJson:
     def __init__(self, pdbfile):
         """ Initialise the object and create object properties"""
         DUCQUEHOME = SD.return_DUCQUEHOME()
+        JSONDIR = DUCQUEHOME + "/json"
 
-        self.rootName = pdbfile.split('.')[0]
-        self.fileName = DUCQUEHOME + "/" + self.rootName + ".pdb"
+#        self.rootName = os.path.basename(pdbfile)   # basename of the file
+        self.fileName = pdbfile                     # path to the pdb file we input
         self.array = np.array([])
         self.atomName = list()
-        self.residueName = list()
+        self.residueName = str
         self.elementSymbol = list()
 
 
@@ -54,7 +55,7 @@ class TransmuteToJson:
             Charge:           line 79 - 80          """
 
         # Start new lists to append it all
-        atomName, resName, xCoords, yCoords, zCoords, elementSymbol = ([] for i in range(6))
+        atomName, resName, xCoords, yCoords, zCoords, elementSymbol = ([] for _ in range(6))
 
         # Check if file is in cwd or in the pdb directory
         pdbfname = self.fileName
@@ -139,111 +140,142 @@ class TransmuteToJson:
         return TC.base_dict[base]
 
 
-    def get_dihedrals(self, identifier : str, moietyType : str,  dihedrals_list : list) -> dict:
-        """ List the dihedrals differently whether it belongs to a nucleoside or a linker moietyType """
+#    def get_dihedrals(self, identifier : str, moietyType : str,  dihedrals_list : list) -> dict:
+#        """ List the dihedrals differently whether it belongs to a nucleoside or a linker moietyType """
+#
+#        if moietyType == "nucleoside":
+#            # Strip the list of (for now) string values of their comma 
+#            dihedrals_list = list(map(lambda x: x.strip(","), dihedrals_list))
+#            if len(dihedrals_list) == 7:
+#                dihedrals_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "chi"]
+#            elif len(dihedrals_list) == 8:
+#                dihedrals_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "nu", "chi"]
+#            elif len(dihedrals_list) == 6:
+#                dihedrals_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "chi"]
+#            else:
+#                print("Amount of dihedrals prompted is not aligned with the standard amount of dihedrals.")
+#                SD.exit_Ducque()
+#
+#            # Check if all values are float
+#            for i in dihedrals_list:
+#                if not isinstance(float(i), float):
+#                    print(f"One or more of the dihedral angles is not a floating point number : {i}. Please reconsider the entries for the dihedrals.\n")
+#                    SD.exit_Ducque()
+#
+#            # Check if size of the prompted dihedral values is the same as the amount of required dihedrals
+#            assert len(dihedrals_of_interest) == len(dihedrals_list),  "Check your input for missing dihedral values or missplaced commas.\nNote: the decimal values should be denoted by a point and not a comma."
+#
+#            # Initialise dictionary
+#            set_of_dihedrals = {}
+#            # Append the values to their respective dihedrals 
+#            for dihr in range(len(dihedrals_of_interest)):
+#                set_of_dihedrals[dihedrals_of_interest[dihr]] = float(dihedrals_list[dihr])
+#            return set_of_dihedrals
+#
+#
+#        if moietyType == "linker":
+#            ## For now we hardcode this with the phospate linker, until we start broadening the linker space
+#
+#            # Split the string into a list of strings
+#            dihedrals_list = list(map(lambda x : x.strip(","), dihedrals_list))
+#
+#            # Check if all values are float
+#            for i in dihedrals_list:
+#                if not isinstance(float(i), float):
+#                    print(f"One or more of the dihedral angles is not a floating point number : {i}. Please reconsider the entries for the dihedrals.\n")
+#                    SD.exit_Ducque()
+#
+#            # Check if all values are float
+#            for i, val in enumerate(angles_list):
+#                if not isinstance(float(val), float):
+#                    SD.print_conversion_err(angles_of_interest[i], val)
+#                    SD.exit_Ducque()
+#
+#            # Initialise dictionary
+#            set_of_dihedrals = {}
+#            set_of_dihedrals["dihedral_2"] = float(dihedrals_list[0])
+#            set_of_dihedrals["dihedral_1"] = float(dihedrals_list[1])
+#            return set_of_dihedrals
 
-        if moietyType == "nucleoside":
-            # Strip the list of (for now) string values of their comma 
-            dihedrals_list = list(map(lambda x: x.strip(","), dihedrals_list))
-            if len(dihedrals_list) == 7:
-                dihedrals_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "chi"]
-            else:
-                print("Amount of dihedrals prompted is not aligned with the standard amount of dihedrals.")
-                sys.exit(0)
 
-            # Check if all values are float
-            for i in dihedrals_list:
-                if not isinstance(float(i), float):
-                    print(f"One or more of the dihedral angles is not a floating point number : {i}. Please reconsider the entries for the dihedrals.\n")
-                    sys.exit(0)
-
-            # Check if size of the prompted dihedral values is the same as the amount of required dihedrals
-            assert len(dihedrals_of_interest) == len(dihedrals_list),  "Check your input for missing dihedral values or missplaced commas.\nNote: the decimal values should be denoted by a point and not a comma."
-
-            # Initialise dictionary
-            set_of_dihedrals = {}
-            # Append the values to their respective dihedrals 
-            for dihr in range(len(dihedrals_of_interest)):
-                set_of_dihedrals[dihedrals_of_interest[dihr]] = float(dihedrals_list[dihr])
-            return set_of_dihedrals
-
-
-        if moietyType == "linker":
-            ## For now we hardcode this with the phospate linker, until we start broadening the linker space
-
-            # Split the string into a list of strings
-            dihedrals_list = list(map(lambda x : x.strip(","), dihedrals_list))
-
-            # Check if all values are float
-            for i in dihedrals_list:
-                if not isinstance(float(i), float):
-                    print(f"One or more of the dihedral angles is not a floating point number : {i}. Please reconsider the entries for the dihedrals.\n")
-                    sys.exit(0)
-
-            # Initialise dictionary
-            set_of_dihedrals = {}
-            set_of_dihedrals["dihedral_2"] = float(dihedrals_list[0])
-            set_of_dihedrals["dihedral_1"] = float(dihedrals_list[1])
-            return set_of_dihedrals
-
-
-    def get_angles(self, identifier : str, moietyType : str, angles_list : list) -> dict:
+    def get_angles(self, identifier : str, moietyType : str, angles_list : list, json_dict : dict) -> dict:
+#    def get_angles(self, identifier : str, moietyType : str, angles_list : list) -> dict:
         """ List the bond angles differently whether it belongs to a nucleoside or a linker moietyType """
         if moietyType == "nucleoside":
-            angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "chi"]
-
             # Strip the list of (for now) string values of their comma 
             angles_list = list(map(lambda x: x.strip(","), angles_list))
+            if len(angles_list) == 7:
+                angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "chi"]
+            elif len(angles_list) == 8:
+                angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "nu", "chi"]
+            elif len(angles_list) == 6:
+                angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "chi"]
+            else:
+                print("Amount of dihedrals prompted is not aligned with the standard amount of dihedrals.")
+                SD.exit_Ducque()
+
 
             # Check if all values are float
-            for i in angles_list:
-                if not isinstance(float(i), float):
-                    print(f"One or more of the dihedral angles is not a floating point number : {i}. Please reconsider the entries for the dihedrals.\n")
-                    sys.exit(0)
+            for i, val in enumerate(angles_list):
+                if not isinstance(float(val), float):
+                    SD.print_conversion_err(angles_of_interest[i], val)
+                    SD.exit_Ducque()
 
             # Check if size of the prompted dihedral values is the same as the amount of required dihedrals
             assert len(angles_of_interest) == len(angles_list),  "Check your input for missing dihedral values or missplaced commas.\nNote: the decimal values should be denoted by a point and not a comma."
 
-            # Initialise dictionary
-            set_of_angles = {}
             # Append the values to their respective bond angles
             for ang in range(len(angles_list)):
-                set_of_angles[angles_of_interest[ang]] = float(angles_list[ang])
-            return set_of_angles
+                json_dict[angles_of_interest[ang]] = float(angles_list[ang])
+            return json_dict
 
 
         if moietyType == "linker":
             ## For now we hardcode this with the phospate linker, until we start broadening the linker space
             # Strip the list of (for now) string values of their comma 
             angles_list = list(map(lambda x: x.strip(","), angles_list))
+            if len(angles_list) == 7:
+                angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "chi"]
+            elif len(angles_list) == 8:
+                angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "nu", "chi"]
+            elif len(angles_list) == 6:
+                angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "chi"]
+            else:
+                print("Amount of dihedrals prompted is not aligned with the standard amount of dihedrals.")
+                SD.exit_Ducque()
 
             # Check if all values are float
-            for i in angles_list:
-                if not isinstance(float(i), float):
-                    print(f"One or more of the dihedral angles is not a floating point number : {i}. Please reconsider the entries for the dihedrals.\n")
-                    sys.exit(0)
+            for i, val in enumerate(angles_list):
+                if not isinstance(float(val), float):
+                    SD.print_conversion_err(angles_of_interest[i], val)
+                    SD.exit_Ducque()
 
             # Initialise dictionary
-            set_of_angles = {}
-            set_of_angles["OPO"] = float(angles_list[0])
-            return set_of_angles
+            json_dict = {}
+            json_dict["angle_2"] = float(angles_list[0])
+            json_dict["angle_1"] = float(angles_list[1])
+            return json_dict
+#            set_of_angles = {}
+#            set_of_angles["angle_2"] = float(angles_list[0])
+#            set_of_angles["angle_1"] = float(angles_list[1])
+#            return set_of_angles
 
 
     def get_output_name(self, identifier : str, moietyType : str, conformation : str) -> str:
-        """ Create the name of the file based on the identifier of the nucleic acid chemistry and its corresponding base """
+        """ Create the name of the file based on the identifier of the nucleic acid chemistry and its corresponding base 
+
+            This function creates the name of the json file
+
+
+        """
+
+
         if moietyType == "nucleoside":
             name_of_chemistry = identifier.lower()
             name_of_base = self.get_base().lower()
 
             conformation = conformation.lower()
             return name_of_chemistry + "_" + name_of_base + "_" + conformation
-#           When conformation was an optional str
-#            if isinstance(conformation, bool):
-#                if not conformation:
-#                    return name_of_chemistry + "_" + name_of_base
-#            else :                                                      #is instance of string then
-#                conformation = conformation.lower()
-#                return name_of_chemistry + "_" + name_of_base + "_" + conformation
 
         elif moietyType == "linker":
             name_of_chemistry = identifier.lower()
@@ -253,13 +285,20 @@ class TransmuteToJson:
         else :
             sys.exit("The molecule is not annotated with either `nucleoside` or `linker`. Please revise the inputs")
 
+#           When conformation was an optional str
+#            if isinstance(conformation, bool):
+#                if not conformation:
+#                    return name_of_chemistry + "_" + name_of_base
+#            else :                                                      #is instance of string then
+#                conformation = conformation.lower()
+#                return name_of_chemistry + "_" + name_of_base + "_" + conformation
 
 
 class TransmuteToPdb:
     """ This class is used to convert the *.xyz files from ORCA to *.pdb files. Later on, these *.pdb files are prompted into Ducque to convert to *.json files.
 
         --xyz `*.xyz`
-        --atomID `Residue Name`
+        --residue `Residue Name`
         --atomname_list `see Ducque manual`               """
 
 
@@ -307,7 +346,6 @@ class TransmuteToPdb:
         self.y = yCoords
         self.z = zCoords
         self.elements = elements
-#        return x_coords, y_coords, z_coords, elements
 
 
     def return_processed_atomname_list(self, atomNameList : list):
@@ -317,7 +355,7 @@ class TransmuteToPdb:
         for atom in atomNameList:
             if len(atom) > 4:
                 print(f"The following atom has too many characters in the string {atom}. Maximum amount allowed is 4.\n")
-                sys.exit(0)
+                SD.exit_Ducque()
 
         self.atomNameList = atomNameList
 
@@ -348,7 +386,7 @@ class TransmuteToPdb:
                     print(f"Check for capitalization of the prompted atom : {atom_type}.\n"
                             "If that did not prompt the error, check for its validity as an atom.\n"
                             "Here is the valid atom list : {list_of_two_character_valid_atoms}.\n"
-                            "Feel free to adjust this to your needs in the file : transmute_func.py ; elementsymbol_vs_atomname_list_compatibility() function.\n")
+                            "Feel free to adjust this to your needs in the file : Ducque/src/transmute/utils_transmute.py ; elementsymbol_vs_atomname_list_compatibility() function.\n")
                     return False
 
             # First parse out only the first character of the atomNameList, since this the first letter denotes the element of that atom
@@ -388,39 +426,3 @@ class TransmuteToPdb:
                 pdb.write("%-4s  %5d %-4s %3s %s%4d    %8s%8s%8s%6s%6s          %2s\n" % tuple(line))
 
         SD.print_writing(write_to_file)
-
-
-#    def fill_in_the_rest_of_the_pdb_dataframe_attribute(self, atomID, atomname_list, x_coords, y_coords, z_coords, elements):
-#        """ Fill in the remaining blanks of the pdb dataframe"""
-#        from random import randint
-#        randomised_integer_for_sequence_number = randint(1,100)
-#
-#        AtomNum_range = np.linspace(1, len(elements), len(elements), dtype=int)
-#
-#        self.pdb_dataframe = pd.DataFrame(index=range(len(elements)))
-#        self.pdb_dataframe['RecName'] = 'ATOM'
-#        self.pdb_dataframe['AtomNum'] = AtomNum_range
-#        self.pdb_dataframe['AtomName'] = atomname_list
-#        self.pdb_dataframe['AltLoc'] = ' '
-#        self.pdb_dataframe['ResName'] = atomID
-#        self.pdb_dataframe['Chain'] = 'A'
-#        self.pdb_dataframe['SeqNum'] = randomised_integer_for_sequence_number
-#        self.pdb_dataframe['X_coord'] = x_coords
-#        self.pdb_dataframe['Y_coord'] = y_coords
-#        self.pdb_dataframe['Z_coord'] = z_coords
-#        self.pdb_dataframe['Occupancy'] = '1.00'
-#        self.pdb_dataframe['Temp'] = '0.00'
-#        self.pdb_dataframe['SegmentID'] = '   '
-#        self.pdb_dataframe['Element'] = elements
-#
-#
-#    def write_to_pdb_formatted_file(self):
-#        """ Write out the pdb file """
-#
-#        with open(self.splitted + ".pdb", "w") as pdb:
-#        with open(self.pdbname, "w") as pdb:
-#            for index, row in self.pdb_dataframe.iterrows():
-#                split_line = [ row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13] ]
-#                pdb.write("%-6s%5s%5s%s%3s%2s%5d  %8s%8s%9s%6s%7s%4s     %2s\n" % tuple(split_line))
-#            pdb.write("END")
-#            pdb.close()

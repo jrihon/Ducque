@@ -2,27 +2,46 @@
 \pagebreak
 \section{Installation}
 \subsection{Set-up}
-To access the Ducque software from anywhere on your machine, add the following line to your \textbf{\$HOME/.bashrc}.
-Where path/to/program is the path to where you've installed Ducque. \$pwd inside the Ducque directory if you're unsure.
-\begin{verbatim}
-export PATH=\$PATH:path/to/program/Ducque/bin
-\end{verbatim}
+To access the Ducque software from anywhere on your machine, add the following line to your \verb $HOME/.bashrc  .
+Where path/to/program is the path to where you've installed Ducque.\\
+Use the \verb $pwd  command inside the Ducque directory if you're unsure.
+Depending on your \verb python3  version, you might have to install tkinter separately.
+\begin{minted}
+[
+frame=lines,
+]
+{bash}
+export PATH=$PATH:path/to/program/Ducque/bin # in the $HOME/.bashrc
+\end{minted}
 
-\begin{verbatim}
+\begin{minted}
+[
+frame=lines,
+]
+{bash}
 $ cd path/to/Ducque   # Go to the Ducque directory, where you installed it
 $ chmod +x setup.sh   # Give permission to run as an executable script
 $ ./setup.sh          # Run the setup.sh script
-\end{verbatim}
+    
+\end{minted}
 
 \subsection{Environment}
-To run this project, you will need to add the libraries to your PythonEnv : `NumPy`, `SciPy`\\
-Installation (conda or pip)\\
-`\$ pip install numpy` | `\$ conda install -c numpy `\\
+%To run this project, you will need to add the libraries to your PythonEnv : `NumPy`, `SciPy`\\
+%Installation (conda or pip)\\
+\begin{minted}
+[
+frame=lines,
+]
+{bash}
+# Using the pip package manager
+$ pip install numpy 
+$ pip install scipy
 
-`\$ pip install scipy` | `\$ conda install -c scipy `\\
-\\
-Ducque also employs `sys`, `os`, `tkinter` and `json`. These are built-in libraries, so no need to install these additionally.\\
-Depending on your `python3` version, you might have to install `tkinter` separately.\\
-\\
-Check if you have tkinter installed : `\$ python3 -m tkinter`
-```
+# Using the conda package manager
+$ conda install -c numpy
+$ conda install -c scipy
+
+# Check if you have tkinter installed :
+ $ python3 -m tkinter # if not succesful ... 
+ $ sudo apt-get install python3-tk # install this
+\end{minted}

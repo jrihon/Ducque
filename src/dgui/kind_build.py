@@ -143,7 +143,7 @@ class BuildApp(tk.Tk):
 
     def set_buttons(self):
         # buttons
-        self.btn_write = ttk.Button(self.content, text="write to file!", command=self.write_inputfile)
+        self.btn_write = ttk.Button(self.content, text="Write to file!", command=self.write_inputfile)
         self.btn_build = ttk.Button(self.content, text="Build", command=self.build_structure)
 
     def set_entries(self):

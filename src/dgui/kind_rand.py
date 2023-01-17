@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+from os.path import isfile
 from shutil import which   # Run Ducque
 from subprocess import run # Run Ducque
 
@@ -8,6 +9,7 @@ from builder.builder_library import backbone_codex # import possibilities to bui
 from dgui.grid_geometry import Geometry as G
 
 import systemsDucque as SD
+import dgui.kind_build as KB
 
 #  +--------------------------------------------------+
 #  |                    RANDOMISE                     |
@@ -204,7 +206,8 @@ class RandomiseApp(tk.Tk):
     def set_buttons(self):
         # buttons
         self.btn_write = ttk.Button(self.content, text="write to file!", command=self.write_inputfile)
-        self.btn_rand = ttk.Button(self.content, text="Build", command=self.randomise_set_of_inputs)
+        self.btn_rand = ttk.Button(self.content, text="Randomise", command=self.randomise_set_of_inputs)
+        self.btn_go2build = ttk.Button(self.content, text="Go to Build module", command=self.go_to_build)
 
     def set_entries(self):
         # set sequence
@@ -220,6 +223,10 @@ class RandomiseApp(tk.Tk):
         self.chm_str = tk.StringVar()
         self.entry_chm = ttk.Entry(self.content, textvariable=self.chm_str)
 
+    def go_to_build(self):
+        self.destroy()
+        self.app = KB.BuildApp("build")
+        self.mainloop() 
 
     def place_widgets(self):
 
@@ -236,6 +243,7 @@ class RandomiseApp(tk.Tk):
         # buttons
         self.btn_write.grid(column=2, row=8, **self.padding )
         self.btn_rand.grid(column=2, row=9, **self.padding )
+        self.btn_go2build.grid(column=0, row=9, **self.padding)
 
         # entries
         self.entry_chm.grid(column=1, row=2, **self.padding )
@@ -262,7 +270,7 @@ class RandomiseApp(tk.Tk):
         if self.fname_btn.get() == 1 :
             fname = self.entry_fname.get()
         else : 
-            fname = "randomised_sequence.rinp"
+            fname = "randomised_sequence"
 
         # `--sequence` and `--length` are exclusive flags
         with open("./" + fname + ".rinp", "w") as fileto :
@@ -305,4 +313,9 @@ class RandomiseApp(tk.Tk):
         if not which("Ducque"): 
             SD.print_cant_find_Ducque()
 
-        run(["Ducque", "--randomise", fname + ".rinp"])
+        try :
+            isfile(fname)
+        except :
+            SD.print_empty_query("randomise inputfile")
+        else :
+            run(["Ducque", "--randomise", fname + ".rinp"])

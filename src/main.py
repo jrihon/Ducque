@@ -37,19 +37,19 @@ def main():
                                       formatter_class=argparse.RawTextHelpFormatter)
 
     options.add_argument("--build", type=argparse.FileType("r"),
-            help="Ask the software to build a nucleic acid duplex with a given sequence.")
+            help="Build a nucleic acid duplex with a given sequence.")
 
     options.add_argument("--transmute", type=argparse.FileType("r"),
-            help="Input the *.pdb of the nucleic acid you want to convert to *.json.\n")
+            help="Input a `*.pdb` of the nucleic acid you want to convert to `*.json`.\n")
 
     options.add_argument("--randomise", type=argparse.FileType("r"),
-            help="Given a set of parameters, write out a random sequence that can be prompted to --build.")
+            help="Randomise a given sequence to-be-built.")
 
     options.add_argument("--xyz_pdb", type=argparse.FileType("r"),
-            help="Convert the inputted *.xyz file to a properly formatted *.pdb file.")
+            help="Convert an `*.xyz` file to a formatted `*.pdb` file.")
 
     options.add_argument("--gui", type=str, nargs='?', action="append", const="NO_FLAG",
-            help="Call the Ducque's GUI to perform actions instead of using CLI.")
+            help="Call Ducque's GUI to access clickable actions (instead of using CLI).")
 
     options.add_argument("--help", action="help",
             help="Prompt Ducque's help message to appear")
