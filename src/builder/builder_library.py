@@ -11,6 +11,10 @@ DH = systemsDucque.return_DUCQUEHOME()
 # -----------------------------------------
 #           NUCLEOSIDE REPOSITORY
 # -----------------------------------------
+
+# -------------------
+#                   NUCLEOSIDE              ,             LINKER
+# -------------------
 codex_acidum_nucleicum = {
 "dA" : [ DH + "json/dna_adenosine_2endo.json", DH + "json/dna_phosphate.json"],
 "dG" : [ DH + "json/dna_guanosine_2endo.json", DH + "json/dna_phosphate.json"],

@@ -6,9 +6,13 @@ Ducque has four (4) main functions:
 - `--transmute` : converts a given pdb file to the correct json format.
 - `--xyz_pdb` : converts a given xyz file to the proper pdb format.
 - `--randomise` : returns a randomised sequence to the user.
+- `--gui` : open the GUI to use the modules up above, instead of the CLI
 
-A comprehensive manual is find inside the `Ducque/docs/` directory !
+A comprehensive manual of Ducque is find inside the `Ducque/docs/` directory !
 
+To know more about how to build a forcefield, definitely check out the `pdf` inside the `Ducque/ff/` directory!
+
+<!--
 ## Environment
 
 ### Shell
@@ -31,6 +35,7 @@ Depending on your `python3` version, you might have to install `tkinter` separat
 # Check if you have tkinter installed
 $ python3 -m tkinter
 ```
+-->
   
 ## Authors
 Jérôme Rihon ([@jrihon](https://www.github.com/jrihon) )

@@ -64,6 +64,10 @@ def angle_exclusivity():
     print("[REFERENCE]       : 1983 IUPAC on Nucleic Acids : ` 1982 Mar 1;131(1):9-15. doi: 10.1111/j.1432-1033.1983.tb07225.x.`")
     print("[LINK]            : https://pubmed.ncbi.nlm.nih.gov/6832147/")
 
+def print_no_overwrite(fname, d):
+    print(f"\033[34m[OVERWRITE BLOCK] : Cannot overwrite. File already present in Current Directory ")
+    print(f"    [FILE]        : `{fname}`")
+    print(f"    [DIRECTORY]   : `{d}`\033[39m")
 
 def print_time(t1, t0):             print(f"[TIME]            : %.4f seconds." % (t1 - t0))
 def print_build():                  print(f"\033[96m[BUILD]           : Generating duplex.\033[39m\n")
@@ -78,5 +82,5 @@ def print_empty_query(flag) :       print(f"[EMPTY QUERY]     : No input found f
 def print_cant_find_Ducque():       print(f"[NOT FOUND]       : Ducque not found in the $PATH. Please add `Ducque` to the search path.")
 def print_insuf_amount(flag):       print(f"[INVALID AMOUNT]  : Incorrect amount of queries to properly fill the `{flag}` entry")
 def print_conversion_err(name, x):  print(f"[CONVERSION ERROR]: Could not convert the angle `{name}` to a float `{x}` ")
-def print_no_overwrite(fname, d):   print(f"[OVERWRITE BLOCK] : Cannot overwrite file `{fname}`. Already present in `{d}`")
 def print_launch(module):           print(f"[LAUNCH MODULE]   : {module.title()} module !")
+def print_filenotfound(fname):      print(f"[FILE NOT FOUND]  : The following file was not found at the current path `{fname}`.")

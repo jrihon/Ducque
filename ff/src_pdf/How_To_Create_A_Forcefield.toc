@@ -1,0 +1,30 @@
+\contentsline {section}{\numberline {1}Start a prep file}{2}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Standard file format}{2}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Tree Structure - Topological Types}{2}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}AMBER Atom Typing}{2}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Prep File Structure}{3}{subsection.1.4}%
+\contentsline {subsection}{\numberline {1.5}Atom type tree and structure}{3}{subsection.1.5}%
+\contentsline {section}{\numberline {2}RESP Charge derivation}{5}{section.2}%
+\contentsline {subsection}{\numberline {2.1}The R.E.D server}{5}{subsection.2.1}%
+\contentsline {subsubsection}{\numberline {2.1.1}R.E.D server documentation}{5}{subsubsection.2.1.1}%
+\contentsline {subsubsection}{\numberline {2.1.2}Basics}{5}{subsubsection.2.1.2}%
+\contentsline {subsubsection}{\numberline {2.1.3}Configuration files}{5}{subsubsection.2.1.3}%
+\contentsline {subsection}{\numberline {2.2}RESP charge derivation on your local system}{6}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Small set-up and reasoning behind the RESP calculation}{6}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}Electrostatic Potential (ESP) calculation with ORCA}{6}{subsubsection.2.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.3}Generation of the grid and plotting ESP on the grid}{6}{subsubsection.2.2.3}%
+\contentsline {subsubsection}{\numberline {2.2.4}Restrained Electrostatic Potential (RESP) with AMBER}{7}{subsubsection.2.2.4}%
+\contentsline {section}{\numberline {3}Forcefield file generation}{9}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Parameter Topology \textit {.prmtop}}{9}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Preparatory files \textit {.prep}}{10}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Practicals}{10}{subsubsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.3}Forcefield modification \textit {frcmod.}}{10}{subsection.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.1}Bonded Interaction Terms}{11}{subsubsection.3.3.1}%
+\contentsline {subsubsection}{\numberline {3.3.2}Periodicity}{11}{subsubsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.4}Paramfit}{12}{subsection.3.4}%
+\contentsline {subsubsection}{\numberline {3.4.1}Gathering parameters}{12}{subsubsection.3.4.1}%
+\contentsline {section}{\numberline {4}Miscelanious}{14}{section.4}%
+\contentsline {subsection}{\numberline {4.1}AMBER atom types with GAFF alternative atom types}{14}{subsection.4.1}%
+\contentsline {subsubsection}{\numberline {4.1.1}Introduction}{14}{subsubsection.4.1.1}%
+\contentsline {subsubsection}{\numberline {4.1.2}Atom types}{14}{subsubsection.4.1.2}%
+\contentsline {subsection}{\numberline {4.2}RESP DocString}{17}{subsection.4.2}%

@@ -1,6 +1,6 @@
---pdb puckerdata/dXylo/T/min02.pdb
---chemistry dXylo
---conformation 3endo
---moiety nucleoside
---dihedrals 75.633, -147.887, -119.980, -42.206, 115.964, 35.775, -166.111 
---bondangles 101.654, 119.654, 107.059, 117.353, 111.554, 121.046, 124.280
+--pdb /home/jerome/Desktop/Ducque/puckerdata/dXylo/T/min02.pdb
+--chemistry dXylo 
+--conformation 3endo 
+--moiety nucleoside 
+--bondangles 101.654, 119.654, 107.059, 117.353, 111.554, 121.046, 124.280 
+--dihedrals 82.633, -147.887, -119.980, -42.206, 115.964, 42.775, -166.111 

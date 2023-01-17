@@ -1,0 +1,16 @@
+1) Charge Derivation for Non-standard residues
+
+The AMBER force fields are built around the concept of accurate pair-wise charges.
+The underlying unit of charge is in the form of a residue such as an Amino acid.
+In AMBER each residue is constrained to have a unit charge (with the exception of certain DNA and RNA terminal residues).
+This makes the force field charge model transferable since individual residues can be used as building blocks to build larger protein and nucleic acid systems without the need to refit the charges for each model.
+Key to this approach is that the charge derivation scheme is an integral part of the force field parameterization.
+In AMBER the method used for charge derivation is called the Restrained Electrostatic Potential (RESP) method.
+For details and background of the RESP procedure see J. Phys. Chem, 1993, 97, 10269-10280.
+
+The basis of this procedure is a multistage approach that ensures that rotationally degenerate atoms, such as methyl and methylene hydrogens have equivalent charges.
+An essential component of this procedure is that these pairwise charges are generated from gas phase QM calculations but are designed to reproduce solution phase charge interactions.
+For the FF94, 96, and 99 force field variants this is achieved by using an HF/6-31G* QM calculation to generate the electrostatic potential.
+Conveniently the error in the HF/6-31G* calculation is close to the difference between the charge distribution in gas phase and that in solution.
+The FF03 force fields uses a different but functionally equivalent approach.
+The main point here is that one should not arbitrarily change the level of QM theory when deriving charges.

@@ -603,21 +603,24 @@ class TransmuteApp(tk.Tk):
         json_fname = self.choice_chem.get().lower() + "_" + self.base.lower() + "_" + self.str_conformation.get().lower() + ".json"
         input_fname = "input_" + self.choice_chem.get().lower() + self.base.lower() +  "_" + self.str_conformation.get().lower() + "_transmute.in"
 
+
+        if not which("Ducque"):  # At this point, this would not be necessary, but better safe than sorry
+            SD.print_cant_find_Ducque()
+
+        # Check if the transmute input file is present on the current working directory
         if not isfile(input_fname):
             SD.print_empty_query("transmute input file")
             return
 
+        # Check if the json is not already present in the DUCQUEHOME/json/
         json_dir = SD.return_DUCQUEHOME() + "json/"
-        if self.int_overwrite.get() == 0 and isfile(json_dir + json_fname) :
-            SD.print_no_overwrite(json_fname, json_dir)
-            return
-
-        if self.int_overwrite.get() == 1 :
-            if not which("Ducque"):  # At this point, this would not be necessary, but better safe than sorry
-                SD.print_cant_find_Ducque()
-
+        if not isfile(json_dir + json_fname): 
             run(["Ducque", "--transmute", input_fname])
 
-
-        elif isfile(input_fname) and self.int_overwrite.get() == 0 :
-            print(f"Writing to file has been blocked. {input_fname} exists in this directory.\n")
+        else :
+            # check if the overwrite button is in which state 
+            if self.int_overwrite.get() == 0 :
+                SD.print_no_overwrite(json_fname, json_dir)
+                return
+            if self.int_overwrite.get() == 1 :
+                run(["Ducque", "--transmute", input_fname])

@@ -80,11 +80,13 @@ def Transmutation(pdb_fname, nucleicAcidChemistry : str, moietyType : str, dihed
 
     # Get dihedrals
     torsions = {}
-    nucleicAcid.get_angles(nucleicAcidChemistry, moietyType, dihedralList, torsions)
+    nucleicAcid.get_angles(#nucleicAcidChemistry,
+            moietyType, dihedralList, torsions)
 
     # Get Bond angles
     angles = {}
-    nucleicAcid.get_angles(nucleicAcidChemistry, moietyType, anglesList, angles)
+    nucleicAcid.get_angles(#nucleicAcidChemistry,
+            moietyType, anglesList, angles)
 
     angles["dihedrals"] = json.dumps(torsions)
     angles["bond_angles"] = json.dumps(angles)

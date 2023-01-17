@@ -1,6 +1,8 @@
-import sys, os
+import sys
+from os.path import isfile, basename, dirname
+from os import getcwd
+
 import numpy as np
-#from typing import Union
 
 import systemsDucque as SD
 import transmute.transmute_constants as TC
@@ -22,8 +24,8 @@ class TransmuteToJson:
 
     def __init__(self, pdbfile):
         """ Initialise the object and create object properties"""
-        DUCQUEHOME = SD.return_DUCQUEHOME()
-        JSONDIR = DUCQUEHOME + "/json"
+#        DUCQUEHOME = SD.return_DUCQUEHOME()
+#        JSONDIR = DUCQUEHOME + "/json"
 
 #        self.rootName = os.path.basename(pdbfile)   # basename of the file
         self.fileName = pdbfile                     # path to the pdb file we input
@@ -59,10 +61,9 @@ class TransmuteToJson:
 
         # Check if file is in cwd or in the pdb directory
         pdbfname = self.fileName
-        try:
-            os.path.isfile(pdbfname)
-        except FileNotFoundError:
-            print(f"Could not find {pdbfname} in the directory.\n")
+        if not isfile(pdbfname) :
+            SD.print_filenotfound(pdbfname)
+            SD.exit_Ducque()
 
         # Read the file and fill out the dataframe
         with open(pdbfname) as pdbfile:
@@ -198,7 +199,8 @@ class TransmuteToJson:
 #            return set_of_dihedrals
 
 
-    def get_angles(self, identifier : str, moietyType : str, angles_list : list, json_dict : dict) -> dict:
+    def get_angles(self, #identifier : str,
+            moietyType : str, angles_list : list, json_dict : dict) -> dict:
 #    def get_angles(self, identifier : str, moietyType : str, angles_list : list) -> dict:
         """ List the bond angles differently whether it belongs to a nucleoside or a linker moietyType """
         if moietyType == "nucleoside":
@@ -310,9 +312,9 @@ class TransmuteToPdb:
 #        self.array = np.array([])
 #        self.pdb_dataframe = pd.DataFrame()
         self.pathName = xyzfile
-        self.rootName = os.path.basename(xyzfile).split(".")[0]
+        self.rootName = basename(xyzfile).split(".")[0]
         self.pdbName = self.rootName + ".pdb"
-        self.fullPathTo = os.getcwd() + "/" + os.path.dirname(xyzfile)
+        self.fullPathTo = getcwd() + "/" + dirname(xyzfile)
         self.x = list()
         self.y = list()
         self.z = list()

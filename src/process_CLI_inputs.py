@@ -185,7 +185,7 @@ def randomise(RANDOMISEINPUT):
             try : 
                 int(args[1])
             except :
-                print("Argument for `--length` is not an integer type. Try again.")
+                SD.print_invalid_argument(args[1], "--length")
             else :
                 length_sequence = int(args[1])
                 sequence = None
@@ -243,20 +243,19 @@ def xyz_to_pdb(CONVERSIONINPUT):
             try:
                 os.path.isfile(xyz_fname)
             except FileNotFoundError:
-                print(f"File {xyz_fname} was not found. Please revise either its name or its location on your system.\n")
+                SD.print_filenotfound(xyz_fname)
+#                print(f"File {xyz_fname} was not found. Please revise either its name or its location on your system.\n")
                 SD.exit_Ducque()
 
         if flag == "--residue":
-            atomID = args[1]
-            if len(atomID) > 4:
-                print("The argument '--atomID' requires up to three characters in its name.\n"
-                        "Check your input of the atom identifier.\n")
-                SD.exit_Ducque()
+            residue = args[1]
+            if len(residue) > 4:
+                SD.print_invalid_argument(args[1], "--residue")
 
         if flag == "--atomname_list":
             atomname_list = args[1:]
 
-    return xyz_fname, atomID, atomname_list
+    return xyz_fname, residue, atomname_list
 
 def gui_module(GUIINPUT): 
 

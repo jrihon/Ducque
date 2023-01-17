@@ -1,8 +1,8 @@
 #!/bin/sh
 
-export DUCQUEHOME="$(dirname "$(cd "$(dirname "$0")" && pwd)")"     # returns parent directory of the Ducque program
+export DUCQUEHOME="$(dirname "$(cd "$(dirname "$0")" && pwd)")"     # Returns parent directory of the Ducque program
 
-export PYTHONPATH=PYTHONPATH:"$DUCQUEHOME/src"
-                                                                    # only way to make importing modules easier in python ...
+export PYTHONPATH=PYTHONPATH:"$DUCQUEHOME/src"                      # Import modules into rtp
+                                                                    
 #echo $DUCQUEHOME
-python3 $DUCQUEHOME/src/main.py "$@"
+python3 $DUCQUEHOME/src/main.py "$@"                                # the "$@" is 'shell' for any cli-arguments that may be prompted
