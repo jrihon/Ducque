@@ -325,6 +325,10 @@ class TransmuteToPdb:
     def parse_xyz_and_elementsymbol(self):
         """ Reads the xyz datafile and returns the coordinates and the element symbol"""
         # read only the lines with x-y-z coordinates
+        if not isfile(self.pathName) :
+            SD.print_filenotfound(self.pathName)
+            SD.exit_Ducque()
+
         with open(self.pathName, "r") as XYZ :
             _fileList = [line.strip() for line in XYZ.readlines()[2:]]
 #            file = [line.strip() for line in file_list]
@@ -368,7 +372,7 @@ class TransmuteToPdb:
         if len(self.elements) == len(self.atomNameList):
             return True
         else :
-            print(f"Atomname_list length : {len(self.atomNameList)}. Coordinate array size : ({len(self.elements)}, , 3 ).")
+            print(f"Atomname_list length : {len(self.atomNameList)}.\nCoordinate array size : ({len(self.elements)}, , 3 ).")
             return False
 
 
@@ -395,7 +399,7 @@ class TransmuteToPdb:
             atom_type = self.atomNameList[i_atom][0]
 
             if atom_type != self.elements[i_atom]:
-                print("Atoms that do not match : Atom prompted - {atom_type}. Element parsed : {elements[atom]}. Position {str(atom + 1)}\n")
+                print(f"Atoms that do not match : Atom prompted - {atom_type}. Element parsed : {self.elements[i_atom]}. Position {str(i_atom + 1)}\n")
                 return False
 
         return True

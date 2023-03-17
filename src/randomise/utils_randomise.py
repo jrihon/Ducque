@@ -25,6 +25,7 @@ def randomise_sequence(chemistry : str, lengthSequence : int) -> str:
     """ depends on the prompted chemistry and the length of the sequence """
 
     nucID = process_CLI_inputs.check_if_chemistry_is_valid(chemistry)
+    print(nucID)
     abbrChemistry = return_chemistrycode(nucID)
 
     allCodexKeys = list(CODEX.keys())

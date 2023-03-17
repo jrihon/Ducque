@@ -56,6 +56,10 @@ codex_acidum_nucleicum = {
 "mG" : [DH + "json/mna_guanosine_2-4skew.json", DH + "json/dna_phosphate.json"],
 "mC" : [DH + "json/mna_cytidine_2-4skew.json", DH + "json/dna_phosphate.json"],
 "mT" : [DH + "json/mna_thymidine_2-4skew.json", DH + "json/dna_phosphate.json"],
+"tA" : [DH + "json/tna_adenosine_3_4_twist.json", DH + "json/dna_phosphate.json"],
+"tC" : [DH + "json/tna_cytidine_3_4_twist.json", DH + "json/dna_phosphate.json"],
+"tG" : [DH + "json/tna_guanosine_3_4_twist.json", DH + "json/dna_phosphate.json"],
+"tT" : [DH + "json/tna_thymidine_3_4_twist.json", DH + "json/dna_phosphate.json"],
 }
 
 
@@ -104,6 +108,10 @@ conformations_codex = {
 "mG" : [DH + "json/mna_guanosine_2-4skew.json"],
 "mC" : [DH + "json/mna_cytidine_2-4skew.json"],
 "mT" : [DH + "json/mna_thymidine_2-4skew.json"],
+"tA" : [DH + "json/tna_adenosine_3_4_twist.json"],
+"tC" : [DH + "json/tna_cytidine_3_4_twist.json"],
+"tG" : [DH + "json/tna_guanosine_3_4_twist.json"],
+"tT" : [DH + "json/tna_thymidine_3_4_twist.json"],
 }
 
 
@@ -122,6 +130,7 @@ backbone_codex = {
 "CeNA" : ["O3'", "C3'", "C4'", "C7'", "O7'"],
 "dXylo" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "MNA" : ["N3'", "C4'", "C5'", "C6'", "O6'"],
+"TNA" : ["O2'", "C2'", "C3'", "O3'"],
 }
 
 

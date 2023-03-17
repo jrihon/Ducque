@@ -1,0 +1,68 @@
+\pagebreak
+
+\section{Introduction}
+
+\epigraph{There are no mistakes, only happy little accidents.}{Bob Ross}
+
+\begin{center}
+    \textbf{A software for the purpose of building native and synthetic nucleic acid duplexes.}
+\end{center}
+
+\noindent Ducque \colorbox{gray!20}{(IPA : /d\textipa{2}k/)} stands for :
+\begin{itemize}[leftmargin=*]
+    \setlength{\itemsep}{-1mm}
+    \item[\textbf{D}] Acronyms
+    \item[\textbf{U}] Are
+    \item[\textbf{C}] Rather
+    \item[\textbf{Q}]
+    \item[\textbf{U}]
+    \item[\textbf{E}] Tedious
+\end{itemize}
+%
+%
+%
+The name was inspired much in the same way that the ORCA Quantum Mechanics package\cite{Neese2020Orca, Neese2022ORCA} was named.
+At the time of development, I had different name for Ducque. During one of my evaluation moments, one of the members of my jury pointed out that with that name, I would probably not get enough traction, since Google searches gaves millions of results.
+Given that fact, I tried coming up with a new name for the model builder.
+Weeks later, as I was working, my hat that was resting on my desk in front of me caught my eye.
+You see, my hat has a tiny duck embroided on the front. With this idea, I "researched" ways to rewrite the word and get as little search engine results as possible, without degenerating the word itself and keeping it phonetically somewhat correct. Thusly, Ducque was born (a second time).
+
+
+\subsection{Modules}
+Ducque has five modules the user can access.
+\begin{enumerate}
+    \item The \textbf{build} module, which is the primary module for to use. This will build us the duplex structures
+we want to use for further
+\item The \textbf{transmute} will be used, together with an elaborate input, to convert the ‘pdb‘ file to a
+suitable input for Ducque to use as a building block. The appropriate format has been settled to
+be the very simple ‘json‘ format.
+\item For testing purposes or just to be able to generate randomised sequences, there is a \textbf{randomise}
+module, which generates a randomised duplex structure based on a set of given inputs.
+    \item To be able to convert ‘xyz‘ formatted molecule structures to a ‘pdb‘ format, I have included a
+        \textbf{xyz\_pdb} module. Since I am an avid ORCA user and the ‘xyz‘ format is often outputted, I
+wanted to make it more managable to format a ‘pdb‘ file for myself during development.
+\item To have clickable objects for the standard non-terminal user, there is a simple \textbf{GUI} that can be
+used to employ the following modules : build, transmute and randomise. The reason that the
+xyz\_pdb is not included is because I did not find a nice way to design a simple gui. Secondly,
+other QM programs might have different outputs of molecule structures, the ‘xyz‘ format can be
+rather niche and therefor not worth to effort to design a good gui for. Chimera and PyMol can
+definitely convert from one format to the other if one cannot work through the CLI.
+    
+\end{enumerate}
+\subsection{Package structure}
+\textbf{path/to/Ducque}
+%
+\begin{itemize}[leftmargin=*]
+    \setlength{\itemsep}{-1mm}
+    \item[$\rightarrow$] \textbf{bin/:}
+    \item[$\rightarrow$] \textbf{docs/:}
+    \item[$\rightarrow$] \textbf{json/:}
+    \item[$\rightarrow$] \textbf{puckerdata/:}
+    \item[$\rightarrow$] \textbf{src/:}
+    \item[$\rightarrow$] \textbf{tests/:}
+    \item[$\rightarrow$] \textbf{transmute/:}
+    \item[$\rightarrow$] \textbf{xyz/:}
+    \item[$\rightarrow$] LICENSE:
+    \item[$\rightarrow$] README.md :
+    \item[$\rightarrow$] setup.sh :
+\end{itemize}

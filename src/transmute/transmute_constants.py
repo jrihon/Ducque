@@ -14,6 +14,7 @@ nucleoside_dict = {
         "CENA" : "Cylcohexenyl Nucleic acid",
         "DXYLO" : "deoxy Xylose Nucleic Acid",
         "MNA" : "Morpholino Nucleic Acid",
+        "TNA" : "Threose Nucleic Acid",
         }
 
 linker_dict = {
@@ -26,6 +27,7 @@ linker_dict = {
         "CENA" : "Phosphate",
         "DXYLO" : "Phosphate",
         "MNA" : "Phosphate",
+        "TNA" : "Phosphate",
         }
 
 
