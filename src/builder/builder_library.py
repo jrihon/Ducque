@@ -60,6 +60,10 @@ codex_acidum_nucleicum = {
 "tC" : [DH + "json/tna_cytidine_3_4_twist.json", DH + "json/dna_phosphate.json"],
 "tG" : [DH + "json/tna_guanosine_3_4_twist.json", DH + "json/dna_phosphate.json"],
 "tT" : [DH + "json/tna_thymidine_3_4_twist.json", DH + "json/dna_phosphate.json"],
+"ptA" : [DH + "json/tna_adenosine_3_4_twist.json", DH + "json/dna_phosphate.json"],
+"ptC" : [DH + "json/tna_cytidine_3_4_twist.json", DH + "json/dna_phosphate.json"],
+"ptG" : [DH + "json/tna_guanosine_3_4_twist.json", DH + "json/dna_phosphate.json"],
+"ptT" : [DH + "json/tna_thymidine_3_4_twist.json", DH + "json/dna_phosphate.json"],
 }
 
 
@@ -112,6 +116,10 @@ conformations_codex = {
 "tC" : [DH + "json/tna_cytidine_3_4_twist.json"],
 "tG" : [DH + "json/tna_guanosine_3_4_twist.json"],
 "tT" : [DH + "json/tna_thymidine_3_4_twist.json"],
+"ptA" : [DH + "json/tna_adenosine_3_4_twist.json"],
+"ptC" : [DH + "json/tna_cytidine_3_4_twist.json"],
+"ptG" : [DH + "json/tna_guanosine_3_4_twist.json"],
+"ptT" : [DH + "json/tna_thymidine_3_4_twist.json"],
 }
 
 
@@ -131,6 +139,7 @@ backbone_codex = {
 "dXylo" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "MNA" : ["N3'", "C4'", "C5'", "C6'", "O6'"],
 "TNA" : ["O2'", "C2'", "C3'", "O3'"],
+"PhoTNA" : ["O2'", "C2'", "C3'", "O3'", "CP3'"],
 }
 
 

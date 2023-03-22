@@ -15,6 +15,7 @@ nucleoside_dict = {
         "DXYLO" : "deoxy Xylose Nucleic Acid",
         "MNA" : "Morpholino Nucleic Acid",
         "TNA" : "Threose Nucleic Acid",
+        "pTNA" : "Phosphonate Threose Nucleic Acid",
         }
 
 linker_dict = {
@@ -28,6 +29,7 @@ linker_dict = {
         "DXYLO" : "Phosphate",
         "MNA" : "Phosphate",
         "TNA" : "Phosphate",
+        "pTNA" : "Phosphate", # the nucleoside moiety accounts for a binding between Phosphate - Carbon
         }
 
 
