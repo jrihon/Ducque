@@ -157,7 +157,7 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[Lis
 
 
     # IF THE SEQUENCE NEEDS TO BE A HOMODUPLEX
-    if complement.lower() == "homo":
+    if complement.upper() == "HOMO":
         complementary_sequence = []
         list_of_chemistries = PARSE.retrieve_chemistry_list(sequence_list)
 

@@ -158,7 +158,7 @@ class RandomiseApp(tk.Tk):
         if self.compl_btn_toggle.get() == 1 :
             self.compl_choices = tk.StringVar()
             compllist = self.reveal_chemistry_keys()
-            self.compl_choices.set("homo") # default value
+            self.compl_choices.set("HOMO") # default value
             self.omenu_compl = tk.OptionMenu(self.content, self.compl_choices, *compllist)
             self.omenu_compl.configure(width=16)
 
@@ -180,7 +180,7 @@ class RandomiseApp(tk.Tk):
         if self.chem_btn_toggle.get() == 1 :
             self.chem_choices = tk.StringVar()
             chemlist = self.reveal_chemistry_keys()
-            chemlist.remove("homo")
+            chemlist.remove("HOMO")
             self.chem_choices.set("DNA") # default value
             self.omenu_chem = tk.OptionMenu(self.content, self.chem_choices, *chemlist)
             self.omenu_chem.configure(width=16)
@@ -200,7 +200,7 @@ class RandomiseApp(tk.Tk):
     def reveal_chemistry_keys(self):
 
         chemistries = list(backbone_codex.keys())
-        chemistries[chemistries.index("Phosphate")] = "homo" # replace the phosphate key with the `homoduplex` key
+        chemistries[chemistries.index("Phosphate")] = "HOMO" # replace the phosphate key with the `homoduplex` key
         return chemistries
 #
     def set_buttons(self):
@@ -293,9 +293,9 @@ class RandomiseApp(tk.Tk):
             ## Complement
             if self.com_int.get() == 1 :
                 if self.compl_btn_toggle.get() == 1 :
-                    fileto.write("\n--complement " + self.compl_choices.get() )
+                    fileto.write("\n--complement " + self.compl_choices.get().upper() )
                 else :
-                    fileto.write("\n--complement " + self.com_str.get() )
+                    fileto.write("\n--complement " + self.com_str.get().upper() )
 
 
         SD.print_writing(fname + ".rinp")

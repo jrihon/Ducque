@@ -94,6 +94,6 @@ def write_out_complementary_sequence(compl_seq : Union[str, list]) -> str:
     if isinstance(compl_seq, list):
         compl_seq = list(map(lambda x: x.strip(","), compl_seq))
         output_sequence = ", ".join(compl_seq)
-        return output_sequence
+        return [i.upper() for i in output_sequence]
 
-    return compl_seq
+    return compl_seq.upper()

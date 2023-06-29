@@ -79,7 +79,7 @@ class BuildApp(tk.Tk):
         if self.chem_btn.get() == 1 :
             self.chem_choices = tk.StringVar()
             chemlist = self.reveal_chemistry_keys()
-            self.chem_choices.set("homo") # default value
+            self.chem_choices.set("HOMO") # default value
             self.omenu_chem = tk.OptionMenu(self.content, self.chem_choices, *chemlist)
             self.omenu_chem.configure(width=15)
             self.com_str.set('')
@@ -95,7 +95,7 @@ class BuildApp(tk.Tk):
     def reveal_chemistry_keys(self):
 
         chemistries = list(backbone_codex.keys())
-        chemistries[chemistries.index("Phosphate")] = "homo" # replace the phosphate key with the `homoduplex` key
+        chemistries[chemistries.index("Phosphate")] = "HOMO" # replace the phosphate key with the `homoduplex` key
         return chemistries
 
     def populate_entries(self):

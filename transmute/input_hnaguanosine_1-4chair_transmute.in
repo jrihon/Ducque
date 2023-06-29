@@ -1,6 +1,6 @@
 --pdb puckerdata/HNA/G/min01.pdb
---chemistry HNA
---conformation 1-4chair
---moiety nucleoside
---dihedrals -62.246, 162.944, 57.818, 64.827, -174.768, -82.538, -149.414
---bondangles 107.836, 121.891, 107.511, 112.060, 105.672, 120.501, 122.931
+--chemistry HNA 
+--conformation 1-4chair 
+--moiety nucleoside 
+--bondangles 107.836, 121.891, 107.511, 112.060, 105.672, 120.501, 122.931 
+--dihedrals -62.246, 162.944, 57.818, 64.827, -174.768, -82.538, -149.414 

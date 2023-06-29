@@ -1,6 +1,13 @@
 __pycache__
 ff/src_pdf/
 docs/pdf_src/
+docs/old_manual_ducque_backup.pdf
 input_sequences/
 tests/
+pdb/
 puckerdata/
+transmute/input_tna*
+transmute/input_photna*
+json/tna*
+json/photna*
+xyz/TNA*

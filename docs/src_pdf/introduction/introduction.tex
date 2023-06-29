@@ -54,15 +54,15 @@ definitely convert from one format to the other if one cannot work through the C
 %
 \begin{itemize}[leftmargin=*]
     \setlength{\itemsep}{-1mm}
-    \item[$\rightarrow$] \textbf{bin/:}
-    \item[$\rightarrow$] \textbf{docs/:}
-    \item[$\rightarrow$] \textbf{json/:}
-    \item[$\rightarrow$] \textbf{puckerdata/:}
-    \item[$\rightarrow$] \textbf{src/:}
-    \item[$\rightarrow$] \textbf{tests/:}
-    \item[$\rightarrow$] \textbf{transmute/:}
-    \item[$\rightarrow$] \textbf{xyz/:}
-    \item[$\rightarrow$] LICENSE:
-    \item[$\rightarrow$] README.md :
-    \item[$\rightarrow$] setup.sh :
+    \item[$\rightarrow$] \textbf{bin/:} contains executable to run Ducque.
+    \item[$\rightarrow$] \textbf{docs/:} contains this pdf and its \LaTeX \hspace{1mm} sourcefiles.
+    \item[$\rightarrow$] \textbf{json/:} contains building blocks requires by Ducque to build duplex sequences. The name for the json file is derived from the inputs of the \verb --transmute  INPUTFILE. The filename is there for classification and is thereby non-trivial.
+    \item[$\rightarrow$] \textbf{puckerdata/:} contains all optimised \textit{xyz} and \textit{pdb} files, needed by \verb --transmute  to be converted to \textit{json}.
+    \item[$\rightarrow$] \textbf{src/:} contains all the Ducque source code.
+%    \item[$\rightarrow$] \textbf{tests/:}
+    \item[$\rightarrow$] \textbf{transmute/:} contains the \verb --transmute  input files, just as an example. The name of the file itself is trivial.
+    \item[$\rightarrow$] \textbf{xyz/:} contains the \verb --xyz_pdb  input files, just as an example. The name of the file itself is trivial.
+    \item[$\rightarrow$] LICENSE .
+    \item[$\rightarrow$] README.md .
+    \item[$\rightarrow$] setup.sh : required to make Ducque executable.
 \end{itemize}

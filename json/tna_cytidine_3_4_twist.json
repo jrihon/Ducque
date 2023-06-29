@@ -7,13 +7,7 @@
     },
     "identity": "[\"Threose Nucleic Acid\", \"TNA\", \"TC\", \"Cytidine\"]",
     "angles": {
-        "alpha": 100.783,
-        "beta": 119.96,
-        "gamma": 107.13,
-        "delta": 109.831,
-        "epsilon": 119.96,
-        "chi": 126.052,
-        "dihedrals": "{\"alpha\": -85.649, \"beta\": -179.085, \"gamma\": 158.623, \"delta\": -93.293, \"epsilon\": -90.343, \"chi\": -97.184}",
-        "bond_angles": "{\"alpha\": 100.783, \"beta\": 119.96, \"gamma\": 107.13, \"delta\": 109.831, \"epsilon\": 119.96, \"chi\": 126.052, \"dihedrals\": \"{\\\"alpha\\\": -85.649, \\\"beta\\\": -179.085, \\\"gamma\\\": 158.623, \\\"delta\\\": -93.293, \\\"epsilon\\\": -90.343, \\\"chi\\\": -97.184}\"}"
+        "bond_angles": "{\"alpha\": 100.783, \"beta\": 119.96, \"gamma\": 107.13, \"delta\": 109.831, \"epsilon\": 119.96, \"chi\": 126.052}",
+        "dihedrals": "{\"alpha\": -85.649, \"beta\": -179.085, \"gamma\": 158.623, \"delta\": -93.293, \"epsilon\": -90.343, \"chi\": -97.184}"
     }
 }

@@ -203,7 +203,7 @@ def randomise(RANDOMISEINPUT):
 
             # Check if the complement flag contains either the 'homo' flag or a valid chemistry.
             complement = args[1]
-            compl_test_against = ["homo"] + list(nucleoside_dict.keys())
+            compl_test_against = ["HOMO"] + list(nucleoside_dict.keys())
             if complement not in compl_test_against:
                 SD.print_invalid_argument(complement, "--complement")
 

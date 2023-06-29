@@ -236,21 +236,22 @@ class TransmuteToJson:
             ## For now we hardcode this with the phospate linker, until we start broadening the linker space
             # Strip the list of (for now) string values of their comma 
             angles_list = list(map(lambda x: x.strip(","), angles_list))
-            if len(angles_list) == 7:
-                angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "chi"]
-            elif len(angles_list) == 8:
-                angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "nu", "chi"]
-            elif len(angles_list) == 6:
-                angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "chi"]
-            else:
-                print("Amount of dihedrals prompted is not aligned with the standard amount of dihedrals.")
-                SD.exit_Ducque()
-
-            # Check if all values are float
-            for i, val in enumerate(angles_list):
-                if not isinstance(float(val), float):
-                    SD.print_conversion_err(angles_of_interest[i], val)
-                    SD.exit_Ducque()
+#            if len(angles_list) == 7:
+#                angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "chi"]
+#            elif len(angles_list) == 8:
+#                angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "nu", "chi"]
+#            elif len(angles_list) == 6:
+#                angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "chi"]
+#            else:
+#                print("Amount of dihedrals prompted is not aligned with the standard amount of dihedrals.")
+#                SD.exit_Ducque()
+#
+#            # Check if all values are float
+#            for i, val in enumerate(angles_list):
+#                if not isinstance(float(val), float):
+#                    SD.print_conversion_err(angles_of_interest[i], val)
+#                    SD.exit_Ducque()
+        #TODO: add functionally for adding a linker moiety properly!
 
             # Initialise dictionary
             json_dict = {}
