@@ -52,8 +52,6 @@ def Architecture(lead_nucleic_acid_list, complement, outfile):
 
         # Import the next nucleoside and create an object
         nextnuc_acid = lead_nucleic_acid_list[NA]
-        #nextnuc = initMolecule.Nucleoside(CODEX_AN[nextnuc_acid][0]) ; index_lead += nextnuc.mol_length
-        #nextlink = initMolecule.Linker(CODEX_AN[nextnuc_acid][1]) ; index_lead += nextlink.mol_length
 
         # Parse the dictionary for the previous nucleotide, to append the next nucleotide onto.
         previous_nucleic_acid = lead_nucleic_acid_list[NA - 1]
@@ -120,8 +118,6 @@ def Architecture(lead_nucleic_acid_list, complement, outfile):
         prev_compl_nuc, prev_compl_linker = initMolecule.Nucleoside(CODEX_AN[prev_compl_nextnuc_acid][0]), initMolecule.Linker(CODEX_AN[prev_compl_nextnuc_acid][1])
         index_compl -= (prev_compl_linker.mol_length + prev_compl_nuc.mol_length)
 
-        #compl_nextnuc_arr = UB.assert_possible_base_conformations_and_fit(lead_nextnuc, leading_strand, conformations, compl_nextlinker, complementary_strand,
-        #                                                                                          prev_compl_nuc, prev_compl_linker, index_lead, index_compl)
         fitted_nextnuc = UB.assert_possible_base_conformations_and_fit(lead_nextnuc, leading_strand, conformations, compl_nextlinker, complementary_strand,
                                                                                                   prev_compl_nuc, prev_compl_linker, index_lead, index_compl)
         #complementary_strand = vstack((complementary_strand, compl_nextnuc_arr))

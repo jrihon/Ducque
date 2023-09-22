@@ -14,7 +14,7 @@ CODEX = LIB.codex_acidum_nucleicum
 
 
 ##-- Parse atoms from the queried JSON object files
-def Atom_Parsing_List(prevnuc, link, nextnuc = None):
+def Atom_Parsing_List(prevnuc, link, nextnuc = None) -> list :
     """ Retrieves the atoms that correspond to the correct index of the array, with which we calculate with.
     All variables are json object
 
@@ -122,10 +122,6 @@ def concatenate_chem_and_bases(chemistry : Union[str, list], bases : list) -> li
         return nucleoside_list
 
 
-#def retrieve_base(base : str) -> str:
-#    """ retrieve the base denominator for this specific nucleoside """
-#    return x[-1]
-
 
 def retrieve_homo_nucleosides(codex_dict_keys : list, chem_i : str, ln_str : int) -> list:
     """ Retrieves all the possible nucleobases that the chemistry can have. """
@@ -167,7 +163,6 @@ def return_chemistrycode(identifier : str) -> str:
 
         Then parse the correct abbreviated chemistry identifier.
         Example ; find 'Deoxy Ribonucleic Acid' --> returns 'd'     """
-#    from itertools import chain
 
     # Get the directory from the $HOME of Ducque (where it is installed)
     dH = return_DUCQUEHOME()
@@ -182,10 +177,6 @@ def return_chemistrycode(identifier : str) -> str:
         with open(json_pathname, "r") as jsonf:
             jsonContent = json.loads(json.load(jsonf)["identity"])[0]
 
-#        # Extra concern, check if the file is in the labyrinth_repository dictionary() ...
-#        if json_pathname not in KEYS_LIST :
-#            sys.exit(f"{json_pathname} has not been found in the conformations_codex in labyrinth_repository.py")
-#
         # if the identifier has been found, remember the name of the file we found it in
         if jsonContent == identifier:
             file_of_chemistry = json_pathname
@@ -419,201 +410,3 @@ def return_PDB_Residuename(list_of_sequence : list) -> list:
             tmp_resname = [ID for _ in range(nucleotide_shape)]
             resname_list = resname_list + tmp_resname
 
-
-##-- GRAVEYARD
-#def COMPLEMENTARY_pdb_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : str) -> list:
-#    """ Loads in the atom names from the json files
-#    The identifier is either the string "Atoms" or the string "ElementSymbol", which will parse the list of interest """
-#
-#    # Initialise an empty list
-#    atom_list = []
-#
-#    for i in range(len(list_of_sequence)):
-#
-#        # If it is the first in the nucleotide sequence
-#        if i == 0:
-#            buildingblock = list_of_sequence[i]
-#            # Make json object of nucleoside
-#            nucleoside = CODEX[buildingblock][0]
-#            with open(nucleoside, "r") as nuc:
-#                nucleoside = json.load(nuc)
-#
-#            tmp_atomlist = json.loads(nucleoside["pdb_properties"][identifier])
-#
-#            atom_list = atom_list + tmp_atomlist
-#
-#        # If it is the last in the sequence
-#        if (i + 1) == len(list_of_sequence):
-#            buildingblock = list_of_sequence[i]
-#
-#            # Make json object of nucleoside
-#            nucleoside = CODEX[buildingblock][0]
-#            with open(nucleoside, "r") as nuc:
-#                nucleoside = json.load(nuc)
-#
-#            # Make json object of linker
-#            linker = CODEX[buildingblock][1]
-#            with open(linker, "r") as lnk:
-#                linker = json.load(lnk)
-#
-#            tmp_atomlist = json.loads(linker["pdb_properties"][identifier]) + json.loads(nucleoside["pdb_properties"][identifier])
-#
-#            atom_list = atom_list + tmp_atomlist
-#
-#            return atom_list
-#
-#        if not i == 0 and not (i+1) == len(list_of_sequence):
-#            # since this is not the last one or the first one, just carry on as usual
-#            buildingblock = list_of_sequence[i]
-#
-#            # Make json object of nucleoside
-#            nucleoside = CODEX[buildingblock][0]
-#            with open(nucleoside, "r") as nuc:
-#                nucleoside = json.load(nuc)
-#
-#            # Make json object of linker
-#            linker = CODEX[buildingblock][1]
-#            with open(linker, "r") as lnk:
-#                linker = json.load(lnk)
-#
-#            tmp_atomlist = json.loads(linker["pdb_properties"][identifier]) + json.loads(nucleoside["pdb_properties"][identifier])
-#
-#            atom_list = atom_list + tmp_atomlist
-#
-#
-#def COMPLEMENTARY_pdb_Sequence(list_of_sequence : list, start_of_sequence : int = 0) -> np.array :
-#    """ Determines the number in the sequence of the nucleotides in the strands based off on the shape of their array.
-#        The '+1' for the first and last nucleotide is to account for the capping of the nucleoside, here with a single hydrogen. """
-#
-#    # Initialise an empty array
-#    sequence_array = np.array([], dtype=int)
-#
-#    # Initialise a counter
-#    seq_count = 1 + start_of_sequence
-#
-#    for i in range(len(list_of_sequence)):
-#
-#        # If it is the first in the nucleotide sequence
-#        if i == 0:
-#            buildingblock = list_of_sequence[i]
-#
-#            # Make json object of nucleoside
-#            nucleoside = CODEX[buildingblock][0]
-#            with open(nucleoside, "r") as nuc:
-#                nucleoside = json.load(nuc)
-#
-#            nuc_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + 1
-#            tmp_seqarray = np.full(nuc_shape, seq_count, dtype=int)
-#
-#            seq_count += 1
-#
-#            sequence_array = np.concatenate((sequence_array, tmp_seqarray), axis=None)
-#
-#        # If it is the last in the sequence
-#        if (i + 1) == len(list_of_sequence):
-#            buildingblock = list_of_sequence[i]
-#
-#            # Make json object of nucleoside
-#            nucleoside = CODEX[buildingblock][0]
-#            with open(nucleoside, "r") as nuc:
-#                nucleoside = json.load(nuc)
-#
-#            # Make json object of linker
-#            linker = CODEX[buildingblock][1]
-#            with open(linker, "r") as lnk:
-#                linker = json.load(lnk)
-#
-#            nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0] + 1
-#            tmp_seqarray = np.full(nucleotide_shape, seq_count, dtype=int)
-#
-#            sequence_array = np.concatenate((sequence_array, tmp_seqarray), axis=None)
-#
-#            # Return the output of the atom_list, as this is the last nucleotide in the sequence
-#            return sequence_array
-#
-#        # since this is not the last one or the first one, just carry on as usual
-#        if not i == 0 and not (i+1) == len(list_of_sequence):
-#            buildingblock = list_of_sequence[i]
-#
-#            # Make json object of nucleoside
-#            nucleoside = CODEX[buildingblock][0]
-#            with open(nucleoside, "r") as nuc:
-#                nucleoside = json.load(nuc)
-#
-#            # Make json object of linker
-#            linker = CODEX[buildingblock][1]
-#            with open(linker, "r") as lnk:
-#                linker = json.load(lnk)
-#
-#            nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0]
-#            tmp_seqarray = np.full(nucleotide_shape, seq_count, dtype=int)
-#
-#            seq_count += 1
-#
-#            sequence_array = np.concatenate((sequence_array, tmp_seqarray), axis=None)
-#
-#
-#def COMPLEMENTARY_pdb_Residuename(list_of_sequence : list) -> list:
-#
-#    # Initialise an empty array
-#    resname_list = []
-#
-#    for i in range(len(list_of_sequence)):
-#
-#        # If it is the first in the nucleotide sequence, meaning the last in the nucleotide sequence
-#        if i == 0:
-#            buildingblock = list_of_sequence[i]
-#
-#            # Make json object of nucleoside
-#            nucleoside = CODEX[buildingblock][0]
-#            with open(nucleoside, "r") as nuc:
-#                nucleoside = json.load(nuc)
-#
-#            nuc_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + 1
-#            ID = json.loads(nucleoside["identity"])[2]
-#
-#            tmp_resname = [ID for i in range(nuc_shape)]
-#            resname_list = resname_list + tmp_resname
-#
-#        # If it is the last nucleotide in the sequence
-#        if (i + 1) == len(list_of_sequence):
-#            buildingblock = list_of_sequence[i]
-#
-#            # Make json object of nucleoside
-#            nucleoside = CODEX[buildingblock][0]
-#            with open(nucleoside, "r") as nuc:
-#                nucleoside = json.load(nuc)
-#
-#            # Make json object of linker
-#            linker = CODEX[buildingblock][1]
-#            with open(linker, "r") as lnk:
-#                linker = json.load(lnk)
-#
-#            nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0] + 1
-#            ID = json.loads(nucleoside["identity"])[2]
-#
-#            tmp_resname = [ID for i in range(nucleotide_shape)]
-#            resname_list = resname_list + tmp_resname
-#            # Return the output of the atom_list, as this is the last nucleotide in the sequence
-#            return resname_list
-#
-#
-#        # since this is not the last one or the first one, just carry on as usual
-#        if not i == 0 and not (i+1) == len(list_of_sequence):
-#            buildingblock = list_of_sequence[i]
-#
-#            # Make json object of nucleoside
-#            nucleoside = CODEX[buildingblock][0]
-#            with open(nucleoside, "r") as nuc:
-#                nucleoside = json.load(nuc)
-#
-#            # Make json object of linker
-#            linker = CODEX[buildingblock][1]
-#            with open(linker, "r") as lnk:
-#                linker = json.load(lnk)
-#
-#            nucleotide_shape = json.loads(nucleoside["pdb_properties"]["Shape"])[0] + json.loads(linker["pdb_properties"]["Shape"])[0]
-#            ID = json.loads(nucleoside["identity"])[2]
-#
-#            tmp_resname = [ID for i in range(nucleotide_shape)]
-#            resname_list = resname_list + tmp_resname

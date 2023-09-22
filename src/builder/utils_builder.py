@@ -16,10 +16,11 @@ import systemsDucque as SD
 The script that contains the classes and all the functions that concatenate the workflow of consecutively adding the linker and nucleotides. """
 
 
-def generate_vector_of_interest(angle : float, dihedral : float, atom_array : np.ndarray) -> np.ndarray:
+def generate_vector_of_interest(angle : float, dihedral : float, atom_array : list) -> np.ndarray:
     """ This function generates a single vector for which there exists only one angle and dihedral.
         The atom_array contains the three first atoms in the sequence that make up the dihedral.
-        Example = if the sequence of a dihedral is C4' - C5' - O5' - P (beta backbone), then the atom_array is [O5', C5', C4'] """
+        Example = if the sequence of a dihedral is C4' - C5' - O5' - P (beta backbone), then the atom_array is [O5', C5', C4'] 
+        atom_array : list[np.ndarray]                                                                                           """
 
     # Get the vector to rotate the cone vector onto. This is done on the middle two atoms of the sequence
     # Example : [O5'] minus (-) [C5'] results in a vector that goes [C5' -> O5']
@@ -191,11 +192,6 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[Lis
     return complementary_sequence
 
 
-#    # At this point, any input the user has prompted should have gone through a return statement. So if we reach this point, abort because something went wrong
-#    raise ValueError("The variable you have prompted for the '--complement' flag is not correct. Please review your input file.\n")
-#    sys.exit(1)
-
-
 def assert_leading_strand_nucleotide_conformation(conformations, prev_nucleoside, prev_link, leading_strand):
     """ Position the different conformations and assert which conformation is the most parralel with respect to the bases of both nucleosides """
 
@@ -236,7 +232,7 @@ def assert_leading_strand_nucleotide_conformation(conformations, prev_nucleoside
         scalar_product = np.dot(cross_prev, possible_cross_vectors[v])
         radians_product_array[v] = np.arccos(scalar_product)
 
-    stored_distances = MATH.smallest_difference(radians_product_array, 1)
+#    stored_distances = MATH.smallest_difference(radians_product_array, 1)
     smallest_distance = radians_product_array.min()
     index_smallest_distance = np.where(radians_product_array == smallest_distance)[0][0]
 
@@ -267,7 +263,7 @@ def assert_starting_bases_of_complementary_strand(compl1_base_confs : list, comp
     array_of_possible_dinucleotide_conformations = np.zeros((len(compl1_base_confs), len(compl2_base_confs)), dtype=object)
 
     # Create instanced objects of the two nucleotides to parse the correct vectors
-    lead1_base, lead1_link = initMolecule.Nucleoside(lead_bases[0][0]), initMolecule.Linker(lead_bases[0][1])
+    lead1_base, _ = initMolecule.Nucleoside(lead_bases[0][0]), initMolecule.Linker(lead_bases[0][1])
     lead2_base, lead2_link = initMolecule.Nucleoside(lead_bases[1][0]), initMolecule.Linker(lead_bases[1][1])
 
     # Prepare variables for the forloop
@@ -398,12 +394,8 @@ def assert_starting_bases_of_complementary_strand(compl1_base_confs : list, comp
         _quaternionNuc1 = MATH.get_quaternion_custom_axis(v_direction1, _arrayOfRotationAngles1[i])
         _quaternionNuc2 = MATH.get_quaternion_custom_axis(v_direction2, _arrayOfRotationAngles2[i])
 
-#        testnuc1 = MATH.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, arr_nuc1, arr_nuc1[id_nuc1_origin])
-#        testnuc2 = MATH.move_to_origin_ROTATE_move_back_to_loc(quat_nuc2, arr_nuc2, arr_nuc2[id_nuc2_origin])
         _rotatedNuc1 = MATH.move_to_origin_ROTATE_move_back_to_loc(_quaternionNuc1, _arrNuc1, _arrNuc1[_idxNucAtomsForDirection1])
         _rotatedNuc2 = MATH.move_to_origin_ROTATE_move_back_to_loc(_quaternionNuc2, _arrNuc2, _arrNuc2[_idxNucAtomsForDirection2])
-#        _rotatedNuc1 = MATH.move_to_origin_ROTATE_move_back_to_loc(_quaternionNuc1, _arrNuc1, _arrNuc1[_idxNucAtomsOrigin1])
-#        _rotatedNuc2 = MATH.move_to_origin_ROTATE_move_back_to_loc(_quaternionNuc2, _arrNuc2, _arrNuc2[_idxNucAtomsOrigin2])
 
         _storedDistances[i] = MATH.get_length_of_vector(_rotatedNuc1[_idxDistCompl1], _rotatedNuc2[_idxDistCompl2])
         # If the distance is suitable according to the boundaries, return the stack
@@ -430,12 +422,8 @@ def assert_starting_bases_of_complementary_strand(compl1_base_confs : list, comp
         _quaternionNuc1 = MATH.get_quaternion_custom_axis(v_direction1, _arrayOfRotationAngles1[_i])
         _quaternionNuc2 = MATH.get_quaternion_custom_axis(v_direction2, _arrayOfRotationAngles2[_i])
 
-#        testnuc1 = MATH.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, arr_nuc1, arr_nuc1[id_nuc1_origin])
-#        testnuc2 = MATH.move_to_origin_ROTATE_move_back_to_loc(quat_nuc2, arr_nuc2, arr_nuc2[id_nuc2_origin])
         _rotatedNuc1 = MATH.move_to_origin_ROTATE_move_back_to_loc(_quaternionNuc1, _arrNuc1, _arrNuc1[_idxNucAtomsForDirection1])
         _rotatedNuc2 = MATH.move_to_origin_ROTATE_move_back_to_loc(_quaternionNuc2, _arrNuc2, _arrNuc2[_idxNucAtomsForDirection2])
-#        _rotatedNuc1 = MATH.move_to_origin_ROTATE_move_back_to_loc(_quaternionNuc1, _arrNuc1, _arrNuc1[_idxNucAtomsOrigin1])
-#        _rotatedNuc2 = MATH.move_to_origin_ROTATE_move_back_to_loc(_quaternionNuc2, _arrNuc2, _arrNuc2[_idxNucAtomsOrigin2])
 
         # Normalise vectors
         v0 = MATH.return_normalized(_rotatedNuc2[idx0] - _rotatedNuc2[idx1])
@@ -533,16 +521,13 @@ def assert_possible_base_conformations_and_fit(leading_nuc, leading_array : np.n
             conf_n = initMolecule.Nucleoside(conformations[index_of_best_conformation])
             conf_n.array = utilsUB.tilt_array_to_get_a_better_fit(conf_n, compl_linker, prev_compl_nuc, prev_compl_linker, possibilities_of_conformations[index_of_best_conformation], complementary_strand, index_compl)
             return conf_n
-            #return utilsUB.tilt_array_to_get_a_better_fit(conf_n, compl_linker, prev_compl_nuc, prev_compl_linker, possibilities_of_conformations[index_of_best_conformation], complementary_strand, index_compl)
 
-        #return possibilities_of_conformations[index_of_best_conformation]
     # if the check dihedral suitability fails, check for distance suitability
     if np.any(stored_bb_distance_bools == True):
         index_of_best_conformation = utilsUB.retrieve_index_of_best_conformation(stored_bb_distances, stored_bb_distance_bools)
         conf_n =  initMolecule.Nucleoside(conformations[index_of_best_conformation])
         conf_n.array = possibilities_of_conformations[index_of_best_conformation]
         return conf_n
-        #return possibilities_of_conformations[index_of_best_conformation]
 
 
     ## Alas, none of the conformations were suitable enough, it seems we will have to fit them over and over.
@@ -572,14 +557,12 @@ def assert_possible_base_conformations_and_fit(leading_nuc, leading_array : np.n
         conf_n =  initMolecule.Nucleoside(conformations[index_of_best_conformation])
         conf_n.array = possibilities_of_conformations[index_of_best_conformation]
         return conf_n
-        #return possibilities_of_conformations[index_of_best_conformation]
 
     # This gives the one with the least distance from the desired bb_distance
     index_of_best_conformation = utilsUB.retrieve_index_of_best_conformation(stored_bb_distances, stored_bb_distance_bools)
     conf_n =  initMolecule.Nucleoside(conformations[index_of_best_conformation])
     conf_n.array = possibilities_of_conformations[index_of_best_conformation]
     return conf_n
-    #return possibilities_of_conformations[index_of_best_conformation]
 
 
 def orient_the_linker_moieties_better(CONF_LIST : list, LINK_LIST : list, leading_array : np.ndarray, compl_array : np.ndarray) -> Union[np.ndarray, np.ndarray]:

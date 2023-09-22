@@ -326,7 +326,7 @@ def assess_complX_id(compl1_id : int, compl2_id : int) -> bool :
 
 
 def assert_rotation_of_bases_by_distance(array_nucs : list, v_directions: list, index_origin : Union[list, float], idxDistanceBetweenSubsequentNucs : list) -> np.ndarray:
-    """ Assert the direction of the rotation axis by measuring the distances between the two nucleic acids; by the backbone"""
+    """ Assert the angle of the rotation axis by measuring the angles between the two nucleic acids; by the backbone"""
     ## ASSERT THE ROTATIONS
     nuc1 = array_nucs[0]
     nuc2 = array_nucs[1]
@@ -340,16 +340,12 @@ def assert_rotation_of_bases_by_distance(array_nucs : list, v_directions: list, 
     if len(v_directions) == 1:
         angles_of_rotation = np.array([_rot0, _rotI])
         v_direction = v_directions[0]
-        #direction_of_rotation = np.array([[1], [-1]])
         _storedDistances = np.zeros(2)
 
         _returnAnglesOfRotation = np.array([np.linspace(_rot00, _rot01, 16),
                                            np.linspace(_rotI0, _rotI1, 16)])
 
         for i, angle in enumerate(angles_of_rotation) :
-            # The direction of the direction_axis is the following ;
-            #d1 = v_direction * set_of_angles[index]
-
             # Get quaternion for the rotation
             _quaternion = MATH.get_quaternion_custom_axis(v_direction, angle)
 
@@ -366,8 +362,6 @@ def assert_rotation_of_bases_by_distance(array_nucs : list, v_directions: list, 
         # index_min == 1 is rotation 357.5 -> 330 degrees
         return _returnAnglesOfRotation[0] if _indexMin == 0 else _returnAnglesOfRotation[1]
 
-        #direction = direction_of_rotation[index_min[0]][0]
-        #return v_direction1 * direction
 
     # Two sets of nucleobase-plane rotations to check, when fitting the first two complementary nucleosides
     if len(v_directions) == 2:
@@ -391,8 +385,6 @@ def assert_rotation_of_bases_by_distance(array_nucs : list, v_directions: list, 
 
         for _i, _angle in enumerate(_anglesOfRotation):
             # The direction of the direction_axis is the following ;
-            # d1 = v_direction1 * directions[0]
-            # d2 = v_direction2 * directions[1]
 
             # Get quaternion for the rotation
             _quaternion1 = MATH.get_quaternion_custom_axis(v_direction1, _angle[0])
@@ -409,8 +401,6 @@ def assert_rotation_of_bases_by_distance(array_nucs : list, v_directions: list, 
         _storedDistances = MATH.smallest_difference(_storedDistances, 1.6)
         _indexMin = np.where(_storedDistances == _storedDistances.min())[0][0]
         return _returnAnglesOfRotation[_indexMin][0], _returnAnglesOfRotation[_indexMin][1]
-        #v_directions = direction_of_rotation[index_min[0]][0]
-        #return v_direction1 * v_directions[0], v_direction2 * v_directions[1]
 
 
 
@@ -418,7 +408,6 @@ def assert_rotation_of_bases_by_angle(array_nucs : list, v_directions : list,  i
     """ Assert the direction of the rotation axis by approximating the best fitting angle between the two nucleic acids; by the backbone"""
     ## ASSERT THE ROTATIONS
     # use a small angle of 2 degrees
-#    angle_of_rotation = 5 * (np.pi/180)
     nuc1 = array_nucs[0]
     nuc2 = array_nucs[1]
 
@@ -431,14 +420,8 @@ def assert_rotation_of_bases_by_angle(array_nucs : list, v_directions : list,  i
     _rotI = np.deg2rad(355)
     _rot00, _rot01, _rotI0, _rotI1 = np.deg2rad(2.5), np.deg2rad(20), np.deg2rad(357.5), np.deg2rad(360)
 
-    #angles_of_rotation = np.array([5 * deg2rad, (355 * deg2rad)])
-    #v_direction = v_directions[0]
-    ##direction_of_rotation = np.array([[1], [-1]])
-    #_storedDistances = np.zeros(2)
-
     # One direction to check
     if len(v_directions) == 1:
-        #direction_of_rotation = np.array([[1], [-1]])
         _storedAngles = np.empty(2)
         _anglesOfRotation = np.array([_rot0, _rotI])
         v_direction = v_directions[0]
@@ -447,15 +430,11 @@ def assert_rotation_of_bases_by_angle(array_nucs : list, v_directions : list,  i
 
 
         for _i, _angle in enumerate(_anglesOfRotation):
-            # The direction of the direction_axis is the following ;
-            #d1 = v_direction * directions
 
             # Get quaternion for the rotation
             _quaternionNuc2 = MATH.get_quaternion_custom_axis(v_direction, _angle)
 
             # Rotate the nucleoside by the plane of the base
-#            _tmpNuc2 = MATH.move_to_origin_ROTATE_move_back_to_loc(_quaternionNuc2, nuc2, nuc2[index_angles])
-#            _rotatedNuc2 = MATH.move_to_origin_ROTATE_move_back_to_loc(_quaternionNuc2, nuc2, nuc2[index_origin])
             _rotatedNuc2 = MATH.move_to_origin_ROTATE_move_back_to_loc(_quaternionNuc2, nuc2, nuc2[index_origin])
 
             # Normalise vectors
@@ -468,10 +447,7 @@ def assert_rotation_of_bases_by_angle(array_nucs : list, v_directions : list,  i
         # Find the angle with the lowest difference possible and use that specific set of rotations
         _storedAngles = MATH.smallest_difference(_storedAngles, angle_to_fit)
         _indexMin = np.where(_storedAngles == _storedAngles.min())[0][0]
-        #direction = direction_of_rotation[index_min[0]][0]
         return _returnAnglesOfRotation[0] if _indexMin == 0 else _returnAnglesOfRotation[1]
-
-        #return v_direction1 * direction
 
     # Two sets of directions to check
     if len(v_directions) == 2:
@@ -493,14 +469,8 @@ def assert_rotation_of_bases_by_angle(array_nucs : list, v_directions : list,  i
         # Reshape the arrays to the desired (4,2,16) shape. Here, every value in the array is an array of length[16] instead of an float
         _returnAnglesOfRotation = np.reshape(_returnAnglesOfRotation, (4,2,16))
 
-#        _storedAngles = np.empty(4)
-#        v_direction1, v_direction2 = v_directions[0], v_directions[1]
-#        direction_of_rotation = np.array([[1,1], [1,-1], [-1, 1], [-1, -1]])
 
         for _i, _angle in enumerate(_anglesOfRotation):
-            # The direction of the direction_axis is the following ;
-            #d1 = v_direction1 * directions[0]
-            #d2 = v_direction2 * directions[1]
 
             # Get quaternion for the rotation
             _quaternionNuc1 = MATH.get_quaternion_custom_axis(v_direction1, _angle[0])
@@ -509,8 +479,6 @@ def assert_rotation_of_bases_by_angle(array_nucs : list, v_directions : list,  i
             # Rotate the nucleoside by the plane of the base
             _rotatedNuc1 = MATH.move_to_origin_ROTATE_move_back_to_loc(_quaternionNuc1, nuc1, nuc1[index_origin[0]])
             _rotatedNuc2 = MATH.move_to_origin_ROTATE_move_back_to_loc(_quaternionNuc2, nuc2, nuc2[index_origin[1]])
-#            _tmpNuc1 = MATH.move_to_origin_ROTATE_move_back_to_loc(_quaternionNuc1, nuc1, nuc1[index_origin[0]])
-#            _tmpNuc2 = MATH.move_to_origin_ROTATE_move_back_to_loc(_quaternionNuc2, nuc2, nuc2[index_origin[1]])
 
             # Normalise vectors
             v0 = MATH.return_normalized(_rotatedNuc2[idx0] - _rotatedNuc2[idx1])
@@ -523,9 +491,6 @@ def assert_rotation_of_bases_by_angle(array_nucs : list, v_directions : list,  i
         _storedAngles = MATH.smallest_difference(_storedAngles, angle_to_fit)
         _indexMin = np.where(_storedAngles == _storedAngles.min())[0][0]
         return _returnAnglesOfRotation[_indexMin][0], _returnAnglesOfRotation[_indexMin][1]
-        #v_directions = direction_of_rotation[index_min[0]][0]
-
-        #return v_direction1 * v_directions[0], v_direction2 * v_directions[1]
 
 
 def distance_or_angle(distances_arr : np.array, angles_arr : np.array, ref_distance : float, ref_angle : float) -> int:
@@ -588,67 +553,37 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linke
     # If one or both values are false, try to position the bases to an appropriate orientation
     else :
         ## Generate a quaternion that orients the alpha dihedral properly
-        #angle_of_rot_TEST = 5 * (np.pi/180)
         # Retrieve which the denominator of the base that the nucleotide is
         compl_base = compl_nuc.get_base_denominator()
 
-######################################################################################################################### HOW DO WE ASSIGN THE DIRECTION AXIS TO ROTATE ON
-        # Make a custom direction and angle. Not to worry, the direction is perpendicular to the movement
-        # First try
-#        compl_base_atoms1, _ = LCst.retrieve_atoms_for_plane_rotation_of_complement(compl_base, compl_base)
-#        compl_base_atoms2, _ , __= LCst.retrieve_atoms_for_positioning_of_complement1(compl_base, compl_base)
-#        idx_compl_base_atoms1 = PARSE.retrieve_atom_index(compl_nuc, compl_base_atoms1[0]) + compl_linker.mol_length
-#        idx_compl_base_atoms2 = PARSE.retrieve_atom_index(compl_nuc, compl_base_atoms2[2]) + compl_linker.mol_length
-#        v_direction = MATH.return_normalized(compl_nuc_arr[idx_compl_base_atoms2] - compl_nuc_arr[idx_compl_base_atoms1])
-        # Second try
         complNucleobaseAtoms1, _ , _= CONSTANTS.retrieve_atoms_for_positioning_of_complement1(compl_base, compl_base)
         complNucleobaseAtom2 = CONSTANTS.retrieve_atom_for_direction_axis(compl_base)
         _idxDirNucleobaseAtom1 = PARSE.retrieve_atom_index(compl_nuc, complNucleobaseAtoms1[2]) + compl_linker.mol_length
         _idxDirNucleobaseAtom2 = PARSE.retrieve_atom_index(compl_nuc, complNucleobaseAtom2) + compl_linker.mol_length
         v_direction = MATH.return_normalized(compl_nuc_arr[_idxDirNucleobaseAtom1] - compl_nuc_arr[_idxDirNucleobaseAtom2])
 
-        # angles of rotation that need to be operated with
-        #array_of_rotation_angles = np.linspace(2.5, 30, 16) * (np.pi/180)
-        #array_of_inverted_rotation_angles = np.linspace(360 - 2.5, 360 - 30, 16) * (np.pi/180)
 
         ### DISTANCE
         _idxDistanceBetweenSubsequentNucs = [PARSE.retrieve_atom_index(compl_linker, APL[2]),
                                     PARSE.retrieve_atom_index(prev_nuc, APL[3]) + index_compl + prev_linker.mol_length]
-#        idx_distance_between_nuc = [PARSE.retrieve_atom_index(compl_linker, APL[2]),
-#                                    PARSE.retrieve_atom_index(prev_nuc, APL[3])]
 
         _anglesOfRotation = assert_rotation_of_bases_by_distance([complementary_strand, compl_nuc_arr], [v_direction], _idxDirNucleobaseAtom1, _idxDistanceBetweenSubsequentNucs)
-#        _anglesOfRotation = assert_rotation_of_bases_by_distance([complementary_strand, compl_nuc_arr], [v_direction], _idxDirNucleobaseAtom2, _idxDistanceBetweenSubsequentNucs)
-#        v_direction = assert_rotation_of_bases_by_distance([complementary_strand, compl_nuc_arr], [v_direction], _idxDirNucleobaseAtom2, idxDistanceBetweenSubsequentNucs)
-#        v_direction = assert_rotation_of_bases_by_distance([complementary_strand, compl_nuc_arr], [v_direction], idx_compl_base_atoms1, idx_distance_between_nuc)
-#        v_direction = assert_rotation_of_bases_by_distance([prev_nuc.array, compl_nuc_arr], [v_direction], idx_compl_base_atoms1, idx_distance_between_nuc)
 
         _storedDistances = np.zeros(shape=(_anglesOfRotation.shape[0]))
         for _i in range(len(_anglesOfRotation)) :
             _quaternionDistance = MATH.get_quaternion_custom_axis(v_direction, _anglesOfRotation[_i])
             testnuc = MATH.move_to_origin_ROTATE_move_back_to_loc(_quaternionDistance, compl_nuc_arr, compl_nuc_arr[_idxDirNucleobaseAtom1])
-#            testnuc = MATH.move_to_origin_ROTATE_move_back_to_loc(_quaternionDistance, compl_nuc_arr, compl_nuc_arr[_idxDirNucleobaseAtom2])
-#            testnuc = MATH.move_to_origin_ROTATE_move_back_to_loc(nucD_quaternion, compl_nuc_arr, compl_nuc_arr[idx_compl_base_atoms1])
             _storedDistances[_i] = MATH.get_length_of_vector(testnuc[idx_v2], complementary_strand[idx_compl_strand])
 
             if MATH.assert_length_of_vector(_storedDistances[_i]):
-#                print(_anglesOfRotation[_i])
                 return testnuc
 
-        #print("Accessing angles")
-        ### ANGLE
+
         _idxAngleBetweenSubsequentNucs = [PARSE.retrieve_atom_index(compl_nuc, APL[1]) + compl_linker.mol_length,
                                  PARSE.retrieve_atom_index(compl_linker, APL[2]),
                                  PARSE.retrieve_atom_index(prev_nuc, APL[3]) + index_compl + prev_linker.mol_length]
-#        idx_angle_between_nuc = [PARSE.retrieve_atom_index(compl_nuc, APL[1]) + compl_linker.mol_length,
-#                                 PARSE.retrieve_atom_index(compl_linker, APL[2]),
-#                                 PARSE.retrieve_atom_index(prev_nuc, APL[3])]
 
         _anglesOfRotation = assert_rotation_of_bases_by_angle([complementary_strand, compl_nuc_arr], [v_direction], _idxDirNucleobaseAtom1, _idxAngleBetweenSubsequentNucs, angle_to_fit)
-#        _anglesOfRotation = assert_rotation_of_bases_by_angle([complementary_strand, compl_nuc_arr], [v_direction], _idxDirNucleobaseAtom2, _idxAngleBetweenSubsequentNucs, angle_to_fit)
-#        v_direction = assert_rotation_of_bases_by_angle([complementary_strand, compl_nuc_arr], [v_direction], _idxDirNucleobaseAtom2, idxDistanceBetweenSubsequentNucs, angle_to_fit)
-#        v_direction = assert_rotation_of_bases_by_angle([complementary_strand, compl_nuc_arr], [v_direction], idx_compl_base_atoms1, idx_angle_between_nuc, angle_to_fit)
-#        v_direction = assert_rotation_of_bases_by_angle([prev_nuc.array, compl_nuc_arr], [v_direction], idx_compl_base_atoms1, idx_angle_between_nuc, angle_to_fit)
         idx0 = _idxAngleBetweenSubsequentNucs[0]
         idx1 = _idxAngleBetweenSubsequentNucs[1]
         idx2 = _idxAngleBetweenSubsequentNucs[2]
@@ -657,13 +592,10 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linke
         for _i, _angle in enumerate(_anglesOfRotation) :
             _quaternionAngle = MATH.get_quaternion_custom_axis(v_direction, _angle)
             testnuc = MATH.move_to_origin_ROTATE_move_back_to_loc(_quaternionAngle, compl_nuc_arr, compl_nuc_arr[_idxDirNucleobaseAtom1])
-#            testnuc = MATH.move_to_origin_ROTATE_move_back_to_loc(_quaternionAngle, compl_nuc_arr, compl_nuc_arr[_idxDirNucleobaseAtom2])
-#            testnuc = MATH.move_to_origin_ROTATE_move_back_to_loc(nucA_quaternion, compl_nuc_arr, compl_nuc_arr[idx_compl_base_atoms1])
 
             # Normalise vectors
             v0 = MATH.return_normalized(testnuc[idx0] - testnuc[idx1])
             v1 = MATH.return_normalized(complementary_strand[idx2] - testnuc[idx1])
-#            v1 = MATH.return_normalized(prev_nuc.array[idx2] - testnuc[idx1])
 
             # Calculate the rotation by the angle that the vectors form. The output of the angle is in radians
             _storedAngles[_i] = MATH.get_angle_of_rotation(v0, v1)
@@ -685,7 +617,6 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linke
         nuc1_quaternion = MATH.get_quaternion_custom_axis(v_direction, float(_angleOfRot))
 
         return MATH.move_to_origin_ROTATE_move_back_to_loc(nuc1_quaternion, compl_nuc_arr, compl_nuc_arr[_idxDirNucleobaseAtom2])
-#        return MATH.move_to_origin_ROTATE_move_back_to_loc(nuc1_quaternion, compl_nuc_arr, compl_nuc_arr[idx_compl_base_atoms1])
 
 
 def parse_indexes_of_the_array_for_linker_reorientation(APL : list, nuc, link, nucPN, idx : int = 0) -> Union[np.ndarray, np.ndarray]:
@@ -701,34 +632,6 @@ def parse_indexes_of_the_array_for_linker_reorientation(APL : list, nuc, link, n
         link_atoms_idx = np.delete(link_atoms_idx, centroid_idx)
 
         return np.array([nuc_atom_idx, centrallink_atom_idx, nucPN_atom_idx]), link_atoms_idx
-
-#        if ID == "lead":
-#            # Parse all the indexes from the AtomParsingList
-#            nuc_atom_idx = PARSE.retrieve_atom_index(nuc, APL[1], (idx + link.mol_length + nucPN.mol_length ))
-#            centrallink_atom_idx = PARSE.retrieve_atom_index(link, APL[2], (idx + nucPN.mol_length))
-#            nucPN_atom_idx = PARSE.retrieve_atom_index(nucPN, APL[3], idx)
-#            link_atoms_idx = PARSE.retrieve_atom_index_MULTIPLE(link, link.atom_list, (idx + nucPN.mol_length))
-#
-#            # Remove central atom from the link_atoms_idx array, since this will make it easier to calculate with later on without making mistakes
-#            centroid_idx = PARSE.retrieve_atom_index(link, APL[2])
-#            link_atoms_idx = np.delete(link_atoms_idx, centroid_idx)
-#
-#            return np.array([nuc_atom_idx, centrallink_atom_idx, nucPN_atom_idx]), link_atoms_idx
-#
-#
-#        if ID == "complementary":
-#            # Parse all the indexes from the AtomParsingList
-#            nuc_atom_idx = PARSE.retrieve_atom_index(nuc, APL[1], (idx + link.mol_length + nucPN.mol_length))
-#            centrallink_atom_idx = PARSE.retrieve_atom_index(link, APL[2], (idx + nucPN.mol_length))
-#            nucPN_atom_idx= PARSE.retrieve_atom_index(nucPN, APL[3], idx)
-#
-#            link_atoms_idx = PARSE.retrieve_atom_index_MULTIPLE(link, link.atom_list, (idx + nucPN.mol_length))
-#
-#            # Remove central atom from the link_atoms_idx array, since this will make it easier to calculate with later on without making mistakes
-#            centroid_idx = PARSE.retrieve_atom_index(link, APL[2])
-#            link_atoms_idx = np.delete(link_atoms_idx, centroid_idx)
-#
-#            return np.array([nuc_atom_idx, centrallink_atom_idx, nucPN_atom_idx]), link_atoms_idx
 
 
 

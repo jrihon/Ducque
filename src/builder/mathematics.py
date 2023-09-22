@@ -50,27 +50,6 @@ def get_length_of_vector(vector1 : np.ndarray, vector2 : np.ndarray) -> float:
     return LA.norm(vector2 - vector1)
 
 
-def TESTTHETAget_quaternion(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : np.ndarray = np.array([0,0,1])) -> Rotation:
-    """ Quaternion mathematics using the scipy.spatial.transform.Rotation library
-        Create the quaternion that is associated with the angle and axis of rotation
-        Apply it to the vector you want to rotate.  """
-    # axis has been normalised
-    axis = get_direction_of_rotation(vector_to_rotate_from, vector_to_rotate_onto)      # DIRECTION
-
-    # angle already in radians 
-    theta = np.pi / 4     # ANGLE
-
-    # Create the quaternion
-    qx = axis[0] * np.sin(theta)
-    qy = axis[1] * np.sin(theta)
-    qz = axis[2] * np.sin(theta)
-    qw = np.cos(theta)
-
-    quaternion = Rotation.from_quat([qx, qy, qz, qw])
-
-    return quaternion
-
-
 def get_quaternion(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : np.ndarray = np.array([0,0,1])) -> Rotation:
     """ Quaternion mathematics using the scipy.spatial.transform.Rotation library
         Create the quaternion that is associated with the angle and axis of rotation
@@ -92,7 +71,7 @@ def get_quaternion(vector_to_rotate_onto : np.ndarray, vector_to_rotate_from : n
     return quaternion
 
 def get_quaternion_custom_axis(axis : np.ndarray, theta : float) -> Rotation:
-    """ Generate a customized quaternion. This is only succesful if the direction axis is perpendicular. """
+    """ Generate a customized quaternion. This is only succesful if the direction axis is near pi (SciPy gave unpredictable rotations at that range) """
     # Create the quaternion
     qx = axis[0] * np.sin(theta)
     qy = axis[1] * np.sin(theta)
@@ -164,30 +143,6 @@ def reorient_nucleoside_array(complementary_array : np.ndarray) -> np.ndarray :
 
     return move_to_origin_ROTATE_move_back_to_loc(_quaternion_custom, complementary_array, complementary_array[0])
 
-#def apply_rotation_of_planes(quaternion : np.array, nucleoside_array : np.ndarray, index_of_vectors : list) -> np.ndarray :
-#    """ This functions applies a second rotation to the nucleoside. The problem here is that we cannot use a custom axis, since direction axises are always perpendicular to the two vectors.
-#        This is why we rotate the array as usual. But we only override the vectors that we actually want to rotate.
-#        This way, we effectively rotate over a certain bond, but the mathematical part just did a copy-paste of the vectors we really want
-#        index_of_vectors : the vectors (or the atoms) that we do not want to have rotated. These will be cut out the list of indices.
-#        """
-#    # Get size of the array, then make a list of the range of indices to emulate the indices of the array we calculate with
-#   # size_of_array = nucleoside_array.shape[0]
-#   # list_of_indices = [i for i in range(size_of_array)]
-#
-#    # Remove index of the vectors of array that we do not want to rotate, so we do not override them later in this function
-#    #for index in index_of_vectors:
-#    #    list_of_indices.remove(index)
-#
-#    # apply rotation
-#    #tmp_rotated_vector = quaternion.apply(nucleoside_array)
-#    return quaternion.apply(nucleoside_array)
-#
-#    # Override the vectors into the nucleoside_array, ofcourse already having ommited the vectors you do not want to override
-#   # for i in list_of_indices:
-#   #     nucleoside_array[i] = tmp_rotated_vector[i]
-#
-#   # return nucleoside_array
-#
 
 def dihedral_array(atoms_in_dihr : np.ndarray, cone_vector : np.ndarray) -> np.ndarray :
     """ https://stackoverflow.com/questions/20305272/dihedral-torsion-angle-from-four-points-in-cartesian-coordinates-in-python
@@ -470,7 +425,7 @@ def smallest_difference(array : np.ndarray, ref_value : float) -> np.ndarray:
 
 
 
-##-- GRAVEYARD
+##-- LEGACY
 #def check_phi_angle_of_vector(vectors : np.ndarray, axis : np.array = np.array([0,0,1])) :
 #    """ The dotproduct determines the angle of the vector with a given axis/vector.
 #    This function is mainly for debugging purposes and has no value for building duplexes.

@@ -35,6 +35,9 @@ class BuildApp(tk.Tk):
         # set entries
         self.set_entries()
 
+        # set optionmenu
+        self.set_optionmenu()
+
         # set entries
         self.set_checkbutton()
 
@@ -60,10 +63,6 @@ class BuildApp(tk.Tk):
         self.entry_fname = ttk.Entry(self.content, textvariable=self.fname_str, state='disabled')
         self.entry_fname.grid(column=1, row=6)
 
-        # Checkbutton to toggle a list of possible chemistries from the `--complement`
-        self.chem_btn = tk.IntVar()
-        self.checkbtn_chemistries = ttk.Checkbutton(self.content, text="toggle list", variable=self.chem_btn, command=self.set_and_place_optionmenu,
-                                                onvalue=1, offvalue=0)
 
     def toggle_fname_checkbutton(self):
         """ the fname_btn variable only has two states, which are 1 and 0 """
@@ -73,23 +72,14 @@ class BuildApp(tk.Tk):
             self.entry_fname.delete(0, 'end')
             self.entry_fname.config(state="disabled")
 
-    def set_and_place_optionmenu(self):
+    def set_optionmenu(self):
         """ Set the list for all the possible chemistries for the `--complement` flag"""
 
-        if self.chem_btn.get() == 1 :
-            self.chem_choices = tk.StringVar()
-            chemlist = self.reveal_chemistry_keys()
-            self.chem_choices.set("HOMO") # default value
-            self.omenu_chem = tk.OptionMenu(self.content, self.chem_choices, *chemlist)
-            self.omenu_chem.configure(width=15)
-            self.com_str.set('')
-            self.entry_com.destroy()
-            self.omenu_chem.grid(column=1, row=4)
-        else :
-            self.omenu_chem.destroy()
-            self.com_str = tk.StringVar()
-            self.entry_com = ttk.Entry(self.content, textvariable=self.com_str)
-            self.entry_com.grid(column=1, row=4, **self.padding)
+        self.chem_choices = tk.StringVar()
+        chemlist = self.reveal_chemistry_keys()
+        self.chem_choices.set("HOMO") # default value
+        self.omenu_chem = tk.OptionMenu(self.content, self.chem_choices, *chemlist)
+        self.omenu_chem.configure(width=16)
             
 
     def reveal_chemistry_keys(self):
@@ -131,8 +121,12 @@ class BuildApp(tk.Tk):
                     sizeline = 470
 
             if flag == "--complement" :
-                self.com_str.set(inp.strip())
-                self.entry_com.configure(width=G.BUILD_label)
+                chemlist = self.reveal_chemistry_keys()
+                if inp.strip() not in chemlist: 
+                    self.chem_choices.set("")
+                    SD.print_invalid_chemistry(inp.strip())
+                else :
+                    self.chem_choices.set(inp.strip())
 
             if flag == "--pdbname" :
                 self.pdb_str.set(inp.strip())
@@ -150,9 +144,6 @@ class BuildApp(tk.Tk):
         # set sequence
         self.seq_str = tk.StringVar()
         self.entry_seq = ttk.Entry(self.content, textvariable=self.seq_str)
-        # set complement
-        self.com_str = tk.StringVar()
-        self.entry_com = ttk.Entry(self.content, textvariable=self.com_str)
         # set output file
         self.pdb_str = tk.StringVar()
         self.entry_out = ttk.Entry(self.content, textvariable=self.pdb_str)
@@ -178,12 +169,13 @@ class BuildApp(tk.Tk):
 
         # entries
         self.entry_seq.grid(column=1, row=3, **self.padding)
-        self.entry_com.grid(column=1, row=4, **self.padding)
         self.entry_out.grid(column=1, row=5, **self.padding)
+
+        # optionmenu
+        self.omenu_chem.grid(column=1, row=4)
 
         # checkbutton
         self.checkbtn_fname.grid(column=0, row=6, **self.padding)
-        self.checkbtn_chemistries.grid(column=2, row=4)
 
 
 
@@ -210,10 +202,7 @@ class BuildApp(tk.Tk):
             self.outputfname = getcwd() + "/" + self.entry_fname.get()
 
         # try except clause are stupid, because python is a dumb language
-        if self.chem_btn.get() == 1 :
-            complement = self.chem_choices.get()
-        else :
-            complement = self.com_str.get()
+        complement = self.chem_choices.get()
 
 
         with open(self.outputfname + ".binp", "w") as fileto :
