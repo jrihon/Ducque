@@ -307,11 +307,6 @@ class TransmuteToPdb:
 
     def __init__(self, xyzfile):
         """ Initialise the object and create object attributes """
-#        self.splitted = xyzfile.split('.')[0]
-#        self.filename = self.splitted + '.xyz'
-#        self.xyzname = self.basename + ".xyz"
-#        self.array = np.array([])
-#        self.pdb_dataframe = pd.DataFrame()
         self.pathName = xyzfile
         self.rootName = basename(xyzfile).split(".")[0]
         self.pdbName = self.rootName + ".pdb"
@@ -332,11 +327,6 @@ class TransmuteToPdb:
 
         with open(self.pathName, "r") as XYZ :
             _fileList = [line.strip() for line in XYZ.readlines()[2:]]
-#            file = [line.strip() for line in file_list]
-#        file_n = open(self.pathname, "r")
-#        file_list = file_n.readlines()[2:]
-#        file = [line.strip() for line in file_list]
-#        file_n.close()
 
         # extract the coordinates. 
         xCoords, yCoords, zCoords, elements = [], [], [], []
@@ -418,7 +408,7 @@ class TransmuteToPdb:
         # Write out the `*.pdb` file
         write_to_file = self.fullPathTo + "/" + self.pdbName
         with open(write_to_file, "w") as pdb:
-            # Write out Leading Strand
+
             for idx in range(len(self.elements)):
                 line = ["ATOM",
                         atomNumbers[idx],

@@ -27,7 +27,7 @@ def main():
 
     t0 = time.time()
 
-    # Check if the version of python is at least python3.6
+    # Check if the version of python is at least python3.8
     SD.version_checker()
 
     ## -------------------------------------------------- P A R S E  A R G U M E N T S --------------------------------------- ##
@@ -77,20 +77,9 @@ def main():
         if arguments.xyz_pdb:
             XYZ_FNAME, ATOM_ID, ATOMNAME_LIST = process_CLI_inputs.xyz_to_pdb(arguments.xyz_pdb)
 
-        # If we want to use the GUI ...
+        # If we want to use the GUI
         if arguments.gui :
             GUI_OPT = process_CLI_inputs.gui_module(arguments.gui)
-
-
-    # Try and see if any of the options are used together. 
-    # Ducque will not allow this to happen for the reason that I don't feel like complicating stuff too much.
-#    try:
-#        if arguments.build and arguments.transmute:
-#            raise process_CLI_inputs.InputExclusivity
-#
-#    except process_CLI_inputs.InputExclusivity:
-#        print("InputExclusivity: These flags are mutually exclusive; --transmute --build ")
-#        SD.exit_Ducque()
 
 
 ## -------------------------------------------------- M A I N -------------------------------------------------- ##

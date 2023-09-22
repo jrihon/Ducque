@@ -207,7 +207,7 @@ def randomise(RANDOMISEINPUT):
             if complement not in compl_test_against:
                 SD.print_invalid_argument(complement, "--complement")
 
-#    # If the variable chemistry has not been defined, then
+#    # If the variable chemistry has not been instantiated, then
 #    try:
 #        chemistry
 #    except NameError:

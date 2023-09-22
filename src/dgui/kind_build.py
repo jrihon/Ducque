@@ -139,7 +139,7 @@ class BuildApp(tk.Tk):
                 self.entry_out.configure(width=G.BUILD_label)
 
         self.geometry(str(sizeline + 512) + "x300")
-#        self.geometry("975x300")
+
 
     def set_buttons(self):
         # buttons

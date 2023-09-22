@@ -3,7 +3,11 @@ import os
 
 
 
-""" This file exists to retrieve systems data on the current machine ."""
+""" 
+    This file exists to retrieve systems data on the current machine .
+    
+    This also exists to return error messages from I/O operations.
+"""
 
 def version_checker():
     """ Checks the version of Ducque"""

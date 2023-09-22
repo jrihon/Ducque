@@ -5,7 +5,7 @@ import systemsDucque as SD
 from dgui.grid_geometry import Geometry as G
 import dgui.kind_build as KB
 import dgui.kind_rand as KR
-import dgui.kind_xyzpdb as KX
+#import dgui.kind_xyzpdb as KX # disabled module
 import dgui.kind_transmute as KT
 
 #  +--------------------------------------------------+

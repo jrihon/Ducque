@@ -114,11 +114,10 @@ class PdbInstance():
         rangeAtoms = arange(start=1 + addLength, stop=nucleotideArray.shape[0] + 1 + addLength, dtype=int)
 
         self.AtomNumber = rangeAtoms
-#        self.AtomNumber = [str(x) for x in rangeAtoms]
 
 
     def SetAtomName(self, terminal_atomnames : list, nucleotideSequence : list, strandType : str) :
-        """  """
+        """  Set Atom Names of the molecule """
 
         if strandType == "lead" :
             self.AtomName = terminal_atomnames[0] + PARSE.return_PDB_AtomNames_or_ElementSymbol(nucleotideSequence, "Atoms") + terminal_atomnames[1]
@@ -127,17 +126,17 @@ class PdbInstance():
 
 
     def SetResidueName(self, list_of_leading_sequence : list) :
-        """  """
+        """ Set Residue Name of the molecule """
         self.ResidueName = PARSE.return_PDB_Residuename(list_of_leading_sequence)
 
 
     def SetChainLetter(self, letter : str):
-        """  """
+        """ Set Chain to on my my initials (JR) """
         self.Chain = letter
 
 
     def SetSequenceNumber(self, nucleotide_sequence : list, strandType : str) :
-        """  """
+        """ Set sequence number of the atoms in the pdb """
         if strandType == "lead" :
             self.SequenceNumber = PARSE.return_PDB_Sequence(nucleotide_sequence)
         if strandType == "complementary" :
@@ -145,21 +144,19 @@ class PdbInstance():
 
 
 
-    def SetAtomArray(self, terminalArray : ndarray, nucleotideArray : ndarray, strandType : str) -> ndarray :
-        """  """
+    def SetAtomArray(self, nucleotideArray : ndarray, strandType : str) :
+        """ Parse xyz coordinates in separate lists """
         if strandType == "lead" :
-#            leadingArray = vstack((terminalArray[0], nucleotideArray, terminalArray[1]))
             self.x = list(map(lambda x: "{:.3f}".format(x), nucleotideArray[:,0]))
             self.y = list(map(lambda x: "{:.3f}".format(x), nucleotideArray[:,1]))
             self.z = list(map(lambda x: "{:.3f}".format(x), nucleotideArray[:,2]))
 
         if strandType == "complementary" :
-#            leadingArray = vstack((terminalArray[2], nucleotideArray, terminalArray[3]))
             self.x = list(map(lambda x: "{:.3f}".format(x), nucleotideArray[:,0]))
             self.y = list(map(lambda x: "{:.3f}".format(x), nucleotideArray[:,1]))
             self.z = list(map(lambda x: "{:.3f}".format(x), nucleotideArray[:,2]))
 
 
     def SetElementSymbols(self, nucleotideSequence : list) :
-        """  """
+        """ Parse element symbols. This is important when setting the atom names, to see if the elements match with the given atom names. """
         self.ElementSymbol = ["H"] + PARSE.return_PDB_AtomNames_or_ElementSymbol(nucleotideSequence, "Symbol") + ["H"]

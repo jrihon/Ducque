@@ -9,7 +9,7 @@ class Geometry:
     window_size_SELECT = "300x100"
     window_size_RANDOMISE = "512x300"
     window_size_BUILD = "512x300"
-    # window_size_XYZ = "512x300"
+    window_size_XYZ = "512x300" #unused module
     window_size_TRANSMUTE = "1500x400"
 
     padx = 5

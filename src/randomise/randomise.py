@@ -26,7 +26,7 @@ def randomiser(chemistry : Union[str, list], lengthSequence : int, sequence : li
         return
 
     # IF GIVEN A SINGLE CHEMISTRY AND A SEQUENCE, CONCATENATE THE GIVEN CHEMISTRY AND THE GIVEN SEQUENCE.
-    # NB : this is not randomisation, just a bit of laziness
+    # NB : this is not randomisation, just adding the correct prefix chemistry to the prompted nucleobase
     if isinstance(chemistry, str) and sequence:
         outputSequence = UR.join_chemistry_with_sequence(chemistry, sequence)
         complementSequence = UR.write_out_complementary_sequence(complementSequence)
