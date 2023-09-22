@@ -691,7 +691,7 @@ def create_PDB_from_array_final(outfile : str, leadingArray : np.ndarray, listOf
     leadingStrand.SetResidueName(listOfLeadingSequence)
     leadingStrand.SetChainLetter("J")
     leadingStrand.SetSequenceNumber(listOfLeadingSequence, "lead")
-    leadingStrand.SetAtomArray(terminalArray, leadingArray, "lead")
+    leadingStrand.SetAtomArray(leadingArray, "lead")
     leadingStrand.SetElementSymbols(listOfLeadingSequence)
 
 
@@ -707,7 +707,7 @@ def create_PDB_from_array_final(outfile : str, leadingArray : np.ndarray, listOf
     complementaryStrand.SetResidueName(listOfComplementarySequence)
     complementaryStrand.SetChainLetter("R")
     complementaryStrand.SetSequenceNumber(listOfComplementarySequence, "complementary")
-    complementaryStrand.SetAtomArray(terminalArray, complementaryArray, "complementary")
+    complementaryStrand.SetAtomArray(complementaryArray, "complementary")
     complementaryStrand.SetElementSymbols(listOfComplementarySequence)
 
 

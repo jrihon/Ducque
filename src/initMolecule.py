@@ -145,18 +145,20 @@ class PdbInstance():
 
 
     def SetAtomArray(self, nucleotideArray : ndarray, strandType : str) :
-        """ Parse xyz coordinates in separate lists """
+        """ Set Transform nucleotide arrays """
         if strandType == "lead" :
+#            leadingArray = vstack((terminalArray[0], nucleotideArray, terminalArray[1]))
             self.x = list(map(lambda x: "{:.3f}".format(x), nucleotideArray[:,0]))
             self.y = list(map(lambda x: "{:.3f}".format(x), nucleotideArray[:,1]))
             self.z = list(map(lambda x: "{:.3f}".format(x), nucleotideArray[:,2]))
 
         if strandType == "complementary" :
+#            leadingArray = vstack((terminalArray[2], nucleotideArray, terminalArray[3]))
             self.x = list(map(lambda x: "{:.3f}".format(x), nucleotideArray[:,0]))
             self.y = list(map(lambda x: "{:.3f}".format(x), nucleotideArray[:,1]))
             self.z = list(map(lambda x: "{:.3f}".format(x), nucleotideArray[:,2]))
 
 
     def SetElementSymbols(self, nucleotideSequence : list) :
-        """ Parse element symbols. This is important when setting the atom names, to see if the elements match with the given atom names. """
+        """ Set element symbols.   """
         self.ElementSymbol = ["H"] + PARSE.return_PDB_AtomNames_or_ElementSymbol(nucleotideSequence, "Symbol") + ["H"]
