@@ -6,8 +6,8 @@ input_sequences/
 tests/
 pdb/
 puckerdata/
-transmute/input_tna*
-transmute/input_photna*
+transmute/tna*
+transmute/photna*
 json/tna*
 json/photna*
 xyz/TNA*
