@@ -1,6 +1,5 @@
 # Ducque
 
-## Documentation
 Ducque has four (4) main functions:
 - `--build` : the nucleic acid builder
 - `--transmute` : converts a given pdb file to the correct json format.
