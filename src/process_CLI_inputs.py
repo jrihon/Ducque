@@ -103,6 +103,9 @@ def build(BUILDINPUT):
 
 def transmute(TRANSMUTEINPUT):
 
+    if not TRANSMUTEINPUT.name.endswith(".tinp"): 
+        SD.print_inputfile("`--transmute`", "`.tinp`")
+
     # Read the input file and create a list object of the sequence. Removes any whitespace.
     fileTransmute = remove_blank_lines(list(map(lambda x: x.strip(), TRANSMUTEINPUT.readlines())))
 

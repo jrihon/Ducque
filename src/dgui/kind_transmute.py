@@ -186,7 +186,7 @@ class TransmuteApp(tk.Tk):
 
     def file_dialog(self):
 
-        filetypes = (("All files", "*.*"), ("input-files", "*.in*"))
+        filetypes = (("All files", "*.*"), ("input-files", "*.tinp"))
 
         select_files = filedialog.askopenfilenames(
                                         title="Import files : " + self.cwd,
