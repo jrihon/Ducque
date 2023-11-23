@@ -2,11 +2,14 @@ import argparse
 import sys
 import time
 
+
+import systemsDucque as SD              # Retrieves system information from the machine
+SD.check_environment()
+
 from builder import builder             # Build the duplex
 from transmute import transmute         # Convert a given pdb file to a custom json format
 from randomise import randomise         # Output a random sequence
 import process_CLI_inputs               # Exceptions and custom errors
-import systemsDucque as SD              # Retrieves system information from the machine
 
 def main():
 
