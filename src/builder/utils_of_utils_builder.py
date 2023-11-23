@@ -672,12 +672,11 @@ def assert_and_reorient_the_position_of_the_linker(ArrOfIdxBB: np.ndarray, ArrOf
     parallelVector = MATH.return_normalized(SA[ArrOfIdxBB[2]] - SA[ArrOfIdxBB[0]])
     quaternion = MATH.get_quaternion(parallelVector, bCross)
 
-    #return MATH.move_to_origin_ROTATE_move_back_to_loc(quaternion, SA[ArrOfIdxLink], SA[ArrOfIdxBB[1]])
     return MATH.move_to_origin_ROTATE_move_back_to_loc(quaternion, SA[ArrOfIdxLink], SA[ArrOfIdxBB[1]])
 
 
 
-def capping_retrieve_atomnames(list_of_leading_sequence : list, list_of_complementary_sequence : list, backbone_dict : dict, nuc_dict : dict) -> list:
+def capping_retrieve_atomnames(list_of_leading_sequence : list, list_of_complementary_sequence : list, TB : dict, TN : dict) -> list:
     """ This should return the names of the capping atoms.
             i.e. ; if the H binds to O5', the atom name of the H should be HO5' """
     # Initiate a list with filler values
@@ -686,14 +685,14 @@ def capping_retrieve_atomnames(list_of_leading_sequence : list, list_of_compleme
     index_list = [-1, 0]
     for atom in range(len(index_list)):
         # Leading strand
-        lead_nucleoside_fname = nuc_dict[list_of_leading_sequence[index_list[atom]]][0]
+        lead_nucleoside_fname = TN[list_of_leading_sequence[index_list[atom]]][0]
         atom_lead = initMolecule.Nucleoside(lead_nucleoside_fname)
         # Complementary strand
-        compl_nucleoside_fname = nuc_dict[list_of_complementary_sequence[index_list[atom]]][0]
+        compl_nucleoside_fname = TN[list_of_complementary_sequence[index_list[atom]]][0]
         atom_compl = initMolecule.Nucleoside(compl_nucleoside_fname)
 
-        backbone_lead = backbone_dict[atom_lead.get_nucleic_acid_code()]
-        backbone_compl = backbone_dict[atom_compl.get_nucleic_acid_code()]
+        backbone_lead = TB[atom_lead.get_nucleic_acid_code()]
+        backbone_compl = TB[atom_compl.get_nucleic_acid_code()]
 
         # Parse the atom of interest from the backbone
         list_lead_atom[atom] = backbone_lead[index_list[atom]]
@@ -709,7 +708,7 @@ def capping_retrieve_atomnames(list_of_leading_sequence : list, list_of_compleme
     return list_of_atoms
 
 
-def capping_retrieve_atomarrays(leading_array : np.ndarray, list_of_leading_sequence : list, complementary_array : np.ndarray, list_of_complementary_sequence : list, backbone_dict : dict, nuc_dict : dict) -> np.ndarray:
+def capping_retrieve_atomarrays(leading_array : np.ndarray, list_of_leading_sequence : list, complementary_array : np.ndarray, list_of_complementary_sequence : list, TB : dict, TN : dict) -> np.ndarray:
     """ This should return the coordinates of the capping atoms.
         We are going to make a set angle and dihedral for all the hydrogens, since it's not going to matter that much in which angle they are.
             As long as there are no clashes and the dihedral and angle are within ranges of reason. """
@@ -731,14 +730,14 @@ def capping_retrieve_atomarrays(leading_array : np.ndarray, list_of_leading_sequ
     # Parse the correct atoms from the backbone dict. This for loop prints the keys of the dict, when calling the variable 'atom'
     for i in range(len(index_list)):
         # Leading strand
-        lead_nucleoside_fname = nuc_dict[list_of_leading_sequence[index_list[i]]][0]
+        lead_nucleoside_fname = TN[list_of_leading_sequence[index_list[i]]][0]
         lead_atom = initMolecule.Nucleoside(lead_nucleoside_fname)
         # Complementary strand
-        compl_nucleoside_fname = nuc_dict[list_of_complementary_sequence[index_list[i]]][0]
+        compl_nucleoside_fname = TN[list_of_complementary_sequence[index_list[i]]][0]
         compl_atom = initMolecule.Nucleoside(compl_nucleoside_fname)
 
-        backbone_lead = backbone_dict[lead_atom.get_nucleic_acid_code()]
-        backbone_compl = backbone_dict[compl_atom.get_nucleic_acid_code()]
+        backbone_lead = TB[lead_atom.get_nucleic_acid_code()]
+        backbone_compl = TB[compl_atom.get_nucleic_acid_code()]
 
         # Now retrieve the index of the arrays for which we want to parse the atoms
         if index_list[i] == 0 :

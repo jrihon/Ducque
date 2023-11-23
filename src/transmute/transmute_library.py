@@ -18,6 +18,7 @@ TABLE_CHEMISTRY = {
         "PHOTNA" : "Phosphonate Threose Nucleic Acid",
         }
 
+# the nucleoside moiety accounts for a binding between Phosphate - Carbon
 TABLE_LINKER = {
         "DNA" : "Phosphate",
         "RNA" : "Phosphate",
@@ -29,7 +30,7 @@ TABLE_LINKER = {
         "DXYLO" : "Phosphate",
         "MNA" : "Phosphate",
         "TNA" : "Phosphate",
-        "PHOTNA" : "Phosphate", # the nucleoside moiety accounts for a binding between Phosphate - Carbon
+        "PHOTNA" : "Phosphate", 
         }
 
 

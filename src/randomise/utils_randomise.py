@@ -3,9 +3,9 @@ from typing import Union
 
 import process_CLI_inputs
 from builder.parse_or_write import return_chemistrycode
-from builder.builder_library import codex_acidum_nucleicum
+from builder.builder_library import TABLE_NUCLEOTIDES
 
-CODEX = codex_acidum_nucleicum
+TN = TABLE_NUCLEOTIDES
 
 
 def join_chemistry_with_sequence(chemistry : str, sequence) -> str:
@@ -28,7 +28,7 @@ def randomise_sequence(chemistry : str, lengthSequence : int) -> str:
     print(nucID)
     abbrChemistry = return_chemistrycode(nucID)
 
-    allCodexKeys = list(CODEX.keys())
+    allCodexKeys = list(TN.keys())
 
     listOfPossibleNucleotides = []
     for i, _code in enumerate(allCodexKeys):
@@ -74,7 +74,7 @@ def randomise_sequence_and_chemistry(chemistry : list, lengthSequence : int) -> 
         abbrChemistry = return_chemistrycode(nucID)
         listOfChemistries.append(abbrChemistry)
 
-    allCodexKeys = list(CODEX.keys())
+    allCodexKeys = list(TN.keys())
 
     listOfPossibleNucleotides = []
     for i, _code in enumerate(allCodexKeys):
@@ -94,6 +94,7 @@ def write_out_complementary_sequence(compl_seq : Union[str, list]) -> str:
     if isinstance(compl_seq, list):
         compl_seq = list(map(lambda x: x.strip(","), compl_seq))
         output_sequence = ", ".join(compl_seq)
-        return [i.upper() for i in output_sequence]
+#        return [i.upper() for i in output_sequence]
+        return output_sequence.upper()
 
     return compl_seq.upper()

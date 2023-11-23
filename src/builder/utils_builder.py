@@ -12,6 +12,11 @@ import builder.utils_of_utils_builder as utilsUB
 
 import systemsDucque as SD
 
+TN = LIB.TABLE_NUCLEOTIDES
+TC = LIB.TABLE_CONFORMATIONS
+TB = LIB.TABLE_BACKBONE
+
+
 """ utils_builder.py
 The script that contains the classes and all the functions that concatenate the workflow of consecutively adding the linker and nucleotides. """
 
@@ -135,7 +140,7 @@ def generate_complementary_sequence(sequence_list : list, complement : Union[Lis
     complementary_dictRNA = { "A" : "U", "T" : "A", "G" : "C", "C" : "G", "U" : "A" }
 
     # The keys, meaning the nucleosides, from the complementary dictionary wil be parsed as a list
-    keys_of_dict = list(LIB.codex_acidum_nucleicum.keys())
+    keys_of_dict = list(TN.keys())
 
     # Get a list of the bases of the leading strand, to later build a complementary strand
     bases = PARSE.retrieve_bases_list(sequence_list)
@@ -454,7 +459,7 @@ def assert_starting_bases_of_complementary_strand(compl1_base_confs : list, comp
 
 def assert_possible_base_conformations_and_fit(leading_nuc, leading_array : np.ndarray, conformations : list, compl_linker, complementary_strand : np.ndarray,
                                                                                 prev_compl_nuc, prev_compl_linker, index_lead : int, index_compl : int) : # -> Nucleoside
-    """ Conformations is a list of the conformations_codex[NA], that contains one, two or three different conformations of the same NA.
+    """ Conformations is a list of the TC[NA], that contains one, two or three different conformations of the same NA.
 
         Conformations contains the names of particular json files, which will be converted to json objects.
         leading_nuc is already a json object.
@@ -484,12 +489,12 @@ def assert_possible_base_conformations_and_fit(leading_nuc, leading_array : np.n
     nuc_data = initMolecule.Nucleoside(conformations[0])
 
     # The first atom in the backbone of the nucleoside the current nucleoside attaches to
-    atomOfInterest2 = LIB.backbone_codex[json.loads(nuc_data.jsonObject["identity"])[1]][0]   # first value of the backbone_codex to parse. else make list(_VAL)[0]
+    atomOfInterest2 = TB[json.loads(nuc_data.jsonObject["identity"])[1]][0]   # first value of the TB to parse. else make list(_VAL)[0]
     bb_id = PARSE.retrieve_atom_index(prev_compl_nuc, atomOfInterest2) + index_compl + prev_compl_linker.mol_length
     bb_v = complementary_strand[bb_id]
 
     # The last atom in the backbone of the linker of the current nucleoside. 
-    atomOfInterest1 = LIB.backbone_codex[json.loads(compl_linker.jsonObject["identity"])[0]][-1] # since it is the last of the backbone_codex that should be parsed. else make list(_VAL)[-1]
+    atomOfInterest1 = TB[json.loads(compl_linker.jsonObject["identity"])[0]][-1] # since it is the last of the TB that should be parsed. else make list(_VAL)[-1]
     link_id = PARSE.retrieve_atom_index(compl_linker, atomOfInterest1)
 
     ## First we assert the conformations without tilting by the base-plane
@@ -634,17 +639,13 @@ def cap_nucleic_acid_strands(leading_array : np.ndarray, leading_sequence : list
     """ Cap the nucleic acid strands with a hydrogen, to finish the build of the duplex
         We create two functions in utilsUB that parse both the correct coordinates of the capping atoms and their names """
 
-    # Retrieve the backbone dictionary from LIB, since we'll be needing it
-    backbone = LIB.backbone_codex
-
-    # Retrieve the dictionary for the nucleoside filenames from LIB as well
-    filenames = LIB.codex_acidum_nucleicum
+    # Retrieve the backbone atoms, retrieve the filenames too from the TB and TN tables
 
     # Defines and returns the cartesian position of the hydrogens 
-    atom_array = utilsUB.capping_retrieve_atomarrays(leading_array, leading_sequence, complementary_array, complementary_sequence, backbone, filenames)
+    atom_array = utilsUB.capping_retrieve_atomarrays(leading_array, leading_sequence, complementary_array, complementary_sequence, TB, TN)
 
     # Returns the name of the hydrogens that have been defined with the previous function
-    atom_names = utilsUB.capping_retrieve_atomnames(leading_sequence, complementary_sequence, backbone, filenames)
+    atom_names = utilsUB.capping_retrieve_atomnames(leading_sequence, complementary_sequence, TB, TN)
 
     return atom_array, atom_names
 

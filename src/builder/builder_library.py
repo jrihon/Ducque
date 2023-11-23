@@ -14,7 +14,7 @@ DH = systemsDucque.return_DUCQUEHOME() + "json/"
 # -------------------
 #                   NUCLEOSIDE              ,             LINKER
 # -------------------
-codex_acidum_nucleicum = {
+TABLE_NUCLEOTIDES = {
 "dA" : [ DH + "dna_adenosine_2endo.json", DH + "dna_phosphate.json"],
 "dG" : [ DH + "dna_guanosine_2endo.json", DH + "dna_phosphate.json"],
 "dC" : [ DH + "dna_cytidine_2endo.json", DH + "dna_phosphate.json"],
@@ -51,10 +51,6 @@ codex_acidum_nucleicum = {
 "mG" : [DH + "mna_guanosine_1-4chair.json", DH + "dna_phosphate.json"],
 "mC" : [DH + "mna_cytidine_1-4chair.json", DH + "dna_phosphate.json"],
 "mT" : [DH + "mna_thymidine_1-4chair.json", DH + "dna_phosphate.json"],
-#"mA" : [DH + "mna_adenosine_2-4skew.json", DH + "dna_phosphate.json"],
-#"mG" : [DH + "mna_guanosine_2-4skew.json", DH + "dna_phosphate.json"],
-#"mC" : [DH + "mna_cytidine_2-4skew.json", DH + "dna_phosphate.json"],
-#"mT" : [DH + "mna_thymidine_2-4skew.json", DH + "dna_phosphate.json"],
 "tA" : [DH + "tna_adenosine_3_4_twist.json", DH + "dna_phosphate.json"],
 "tC" : [DH + "tna_cytidine_3_4_twist.json", DH + "dna_phosphate.json"],
 "tG" : [DH + "tna_guanosine_3_4_twist.json", DH + "dna_phosphate.json"],
@@ -70,7 +66,7 @@ codex_acidum_nucleicum = {
 # -----------------------------------------
 #       COMPLEMENTARY REPOSITORY
 # -----------------------------------------
-conformations_codex = {
+TABLE_CONFORMATIONS = {
 "dA": [ DH + "dna_adenosine_2endo.json", DH + "dna_adenosine_3endo.json"],
 "dC": [ DH + "dna_cytidine_2endo.json", DH + "dna_cytidine_3endo.json"],
 "dG": [ DH + "dna_guanosine_2endo.json", DH + "dna_guanosine_3endo.json"],
@@ -107,10 +103,6 @@ conformations_codex = {
 "mG" : [DH + "mna_guanosine_1-4chair.json"],
 "mC" : [DH + "mna_cytidine_1-4chair.json"],
 "mT" : [DH + "mna_thymidine_1-4chair.json"],
-#"mA" : [DH + "mna_adenosine_2-4skew.json"],
-#"mG" : [DH + "mna_guanosine_2-4skew.json"],
-#"mC" : [DH + "mna_cytidine_2-4skew.json"],
-#"mT" : [DH + "mna_thymidine_2-4skew.json"],
 "tA" : [DH + "tna_adenosine_3_4_twist.json"],
 "tC" : [DH + "tna_cytidine_3_4_twist.json"],
 "tG" : [DH + "tna_guanosine_3_4_twist.json"],
@@ -126,7 +118,7 @@ conformations_codex = {
 # -----------------------------------------
 #           BACKBONE REPOSITORY
 # -----------------------------------------
-backbone_codex = {
+TABLE_BACKBONE = {
 "Phosphate" : ["P"],
 "DNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "RNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
@@ -146,6 +138,6 @@ backbone_codex = {
 # -----------------------------------------
 #           LINKER REPOSITORY
 # -----------------------------------------
-linker_codex = {
+TABLE_LINKER_BACKBONE = {
 "Phosphate" : ["P", "OP2", "OP1"],
 }

@@ -5,7 +5,7 @@ from os.path import isfile
 from shutil import which   # Run Ducque
 from subprocess import run # Run Ducque
 
-from builder.builder_library import backbone_codex # import possibilities to build complementary strand
+from builder.builder_library import TABLE_BACKBONE # import possibilities to build complementary strand
 from dgui.grid_geometry import Geometry as G
 
 import systemsDucque as SD
@@ -167,7 +167,7 @@ class RandomiseApp(tk.Tk):
 
     def reveal_chemistry_keys(self):
 
-        chemistries = list(backbone_codex.keys())
+        chemistries = list(TABLE_BACKBONE.keys())
         chemistries[chemistries.index("Phosphate")] = "HOMO" # replace the phosphate key with the `homoduplex` key
         return chemistries
 #

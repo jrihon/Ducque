@@ -7,11 +7,11 @@ from os.path import isfile
 from shutil import which   # Check if Ducque is on the $PATH
 from subprocess import run # Run Ducque
 
-from builder.builder_library import backbone_codex # import possibilities to build complementary strand
+from builder.builder_library import TABLE_BACKBONE # import possibilities to build complementary strand
 from dgui.grid_geometry import Geometry as G
 
 import systemsDucque as SD
-from transmute.transmute_constants import TABLE_NUCLEOBASE
+from transmute.transmute_library import TABLE_NUCLEOBASE
 
 #  +--------------------------------------------------+
 #  |                    TRANSMUTE                     |
@@ -171,7 +171,7 @@ class TransmuteApp(tk.Tk):
     def set_optionmenu(self):
         # chemistries
         self.choice_chem = tk.StringVar()
-        opt_chems = list(backbone_codex.keys())
+        opt_chems = list(TABLE_BACKBONE.keys())
         self.opt_chems = ["..."] + sorted([x for x in opt_chems if x != "Phosphate"], key=str.casefold) # replace the phosphate key with the `...` key and sort
         self.omenu_chem = ttk.OptionMenu(self.content, self.choice_chem, *self.opt_chems)
         self.omenu_chem.configure(width=15)
@@ -230,7 +230,7 @@ class TransmuteApp(tk.Tk):
 
             if flag == "--chemistry" :
                 opt = inp.strip()
-                if opt in list(backbone_codex.keys()) : self.choice_chem.set(inp.strip())
+                if opt in list(TABLE_BACKBONE.keys()) : self.choice_chem.set(inp.strip())
                 else : SD.print_invalid_argument(opt, "`--chemistry`")
 
             if flag == "--conformation" :

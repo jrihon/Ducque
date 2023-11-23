@@ -5,8 +5,9 @@ from tkinter import filedialog
 from shutil import which   # Run Ducque
 from subprocess import run # Run Ducque
 from os import getcwd
+from os.path import basename
 
-from builder.builder_library import backbone_codex # import possibilities to build complementary strand
+from builder.builder_library import TABLE_BACKBONE # import possibilities to build complementary strand
 from dgui.grid_geometry import Geometry as G
 import systemsDucque as SD
 
@@ -61,7 +62,6 @@ class BuildApp(tk.Tk):
 
         self.fname_str = tk.StringVar()
         self.entry_fname = ttk.Entry(self.content, textvariable=self.fname_str, state='disabled')
-        self.entry_fname.grid(column=1, row=6)
 
 
     def toggle_fname_checkbutton(self):
@@ -84,7 +84,7 @@ class BuildApp(tk.Tk):
 
     def reveal_chemistry_keys(self):
 
-        chemistries = list(backbone_codex.keys())
+        chemistries = list(TABLE_BACKBONE.keys())
         chemistries[chemistries.index("Phosphate")] = "HOMO" # replace the phosphate key with the `homoduplex` key
         return chemistries
 
@@ -107,7 +107,11 @@ class BuildApp(tk.Tk):
         with open(self.file_queried, "r") as inputfile :
             file_content = inputfile.readlines()
 
-        self.outputfname = self.file_queried
+        # Set filename as the file queried when importing 
+        self.fname_btn.set(1)
+        self.fname_str.set(basename(self.file_queried))
+        self.entry_fname.config(state="enabled")
+
         sizeline = 0
         for line in file_content :
             flag , inp = line.split(" ", maxsplit=1)
@@ -130,7 +134,7 @@ class BuildApp(tk.Tk):
 
             if flag == "--pdbname" :
                 self.pdb_str.set(inp.strip())
-                self.entry_out.configure(width=G.BUILD_label)
+                self.entry_pdb.configure(width=G.BUILD_label)
 
         self.geometry(str(sizeline + 512) + "x300")
 
@@ -146,7 +150,7 @@ class BuildApp(tk.Tk):
         self.entry_seq = ttk.Entry(self.content, textvariable=self.seq_str)
         # set output file
         self.pdb_str = tk.StringVar()
-        self.entry_out = ttk.Entry(self.content, textvariable=self.pdb_str)
+        self.entry_pdb = ttk.Entry(self.content, textvariable=self.pdb_str)
 
 
     def place_widgets(self):
@@ -169,7 +173,8 @@ class BuildApp(tk.Tk):
 
         # entries
         self.entry_seq.grid(column=1, row=3, **self.padding)
-        self.entry_out.grid(column=1, row=5, **self.padding)
+        self.entry_pdb.grid(column=1, row=5, **self.padding)
+        self.entry_fname.grid(column=1, row=6, **self.padding)
 
         # optionmenu
         self.omenu_chem.grid(column=1, row=4)
@@ -180,19 +185,6 @@ class BuildApp(tk.Tk):
 
 
     def write_inputfile(self):
-
-        # If else clause if we imported a file
-        try : 
-            self.file_queried
-        except : 
-            if self.fname_btn.get() == 1 :
-                self.outputfname = self.entry_fname.get()
-            else :
-                print(f"[EMPTY QUERY]     : Consider adding a filename")
-                return
-        else :
-            self.outputfname = self.file_queried.split(".")[0]
-
         
         if self.pdb_str.get().strip() == "" :
             SD.print_empty_query("--pdb")
@@ -200,6 +192,15 @@ class BuildApp(tk.Tk):
 
         if self.fname_btn.get() == 1 :
             self.outputfname = getcwd() + "/" + self.entry_fname.get()
+        else :  # if no file has been queried and the button is off, consider adding a filename
+            try : 
+                self.file_queried
+            except : 
+                if self.fname_btn.get() == 1 :
+                    self.outputfname = self.entry_fname.get()
+                else :
+                    print(f"[EMPTY QUERY]     : Consider adding a filename")
+                    return
 
         # try except clause are stupid, because python is a dumb language
         complement = self.chem_choices.get()

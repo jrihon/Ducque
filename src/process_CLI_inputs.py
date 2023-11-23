@@ -1,6 +1,8 @@
-from builder import builder_library as LIB
 import systemsDucque as SD
 import os
+
+from builder.builder_library import TABLE_NUCLEOTIDES
+from transmute.transmute_library import TABLE_CHEMISTRY
 
 """ When the user prompts the wrong values or flags, this python script intercepts most errors that happen at the start """
 
@@ -21,7 +23,7 @@ def remove_blank_lines(fileList : list) -> list:
 def check_if_nucleotides_are_valid(input_sequence : list) -> bool:
     """ Check if any of the prompted nucleotides is not valid. """
     # Retrieve the keys of the dictionary from which we parse the data
-    keysOfDict = LIB.codex_acidum_nucleicum.keys()
+    keysOfDict = TABLE_NUCLEOTIDES.keys()
     # Check if any of the prompted nucleotides is not found in the sequence
     for NA in input_sequence:
         if NA not in keysOfDict:
@@ -35,11 +37,10 @@ def check_if_chemistry_is_valid(chemistry : str) -> str:
     """ If the chemistry is invalid, stop the script.
         If the chemistry is actually valid, return the keys of the dictionary as a list. """
 
-    from transmute.transmute_constants import nucleoside_dict
 
     # Get the value from the transmute_constants nucleoside dictionary, to get the full name of the chemistry
     try:
-        NUC_ID = nucleoside_dict[chemistry.upper()]
+        NUC_ID = TABLE_CHEMISTRY[chemistry.upper()]
     except KeyError:
         SD.print_invalid_chemistry(chemistry)
         SD.exit_Ducque()
@@ -151,8 +152,6 @@ def transmute(TRANSMUTEINPUT):
 
 def randomise(RANDOMISEINPUT):
 
-    from transmute.transmute_constants import nucleoside_dict
-    
     if not RANDOMISEINPUT.name.endswith(".rinp"): 
         SD.print_inputfile("`--randomise`", "`.rinp`")
 
@@ -206,7 +205,7 @@ def randomise(RANDOMISEINPUT):
 
             # Check if the complement flag contains either the 'homo' flag or a valid chemistry.
             complement = args[1]
-            compl_test_against = ["HOMO"] + list(nucleoside_dict.keys())
+            compl_test_against = ["HOMO"] + list(TABLE_CHEMISTRY.keys())
             if complement not in compl_test_against:
                 SD.print_invalid_argument(complement, "--complement")
 

@@ -4,14 +4,17 @@ import os
 import sys
 from typing import Union, Tuple
 
-from builder.builder_library import backbone_codex, linker_codex
+#from builder.builder_library import TB, TLB
+from builder.builder_library import TABLE_BACKBONE, TABLE_LINKER_BACKBONE
+TB = TABLE_BACKBONE
+TLB = TABLE_LINKER_BACKBONE
 
 import builder.builder_library as LIB    # Parse the nucleic acid dictionaries
 from systemsDucque import return_DUCQUEHOME
 """ This scripts makes data parsing much easier and makes builder.py much more organised. """
 
-CODEX = LIB.codex_acidum_nucleicum
-
+TN = LIB.TABLE_NUCLEOTIDES
+TC = LIB.TABLE_CONFORMATIONS
 
 ##-- Parse atoms from the queried JSON object files
 def Atom_Parsing_List(prevnuc, link, nextnuc = None) -> list :
@@ -22,8 +25,8 @@ def Atom_Parsing_List(prevnuc, link, nextnuc = None) -> list :
 
     # For when adding the linker moiety to the nucleoside
     if nextnuc == None:
-        prevChem = backbone_codex[json.loads(prevnuc.jsonObject["identity"])[1]]
-        linkChem = linker_codex[json.loads(link.jsonObject["identity"])[0]]
+        prevChem = TB[json.loads(prevnuc.jsonObject["identity"])[1]]
+        linkChem = TLB[json.loads(link.jsonObject["identity"])[0]]
 
         truncPrevChem = [prevChem[-3], prevChem[-2], prevChem[-1]]
 
@@ -32,9 +35,9 @@ def Atom_Parsing_List(prevnuc, link, nextnuc = None) -> list :
 
     # For when building a subsequent nucleoside to the current nucleotide
     else :
-        prevChem = backbone_codex[json.loads(prevnuc.jsonObject["identity"])[1]]
-        linkChem = backbone_codex[json.loads(link.jsonObject["identity"])[0]]
-        nextChem = backbone_codex[json.loads(nextnuc.jsonObject["identity"])[1]]
+        prevChem = TB[json.loads(prevnuc.jsonObject["identity"])[1]]
+        linkChem = TB[json.loads(link.jsonObject["identity"])[0]]
+        nextChem = TB[json.loads(nextnuc.jsonObject["identity"])[1]]
 
         if len(linkChem) == 1:
             truncPrevChem = [prevChem[-2], prevChem[-1]]
@@ -167,8 +170,6 @@ def return_chemistrycode(identifier : str) -> str:
     # Get the directory from the $HOME of Ducque (where it is installed)
     dH = return_DUCQUEHOME()
     dirJSON = os.listdir(dH + 'json/')
-    COMPL_CODEX = LIB.conformations_codex
-#    KEYS_LIST = list(chain(*COMPL_CODEX.values())) # Flatten a possibly nested list
 
     # Read all the files in the json/ directory and find the identifier that was prompted, this way we can inambiguously find the abbreviated chemical code
     for json_file in dirJSON:
@@ -186,7 +187,7 @@ def return_chemistrycode(identifier : str) -> str:
     CHECK = False
 
     # Iterate over the complementary codex
-    for key, value in COMPL_CODEX.items():
+    for key, value in TC.items():
         if isinstance(value, list):
             for i, item in enumerate(value):
                 if value[i] == file_of_chemistry:
@@ -224,7 +225,7 @@ def return_PDB_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : 
         if i == 0:
             buildingblock = list_of_sequence[i]
             # Make json object of nucleoside
-            nucleoside = CODEX[buildingblock][0]
+            nucleoside = TN[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
@@ -237,12 +238,12 @@ def return_PDB_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : 
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = CODEX[buildingblock][0]
+            nucleoside = TN[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
             # Make json object of linker
-            linker = CODEX[buildingblock][1]
+            linker = TN[buildingblock][1]
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
@@ -257,12 +258,12 @@ def return_PDB_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : 
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = CODEX[buildingblock][0]
+            nucleoside = TN[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
             # Make json object of linker
-            linker = CODEX[buildingblock][1]
+            linker = TN[buildingblock][1]
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
@@ -288,7 +289,7 @@ def return_PDB_Sequence(list_of_sequence : list, start_of_sequence : int = 0) ->
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = CODEX[buildingblock][0]
+            nucleoside = TN[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
@@ -304,12 +305,12 @@ def return_PDB_Sequence(list_of_sequence : list, start_of_sequence : int = 0) ->
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = CODEX[buildingblock][0]
+            nucleoside = TN[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
             # Make json object of linker
-            linker = CODEX[buildingblock][1]
+            linker = TN[buildingblock][1]
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
@@ -326,12 +327,12 @@ def return_PDB_Sequence(list_of_sequence : list, start_of_sequence : int = 0) ->
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = CODEX[buildingblock][0]
+            nucleoside = TN[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
             # Make json object of linker
-            linker = CODEX[buildingblock][1]
+            linker = TN[buildingblock][1]
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
@@ -355,7 +356,7 @@ def return_PDB_Residuename(list_of_sequence : list) -> list:
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = CODEX[buildingblock][0]
+            nucleoside = TN[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
@@ -371,12 +372,12 @@ def return_PDB_Residuename(list_of_sequence : list) -> list:
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = CODEX[buildingblock][0]
+            nucleoside = TN[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
             # Make json object of linker
-            linker = CODEX[buildingblock][1]
+            linker = TN[buildingblock][1]
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
@@ -395,12 +396,12 @@ def return_PDB_Residuename(list_of_sequence : list) -> list:
             buildingblock = list_of_sequence[i]
 
             # Make json object of nucleoside
-            nucleoside = CODEX[buildingblock][0]
+            nucleoside = TN[buildingblock][0]
             with open(nucleoside, "r") as nuc:
                 nucleoside = json.load(nuc)
 
             # Make json object of linker
-            linker = CODEX[buildingblock][1]
+            linker = TN[buildingblock][1]
             with open(linker, "r") as lnk:
                 linker = json.load(lnk)
 
