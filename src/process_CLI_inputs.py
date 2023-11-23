@@ -106,7 +106,7 @@ def transmute(TRANSMUTEINPUT):
     fileTransmute = remove_blank_lines(list(map(lambda x: x.strip(), TRANSMUTEINPUT.readlines())))
 
     # Check if amount of inputs are valid
-    list_of_valid_flags = ["--pdb", "--chemistry", "--moiety", "--conformation", "--dihedrals", "--bondangles"]
+    list_of_valid_flags = ["--pdb", "--chemistry", "--moiety", "--conformation", "--nucleobase", "--dihedrals", "--bondangles"]
     if not len(fileTransmute) == len(list_of_valid_flags):
 #    if not len(fileTransmute) == len(list_of_valid_flags) and not len(fileTransmute) == (len(list_of_valid_flags) - 1):
         SD.print_insufficient_flag(6)
@@ -135,13 +135,16 @@ def transmute(TRANSMUTEINPUT):
         if flag == "--moiety":
             moiety = args[1]
 
+        if flag == "--nucleobase":
+            nucleobase = args[1]
+
         if flag == "--dihedrals":
             dihedrals = args[1:]
 
         if flag == "--bondangles":
             angles = args[1:]
 
-    return pdb_fname, chemistry, moiety, dihedrals, angles, conformation
+    return pdb_fname, chemistry, moiety, dihedrals, angles, conformation, nucleobase
 
 
 

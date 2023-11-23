@@ -4,7 +4,7 @@ import sys
 """ Contains all the dictionaries and the tools to help the Transmutation work properly.    """
 
 # Identify the nucleic acid chemistry
-nucleoside_dict = {
+TABLE_CHEMISTRY = {
         "DNA" : "Deoxyribonucleic acid",
         "RNA" : "Ribonucleic acid",
         "B-HOMODNA" : "beta-Homo Deoxyribonucleic acid",
@@ -18,7 +18,7 @@ nucleoside_dict = {
         "PHOTNA" : "Phosphonate Threose Nucleic Acid",
         }
 
-linker_dict = {
+TABLE_LINKER = {
         "DNA" : "Phosphate",
         "RNA" : "Phosphate",
         "B-HOMODNA" : "Phosphate",
@@ -34,7 +34,7 @@ linker_dict = {
 
 
 # Used for the filename and to fill out the identity dict in the json file
-base_dict = {
+TABLE_NUCLEOBASE = {
         "A" : "Adenosine",
         "C" : "Cytidine",
         "G" : "Guanosine",
@@ -45,7 +45,9 @@ base_dict = {
 
 
 def get_base_type(base : str) -> str:
-    """ Retrieve the type of base we will calculate with"""
+    """ Retrieve the type of base we will calculate with 
+        At the moment, this function is unused, but might be used later when the modified nucleobases are implemented
+    """
 
     if base == "A":
         return "purine"

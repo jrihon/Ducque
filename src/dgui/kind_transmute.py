@@ -4,14 +4,14 @@ from tkinter import filedialog
 
 from os import getcwd 
 from os.path import isfile
-from shutil import which   # Run Ducque
+from shutil import which   # Check if Ducque is on the $PATH
 from subprocess import run # Run Ducque
 
 from builder.builder_library import backbone_codex # import possibilities to build complementary strand
 from dgui.grid_geometry import Geometry as G
 
 import systemsDucque as SD
-from transmute.transmute_constants import base_dict
+from transmute.transmute_constants import TABLE_NUCLEOBASE
 
 #  +--------------------------------------------------+
 #  |                    TRANSMUTE                     |
@@ -55,7 +55,7 @@ class TransmuteApp(tk.Tk):
         self.label_moiety = ttk.Label(self.content, text="--moiety")
         self.label_bondangles = ttk.Label(self.content, text="--bondangles")
         self.label_dihedrals = ttk.Label(self.content, text="--dihedrals")
-        self.label_nucleobase = ttk.Label(self.content, text="nucleobase :")
+        self.label_nucleobase = ttk.Label(self.content, text="--nucleobase")
 
         self.label_alpha = ttk.Label(self.content, text="α")
         self.label_beta = ttk.Label(self.content, text="β")
@@ -216,6 +216,8 @@ class TransmuteApp(tk.Tk):
 
 
 
+        # Setting strings to the variables.
+        # If this errors out, it will be caught when Transmute runs
         with open(self.file_queried, "r") as inputfile :
             file_content = inputfile.readlines()
 
@@ -237,6 +239,9 @@ class TransmuteApp(tk.Tk):
             if flag == "--moiety" :
                 if inp.strip() in ["nucleoside", "linker"]: self.choice_moi.set(inp.strip())
                 else : SD.print_invalid_argument(inp, "`--moiety`")
+
+            if flag == "--nucleobase" :
+                self.str_nucleobase.set(inp.strip()) 
 
             if flag == "--bondangles" : 
                 angs = list(map(lambda x: x.strip(), inp.split(",")))
@@ -483,7 +488,7 @@ class TransmuteApp(tk.Tk):
 
     def write_inputfile(self):
 
-        import re
+        import re   # regex library
 
         def format_angle(name_angle : str, angle : str):
 
@@ -500,21 +505,21 @@ class TransmuteApp(tk.Tk):
             else :
                 return a
 
-        # get key from the nucleobase
+        # get valid key from the TABLE_NUCLEOBASE
         try :
             self.str_nucleobase.get()
         except :
-            SD.print_empty_query("nucleobase"); return
+            SD.print_empty_query("--nucleobase"); return
 
         try :
             B = self.str_nucleobase.get().upper()
-            base_dict[B]
+            TABLE_NUCLEOBASE[B]
         except :
             B = self.str_nucleobase.get().upper()
             SD.print_invalid_chemistry(B); return
         else :
             B = self.str_nucleobase.get().upper()
-            self.base = base_dict[B]
+            self.base = TABLE_NUCLEOBASE[B]
 
 
 
@@ -550,6 +555,7 @@ class TransmuteApp(tk.Tk):
 
         # Check if any angles are empty, if so, return early
         if "" in list_ang or "" in list_dih:
+            SD.print_empty_query("Angles or Dihedrals")
             return
 
         # This means that when we import a file to be read in by the GUI, that we will have it start out in the current directory
@@ -578,30 +584,31 @@ class TransmuteApp(tk.Tk):
     def transmute_input(self):
 
 
-        # get key from the nucleobase
-        try :
-            self.str_nucleobase.get()
-        except :
-            SD.print_empty_query("nucleobase"); return
+#        # get key from the nucleobase
+#        try :
+#            self.str_nucleobase.get()
+#        except :
+#            SD.print_empty_query("--nucleobase"); return
+#
+#        try :
+#            B = self.str_nucleobase.get().upper()
+#            TABLE_NUCLEOBASE[B]
+#        except :
+#            B = self.str_nucleobase.get().upper()
+#            SD.print_invalid_chemistry(B); return
+#        else :
+#            B = self.str_nucleobase.get().upper()
+#            self.base = TABLE_NUCLEOBASE[B]
 
-        try :
-            B = self.str_nucleobase.get().upper()
-            base_dict[B]
-        except :
-            B = self.str_nucleobase.get().upper()
-            SD.print_invalid_chemistry(B); return
-        else :
-            B = self.str_nucleobase.get().upper()
-            self.base = base_dict[B]
-
-        for string in [self.choice_chem.get().lower() , self.str_conformation.get().lower()]:
+        for string in [self.choice_chem.get().lower() , self.str_conformation.get().lower(), self.str_nucleobase.get()]:
             if len(string) == 0 :
                 SD.print_empty_query("multiple entries")
                 return
 
         # filename for the transmute file
-        json_fname = self.choice_chem.get().lower() + "_" + self.base.lower() + "_" + self.str_conformation.get().lower() + ".json"
-        input_fname = "input_" + self.choice_chem.get().lower() + self.base.lower() +  "_" + self.str_conformation.get().lower() + "_transmute.in"
+        json_fname = self.choice_chem.get().lower() + "_" + self.str_nucleobase.get().lower() + "_" + self.str_conformation.get().lower() + ".json"
+#        input_fname = "input_" + self.choice_chem.get().lower() + self.str_nucleobase.get().lower() +  "_" + self.str_conformation.get().lower() + "_transmute.tinp"
+        input_fname = self.choice_chem.get().lower() + self.str_nucleobase.get().lower() +  "_" + self.str_conformation.get().lower() + ".tinp"
 
 
         if not which("Ducque"):  # At this point, this would not be necessary, but better safe than sorry

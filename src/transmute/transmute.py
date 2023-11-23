@@ -5,7 +5,7 @@ import transmute.utils_transmute as UT
 
 
 
-def Transmutation(pdb_fname, nucleicAcidChemistry : str, moietyType : str, dihedralList : list, anglesList : list, conformation : str ):
+def Transmutation(pdb_fname, nucleicAcidChemistry : str, moietyType : str, dihedralList : list, anglesList : list, conformation : str , nucleobase : str):
     """This function converts a pdb formatted file into a json file.
     Json files make for a much easier data parsing format, are computationally much more efficient and require less memory to be held.
 
@@ -62,7 +62,7 @@ def Transmutation(pdb_fname, nucleicAcidChemistry : str, moietyType : str, dihed
         identity.append(molecule_residuename)
 
         # Nucleobase of the nucleic acid
-        nucleobase = nucleicAcid.get_base()
+        nucleobase = nucleicAcid.get_base(nucleobase)
         identity.append(nucleobase)
 
     if moietyType == "linker":
@@ -106,6 +106,8 @@ def Transmutation(pdb_fname, nucleicAcidChemistry : str, moietyType : str, dihed
     # Write the inputfile to the Ducque home directory
     with open(DUCQUEHOME + "json/" + fname + ".json", "w") as filejson:
         json.dump(molecule, filejson, indent=4)
+
+    print(f"Writing file to {DUCQUEHOME}json/{fname}.json")
 
 
 

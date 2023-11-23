@@ -13,10 +13,10 @@ def main():
     explanation = """
                                                           AUG   TCC        TCG   TTC        TAT   TCG
                              ____                         :::C A:::G      A:::G T:::A      A:::T C:::G
-                            |  _ \ _   _  ___ __ _ _   _  ___ G:::::A    G:::::T:::::G    G:::::G:::::C         :
-                            | | | | | | |/ __/ _` | | | |/ _ \ T:::::G  T:::::C A:::::T  G:::::A G:::::T   G   :G
+                            |  _ \\ _   _  ___ __ _ _   _  ___ G:::::A    G:::::T:::::G    G:::::G:::::C         :
+                            | | | | | | |/ __/ _` | | | |/ _ \\ T:::::G  T:::::C A:::::T  G:::::A G:::::T   G   :G
                             | |_| | |_| | (_| (_| | |_| |  __/  A:::::TC:::::C   A:::::AT:::::A   A:::::AGA:  :A
-                            |____/ \__,_|\___\__, |\__,_|\___|   G::::CG::::G     G::::TA::::T     C::::TC::::T
+                            |____/ \\__,_|\\___\\__, |\\__,_|\\___|   G::::CG::::G     G::::TA::::T     C::::TC::::T
                                                 |_|               GCTC  AGTA       GGCA  CCTA       CCGA  TCTA
 
     Project to generate and customize DNA, RNA, XNA duplex molecules
@@ -67,7 +67,7 @@ def main():
 
         # If we want to convert a pdb to a json file
         if arguments.transmute:
-            PDB_FNAME, CHEMISTRY_T, MOIETY, DIHEDRALS, ANGLES, CONFORMATION = process_CLI_inputs.transmute(arguments.transmute)
+            PDB_FNAME, CHEMISTRY_T, MOIETY, DIHEDRALS, ANGLES, CONFORMATION, NUCLEOBASE = process_CLI_inputs.transmute(arguments.transmute)
 
         # If we want to call for a randomised sequence
         if arguments.randomise:
@@ -94,7 +94,7 @@ def main():
     # Convert pdb to json
     if arguments.transmute:
         SD.print_transmute(PDB_FNAME)
-        transmute.Transmutation(PDB_FNAME, CHEMISTRY_T, MOIETY, DIHEDRALS, ANGLES, CONFORMATION)
+        transmute.Transmutation(PDB_FNAME, CHEMISTRY_T, MOIETY, DIHEDRALS, ANGLES, CONFORMATION, NUCLEOBASE)
         sys.exit(0)
 
     # Convert an xyz coordinate file to a pdb file

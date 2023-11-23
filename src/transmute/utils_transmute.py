@@ -5,7 +5,7 @@ from os import getcwd
 import numpy as np
 
 import systemsDucque as SD
-import transmute.transmute_constants as TC
+import transmute.transmute_library as TB
 
 class TransmuteToJson:
     """ This class exists to convert any *.pdb type format to an appriopriate *.json type format.
@@ -123,86 +123,54 @@ class TransmuteToJson:
         return self.residueName
 
 
-    def get_full_name(self, identifier : str, moietyType):
+    def get_full_name(self, identifier : str, moietyType) -> str:
         """ Get the full name of the nucleic acid chemistry or linker moietyType we want to convert to a json """
 
-        if moietyType == "nucleoside":
-            return TC.nucleoside_dict[identifier.upper()]
+        if moietyType.upper() == "NUCLEOSIDE":
+            try : 
+                base = TB.TABLE_CHEMISTRY[identifier.upper()]
+            except :
+                SD.print_invalid_key(nucleobase, "TABLE_CHEMISTRY")
+                sys.exit(1)
+            
+            return base
 
-        if moietyType == "linker":
-            return TC.linker_dict[identifier.upper()]
+        if moietyType.upper() == "LINKER":
+            try : 
+                 link = TB.TABLE_LINKER[identifier.upper()]
+            except :
+                SD.print_invalid_key(nucleobase, "TABLE_LINKER")
+                sys.exit(1)
+            
+            return link
 
 
-    def get_base(self) -> str:
-        """ Get the base that corresponds with this nucleic acid. Take the last character of the string Residue Name and
-            look for it in the dictionary """
-        base = str(self.residueName)[-1]
-
-        return TC.base_dict[base]
-
-
-#    def get_dihedrals(self, identifier : str, moietyType : str,  dihedrals_list : list) -> dict:
-#        """ List the dihedrals differently whether it belongs to a nucleoside or a linker moietyType """
-#
 #        if moietyType == "nucleoside":
-#            # Strip the list of (for now) string values of their comma 
-#            dihedrals_list = list(map(lambda x: x.strip(","), dihedrals_list))
-#            if len(dihedrals_list) == 7:
-#                dihedrals_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "chi"]
-#            elif len(dihedrals_list) == 8:
-#                dihedrals_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "nu", "chi"]
-#            elif len(dihedrals_list) == 6:
-#                dihedrals_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "chi"]
-#            else:
-#                print("Amount of dihedrals prompted is not aligned with the standard amount of dihedrals.")
-#                SD.exit_Ducque()
-#
-#            # Check if all values are float
-#            for i in dihedrals_list:
-#                if not isinstance(float(i), float):
-#                    print(f"One or more of the dihedral angles is not a floating point number : {i}. Please reconsider the entries for the dihedrals.\n")
-#                    SD.exit_Ducque()
-#
-#            # Check if size of the prompted dihedral values is the same as the amount of required dihedrals
-#            assert len(dihedrals_of_interest) == len(dihedrals_list),  "Check your input for missing dihedral values or missplaced commas.\nNote: the decimal values should be denoted by a point and not a comma."
-#
-#            # Initialise dictionary
-#            set_of_dihedrals = {}
-#            # Append the values to their respective dihedrals 
-#            for dihr in range(len(dihedrals_of_interest)):
-#                set_of_dihedrals[dihedrals_of_interest[dihr]] = float(dihedrals_list[dihr])
-#            return set_of_dihedrals
-#
+#            return TB.nucleoside_dict[identifier.upper()]
 #
 #        if moietyType == "linker":
-#            ## For now we hardcode this with the phospate linker, until we start broadening the linker space
-#
-#            # Split the string into a list of strings
-#            dihedrals_list = list(map(lambda x : x.strip(","), dihedrals_list))
-#
-#            # Check if all values are float
-#            for i in dihedrals_list:
-#                if not isinstance(float(i), float):
-#                    print(f"One or more of the dihedral angles is not a floating point number : {i}. Please reconsider the entries for the dihedrals.\n")
-#                    SD.exit_Ducque()
-#
-#            # Check if all values are float
-#            for i, val in enumerate(angles_list):
-#                if not isinstance(float(val), float):
-#                    SD.print_conversion_err(angles_of_interest[i], val)
-#                    SD.exit_Ducque()
-#
-#            # Initialise dictionary
-#            set_of_dihedrals = {}
-#            set_of_dihedrals["dihedral_2"] = float(dihedrals_list[0])
-#            set_of_dihedrals["dihedral_1"] = float(dihedrals_list[1])
-#            return set_of_dihedrals
+#            return TB.linker_dict[identifier.upper()]
+
+
+    def get_base(self, nucleobase: str) -> str:
+        """ Get the base that corresponds with this nucleic acid. Take the last character of the string Residue Name and
+            look for it in the dictionary """
+        try : 
+            base = TB.TABLE_NUCLEOBASE[nucleobase.upper()]
+        except :
+            SD.print_invalid_key(nucleobase, "TABLE_NUCLEOBASE")
+            sys.exit(1)
+        
+        return base
 
 
     def get_angles(self, #identifier : str,
             moietyType : str, angles_list : list, json_dict : dict) -> dict:
-#    def get_angles(self, identifier : str, moietyType : str, angles_list : list) -> dict:
-        """ List the bond angles differently whether it belongs to a nucleoside or a linker moietyType """
+        """
+        List the bond angles differently whether it belongs to a nucleoside or a linker moietyType 
+        This function is used by both the bondangle parser and the dihedral parser.
+
+        """
         if moietyType == "nucleoside":
             # Strip the list of (for now) string values of their comma 
             angles_list = list(map(lambda x: x.strip(","), angles_list))
@@ -233,35 +201,13 @@ class TransmuteToJson:
 
 
         if moietyType == "linker":
-            ## For now we hardcode this with the phospate linker, until we start broadening the linker space
-            # Strip the list of (for now) string values of their comma 
             angles_list = list(map(lambda x: x.strip(","), angles_list))
-#            if len(angles_list) == 7:
-#                angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "chi"]
-#            elif len(angles_list) == 8:
-#                angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "nu", "chi"]
-#            elif len(angles_list) == 6:
-#                angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "chi"]
-#            else:
-#                print("Amount of dihedrals prompted is not aligned with the standard amount of dihedrals.")
-#                SD.exit_Ducque()
-#
-#            # Check if all values are float
-#            for i, val in enumerate(angles_list):
-#                if not isinstance(float(val), float):
-#                    SD.print_conversion_err(angles_of_interest[i], val)
-#                    SD.exit_Ducque()
-        #TODO: add functionally for adding a linker moiety properly!
 
             # Initialise dictionary
             json_dict = {}
             json_dict["angle_2"] = float(angles_list[0])
             json_dict["angle_1"] = float(angles_list[1])
             return json_dict
-#            set_of_angles = {}
-#            set_of_angles["angle_2"] = float(angles_list[0])
-#            set_of_angles["angle_1"] = float(angles_list[1])
-#            return set_of_angles
 
 
     def get_output_name(self, identifier : str, moietyType : str, conformation : str) -> str:
@@ -282,19 +228,11 @@ class TransmuteToJson:
 
         elif moietyType == "linker":
             name_of_chemistry = identifier.lower()
-            name_of_linker = TC.linker_dict[identifier].lower()
+            name_of_linker = TB.linker_dict[identifier].lower()
             return name_of_chemistry + "_" + name_of_linker
 
         else :
             sys.exit("The molecule is not annotated with either `nucleoside` or `linker`. Please revise the inputs")
-
-#           When conformation was an optional str
-#            if isinstance(conformation, bool):
-#                if not conformation:
-#                    return name_of_chemistry + "_" + name_of_base
-#            else :                                                      #is instance of string then
-#                conformation = conformation.lower()
-#                return name_of_chemistry + "_" + name_of_base + "_" + conformation
 
 
 class TransmuteToPdb:
