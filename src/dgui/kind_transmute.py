@@ -57,14 +57,14 @@ class TransmuteApp(tk.Tk):
         self.label_dihedrals = ttk.Label(self.content, text="--dihedrals")
         self.label_nucleobase = ttk.Label(self.content, text="--nucleobase")
 
-        self.label_alpha = ttk.Label(self.content, text="α")
-        self.label_beta = ttk.Label(self.content, text="β")
-        self.label_gamma = ttk.Label(self.content, text="γ")
-        self.label_delta = ttk.Label(self.content, text="δ")
-        self.label_epsilon = ttk.Label(self.content, text="ε")
-        self.label_zeta = ttk.Label(self.content, text="ζ")
-        self.label_nu = ttk.Label(self.content, text="η")
-        self.label_chi = ttk.Label(self.content, text="χ")
+        self.label_alpha = ttk.Label(self.content, text="Alpha")
+        self.label_beta = ttk.Label(self.content, text="Beta")
+        self.label_gamma = ttk.Label(self.content, text="Gamma")
+        self.label_delta = ttk.Label(self.content, text="Delta")
+        self.label_epsilon = ttk.Label(self.content, text="Epsilon")
+        self.label_zeta = ttk.Label(self.content, text="Zeta")
+        self.label_nu = ttk.Label(self.content, text="Eta")
+        self.label_chi = ttk.Label(self.content, text="Chi")
 
 
     def set_buttons(self):
@@ -104,9 +104,9 @@ class TransmuteApp(tk.Tk):
     def set_checkbutton(self):
         self.int_zeta = tk.IntVar()
         self.int_nu = tk.IntVar()
-        self.chkbtn_zeta = ttk.Checkbutton(self.content, text="ζ", variable=self.int_zeta, command=self.toggle_zeta,
+        self.chkbtn_zeta = ttk.Checkbutton(self.content, text="Zeta", variable=self.int_zeta, command=self.toggle_zeta,
                                                 onvalue=1, offvalue=0)
-        self.chkbtn_nu = ttk.Checkbutton(self.content, text="η", variable=self.int_nu, command=self.toggle_nu,
+        self.chkbtn_nu = ttk.Checkbutton(self.content, text="Eta", variable=self.int_nu, command=self.toggle_nu,
                                                 onvalue=1, offvalue=0)
 
         self.int_zeta.set(1)
@@ -537,11 +537,11 @@ class TransmuteApp(tk.Tk):
                      format_angle("angle(delta)", self.str_ang_d.get()),
                      format_angle("angle(epsilon)", self.str_ang_e.get()),
                     ]
-        list_dih = [ format_angle("dihedral(alpha", self.str_dihr_a.get()),
-                     format_angle("dihedral(beta", self.str_dihr_b.get()),
-                     format_angle("dihedral(gamme", self.str_dihr_g.get()),
-                     format_angle("dihedral(delta", self.str_dihr_d.get()),
-                     format_angle("dihedral(epsilon", self.str_dihr_e.get()),
+        list_dih = [ format_angle("dihedral(alpha)", self.str_dihr_a.get()),
+                     format_angle("dihedral(beta)", self.str_dihr_b.get()),
+                     format_angle("dihedral(gamma)", self.str_dihr_g.get()),
+                     format_angle("dihedral(delta)", self.str_dihr_d.get()),
+                     format_angle("dihedral(epsilon)", self.str_dihr_e.get()),
                     ]
         if self.int_zeta.get() == 1 :
             list_ang.append(format_angle("angle(zeta)", self.str_ang_z.get()))
