@@ -5,7 +5,7 @@
         "Atoms": "[\"P\", \"OP1\", \"OP2\"]",
         "Symbol": "[\"P\", \"O\", \"O\"]"
     },
-    "identity": "[\"Phosphate\", \"DNA\"]",
+    "identity": "[\"PHOSPHATE\", \"DNA\"]",
     "angles": {
         "dihedrals": "{\"dihedral_2\": -155.047, \"dihedral_1\": 76.677}",
         "bond_angles": "{\"OPO\": 109.77}"

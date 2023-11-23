@@ -85,7 +85,7 @@ class BuildApp(tk.Tk):
     def reveal_chemistry_keys(self):
 
         chemistries = list(TABLE_BACKBONE.keys())
-        chemistries[chemistries.index("Phosphate")] = "HOMO" # replace the phosphate key with the `homoduplex` key
+        chemistries[chemistries.index("PHOSPHATE")] = "HOMO" # replace the phosphate key with the `homoduplex` key
         return chemistries
 
     def populate_entries(self):
@@ -206,15 +206,14 @@ class BuildApp(tk.Tk):
         complement = self.chem_choices.get()
 
 
-        with open(self.outputfname + ".binp", "w") as fileto :
+        if not self.outputfname.endswith(".binp"): 
+            self.outputfname += ".binp"
+
+        with open(self.outputfname, "w") as fileto :
             fileto.write("--sequence " + self.seq_str.get() +
                         "\n--complement " + complement + 
                         "\n--pdbname " + self.pdb_str.get() + "\n"
                     )
-
-
-        if not self.outputfname.endswith(".binp"): 
-            self.outputfname += ".binp"
 
         try : 
             self.file_queried

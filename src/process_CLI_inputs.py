@@ -74,7 +74,7 @@ def build(BUILDINPUT):
         SD.check_for_empty_string(argument)
 
         if flag == "--sequence":
-            nucleicAcidList = list(map(lambda x: x.strip(","), args[1:]))
+            nucleicAcidList = list(map(lambda x: x.strip(",").upper(), args[1:]))
 
         if flag == "--complement":
             try:
@@ -82,7 +82,7 @@ def build(BUILDINPUT):
             except:
                 complement = args[1] # else it is just a single keyword
             else:
-                complement =  list(map(lambda x: x.strip(","), args[1:]))
+                complement =  list(map(lambda x: x.strip(",").upper(), args[1:]))
 
         if flag == "--pdbname" :
             pdbName = args[1]

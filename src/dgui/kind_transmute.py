@@ -172,7 +172,7 @@ class TransmuteApp(tk.Tk):
         # chemistries
         self.choice_chem = tk.StringVar()
         opt_chems = list(TABLE_BACKBONE.keys())
-        self.opt_chems = ["..."] + sorted([x for x in opt_chems if x != "Phosphate"], key=str.casefold) # replace the phosphate key with the `...` key and sort
+        self.opt_chems = ["..."] + sorted([x for x in opt_chems if x != "PHOSPHATE"], key=str.casefold) # replace the phosphate key with the `...` key and sort
         self.omenu_chem = ttk.OptionMenu(self.content, self.choice_chem, *self.opt_chems)
         self.omenu_chem.configure(width=15)
 

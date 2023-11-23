@@ -168,7 +168,7 @@ class RandomiseApp(tk.Tk):
     def reveal_chemistry_keys(self):
 
         chemistries = list(TABLE_BACKBONE.keys())
-        chemistries[chemistries.index("Phosphate")] = "HOMO" # replace the phosphate key with the `homoduplex` key
+        chemistries[chemistries.index("PHOSPHATE")] = "HOMO" # replace the phosphate key with the `homoduplex` key
         return chemistries
 #
     def set_buttons(self):

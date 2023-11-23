@@ -9,10 +9,10 @@ TABLE_CHEMISTRY = {
         "RNA" : "Ribonucleic acid",
         "B-HOMODNA" : "beta-Homo Deoxyribonucleic acid",
         "HNA" : "Hexitol Nucleic acid",
-        "XYLO" : "Xylose Nucleic acid",
+        "XYNA" : "Xylose Nucleic acid",
         "2-OME-RNA" : "2-O-Methyl Ribonucleic acid",
         "CENA" : "Cylcohexenyl Nucleic acid",
-        "DXYLO" : "deoxy Xylose Nucleic Acid",
+        "DXYNA" : "deoxy Xylose Nucleic Acid",
         "MNA" : "Morpholino Nucleic Acid",
         "TNA" : "Threose Nucleic Acid",
         "PHOTNA" : "Phosphonate Threose Nucleic Acid",
@@ -20,17 +20,17 @@ TABLE_CHEMISTRY = {
 
 # the nucleoside moiety accounts for a binding between Phosphate - Carbon
 TABLE_LINKER = {
-        "DNA" : "Phosphate",
-        "RNA" : "Phosphate",
-        "B-HOMODNA" : "Phosphate",
-        "HNA" : "Phosphate",
-        "XYLO" : "Phosphate",
-        "2-OME-RNA" : "Phosphate",
-        "CENA" : "Phosphate",
-        "DXYLO" : "Phosphate",
-        "MNA" : "Phosphate",
-        "TNA" : "Phosphate",
-        "PHOTNA" : "Phosphate", 
+        "DNA" : "PHOSPHATE",
+        "RNA" : "PHOSPHATE",
+        "B-HOMODNA" : "PHOSPHATE",
+        "HNA" : "PHOSPHATE",
+        "XYNA" : "PHOSPHATE",
+        "2-OME-RNA" : "PHOSPHATE",
+        "CENA" : "PHOSPHATE",
+        "DXYNA" : "PHOSPHATE",
+        "MNA" : "PHOSPHATE",
+        "TNA" : "PHOSPHATE",
+        "PHOTNA" : "PHOSPHATE", 
         }
 
 
