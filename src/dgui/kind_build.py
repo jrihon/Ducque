@@ -7,7 +7,8 @@ from subprocess import run # Run Ducque
 from os import getcwd
 from os.path import basename
 
-from builder.builder_library import TABLE_BACKBONE # import possibilities to build complementary strand
+#from builder.builder_library import TABLE_BACKBONE # import possibilities to build complementary strand
+from ducquelib.library import TABLE_BACKBONE # import possibilities to build complementary strand
 from dgui.grid_geometry import Geometry as G
 import systemsDucque as SD
 

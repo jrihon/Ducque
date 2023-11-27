@@ -3,7 +3,8 @@ from typing import Union
 
 import process_CLI_inputs
 from builder.parse_or_write import return_chemistrycode
-from builder.builder_library import TABLE_NUCLEOTIDES
+#from builder.builder_library import TABLE_NUCLEOTIDES
+from ducquelib.library import TABLE_NUCLEOTIDES
 
 TN = TABLE_NUCLEOTIDES
 

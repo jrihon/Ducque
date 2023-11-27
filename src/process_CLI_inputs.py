@@ -1,8 +1,9 @@
 import systemsDucque as SD
 import os
 
-from builder.builder_library import TABLE_NUCLEOTIDES
-from transmute.transmute_library import TABLE_CHEMISTRY
+from ducquelib.library import TABLE_NUCLEOTIDES, TABLE_CHEMISTRY
+#from builder.builder_library import TABLE_NUCLEOTIDES
+#from transmute.transmute_library import TABLE_CHEMISTRY
 
 """ When the user prompts the wrong values or flags, this python script intercepts most errors that happen at the start """
 

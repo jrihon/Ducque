@@ -5,7 +5,8 @@ from os.path import isfile
 from shutil import which   # Run Ducque
 from subprocess import run # Run Ducque
 
-from builder.builder_library import TABLE_BACKBONE # import possibilities to build complementary strand
+#from builder.builder_library import TABLE_BACKBONE # import possibilities to build complementary strand
+from ducquelib.library import TABLE_BACKBONE # import possibilities to build complementary strand
 from dgui.grid_geometry import Geometry as G
 
 import systemsDucque as SD

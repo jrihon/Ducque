@@ -5,7 +5,8 @@ from random import randint
 import numpy as np
 
 import systemsDucque as SD
-import transmute.transmute_library as TB
+#import transmute.transmute_library as TB
+from ducquelib.library import TABLE_CHEMISTRY, TABLE_LINKER, TABLE_NUCLEOBASE
 
 class TransmuteToJson:
     """ This class exists to convert any *.pdb type format to an appriopriate *.json type format.
@@ -27,7 +28,6 @@ class TransmuteToJson:
 #        DUCQUEHOME = SD.return_DUCQUEHOME()
 #        JSONDIR = DUCQUEHOME + "/json"
 
-#        self.rootName = os.path.basename(pdbfile)   # basename of the file
         self.fileName = pdbfile                     # path to the pdb file we input
         self.array = np.array([])
         self.atomName = list()
@@ -128,7 +128,7 @@ class TransmuteToJson:
 
         if moietyType.upper() == "NUCLEOSIDE":
             try : 
-                base = TB.TABLE_CHEMISTRY[identifier.upper()]
+                base = TABLE_CHEMISTRY[identifier.upper()]
             except :
                 SD.print_invalid_key(nucleobase, "TABLE_CHEMISTRY")
                 sys.exit(1)
@@ -137,7 +137,7 @@ class TransmuteToJson:
 
         if moietyType.upper() == "LINKER":
             try : 
-                 link = TB.TABLE_LINKER[identifier.upper()]
+                 link = TABLE_LINKER[identifier.upper()]
             except :
                 SD.print_invalid_key(nucleobase, "TABLE_LINKER")
                 sys.exit(1)
@@ -149,7 +149,7 @@ class TransmuteToJson:
         """ Get the base that corresponds with this nucleic acid. Take the last character of the string Residue Name and
             look for it in the dictionary """
         try : 
-            base = TB.TABLE_NUCLEOBASE[nucleobase.upper()]
+            base = TABLE_NUCLEOBASE[nucleobase.upper()]
         except :
             SD.print_invalid_key(nucleobase, "TABLE_NUCLEOBASE")
             sys.exit(1)
@@ -221,7 +221,7 @@ class TransmuteToJson:
 
         elif moietyType == "linker":
             name_of_chemistry = identifier.lower()
-            name_of_linker = TB.linker_dict[identifier].lower()
+            name_of_linker = TABLE_LINKER[identifier].lower()
             return name_of_chemistry + "_" + name_of_linker
 
         else :

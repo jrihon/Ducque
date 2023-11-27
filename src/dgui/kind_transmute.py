@@ -1,17 +1,17 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
+from dgui.grid_geometry import Geometry as G
 
 from os import getcwd 
 from os.path import isfile
 from shutil import which   # Check if Ducque is on the $PATH
 from subprocess import run # Run Ducque
 
-from builder.builder_library import TABLE_BACKBONE # import possibilities to build complementary strand
-from dgui.grid_geometry import Geometry as G
-
 import systemsDucque as SD
-from transmute.transmute_library import TABLE_NUCLEOBASE
+#from builder.builder_library import TABLE_BACKBONE 
+#from transmute.transmute_library import TABLE_NUCLEOBASE, TABLE_BACKBONE
+from ducquelib.library import TABLE_NUCLEOBASE, TABLE_BACKBONE
 
 #  +--------------------------------------------------+
 #  |                    TRANSMUTE                     |

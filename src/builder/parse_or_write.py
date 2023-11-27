@@ -4,8 +4,9 @@ import os
 import sys
 from typing import Union, Tuple
 
-#from builder.builder_library import TB, TLB
-from builder.builder_library import TABLE_BACKBONE, TABLE_LINKER_BACKBONE
+#from builder.builder_library import TABLE_BACKBONE, TABLE_LINKER_BACKBONE
+from ducquelib.library import TABLE_BACKBONE, TABLE_LINKER_BACKBONE
+
 TB = TABLE_BACKBONE
 TLB = TABLE_LINKER_BACKBONE
 

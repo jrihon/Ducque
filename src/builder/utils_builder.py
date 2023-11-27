@@ -7,14 +7,15 @@ import numpy as np
 import builder.mathematics as MATH
 import builder.parse_or_write as PARSE
 import builder.builder_constants as CONSTANTS
-import builder.builder_library as LIB
+#import builder.builder_library as LIB
 import builder.utils_of_utils_builder as utilsUB
+from ducquelib.library import TABLE_NUCLEOTIDES, TABLE_CONFORMATIONS, TABLE_BACKBONE
 
 import systemsDucque as SD
 
-TN = LIB.TABLE_NUCLEOTIDES
-TC = LIB.TABLE_CONFORMATIONS
-TB = LIB.TABLE_BACKBONE
+TN = TABLE_NUCLEOTIDES
+TC = TABLE_CONFORMATIONS
+TB = TABLE_BACKBONE
 
 
 """ utils_builder.py
