@@ -1,4 +1,6 @@
 import json
+from os import getcwd, listdir
+from os.path import isfile, isdir
 
 import systemsDucque as SD
 import transmute.utils_transmute as UT
@@ -114,27 +116,65 @@ def Transmutation(pdb_fname, nucleicAcidChemistry : str, moietyType : str, dihed
 def convert_XYZ_to_PDB(xyzFname : str, residue : str, atomNameList : list):
     """ the main function that convert an xyz formatted file to the required pdb format """
 
-    # Instantiate the object
-    PdbToBe = UT.TransmuteToPdb(xyzFname)
+    pathToFile = getcwd() + "/" + xyzFname
 
-    # Parse all the required data from the xyz file
-    PdbToBe.parse_xyz_and_elementsymbol()
-#    xCoords, yCoords, zCoords, elementSymbol = PDB_to_be.parse_xyz_and_elementsymbol()
+    # If is file
+    if isfile(pathToFile) :
+        # Instantiate the object
+        PdbToBe = UT.TransmuteToPdb(xyzFname)
 
-    # Process the inputted atomname list from a string to a list
-    PdbToBe.return_processed_atomname_list(atomNameList)
+        # Parse all the required data from the xyz file
+        PdbToBe.parse_xyz_and_elementsymbol()
 
-    # If the inputted atomname list and the array size do not match in size, exit the program
-    if not PdbToBe.arraysize_vs_atomname_list_compatibility() :
-        print("The size of the prompted '--atomname_list' is not equal to the array of the cartesian coordinates, pertaining to the atoms of the molecule.\n"
-                "Please revise the prompted atomlist.")
-        SD.exit_Ducque()
+        # Process the inputted atomname list from a string to a list
+        PdbToBe.return_processed_atomname_list(atomNameList)
 
-    # If the inputted atomname list and the elements do not match in atoms, exit the program
-    if not PdbToBe.elementsymbol_vs_atomname_list_compatibility() :
-        print("The prompted '--atomname_list' do not match the order of the parsed ElementSymbol list, pertaining to the atoms of the molecule.\n"
-                "Please revise the prompted atomlist.")
-        SD.exit_Ducque()
+        # If the inputted atomname list and the array size do not match in size, exit the program
+        if not PdbToBe.arraysize_vs_atomname_list_compatibility() :
+            print("The size of the prompted '--atomname_list' is not equal to the array of the cartesian coordinates, pertaining to the atoms of the molecule.\n"
+                    "Please revise the prompted atomlist.")
+            SD.exit_Ducque()
 
-    # Write out the pdb file from all the gathered information
-    PdbToBe.write_to_pdb_format_file(residue)
+        # If the inputted atomname list and the elements do not match in atoms, exit the program
+        if not PdbToBe.elementsymbol_vs_atomname_list_compatibility() :
+            print("The prompted '--atomname_list' do not match the order of the parsed ElementSymbol list, pertaining to the atoms of the molecule.\n"
+                    "Please revise the prompted atomlist.")
+            SD.exit_Ducque()
+
+        # Write out the pdb file from all the gathered information
+        PdbToBe.write_to_pdb_format_file(residue)
+
+    # If is directory
+    elif isdir(pathToFile):
+        # find all xyz files in a directory
+        lsdir = [x for x in listdir(pathToFile) if x.endswith(".xyz") and not x.endswith("_trj.xyz")]  # xyz coordinate files, not FNAME_trj.xyz
+
+        # Do a first check
+        PdbToBe = UT.TransmuteToPdb(xyzFname + "/" + lsdir[0])
+        PdbToBe.parse_xyz_and_elementsymbol()
+        PdbToBe.return_processed_atomname_list(atomNameList)
+
+        if not PdbToBe.arraysize_vs_atomname_list_compatibility() :
+            print("The size of the prompted '--atomname_list' is not equal to the array of the cartesian coordinates, pertaining to the atoms of the molecule.\n"
+                    "Please revise the prompted atomlist.")
+            SD.exit_Ducque()
+
+        if not PdbToBe.elementsymbol_vs_atomname_list_compatibility() :
+            print("The prompted '--atomname_list' do not match the order of the parsed ElementSymbol list, pertaining to the atoms of the molecule.\n"
+                    "Please revise the prompted atomlist.")
+            SD.exit_Ducque()
+
+        counter = 0
+        # If this all works, don't do the compatibility checks anymore
+        for fname in lsdir: 
+            PdbToBe = UT.TransmuteToPdb(xyzFname + "/" + fname)
+            PdbToBe.parse_xyz_and_elementsymbol()
+            PdbToBe.return_processed_atomname_list(atomNameList)
+            PdbToBe.write_to_pdb_format_file(residue)
+            counter += 1
+
+        SD.print_writing(f"Written to {counter} pdb formatted files")
+
+    else : 
+        SD.print_filenotfound(pathToFile)
+        

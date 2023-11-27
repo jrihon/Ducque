@@ -1,7 +1,7 @@
 import sys
 from os.path import isfile, basename, dirname
 from os import getcwd
-
+from random import randint
 import numpy as np
 
 import systemsDucque as SD
@@ -145,13 +145,6 @@ class TransmuteToJson:
             return link
 
 
-#        if moietyType == "nucleoside":
-#            return TB.nucleoside_dict[identifier.upper()]
-#
-#        if moietyType == "linker":
-#            return TB.linker_dict[identifier.upper()]
-
-
     def get_base(self, nucleobase: str) -> str:
         """ Get the base that corresponds with this nucleic acid. Take the last character of the string Residue Name and
             look for it in the dictionary """
@@ -246,7 +239,7 @@ class TransmuteToPdb:
     def __init__(self, xyzfile):
         """ Initialise the object and create object attributes """
         self.pathName = xyzfile
-        self.rootName = basename(xyzfile).split(".")[0]
+        self.rootName = basename(xyzfile)[:-4] # cut off last `.xyz` part
         self.pdbName = self.rootName + ".pdb"
         self.fullPathTo = getcwd() + "/" + dirname(xyzfile)
         self.x = list()
@@ -336,10 +329,7 @@ class TransmuteToPdb:
 
     def write_to_pdb_format_file(self, residue) :
 
-        # Just create a random integer for the sequenceNumber, just needs to be filled in
-        from random import randint
         randomised_integer_for_sequence_number = randint(1,100)
-
 
         atomNumbers = np.linspace(1, len(self.elements), len(self.elements), dtype=int)
 
