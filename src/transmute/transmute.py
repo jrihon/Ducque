@@ -40,7 +40,7 @@ def Transmutation(pdb_fname, nucleicAcidChemistry : str, moietyType : str, dihed
     pdb_properties["Coordinates"] = json.dumps(nucleicAcid.get_array())
     pdb_properties["Shape"] = json.dumps(nucleicAcid.get_shape_array())
 
-    # Get Atom namelist             NB: json outputs double quotations as \" XX \" for strings (escape characters), since there are apostrophes in the molecules
+    # Get Atom namelist             NB: json outputs double quotations as \" XX \" for strings (escape characters)
     pdb_properties["Atoms"] = json.dumps(nucleicAcid.get_atoms())
 
     # Get the element symbol
@@ -64,7 +64,7 @@ def Transmutation(pdb_fname, nucleicAcidChemistry : str, moietyType : str, dihed
         identity.append(molecule_residuename)
 
         # Nucleobase of the nucleic acid
-        nucleobase = nucleicAcid.get_base(nucleobase)
+        nucleobase = nucleicAcid.get_nucleobase(nucleobase)
         identity.append(nucleobase)
 
     if moietyType == "linker":

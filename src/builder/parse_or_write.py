@@ -4,18 +4,18 @@ import os
 import sys
 from typing import Union, Tuple
 
-#from builder.builder_library import TABLE_BACKBONE, TABLE_LINKER_BACKBONE
-from ducquelib.library import TABLE_BACKBONE, TABLE_LINKER_BACKBONE
+from ducquelib.library import TABLE_BACKBONE, TABLE_LINKER_BACKBONE, TABLE_NUCLEOTIDES, TABLE_CONFORMATIONS
+from systemsDucque import return_DUCQUEHOME
 
 TB = TABLE_BACKBONE
 TLB = TABLE_LINKER_BACKBONE
+TN = TABLE_NUCLEOTIDES
+TC = TABLE_CONFORMATIONS
 
-import builder.builder_library as LIB    # Parse the nucleic acid dictionaries
-from systemsDucque import return_DUCQUEHOME
+
+
 """ This scripts makes data parsing much easier and makes builder.py much more organised. """
 
-TN = LIB.TABLE_NUCLEOTIDES
-TC = LIB.TABLE_CONFORMATIONS
 
 ##-- Parse atoms from the queried JSON object files
 def Atom_Parsing_List(prevnuc, link, nextnuc = None) -> list :
@@ -212,7 +212,7 @@ def return_chemistrycode(identifier : str) -> str:
 
 
 
-##-- FUNCTIONS USED TO FILIB IN THE COLUMNS OF THE PDB FILE TO-BE-WRITTEN
+##-- FUNCTIONS USED TO FILL IN IN THE COLUMNS OF THE PDB FILE TO-BE-WRITTEN
 def return_PDB_AtomNames_or_ElementSymbol(list_of_sequence : list, identifier : str) -> list:
     """ Loads in the atom names from the json files
     The identifier is either the string "Atoms" or the string "ElementSymbol", which will parse the list of interest """

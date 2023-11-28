@@ -242,9 +242,9 @@ class TransmuteApp(tk.Tk):
             if flag == "--conformation" :
                 self.str_conformation.set(inp.strip())
             
-#            if flag == "--moiety" :
-#                if inp.strip() in ["nucleoside", "linker"]: self.choice_moi.set(inp.strip())
-#                else : SD.print_invalid_argument(inp, "`--moiety`")
+            if flag == "--moiety" :
+                if inp.strip() == "nucleoside": 
+                    print("--moiety `nucleoside` correctly prompted.")
 
             if flag == "--nucleobase" :
                 self.str_nucleobase.set(inp.strip()) 
@@ -482,7 +482,6 @@ class TransmuteApp(tk.Tk):
 
         # set optionmenu
         self.omenu_chem.grid(column=1, row=4, **self.padding)
-#        self.omenu_moi.grid(column=1, row=6, **self.padding)
         self.entr_moiety.grid(column=1, row=6, **self.padding)
 
         # set buttons
@@ -529,7 +528,6 @@ class TransmuteApp(tk.Tk):
 
 
         # Handle empty inputs for these fields
-#        for i in [self.str_pdbfname, self.str_conformation, self.choice_chem, self.choice_moi] :
         for string in [self.str_pdbfname, self.str_conformation, self.choice_chem, self.str_moiety] :
             if len(string.get()) == 0 or string.get() == "..." : 
                 SD.print_empty_query("--pdb, --chemistry, --conformation or --nucleobase")
@@ -565,7 +563,6 @@ class TransmuteApp(tk.Tk):
 
         # This means that when we import a file to be read in by the GUI, that we will have it start out in the current directory
         # OR the $DUCQUE/transmute directory
-#        input_fname = "input_" + self.choice_chem.get().lower() + self.base.lower() +  "_" + self.str_conformation.get().lower() + "_transmute.in"
         input_fname = self.choice_chem.get().lower() + self.str_nucleobase.get().lower() +  "_" + self.str_conformation.get().lower() + ".tinp"
 
 
@@ -579,7 +576,6 @@ class TransmuteApp(tk.Tk):
             fileto.write("--pdb " + self.str_pdbfname.get() + "\n"
                         "--chemistry " + self.choice_chem.get() + " \n"  
                         "--conformation " + self.str_conformation.get() + " \n"
-#                        "--moiety " + self.choice_moi.get() + " \n"
                         "--moiety " + self.str_moiety.get() + " \n"
                         "--bondangles " + ", ".join(list_ang) + " \n"
                         "--dihedrals " + ", ".join(list_dih) + " \n"
@@ -615,7 +611,6 @@ class TransmuteApp(tk.Tk):
 
         # filename for the transmute file
         json_fname = self.choice_chem.get().lower() + "_" + self.str_nucleobase.get().lower() + "_" + self.str_conformation.get().lower() + ".json"
-#        input_fname = "input_" + self.choice_chem.get().lower() + self.str_nucleobase.get().lower() +  "_" + self.str_conformation.get().lower() + "_transmute.tinp"
         input_fname = self.choice_chem.get().lower() + self.str_nucleobase.get().lower() +  "_" + self.str_conformation.get().lower() + ".tinp"
 
 
@@ -624,7 +619,7 @@ class TransmuteApp(tk.Tk):
 
         # Check if the transmute input file is present on the current working directory
         if not isfile(input_fname):
-            SD.print_empty_query("transmute input file")
+            SD.print_filenotfound(input_fname)
             return
 
         # Check if the json is not already present in the DUCQUEHOME/json/

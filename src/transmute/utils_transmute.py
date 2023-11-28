@@ -5,7 +5,6 @@ from random import randint
 import numpy as np
 
 import systemsDucque as SD
-#import transmute.transmute_library as TB
 from ducquelib.library import TABLE_CHEMISTRY, TABLE_LINKER, TABLE_NUCLEOBASE
 
 class TransmuteToJson:
@@ -57,7 +56,7 @@ class TransmuteToJson:
             Charge:           line 79 - 80          """
 
         # Start new lists to append it all
-        atomName, resName, xCoords, yCoords, zCoords, elementSymbol = ([] for _ in range(6))
+        resName, xCoords, yCoords, zCoords = ([] for _ in range(4))
 
         # Check if file is in cwd or in the pdb directory
         pdbfname = self.fileName
@@ -94,9 +93,6 @@ class TransmuteToJson:
 
             # Add the array as an attribute
             self.array = np.array([xCoords, yCoords, zCoords], dtype=float).T
-#
-#            # Add the atom name list as an attribute
-#            self.atomList = list(map(lambda x : x.strip(), AtomName))
 
     def get_array(self) -> list:
         """ Create a list of the array of coordinates respectively."""
@@ -123,29 +119,29 @@ class TransmuteToJson:
         return self.residueName
 
 
-    def get_full_name(self, identifier : str, moietyType) -> str:
+    def get_full_name(self, chemistry : str, moietyType) -> str:
         """ Get the full name of the nucleic acid chemistry or linker moietyType we want to convert to a json """
 
         if moietyType.upper() == "NUCLEOSIDE":
             try : 
-                base = TABLE_CHEMISTRY[identifier.upper()]
+                chemistry = TABLE_CHEMISTRY[chemistry.upper()]
             except :
-                SD.print_invalid_key(nucleobase, "TABLE_CHEMISTRY")
+                SD.print_invalid_key(chemistry, "TABLE_CHEMISTRY")
                 sys.exit(1)
             
-            return base
+            return chemistry
 
         if moietyType.upper() == "LINKER":
             try : 
-                 link = TABLE_LINKER[identifier.upper()]
+                 link = TABLE_LINKER[chemistry.upper()]
             except :
-                SD.print_invalid_key(nucleobase, "TABLE_LINKER")
+                SD.print_invalid_key(chemistry.upper(), "TABLE_LINKER")
                 sys.exit(1)
             
             return link
 
 
-    def get_base(self, nucleobase: str) -> str:
+    def get_nucleobase(self, nucleobase: str) -> str:
         """ Get the base that corresponds with this nucleic acid. Take the last character of the string Residue Name and
             look for it in the dictionary """
         try : 
@@ -157,7 +153,7 @@ class TransmuteToJson:
         return base
 
 
-    def get_angles(self, #identifier : str,
+    def get_angles(self, #chemistry : str,
             moietyType : str, angles_list : list, json_dict : dict) -> dict:
         """
         List the bond angles differently whether it belongs to a nucleoside or a linker moietyType 
@@ -196,15 +192,22 @@ class TransmuteToJson:
         if moietyType == "linker":
             angles_list = list(map(lambda x: x.strip(","), angles_list))
 
-            # Initialise dictionary
             json_dict = {}
-            json_dict["angle_2"] = float(angles_list[0])
-            json_dict["angle_1"] = float(angles_list[1])
+
+            # Bond Angles
+            if len(angles_list) == 1:
+                json_dict["angle_1"] = float(angles_list[0])
+
+            # Dihedrals
+            elif len(angles_list) == 2:
+                json_dict["dihedral_2"] = float(angles_list[0])
+                json_dict["dihedral_1"] = float(angles_list[1])
+
             return json_dict
 
 
-    def get_output_name(self, identifier : str, moietyType : str, conformation : str) -> str:
-        """ Create the name of the file based on the identifier of the nucleic acid chemistry and its corresponding base 
+    def get_output_name(self, chemistry : str, moietyType : str, conformation : str) -> str:
+        """ Create the name of the file based on the chemistry of the nucleic acid chemistry and its corresponding base 
 
             This function creates the name of the json file
 
@@ -213,15 +216,15 @@ class TransmuteToJson:
 
 
         if moietyType == "nucleoside":
-            name_of_chemistry = identifier.lower()
+            name_of_chemistry = chemistry.lower()
             name_of_base = self.get_base().lower()
 
             conformation = conformation.lower()
             return name_of_chemistry + "_" + name_of_base + "_" + conformation
 
         elif moietyType == "linker":
-            name_of_chemistry = identifier.lower()
-            name_of_linker = TABLE_LINKER[identifier].lower()
+            name_of_chemistry = chemistry.lower()
+            name_of_linker = TABLE_LINKER[chemistry].lower()
             return name_of_chemistry + "_" + name_of_linker
 
         else :

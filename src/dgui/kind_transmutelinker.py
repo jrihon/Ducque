@@ -9,9 +9,7 @@ from shutil import which   # Check if Ducque is on the $PATH
 from subprocess import run # Run Ducque
 
 import systemsDucque as SD
-#from builder.builder_library import TABLE_BACKBONE 
-#from transmute.transmute_library import TABLE_NUCLEOBASE, TABLE_BACKBONE
-from ducquelib.library import TABLE_NUCLEOBASE, TABLE_BACKBONE
+from ducquelib.library import TABLE_BACKBONE, TABLE_LINKER
 
 #  +--------------------------------------------------+
 #  |                    TRANSMUTE                     |
@@ -55,9 +53,9 @@ class TransmuteLinkerApp(tk.Tk):
         self.label_bondangles = ttk.Label(self.content, text="--bondangles")
         self.label_dihedrals = ttk.Label(self.content, text="--dihedrals")
 
-        self.label_ang1 = ttk.Label(self.content, text="Angle 1")
-        self.label_dihr1 = ttk.Label(self.content, text="Dihedral 1")
-        self.label_dihr2 = ttk.Label(self.content, text="Dihedral 2")
+        self.label_ang1 = ttk.Label(self.content, text="angle 1")
+        self.label_dihr1 = ttk.Label(self.content, text="dihedral 1")
+        self.label_dihr2 = ttk.Label(self.content, text="dihedral 2")
 
 
     def set_buttons(self):
@@ -116,11 +114,11 @@ class TransmuteLinkerApp(tk.Tk):
     def set_entries(self):
         self.str_pdbfname = tk.StringVar()
 #        self.str_conformation = tk.StringVar()
-        self.str_nucleobase = tk.StringVar()
+#        self.str_nucleobase = tk.StringVar()
         
         self.entr_pdbfname = ttk.Entry(self.content, textvariable=self.str_pdbfname, width=42)
 #        self.entr_conformation = ttk.Entry(self.content, textvariable=self.str_conformation)
-        self.entr_nucleobase = ttk.Entry(self.content, textvariable=self.str_nucleobase)
+#        self.entr_nucleobase = ttk.Entry(self.content, textvariable=self.str_nucleobase)
 
         # moiety entry
         self.str_moiety = tk.StringVar()
@@ -198,15 +196,9 @@ class TransmuteLinkerApp(tk.Tk):
                 if opt in list(TABLE_BACKBONE.keys()) : self.choice_chem.set(inp.strip())
                 else : SD.print_invalid_argument(opt, "`--chemistry`")
 
-#            if flag == "--conformation" :
-#                self.str_conformation.set(inp.strip())
-#            
-#            if flag == "--moiety" :
-#                if inp.strip() in ["nucleoside", "linker"]: self.choice_moi.set(inp.strip())
-#                else : SD.print_invalid_argument(inp, "`--moiety`")
-
-            if flag == "--nucleobase" :
-                self.str_nucleobase.set(inp.strip()) 
+            if flag == "--moiety" :
+                if inp.strip() == "nucleoside": 
+                    print("--moiety `nucleoside` correctly prompted.")
 
             if flag == "--bondangles" : 
                 angs = list(map(lambda x: x.strip(), inp.split(",")))
@@ -356,52 +348,16 @@ class TransmuteLinkerApp(tk.Tk):
                 return ""
             else :
                 return a
-
-        # get valid key from the TABLE_NUCLEOBASE
-        if self.str_nucleobase.get() == "":
-            SD.print_empty_query("--nucleobase"); return
-
-        try :
-            B = self.str_nucleobase.get().upper()
-            TABLE_NUCLEOBASE[B]
-        except :
-            B = self.str_nucleobase.get().upper()
-            SD.print_invalid_key(B, TABLE_NUCLEOBASE); return
-        else :
-            B = self.str_nucleobase.get().upper()
-            self.base = TABLE_NUCLEOBASE[B]
-
-
-
         # Handle empty inputs for these fields
-#        for i in [self.str_pdbfname, self.str_conformation, self.choice_chem, self.choice_moi] :
-        for string in [self.str_pdbfname, self.str_conformation, self.choice_chem, self.str_moiety] :
+        for string in [self.str_pdbfname, self.choice_chem] :
             if len(string.get()) == 0 or string.get() == "..." : 
-                SD.print_empty_query("--pdb, --chemistry, --conformation or --nucleobase")
+                SD.print_empty_query("--pdb or --chemistry")
                 return
 
-        # Sort of handle numerical inputs
-        list_ang = [ format_angle("angle(alpha)", self.str_ang_a.get()),
-                     format_angle("angle(beta)", self.str_ang_b.get()),
-                     format_angle("angle(gamma)", self.str_ang_g.get()),
-                     format_angle("angle(delta)", self.str_ang_d.get()),
-                     format_angle("angle(epsilon)", self.str_ang_e.get()),
-                    ]
-        list_dih = [ format_angle("dihedral(alpha)", self.str_dihr_a.get()),
-                     format_angle("dihedral(beta)", self.str_dihr_b.get()),
-                     format_angle("dihedral(gamma)", self.str_dihr_g.get()),
-                     format_angle("dihedral(delta)", self.str_dihr_d.get()),
-                     format_angle("dihedral(epsilon)", self.str_dihr_e.get()),
-                    ]
-        if self.int_zeta.get() == 1 :
-            list_ang.append(format_angle("angle(zeta)", self.str_ang_z.get()))
-            list_dih.append(format_angle("dihedral(zeta)", self.str_dihr_z.get()))
-        if self.int_nu.get() == 1 :
-            list_ang.append(format_angle("angle(nu)", self.str_ang_n.get()))
-            list_dih.append(format_angle("dihedral(nu)", self.str_dihr_n.get()))
-
-        list_ang.append(format_angle("angle(chi)", self.str_ang_x.get()))
-        list_dih.append(format_angle("dihedral(chi)", self.str_dihr_x.get()))
+#        # Sort of handle numerical inputs
+        list_ang = [ format_angle("angle(angle_1)", self.str_angle1.get())]
+        list_dih = [ format_angle("dihedral(dihedral_1)", self.str_dihr1.get()),
+                     format_angle("dihedral(dihedral_2)", self.str_dihr2.get())]
 
         # Check if any angles are empty, if so, return early
         if "" in list_ang or "" in list_dih:
@@ -410,8 +366,15 @@ class TransmuteLinkerApp(tk.Tk):
 
         # This means that when we import a file to be read in by the GUI, that we will have it start out in the current directory
         # OR the $DUCQUE/transmute directory
-#        input_fname = "input_" + self.choice_chem.get().lower() + self.base.lower() +  "_" + self.str_conformation.get().lower() + "_transmute.in"
-        input_fname = self.choice_chem.get().lower() + self.str_nucleobase.get().lower() +  "_" + self.str_conformation.get().lower() + ".tinp"
+        # Add the related residue name to this, from 
+        # Linking the nucleoside to the correct linker moiety 
+        try: 
+            linker = TABLE_LINKER[self.choice_chem.get().upper()]
+        except: 
+            SD.print_invalid_key(self.choice_chem.get().upper(), TABLE_LINKER)
+            return
+
+        input_fname = self.choice_chem.get().lower() + linker.lower() + ".tinp"
 
 
         if not self.int_overwrite.get() == 1 and isfile(input_fname) :
@@ -423,8 +386,6 @@ class TransmuteLinkerApp(tk.Tk):
         with open(input_fname , "w") as fileto :
             fileto.write("--pdb " + self.str_pdbfname.get() + "\n"
                         "--chemistry " + self.choice_chem.get() + " \n"  
-                        "--conformation " + self.str_conformation.get() + " \n"
-#                        "--moiety " + self.choice_moi.get() + " \n"
                         "--moiety " + self.str_moiety.get() + " \n"
                         "--bondangles " + ", ".join(list_ang) + " \n"
                         "--dihedrals " + ", ".join(list_dih) + " \n"
@@ -435,33 +396,21 @@ class TransmuteLinkerApp(tk.Tk):
 
     def transmute_input(self):
 
-
-#        # get key from the nucleobase
-#        try :
-#            self.str_nucleobase.get()
-#        except :
-#            SD.print_empty_query("--nucleobase"); return
-#
-#        try :
-#            B = self.str_nucleobase.get().upper()
-#            TABLE_NUCLEOBASE[B]
-#        except :
-#            B = self.str_nucleobase.get().upper()
-#            SD.print_invalid_chemistry(B); return
-#        else :
-#            B = self.str_nucleobase.get().upper()
-#            self.base = TABLE_NUCLEOBASE[B]
-
-        for string in [self.choice_chem , self.str_conformation, self.str_nucleobase]:
-            s = string.get().lower()
-            if len(s) == 0 :
-                SD.print_empty_query("--chemistry, --conformation or --nucleobase")
-                return
+        # Check if chemistry is queried
+        chemchoice = self.choice_chem.get().lower()
+        if len(chemchoice) == 0 or chemchoice == "...":
+            SD.print_empty_query("--chemistry")
+            return
 
         # filename for the transmute file
-        json_fname = self.choice_chem.get().lower() + "_" + self.str_nucleobase.get().lower() + "_" + self.str_conformation.get().lower() + ".json"
-#        input_fname = "input_" + self.choice_chem.get().lower() + self.str_nucleobase.get().lower() +  "_" + self.str_conformation.get().lower() + "_transmute.tinp"
-        input_fname = self.choice_chem.get().lower() + self.str_nucleobase.get().lower() +  "_" + self.str_conformation.get().lower() + ".tinp"
+        try: 
+            linker = TABLE_LINKER[self.choice_chem.get().upper()]
+        except: 
+            SD.print_invalid_key(self.choice_chem.get().upper(), TABLE_LINKER)
+            return
+
+        json_fname = chemchoice + "_" + linker.lower() + ".json"
+        input_fname = chemchoice + "_" + linker.lower() + ".tinp"
 
 
         if not which("Ducque"):  # At this point, this would not be necessary, but better safe than sorry
@@ -469,7 +418,7 @@ class TransmuteLinkerApp(tk.Tk):
 
         # Check if the transmute input file is present on the current working directory
         if not isfile(input_fname):
-            SD.print_empty_query("transmute input file")
+            SD.print_filenotfound(input_fname)
             return
 
         # Check if the json is not already present in the DUCQUEHOME/json/

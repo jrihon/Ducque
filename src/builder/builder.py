@@ -4,15 +4,14 @@ import initMolecule
 
 import builder.utils_builder as UB                        # Import all the functions to do with creating the nucleic acid duplex
 import builder.utils_of_utils_builder as utilsUB          # Import all smaller functions
-import builder.builder_library as LIB                     # Import the nucleic acid dictionaries
+from ducquelib.library import TABLE_NUCLEOTIDES, TABLE_CONFORMATIONS # Import the nucleic acid tablesd
 
 import systemsDucque as SD
 
 """ Create dictionary of the filename and their molecule code """
 
-TN = LIB.TABLE_NUCLEOTIDES   # Creates an object of the nucleic acid dictionary for the leading strand
-
-TC = LIB.TABLE_CONFORMATIONS     # Creates an object of the nucleic acid dictionary for the complementary strand
+TN = TABLE_NUCLEOTIDES   # Creates an object of the nucleic acid dictionary for the leading strand
+TC = TABLE_CONFORMATIONS     # Creates an object of the nucleic acid dictionary for the complementary strand
 
 
 
