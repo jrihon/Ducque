@@ -3,6 +3,7 @@ from dgui.kind_select import SelectApp
 from dgui.kind_rand import RandomiseApp
 from dgui.kind_build import BuildApp
 from dgui.kind_transmute import TransmuteApp
+from dgui.kind_transmutelinker import TransmuteLinkerApp
 #from dgui.kind_xyzpdb import FormatPdbApp  # Disabled the xyz_pdb module
 
 import systemsDucque as SD
@@ -22,6 +23,9 @@ def gui_window(cli_argument):
 
     elif cli_argument == "transmute" :
         run(TransmuteApp, cli_argument)
+
+    elif cli_argument == "tlinker" :
+        run(TransmuteLinkerApp, cli_argument)
 
 #    elif cli_argument == "xyz_pdb" :
 #        print(f"The `XYZ_PDB` has been disabled, as it is a work in progress.")

@@ -93,7 +93,7 @@ def print_xyz(XYZ_FNAME):           print(f"\033[96m[XYZ -> PDB]      : Converti
 def print_rand():                   print(f"\033[96m[RANDOMISE]       : Randomisation of the given inputs!\033[39m\n")
 def print_dupl_ln(num_nucl):        print(f"[DUPLEX LENGTH]   : {num_nucl} nucleotides")
 def print_writing(outfile):         print(f"\033[94m[WRITE FILE]      : {outfile} \033[39m")
-def print_invalid_chemistry(chem):  print(f"[INVALID QUERY]   : `{chem}`. Please revise your inputs")
+def print_invalid_chemistry(chem):  print(f"[INVALID QUERY]   : `{chem}`. Please revise your inputs for --chemistry")
 def print_invalid_nucleoside(NA):   print(f"[INVALID QUERY]   : One or more of the nucleotides in the given sequence is invalid `{NA}`")
 def print_invalid_key(key, table):  print(f"[INVALID KEY]     : The key `{key}` is not present in the table `{table}`")
 def print_empty_query(flag) :       print(f"[EMPTY QUERY]     : No input(s) found for `{flag}`.")

@@ -17,7 +17,7 @@ from ducquelib.library import TABLE_NUCLEOBASE, TABLE_BACKBONE
 #  |                    TRANSMUTE                     |
 #  +--------------------------------------------------+
 
-class TransmuteApp(tk.Tk):
+class TransmuteLinkerApp(tk.Tk):
 
     def __init__(self, title):
         # baseline stuff
@@ -51,20 +51,13 @@ class TransmuteApp(tk.Tk):
     def set_labels(self):
         self.label_pdbfname = ttk.Label(self.content, text="--pdb")
         self.label_chemistry = ttk.Label(self.content, text="--chemistry")
-        self.label_conformation = ttk.Label(self.content, text="--conformation")
         self.label_moiety = ttk.Label(self.content, text="--moiety")
         self.label_bondangles = ttk.Label(self.content, text="--bondangles")
         self.label_dihedrals = ttk.Label(self.content, text="--dihedrals")
-        self.label_nucleobase = ttk.Label(self.content, text="--nucleobase")
 
-        self.label_alpha = ttk.Label(self.content, text="Alpha")
-        self.label_beta = ttk.Label(self.content, text="Beta")
-        self.label_gamma = ttk.Label(self.content, text="Gamma")
-        self.label_delta = ttk.Label(self.content, text="Delta")
-        self.label_epsilon = ttk.Label(self.content, text="Epsilon")
-        self.label_zeta = ttk.Label(self.content, text="Zeta")
-        self.label_nu = ttk.Label(self.content, text="Eta")
-        self.label_chi = ttk.Label(self.content, text="Chi")
+        self.label_ang1 = ttk.Label(self.content, text="Angle 1")
+        self.label_dihr1 = ttk.Label(self.content, text="Dihedral 1")
+        self.label_dihr2 = ttk.Label(self.content, text="Dihedral 2")
 
 
     def set_buttons(self):
@@ -72,46 +65,46 @@ class TransmuteApp(tk.Tk):
         self.btn_transmute = ttk.Button(self.content, text="Transmute!", command=self.transmute_input, width=20)
 
 
-    def toggle_zeta(self):
-        if self.int_zeta.get() == 1 : 
-            self.ent_ang_z.config(state="enabled")
-            self.ent_dihr_z.config(state="enabled")
-        elif self.int_zeta.get() == 0  and self.int_nu.get() == 1: 
-            SD.angle_exclusivity()
-
-            self.ent_ang_z.config(state="enabled")
-            self.ent_dihr_z.config(state="enabled")
-            self.int_zeta.set(1)
-        else :
-            self.ent_ang_z.config(state="disabled")
-            self.ent_dihr_z.config(state="disabled")
-
-    def toggle_nu(self):
-        if self.int_nu.get() == 1  and self.int_zeta.get() == 1: 
-            self.ent_ang_n.config(state="enabled")
-            self.ent_dihr_n.config(state="enabled")
-        elif self.int_nu.get() == 1  and self.int_zeta.get() == 0: 
-            SD.angle_exclusivity()
-
-            self.ent_ang_n.config(state="disabled")
-            self.ent_dihr_n.config(state="disabled")
-            self.int_nu.set(0)
-        else :
-            self.ent_ang_n.config(state="disabled")
-            self.ent_dihr_n.config(state="disabled")
-
-
+#    def toggle_zeta(self):
+#        if self.int_zeta.get() == 1 : 
+#            self.ent_ang_z.config(state="enabled")
+#            self.ent_dihr_z.config(state="enabled")
+#        elif self.int_zeta.get() == 0  and self.int_nu.get() == 1: 
+#            SD.angle_exclusivity()
+#
+#            self.ent_ang_z.config(state="enabled")
+#            self.ent_dihr_z.config(state="enabled")
+#            self.int_zeta.set(1)
+#        else :
+#            self.ent_ang_z.config(state="disabled")
+#            self.ent_dihr_z.config(state="disabled")
+#
+#    def toggle_nu(self):
+#        if self.int_nu.get() == 1  and self.int_zeta.get() == 1: 
+#            self.ent_ang_n.config(state="enabled")
+#            self.ent_dihr_n.config(state="enabled")
+#        elif self.int_nu.get() == 1  and self.int_zeta.get() == 0: 
+#            SD.angle_exclusivity()
+#
+#            self.ent_ang_n.config(state="disabled")
+#            self.ent_dihr_n.config(state="disabled")
+#            self.int_nu.set(0)
+#        else :
+#            self.ent_ang_n.config(state="disabled")
+#            self.ent_dihr_n.config(state="disabled")
+#
+#
     def set_checkbutton(self):
-        self.int_zeta = tk.IntVar()
-        self.int_nu = tk.IntVar()
-        self.chkbtn_zeta = ttk.Checkbutton(self.content, text="Zeta", variable=self.int_zeta, command=self.toggle_zeta,
-                                                onvalue=1, offvalue=0)
-        self.chkbtn_nu = ttk.Checkbutton(self.content, text="Eta", variable=self.int_nu, command=self.toggle_nu,
-                                                onvalue=1, offvalue=0)
-
-        self.int_zeta.set(1)
-        self.ent_ang_n.config(state="disabled")
-        self.ent_dihr_n.config(state="disabled")
+#        self.int_zeta = tk.IntVar()
+#        self.int_nu = tk.IntVar()
+#        self.chkbtn_zeta = ttk.Checkbutton(self.content, text="Zeta", variable=self.int_zeta, command=self.toggle_zeta,
+#                                                onvalue=1, offvalue=0)
+#        self.chkbtn_nu = ttk.Checkbutton(self.content, text="Eta", variable=self.int_nu, command=self.toggle_nu,
+#                                                onvalue=1, offvalue=0)
+#
+#        self.int_zeta.set(1)
+#        self.ent_ang_n.config(state="disabled")
+#        self.ent_dihr_n.config(state="disabled")
 
         self.int_overwrite = tk.IntVar()
         self.int_overwrite.set(0)
@@ -122,56 +115,29 @@ class TransmuteApp(tk.Tk):
 
     def set_entries(self):
         self.str_pdbfname = tk.StringVar()
-        self.str_conformation = tk.StringVar()
+#        self.str_conformation = tk.StringVar()
         self.str_nucleobase = tk.StringVar()
         
         self.entr_pdbfname = ttk.Entry(self.content, textvariable=self.str_pdbfname, width=42)
-        self.entr_conformation = ttk.Entry(self.content, textvariable=self.str_conformation)
+#        self.entr_conformation = ttk.Entry(self.content, textvariable=self.str_conformation)
         self.entr_nucleobase = ttk.Entry(self.content, textvariable=self.str_nucleobase)
 
         # moiety entry
         self.str_moiety = tk.StringVar()
         self.entr_moiety = ttk.Entry(self.content, textvariable=self.str_moiety)
-        self.str_moiety.set("nucleoside")
+        self.str_moiety.set("linker")
         self.entr_moiety.config(state="disabled")
 
         # bondangles
-        self.str_ang_a = tk.StringVar() # alpha
-        self.str_ang_b = tk.StringVar() # beta
-        self.str_ang_g = tk.StringVar() # gamma
-        self.str_ang_d = tk.StringVar() # delta
-        self.str_ang_e = tk.StringVar() # epsilon
-        self.str_ang_z = tk.StringVar() # zeta
-        self.str_ang_n = tk.StringVar() # nu
-        self.str_ang_x = tk.StringVar() # chi
-
-        self.ent_ang_a = ttk.Entry(self.content, textvariable=self.str_ang_a) # alpha
-        self.ent_ang_b = ttk.Entry(self.content, textvariable=self.str_ang_b) # beta
-        self.ent_ang_g = ttk.Entry(self.content, textvariable=self.str_ang_g) # gamma
-        self.ent_ang_d = ttk.Entry(self.content, textvariable=self.str_ang_d) # delta
-        self.ent_ang_e = ttk.Entry(self.content, textvariable=self.str_ang_e) # epsilon
-        self.ent_ang_z = ttk.Entry(self.content, textvariable=self.str_ang_z) # zeta
-        self.ent_ang_n = ttk.Entry(self.content, textvariable=self.str_ang_n) # nu
-        self.ent_ang_x = ttk.Entry(self.content, textvariable=self.str_ang_x) # chi
+        self.str_angle1 = tk.StringVar() 
+        self.ent_angle1 = ttk.Entry(self.content, textvariable=self.str_angle1) # Angle_1
     
         # Dihedrals
-        self.str_dihr_a = tk.StringVar() # alpha
-        self.str_dihr_b = tk.StringVar() # beta
-        self.str_dihr_g = tk.StringVar() # gamma
-        self.str_dihr_d = tk.StringVar() # delta
-        self.str_dihr_e = tk.StringVar() # epsilon
-        self.str_dihr_z = tk.StringVar() # zeta
-        self.str_dihr_n = tk.StringVar() # nu
-        self.str_dihr_x = tk.StringVar() # chi
+        self.str_dihr1 = tk.StringVar() # Dihedral_1
+        self.str_dihr2 = tk.StringVar() # Dihedral_2
 
-        self.ent_dihr_a = ttk.Entry(self.content, textvariable=self.str_dihr_a) # alpha
-        self.ent_dihr_b = ttk.Entry(self.content, textvariable=self.str_dihr_b) # beta
-        self.ent_dihr_g = ttk.Entry(self.content, textvariable=self.str_dihr_g) # gamma
-        self.ent_dihr_d = ttk.Entry(self.content, textvariable=self.str_dihr_d) # delta
-        self.ent_dihr_e = ttk.Entry(self.content, textvariable=self.str_dihr_e) # epsilon
-        self.ent_dihr_z = ttk.Entry(self.content, textvariable=self.str_dihr_z) # zeta
-        self.ent_dihr_n = ttk.Entry(self.content, textvariable=self.str_dihr_n) # nu
-        self.ent_dihr_x = ttk.Entry(self.content, textvariable=self.str_dihr_x) # chi
+        self.ent_dihr1 = ttk.Entry(self.content, textvariable=self.str_dihr1) # Dihedral_1
+        self.ent_dihr2 = ttk.Entry(self.content, textvariable=self.str_dihr2) # Dihedral_2
 
 
     def set_optionmenu(self):
@@ -181,13 +147,6 @@ class TransmuteApp(tk.Tk):
         self.opt_chems = ["..."] + sorted([x for x in opt_chems if x != "PHOSPHATE"], key=str.casefold) # replace the phosphate key with the `...` key and sort
         self.omenu_chem = ttk.OptionMenu(self.content, self.choice_chem, *self.opt_chems)
         self.omenu_chem.configure(width=15)
-
-        # moiety
-#        self.choice_moi = tk.StringVar()
-#        self.opt_moi = ["...", "nucleoside", "linker"]
-#        self.omenu_moi = ttk.OptionMenu(self.content, self.choice_moi, *self.opt_moi)
-#        self.choice_moi.set("nucleoside")
-#        self.omenu_moi.configure(width=15)
 
 
     def file_dialog(self):
@@ -239,9 +198,9 @@ class TransmuteApp(tk.Tk):
                 if opt in list(TABLE_BACKBONE.keys()) : self.choice_chem.set(inp.strip())
                 else : SD.print_invalid_argument(opt, "`--chemistry`")
 
-            if flag == "--conformation" :
-                self.str_conformation.set(inp.strip())
-            
+#            if flag == "--conformation" :
+#                self.str_conformation.set(inp.strip())
+#            
 #            if flag == "--moiety" :
 #                if inp.strip() in ["nucleoside", "linker"]: self.choice_moi.set(inp.strip())
 #                else : SD.print_invalid_argument(inp, "`--moiety`")
@@ -251,109 +210,18 @@ class TransmuteApp(tk.Tk):
 
             if flag == "--bondangles" : 
                 angs = list(map(lambda x: x.strip(), inp.split(",")))
-                if len(angs) <= 5 or len(angs) >= 9 : 
+                if len(angs) != 1:
                     SD.print_insuf_amount("--bondangles")
                     return
-                if len(angs) == 6 :
-                    self.int_zeta.set(0)
-                    self.ent_ang_z.config(state="disabled")
-                    self.ent_dihr_z.config(state="disabled")
-                    self.int_nu.set(0)
-                    self.ent_ang_n.config(state="disabled")
-                    self.ent_dihr_n.config(state="disabled")
-
-                    self.str_ang_a.set(angs[0])
-                    self.str_ang_b.set(angs[1])
-                    self.str_ang_g.set(angs[2])
-                    self.str_ang_d.set(angs[3])
-                    self.str_ang_e.set(angs[4])
-                    self.str_ang_x.set(angs[5])
-                if len(angs) == 7 :
-
-                    self.int_zeta.set(1)
-                    self.ent_ang_z.config(state="enabled")
-                    self.ent_dihr_z.config(state="enabled")
-                    self.int_nu.set(0)
-                    self.ent_ang_n.config(state="disabled")
-                    self.ent_dihr_n.config(state="disabled")
-
-                    self.str_ang_a.set(angs[0])
-                    self.str_ang_b.set(angs[1])
-                    self.str_ang_g.set(angs[2])
-                    self.str_ang_d.set(angs[3])
-                    self.str_ang_e.set(angs[4])
-                    self.str_ang_z.set(angs[5])
-                    self.str_ang_x.set(angs[6])
-                if len(angs) == 8 :
-                    self.int_zeta.set(1)
-                    self.ent_ang_z.config(state="enabled")
-                    self.ent_dihr_z.config(state="enabled")
-                    self.int_nu.set(1)
-                    self.ent_ang_n.config(state="enabled")
-                    self.ent_dihr_n.config(state="enabled")
-
-                    self.str_ang_a.set(angs[0])
-                    self.str_ang_b.set(angs[1])
-                    self.str_ang_g.set(angs[2])
-                    self.str_ang_d.set(angs[3])
-                    self.str_ang_e.set(angs[4])
-                    self.str_ang_z.set(angs[5])
-                    self.str_ang_n.set(angs[6])
-                    self.str_ang_x.set(angs[7])
+                self.str_angle1.set(angs[0])
 
             if flag == "--dihedrals" :
                 dihrs = list(map(lambda x: x.strip(), inp.split(",")))
-                if len(dihrs) <= 5 or len(dihrs) >= 9 : 
+                if len(dihrs) != 2 : 
                     SD.print_insuf_amount("--dihedrals")
                     return
-                #
-                if len(dihrs) == 6 :
-                    self.int_zeta.set(0)
-                    self.ent_ang_z.config(state="disabled")
-                    self.ent_dihr_z.config(state="disabled")
-                    self.int_nu.set(0)
-                    self.ent_ang_n.config(state="disabled")
-                    self.ent_dihr_n.config(state="disabled")
-
-                    self.str_dihr_a.set(dihrs[0])
-                    self.str_dihr_b.set(dihrs[1])
-                    self.str_dihr_g.set(dihrs[2])
-                    self.str_dihr_d.set(dihrs[3])
-                    self.str_dihr_e.set(dihrs[4])
-                    self.str_dihr_x.set(dihrs[5])
-                #
-                if len(dihrs) == 7 :
-                    self.int_zeta.set(1)
-                    self.ent_ang_z.config(state="enabled")
-                    self.ent_dihr_z.config(state="enabled")
-                    self.int_nu.set(0)
-                    self.ent_ang_n.config(state="disabled")
-                    self.ent_dihr_n.config(state="disabled")
-
-                    self.str_dihr_a.set(dihrs[0])
-                    self.str_dihr_b.set(dihrs[1])
-                    self.str_dihr_g.set(dihrs[2])
-                    self.str_dihr_d.set(dihrs[3])
-                    self.str_dihr_e.set(dihrs[4])
-                    self.str_dihr_z.set(dihrs[5])
-                    self.str_dihr_x.set(dihrs[6])
-                #
-                if len(dihrs) == 8 :
-                    self.int_zeta.set(1)
-                    self.ent_ang_z.config(state="enabled")
-                    self.ent_dihr_z.config(state="enabled")
-                    self.int_nu.set(1)
-                    self.ent_ang_n.config(state="enabled")
-                    self.ent_dihr_n.config(state="enabled")
-
-                    self.str_dihr_a.set(dihrs[0])
-                    self.str_dihr_b.set(dihrs[1])
-                    self.str_dihr_g.set(dihrs[2])
-                    self.str_dihr_d.set(dihrs[3])
-                    self.str_dihr_e.set(dihrs[4])
-                    self.str_dihr_z.set(dihrs[5])
-                    self.str_dihr_n.set(dihrs[6])
-                    self.str_dihr_x.set(dihrs[7])
+                self.str_dihr1.set(dihrs[0])
+                self.str_dihr2.set(dihrs[1])
 
 
     def build_toggle(self):
@@ -398,7 +266,7 @@ class TransmuteApp(tk.Tk):
 
             select_files = filedialog.askopenfilenames(
                                             title="Import files : " + self.cwd, # OR the $DUCQUE/transmute directory
-                                            initialdir= self.cwd,               # OR the $DUCQUE/transmute directory
+                                            initialdir= self.cwd,               
                                             filetypes=build_filetypes
                                             )
 
@@ -438,52 +306,29 @@ class TransmuteApp(tk.Tk):
         # set labels
         self.label_pdbfname.grid(column=0, row=3, **self.padding)
         self.label_chemistry.grid(column=0, row=4, **self.padding)
-        self.label_conformation.grid(column=0, row=5, **self.padding)
-        self.label_moiety.grid(column=0, row=6, **self.padding)
-        self.label_nucleobase.grid(column=2, row=5, **self.padding)
+#        self.label_conformation.grid(column=0, row=5, **self.padding)
+        self.label_moiety.grid(column=0, row=5, **self.padding)
+#        self.label_nucleobase.grid(column=2, row=5, **self.padding)
 
-        # alphabet
-        self.label_alpha.grid(column=1, row=7)
-        self.label_beta.grid(column=2, row=7)
-        self.label_gamma.grid(column=3, row=7)
-        self.label_delta.grid(column=4, row=7)
-        self.label_epsilon.grid(column=5, row=7)
-        self.chkbtn_zeta.grid(column=6, row=7)
-        self.chkbtn_nu.grid(column=7, row=7)
-        self.label_chi.grid(column=8, row=7)
-
-        self.label_bondangles.grid(column=0, row=8, **self.padding)
-        self.label_dihedrals.grid(column=0, row=9, **self.padding)
-
-        # bondangles
-        self.ent_ang_a.grid(column=1, row=8, **self.padding)
-        self.ent_ang_b.grid(column=2, row=8, **self.padding)
-        self.ent_ang_g.grid(column=3, row=8, **self.padding)
-        self.ent_ang_d.grid(column=4, row=8, **self.padding)
-        self.ent_ang_e.grid(column=5, row=8, **self.padding)
-        self.ent_ang_z.grid(column=6, row=8, **self.padding)
-        self.ent_ang_n.grid(column=7, row=8, **self.padding)
-        self.ent_ang_x.grid(column=8, row=8, **self.padding)
+        # bond angles
+        self.label_ang1.grid(column=1, row=6)
+        self.label_bondangles.grid(column=0, row=7, **self.padding)
+        self.ent_angle1.grid(column=1, row=7, **self.padding)
 
         # dihedrals
-        self.ent_dihr_a.grid(column=1, row=9, **self.padding)
-        self.ent_dihr_b.grid(column=2, row=9, **self.padding)
-        self.ent_dihr_g.grid(column=3, row=9, **self.padding)
-        self.ent_dihr_d.grid(column=4, row=9, **self.padding)
-        self.ent_dihr_e.grid(column=5, row=9, **self.padding)
-        self.ent_dihr_z.grid(column=6, row=9, **self.padding)
-        self.ent_dihr_n.grid(column=7, row=9, **self.padding)
-        self.ent_dihr_x.grid(column=8, row=9, **self.padding)
+        self.label_dihr1.grid(column=1, row=8)
+        self.label_dihr2.grid(column=2, row=8)
+
+        self.label_dihedrals.grid(column=0, row=9, **self.padding)
+        self.ent_dihr1.grid(column=1, row=9, **self.padding)
+        self.ent_dihr2.grid(column=2, row=9, **self.padding)
 
         # set entries
         self.entr_pdbfname.grid(column=1, row=3, columnspan=2, **self.padding)
-        self.entr_conformation.grid(column=1, row=5, **self.padding)
-        self.entr_nucleobase.grid(column=3, row=5, **self.padding)
 
         # set optionmenu
         self.omenu_chem.grid(column=1, row=4, **self.padding)
-#        self.omenu_moi.grid(column=1, row=6, **self.padding)
-        self.entr_moiety.grid(column=1, row=6, **self.padding)
+        self.entr_moiety.grid(column=1, row=5, **self.padding)
 
         # set buttons
         self.btn_write.grid(column=7, row=10, **self.padding)

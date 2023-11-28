@@ -165,7 +165,7 @@ TABLE_CHEMISTRY = {
 # -----------------------------------------
 #           LINKER REPOSITORY
 # -----------------------------------------
-# the nucleoside moiety accounts for a binding between Phosphate - Carbon
+# Linking the nucleoside to the correct linker moiety 
 TABLE_LINKER = {
         "DNA" : "PHOSPHATE",
         "RNA" : "PHOSPHATE",

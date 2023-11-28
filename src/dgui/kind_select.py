@@ -5,8 +5,9 @@ import systemsDucque as SD
 from dgui.grid_geometry import Geometry as G
 import dgui.kind_build as KB
 import dgui.kind_rand as KR
-#import dgui.kind_xyzpdb as KX # disabled module
 import dgui.kind_transmute as KT
+import dgui.kind_transmutelinker as KTL
+#import dgui.kind_xyzpdb as KX # disabled module
 
 #  +--------------------------------------------------+
 #  |                   SELECT                         |
@@ -66,6 +67,9 @@ class SelectApp(tk.Tk):
         if module == "transmute" :
             self.start_module(KT.TransmuteApp, module)
 
+        if module == "tlinker" :
+            self.start_module(KTL.TransmuteLinkerApp, module)
+
 
         # This module has been disabled for the GUI
         # if module == "xyz_pdb" :
@@ -76,6 +80,7 @@ class SelectApp(tk.Tk):
         self.module_choices = tk.StringVar()
         module_opts = ["build",
                        "transmute",
+                       "tlinker",
                        "randomise",
                      # "xyz_pdb" # This module has been disabled for the GUI
                         ]
