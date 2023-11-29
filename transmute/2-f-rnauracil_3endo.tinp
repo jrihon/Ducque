@@ -1,0 +1,7 @@
+--pdb ../puckerdata/FNA/U/fna_U_3endo.pdb
+--chemistry 2-F-RNA 
+--conformation 3endo 
+--moiety nucleoside 
+--nucleobase U 
+--bondangles 102.008, 118.306, 109.839, 115.756, 111.939, 119.370, 117.308 
+--dihedrals -62.130, -179.872, 47.433, 83.473, -151.700, -73.639, -165.774 
