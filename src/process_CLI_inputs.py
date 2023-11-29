@@ -2,8 +2,6 @@ import systemsDucque as SD
 import os
 
 from ducquelib.library import TABLE_NUCLEOTIDES, TABLE_CHEMISTRY
-#from builder.builder_library import TABLE_NUCLEOTIDES
-#from transmute.transmute_library import TABLE_CHEMISTRY
 
 """ When the user prompts the wrong values or flags, this python script intercepts most errors that happen at the start """
 
@@ -113,8 +111,7 @@ def transmute(TRANSMUTEINPUT):
     # Check if amount of inputs are valid
     list_of_valid_flags = ["--pdb", "--chemistry", "--moiety", "--conformation", "--nucleobase", "--dihedrals", "--bondangles"]
     if not len(fileTransmute) == len(list_of_valid_flags):
-#    if not len(fileTransmute) == len(list_of_valid_flags) and not len(fileTransmute) == (len(list_of_valid_flags) - 1):
-        SD.print_insufficient_flag(6)
+        SD.print_insufficient_flag(len(list_of_valid_flags))
 
     for argument in fileTransmute:
         flag = argument.split()[0]

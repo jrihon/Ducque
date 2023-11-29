@@ -242,9 +242,9 @@ class TransmuteApp(tk.Tk):
             if flag == "--conformation" :
                 self.str_conformation.set(inp.strip())
             
-            if flag == "--moiety" :
-                if inp.strip() == "nucleoside": 
-                    print("--moiety `nucleoside` correctly prompted.")
+#            if flag == "--moiety" :
+#                if inp.strip() == "nucleoside": 
+#                    print("--moiety `nucleoside` correctly prompted.")
 
             if flag == "--nucleobase" :
                 self.str_nucleobase.set(inp.strip()) 
@@ -563,7 +563,7 @@ class TransmuteApp(tk.Tk):
 
         # This means that when we import a file to be read in by the GUI, that we will have it start out in the current directory
         # OR the $DUCQUE/transmute directory
-        input_fname = self.choice_chem.get().lower() + self.str_nucleobase.get().lower() +  "_" + self.str_conformation.get().lower() + ".tinp"
+        input_fname = self.choice_chem.get().lower() + self.base.lower() +  "_" + self.str_conformation.get().lower() + ".tinp"
 
 
         if not self.int_overwrite.get() == 1 and isfile(input_fname) :
@@ -577,6 +577,7 @@ class TransmuteApp(tk.Tk):
                         "--chemistry " + self.choice_chem.get() + " \n"  
                         "--conformation " + self.str_conformation.get() + " \n"
                         "--moiety " + self.str_moiety.get() + " \n"
+                        "--nucleobase " + self.str_nucleobase.get() + " \n"
                         "--bondangles " + ", ".join(list_ang) + " \n"
                         "--dihedrals " + ", ".join(list_dih) + " \n"
                     )
@@ -587,21 +588,21 @@ class TransmuteApp(tk.Tk):
     def transmute_input(self):
 
 
-#        # get key from the nucleobase
-#        try :
-#            self.str_nucleobase.get()
-#        except :
-#            SD.print_empty_query("--nucleobase"); return
-#
-#        try :
-#            B = self.str_nucleobase.get().upper()
-#            TABLE_NUCLEOBASE[B]
-#        except :
-#            B = self.str_nucleobase.get().upper()
-#            SD.print_invalid_chemistry(B); return
-#        else :
-#            B = self.str_nucleobase.get().upper()
-#            self.base = TABLE_NUCLEOBASE[B]
+        # get key from the nucleobase
+        try :
+            self.str_nucleobase.get()
+        except :
+            SD.print_empty_query("--nucleobase"); return
+
+        try :
+            B = self.str_nucleobase.get().upper()
+            TABLE_NUCLEOBASE[B]
+        except :
+            B = self.str_nucleobase.get().upper()
+            SD.print_invalid_chemistry(B); return
+        else :
+            B = self.str_nucleobase.get().upper()
+            self.base = TABLE_NUCLEOBASE[B]
 
         for string in [self.choice_chem , self.str_conformation, self.str_nucleobase]:
             s = string.get().lower()
@@ -610,8 +611,8 @@ class TransmuteApp(tk.Tk):
                 return
 
         # filename for the transmute file
-        json_fname = self.choice_chem.get().lower() + "_" + self.str_nucleobase.get().lower() + "_" + self.str_conformation.get().lower() + ".json"
-        input_fname = self.choice_chem.get().lower() + self.str_nucleobase.get().lower() +  "_" + self.str_conformation.get().lower() + ".tinp"
+        json_fname = self.choice_chem.get().lower() + "_" + self.base.lower() + "_" + self.str_conformation.get().lower() + ".json"
+        input_fname = self.choice_chem.get().lower() + self.base.lower() +  "_" + self.str_conformation.get().lower() + ".tinp"
 
 
         if not which("Ducque"):  # At this point, this would not be necessary, but better safe than sorry

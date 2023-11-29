@@ -389,7 +389,7 @@ def assert_starting_bases_of_complementary_strand(compl1_base_confs : list, comp
     v_directions = [v_direction1, v_direction2]
 
     # Generate angles of rotation. Make note that we won't go past a 15 degree angle, since that general will not be necessary to turn that much.
-    #array_of_rot_angles = np.linspace(2.5, 30, 16) * (np.pi/180)
+    #array_of_rot_angles = np.linspace(2.5, 15, 16) * (np.pi/180)
 
     ### CALCULATIONS BASED ON DISTANCE
     _arrayOfRotationAngles1, _arrayOfRotationAngles2 = utilsUB.assert_rotation_of_bases_by_distance(array_nucs, v_directions, index_origin, index_distance_between_nuc)

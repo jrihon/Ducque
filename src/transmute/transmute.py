@@ -64,8 +64,8 @@ def Transmutation(pdb_fname, nucleicAcidChemistry : str, moietyType : str, dihed
         identity.append(molecule_residuename)
 
         # Nucleobase of the nucleic acid
-        nucleobase = nucleicAcid.get_nucleobase(nucleobase)
-        identity.append(nucleobase)
+        nucleobaseName = nucleicAcid.get_nucleobase(nucleobase)
+        identity.append(nucleobaseName)
 
     if moietyType == "linker":
         # full name
@@ -100,7 +100,7 @@ def Transmutation(pdb_fname, nucleicAcidChemistry : str, moietyType : str, dihed
 
     #----------------------------- WRITE OUT A JSON FILE ----------------------------#
     # The json dump() method always requires us to dump it to a file in the current directory
-    fname = nucleicAcid.get_output_name(nucleicAcidChemistry, moietyType, conformation)
+    fname = nucleicAcid.get_output_name(nucleicAcidChemistry, moietyType, conformation, nucleobase)
 
     # Get Ducque home
     DUCQUEHOME = SD.return_DUCQUEHOME()
@@ -109,7 +109,7 @@ def Transmutation(pdb_fname, nucleicAcidChemistry : str, moietyType : str, dihed
     with open(DUCQUEHOME + "json/" + fname + ".json", "w") as filejson:
         json.dump(molecule, filejson, indent=4)
 
-    print(f"Writing file to {DUCQUEHOME}json/{fname}.json")
+    SD.print_writing(f"{DUCQUEHOME}json/{fname}.json")
 
 
 

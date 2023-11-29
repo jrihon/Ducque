@@ -334,7 +334,7 @@ def assert_rotation_of_bases_by_distance(array_nucs : list, v_directions: list, 
     # Initialise the values which we use for the ranges of rotation angles over which we rotate over
     _rot0 = np.deg2rad(5)
     _rotI = np.deg2rad(355)
-    _rot00, _rot01, _rotI0, _rotI1 = np.deg2rad(2.5), np.deg2rad(20), np.deg2rad(357.5), np.deg2rad(340)
+    _rot00, _rot01, _rotI0, _rotI1 = np.deg2rad(2.5), np.deg2rad(20), np.deg2rad(357.5), np.deg2rad(360)
 
     # One set of nucleobase-plane rotations to check
     if len(v_directions) == 1:
@@ -342,8 +342,8 @@ def assert_rotation_of_bases_by_distance(array_nucs : list, v_directions: list, 
         v_direction = v_directions[0]
         _storedDistances = np.zeros(2)
 
-        _returnAnglesOfRotation = np.array([np.linspace(_rot00, _rot01, 16),
-                                           np.linspace(_rotI0, _rotI1, 16)])
+        _returnAnglesOfRotation = np.array([np.linspace(_rot00, _rot01, 5),
+                                           np.linspace(_rotI0, _rotI1, 5)])
 
         for i, angle in enumerate(angles_of_rotation) :
             # Get quaternion for the rotation
@@ -373,15 +373,15 @@ def assert_rotation_of_bases_by_distance(array_nucs : list, v_directions: list, 
                                       _rotI, _rot0,
                                       _rotI, _rotI])
 
-        _returnAnglesOfRotation = np.array([np.linspace(_rot00, _rot01, 16), np.linspace(_rot00, _rot01, 16),
-                                            np.linspace(_rot00, _rot01, 16), np.linspace(_rotI0, _rotI1, 16),
-                                            np.linspace(_rotI0, _rotI1, 16), np.linspace(_rot00, _rot01, 16),
-                                            np.linspace(_rotI0, _rotI1, 16), np.linspace(_rotI0, _rotI1, 16)])
+        _returnAnglesOfRotation = np.array([np.linspace(_rot00, _rot01, 5), np.linspace(_rot00, _rot01, 5),
+                                            np.linspace(_rot00, _rot01, 5), np.linspace(_rotI0, _rotI1, 5),
+                                            np.linspace(_rotI0, _rotI1, 5), np.linspace(_rot00, _rot01, 5),
+                                            np.linspace(_rotI0, _rotI1, 5), np.linspace(_rotI0, _rotI1, 5)])
 
         # Reshape the arrays to the desired (4,2) shape
         _anglesOfRotation = np.reshape(_anglesOfRotation, (4,2))
-        # Reshape the arrays to the desired (4,2,16) shape. Here, every value in the array is an array of length[16] instead of an float
-        _returnAnglesOfRotation = np.reshape(_returnAnglesOfRotation, (4,2,16))
+        # Reshape the arrays to the desired (4,2,5) shape. Here, every value in the array is an array of length[5] instead of an float
+        _returnAnglesOfRotation = np.reshape(_returnAnglesOfRotation, (4,2,5))
 
         for _i, _angle in enumerate(_anglesOfRotation):
             # The direction of the direction_axis is the following ;
@@ -425,8 +425,8 @@ def assert_rotation_of_bases_by_angle(array_nucs : list, v_directions : list,  i
         _storedAngles = np.empty(2)
         _anglesOfRotation = np.array([_rot0, _rotI])
         v_direction = v_directions[0]
-        _returnAnglesOfRotation = np.array([np.linspace(_rot00, _rot01, 16),
-                                           np.linspace(_rotI0, _rotI1, 16)])
+        _returnAnglesOfRotation = np.array([np.linspace(_rot00, _rot01, 5),
+                                           np.linspace(_rotI0, _rotI1, 5)])
 
 
         for _i, _angle in enumerate(_anglesOfRotation):
@@ -459,15 +459,15 @@ def assert_rotation_of_bases_by_angle(array_nucs : list, v_directions : list,  i
                                       _rotI, _rot0,
                                       _rotI, _rotI])
 
-        _returnAnglesOfRotation = np.array([np.linspace(_rot00, _rot01, 16), np.linspace(_rot00, _rot01, 16),
-                                            np.linspace(_rot00, _rot01, 16), np.linspace(_rotI0, _rotI1, 16),
-                                            np.linspace(_rotI0, _rotI1, 16), np.linspace(_rot00, _rot01, 16),
-                                            np.linspace(_rotI0, _rotI1, 16), np.linspace(_rotI0, _rotI1, 16)])
+        _returnAnglesOfRotation = np.array([np.linspace(_rot00, _rot01, 5), np.linspace(_rot00, _rot01, 5),
+                                            np.linspace(_rot00, _rot01, 5), np.linspace(_rotI0, _rotI1, 5),
+                                            np.linspace(_rotI0, _rotI1, 5), np.linspace(_rot00, _rot01, 5),
+                                            np.linspace(_rotI0, _rotI1, 5), np.linspace(_rotI0, _rotI1, 5)])
 
         # Reshape the arrays to the desired (4,2) shape
         _anglesOfRotation = np.reshape(_anglesOfRotation, (4,2))
-        # Reshape the arrays to the desired (4,2,16) shape. Here, every value in the array is an array of length[16] instead of an float
-        _returnAnglesOfRotation = np.reshape(_returnAnglesOfRotation, (4,2,16))
+        # Reshape the arrays to the desired (4,2,5) shape. Here, every value in the array is an array of length[5] instead of an float
+        _returnAnglesOfRotation = np.reshape(_returnAnglesOfRotation, (4,2,5))
 
 
         for _i, _angle in enumerate(_anglesOfRotation):

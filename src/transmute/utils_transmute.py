@@ -56,7 +56,7 @@ class TransmuteToJson:
             Charge:           line 79 - 80          """
 
         # Start new lists to append it all
-        resName, xCoords, yCoords, zCoords = ([] for _ in range(4))
+        atomName, resName, xCoords, yCoords, zCoords, elementSymbol = ([] for _ in range(6))
 
         # Check if file is in cwd or in the pdb directory
         pdbfname = self.fileName
@@ -206,7 +206,7 @@ class TransmuteToJson:
             return json_dict
 
 
-    def get_output_name(self, chemistry : str, moietyType : str, conformation : str) -> str:
+    def get_output_name(self, chemistry : str, moietyType : str, conformation : str, nucleobase: str) -> str:
         """ Create the name of the file based on the chemistry of the nucleic acid chemistry and its corresponding base 
 
             This function creates the name of the json file
@@ -217,7 +217,7 @@ class TransmuteToJson:
 
         if moietyType == "nucleoside":
             name_of_chemistry = chemistry.lower()
-            name_of_base = self.get_base().lower()
+            name_of_base = self.get_nucleobase(nucleobase).lower()
 
             conformation = conformation.lower()
             return name_of_chemistry + "_" + name_of_base + "_" + conformation

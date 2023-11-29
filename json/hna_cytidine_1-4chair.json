@@ -7,7 +7,7 @@
     },
     "identity": "[\"Hexitol Nucleic acid\", \"HNA\", \"HC\", \"Cytidine\"]",
     "angles": {
-        "bond_angles": "{\"alpha\": 104.224, \"beta\": 120.705, \"gamma\": 107.795, \"delta\": 112.325, \"epsilon\": 105.672, \"zeta\": 120.594, \"chi\": 115.426}",
-        "dihedrals": "{\"alpha\": -63.583, \"beta\": 176.54, \"gamma\": 59.118, \"delta\": 63.021, \"epsilon\": -174.768, \"zeta\": -72.278, \"chi\": -155.591}"
+        "bond_angles": "{\"alpha\": 104.779, \"beta\": 120.705, \"gamma\": 107.541, \"delta\": 112.054, \"epsilon\": 105.672, \"zeta\": 118.371, \"chi\": 122.931}",
+        "dihedrals": "{\"alpha\": -61.246, \"beta\": 162.823, \"gamma\": 58.729, \"delta\": 64.866, \"epsilon\": -144.282, \"zeta\": -76.0, \"chi\": -149.414}"
     }
 }
