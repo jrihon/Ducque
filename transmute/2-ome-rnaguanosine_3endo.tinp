@@ -1,0 +1,7 @@
+--pdb ../puckerdata/2OMe/G/2omerna_G_3endo.pdb
+--chemistry 2-OME-RNA 
+--conformation 3endo 
+--moiety nucleoside 
+--nucleobase G 
+--bondangles 101.993, 118.342, 109.837, 115.772, 111.926, 119.350, 125.803 
+--dihedrals -62.089, -179.877, 47.435, 83.456, -151.711, -73.586, -165.821 
