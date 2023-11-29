@@ -1,0 +1,7 @@
+--pdb ../puckerdata/dXylo/G/dxyna_G_3endo.pdb
+--chemistry DXYNA 
+--conformation 3endo 
+--moiety nucleoside 
+--nucleobase G
+--bondangles 101.654, 119.654, 107.059, 117.353, 111.554, 121.046, 124.280 
+--dihedrals 90.633, -145.887, -119.980, -42.206, 127.964, 77.775, -166.111 

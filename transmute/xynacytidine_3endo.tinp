@@ -1,6 +1,7 @@
---pdb /home/jerome/Desktop/Ducque/puckerdata/dXylo/C/min02.pdb
---chemistry dXylo 
+--pdb ../puckerdata/Xylo/C/xyna_C_3endo.pdb
+--chemistry XYNA 
 --conformation 3endo 
 --moiety nucleoside 
+--nucleobase C
 --bondangles 101.654, 119.654, 107.059, 117.353, 111.554, 121.046, 124.280 
 --dihedrals 82.633, -147.887, -119.980, -42.206, 118.964, 72.775, -166.111 
