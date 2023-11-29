@@ -1,0 +1,7 @@
+--pdb ../puckerdata/b-homoDNA/C/bhomodna_C_14chairgamma.pdb
+--chemistry B-HOMODNA 
+--conformation 1-4chair 
+--moiety nucleoside 
+--nucleobase C 
+--bondangles 107.449, 119.372, 108.171, 112.787, 105.472, 120.828, 124.903 
+--dihedrals -60.000, 129.543, 94.675, 62.798, -141.441, -75.977, -158.548 
