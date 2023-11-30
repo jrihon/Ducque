@@ -208,10 +208,10 @@ class TransmuteToJson:
 
     def get_output_name(self, chemistry : str, moietyType : str, conformation : str, nucleobase: str) -> str:
         """ Create the name of the file based on the chemistry of the nucleic acid chemistry and its corresponding base 
-
             This function creates the name of the json file
 
-
+            If moietyType == linker, then the nucleobase == "" (empty). 
+            The conformation is optional and is prompted as either R or S stereochemistry.
         """
 
 
@@ -225,7 +225,13 @@ class TransmuteToJson:
         elif moietyType == "linker":
             name_of_chemistry = chemistry.lower()
             name_of_linker = TABLE_LINKER[chemistry].lower()
-            return name_of_chemistry + "_" + name_of_linker
+            
+            if conformation.upper() == "R" or conformation.upper() == "S":
+                return  conformation.lower() + "_" + name_of_chemistry + "_" + name_of_linker
+            elif conformation.upper() != "NONE":
+                SD.print_invalid_argument(conformation, "--conformation")
+            else:
+                return name_of_chemistry + "_" + name_of_linker
 
         else :
             sys.exit("The molecule is not annotated with either `nucleoside` or `linker`. Please revise the inputs")

@@ -60,12 +60,12 @@ def print_insufficient_flag(amount : int):
     print(f"[INVALID QUERY]    : Insufficient amount of arguments. Required amount : {amount}.")
     exit_Ducque()
 
-def check_for_empty_string(string : str) -> bool:
+def check_for_empty_string(string : str, flag: str) -> bool:
 
     try :
         string.split(sep=" ", maxsplit=1)[1]
     except IndexError : 
-        print("Revise inputs!")
+        print_empty_query(flag)
         exit_Ducque()
 
     else :

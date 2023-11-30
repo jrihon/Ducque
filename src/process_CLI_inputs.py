@@ -70,7 +70,7 @@ def build(BUILDINPUT):
             SD.print_invalid_flag(flag)
 
         # See if all arguments have been prompted
-        SD.check_for_empty_string(argument)
+        SD.check_for_empty_string(argument, flag)
 
         if flag == "--sequence":
             nucleicAcidList = list(map(lambda x: x.strip(",").upper(), args[1:]))
@@ -109,7 +109,17 @@ def transmute(TRANSMUTEINPUT):
     fileTransmute = remove_blank_lines(list(map(lambda x: x.strip(), TRANSMUTEINPUT.readlines())))
 
     # Check if amount of inputs are valid
-    list_of_valid_flags = ["--pdb", "--chemistry", "--moiety", "--conformation", "--nucleobase", "--dihedrals", "--bondangles"]
+    list_of_valid_flags = ["--pdb", "--chemistry", "--moiety", "--conformation", "--dihedrals", "--bondangles"]
+    # iterate early over the possible inputs to check if `nucleoside` or `linker` is prompted
+    for x in fileTransmute:
+        line = x.split() 
+        flag = line[0]
+        if flag == "--moiety": 
+            SD.check_for_empty_string(x, flag)
+            if line[1] == "nucleoside":
+                list_of_valid_flags.append("--nucleobase")
+
+
     if not len(fileTransmute) == len(list_of_valid_flags):
         SD.print_insufficient_flag(len(list_of_valid_flags))
 
@@ -122,7 +132,7 @@ def transmute(TRANSMUTEINPUT):
             SD.print_invalid_flag(flag)
 
         # See if all arguments have been prompted
-        SD.check_for_empty_string(argument)
+        SD.check_for_empty_string(argument, flag)
 
         # Save the prompted arguments according to the respective flags
         if flag == "--pdb":
@@ -134,10 +144,10 @@ def transmute(TRANSMUTEINPUT):
         if flag == "--conformation":
             conformation = args[1]
 
-        if flag == "--moiety":
+        if flag == "--moiety": 
             moiety = args[1]
 
-        if flag == "--nucleobase":
+        if flag == "--nucleobase": # `nucleoside only` flag
             nucleobase = args[1]
 
         if flag == "--dihedrals":
@@ -145,6 +155,12 @@ def transmute(TRANSMUTEINPUT):
 
         if flag == "--bondangles":
             angles = args[1:]
+
+    # If nucleobase is not prompted, the linker moiety is queried
+    try : 
+        nucleobase
+    except :
+        nucleobase = ""
 
     return pdb_fname, chemistry, moiety, dihedrals, angles, conformation, nucleobase
 
@@ -173,7 +189,7 @@ def randomise(RANDOMISEINPUT):
             SD.print_invalid_flag(flag)
 
         # See if all arguments have been prompted
-        SD.check_for_empty_string(argument)
+        SD.check_for_empty_string(argument, flag)
 
         # Save the prompted arguments according to their respective flags
         if flag == "--chemistry":
@@ -238,7 +254,7 @@ def xyz_to_pdb(CONVERSIONINPUT):
             SD.print_invalid_flag(flag)
 
         # See if all arguments have been prompted
-        SD.check_for_empty_string(argument)
+        SD.check_for_empty_string(argument, flag)
 
         # Save the prompted arguments according to their respective flags
         if flag == "--xyz":

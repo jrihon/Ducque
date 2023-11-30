@@ -50,6 +50,7 @@ class TransmuteLinkerApp(tk.Tk):
         self.label_pdbfname = ttk.Label(self.content, text="--pdb")
         self.label_chemistry = ttk.Label(self.content, text="--chemistry")
         self.label_moiety = ttk.Label(self.content, text="--moiety")
+        self.label_conformation = ttk.Label(self.content, text="--conformation")
         self.label_bondangles = ttk.Label(self.content, text="--bondangles")
         self.label_dihedrals = ttk.Label(self.content, text="--dihedrals")
 
@@ -113,11 +114,9 @@ class TransmuteLinkerApp(tk.Tk):
 
     def set_entries(self):
         self.str_pdbfname = tk.StringVar()
-#        self.str_conformation = tk.StringVar()
 #        self.str_nucleobase = tk.StringVar()
         
         self.entr_pdbfname = ttk.Entry(self.content, textvariable=self.str_pdbfname, width=42)
-#        self.entr_conformation = ttk.Entry(self.content, textvariable=self.str_conformation)
 #        self.entr_nucleobase = ttk.Entry(self.content, textvariable=self.str_nucleobase)
 
         # moiety entry
@@ -145,6 +144,12 @@ class TransmuteLinkerApp(tk.Tk):
         self.opt_chems = ["..."] + sorted([x for x in opt_chems if x != "PHOSPHATE"], key=str.casefold) # replace the phosphate key with the `...` key and sort
         self.omenu_chem = ttk.OptionMenu(self.content, self.choice_chem, *self.opt_chems)
         self.omenu_chem.configure(width=15)
+
+        # conformations
+        self.choice_conf = tk.StringVar()
+        self.opt_confs = ["...", "NONE", "R", "S"]
+        self.omenu_confs = ttk.OptionMenu(self.content, self.choice_conf, *self.opt_confs)
+        self.omenu_confs.configure(width=15)
 
 
     def file_dialog(self):
@@ -196,9 +201,14 @@ class TransmuteLinkerApp(tk.Tk):
                 if opt in list(TABLE_BACKBONE.keys()) : self.choice_chem.set(inp.strip())
                 else : SD.print_invalid_argument(opt, "`--chemistry`")
 
-            if flag == "--moiety" :
-                if inp.strip() == "nucleoside": 
-                    print("--moiety `nucleoside` correctly prompted.")
+            if flag == "--chemistry" :
+                opt = inp.strip()
+                if opt in ["NONE", "R", "S"] : self.choice_conf.set(inp.strip())
+                else : SD.print_invalid_argument(opt, "`--conformation`")
+
+#            if flag == "--moiety" :
+#                if inp.strip() == "nucleoside": 
+#                    print("--moiety `nucleoside` correctly prompted.")
 
             if flag == "--bondangles" : 
                 angs = list(map(lambda x: x.strip(), inp.split(",")))
@@ -298,36 +308,36 @@ class TransmuteLinkerApp(tk.Tk):
         # set labels
         self.label_pdbfname.grid(column=0, row=3, **self.padding)
         self.label_chemistry.grid(column=0, row=4, **self.padding)
-#        self.label_conformation.grid(column=0, row=5, **self.padding)
-        self.label_moiety.grid(column=0, row=5, **self.padding)
-#        self.label_nucleobase.grid(column=2, row=5, **self.padding)
+        self.label_conformation.grid(column=0, row=5, **self.padding)
+        self.label_moiety.grid(column=0, row=6, **self.padding)
 
         # bond angles
-        self.label_ang1.grid(column=1, row=6)
-        self.label_bondangles.grid(column=0, row=7, **self.padding)
-        self.ent_angle1.grid(column=1, row=7, **self.padding)
+        self.label_ang1.grid(column=1, row=7)
+        self.label_bondangles.grid(column=0, row=8, **self.padding)
+        self.ent_angle1.grid(column=1, row=8, **self.padding)
 
         # dihedrals
-        self.label_dihr1.grid(column=1, row=8)
-        self.label_dihr2.grid(column=2, row=8)
+        self.label_dihr1.grid(column=1, row=9)
+        self.label_dihr2.grid(column=2, row=9)
 
-        self.label_dihedrals.grid(column=0, row=9, **self.padding)
-        self.ent_dihr1.grid(column=1, row=9, **self.padding)
-        self.ent_dihr2.grid(column=2, row=9, **self.padding)
+        self.label_dihedrals.grid(column=0, row=10, **self.padding)
+        self.ent_dihr1.grid(column=1, row=10, **self.padding)
+        self.ent_dihr2.grid(column=2, row=10, **self.padding)
 
         # set entries
         self.entr_pdbfname.grid(column=1, row=3, columnspan=2, **self.padding)
+        self.entr_moiety.grid(column=1, row=6, **self.padding)
 
         # set optionmenu
         self.omenu_chem.grid(column=1, row=4, **self.padding)
-        self.entr_moiety.grid(column=1, row=5, **self.padding)
+        self.omenu_confs.grid(column=1, row=5, **self.padding)
 
         # set buttons
-        self.btn_write.grid(column=7, row=10, **self.padding)
-        self.btn_transmute.grid(column=7, row=11, **self.padding)
-        self.chkbtn_overwrite.grid(column=8, row=11, **self.padding)
+        self.btn_write.grid(column=7, row=11, **self.padding)
+        self.btn_transmute.grid(column=7, row=12, **self.padding)
+        self.chkbtn_overwrite.grid(column=8, row=12, **self.padding)
 
-        self.chkbtn_build.grid(column=1, row=12, **self.padding)
+        self.chkbtn_build.grid(column=1, row=13, **self.padding)
 
 
     def write_inputfile(self):
@@ -349,9 +359,9 @@ class TransmuteLinkerApp(tk.Tk):
             else :
                 return a
         # Handle empty inputs for these fields
-        for string in [self.str_pdbfname, self.choice_chem] :
+        for string in [self.str_pdbfname, self.choice_chem, self.choice_conf] :
             if len(string.get()) == 0 or string.get() == "..." : 
-                SD.print_empty_query("--pdb or --chemistry")
+                SD.print_empty_query("--pdb, --chemistry or --conformation")
                 return
 
 #        # Sort of handle numerical inputs
@@ -377,6 +387,9 @@ class TransmuteLinkerApp(tk.Tk):
         input_fname = self.choice_chem.get().lower() + linker.lower() + ".tinp"
 
 
+        if self.choice_conf.get() != "NONE": # meaning it is either R or S
+            input_fname = self.choice_conf.get().lower() + input_fname
+
         if not self.int_overwrite.get() == 1 and isfile(input_fname) :
             SD.print_no_overwrite(input_fname, getcwd())
             return
@@ -386,6 +399,7 @@ class TransmuteLinkerApp(tk.Tk):
         with open(input_fname , "w") as fileto :
             fileto.write("--pdb " + self.str_pdbfname.get() + "\n"
                         "--chemistry " + self.choice_chem.get() + " \n"  
+                        "--conformation " + self.choice_conf.get() + " \n"
                         "--moiety " + self.str_moiety.get() + " \n"
                         "--bondangles " + ", ".join(list_ang) + " \n"
                         "--dihedrals " + ", ".join(list_dih) + " \n"
@@ -412,6 +426,9 @@ class TransmuteLinkerApp(tk.Tk):
         json_fname = chemchoice + "_" + linker.lower() + ".json"
         input_fname = chemchoice + "_" + linker.lower() + ".tinp"
 
+        if self.choice_conf.get() != "NONE": # meaning it is either R or S
+            input_fname = self.choice_conf.get().lower() + input_fname
+            json_fname = self.choice_conf.get().lower() + json_fname
 
         if not which("Ducque"):  # At this point, this would not be necessary, but better safe than sorry
             SD.print_cant_find_Ducque()
