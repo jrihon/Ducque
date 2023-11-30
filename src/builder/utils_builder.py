@@ -474,9 +474,6 @@ def assert_possible_base_conformations_and_fit(leading_nuc, leading_array : np.n
         conf_n = initMolecule.Nucleoside(conformations[0])
         conf_n_arr = utilsUB.position_complementary_base(leading_nuc, conf_n, leading_array, index_lead)
         conf_with_linker = position_phosphate_linker(conf_n, conf_n_arr, compl_linker)
-#        #REMOVE THIS LATER
-#        conf_n.array = conf_with_linker
-#        return conf_n
         conf_n.array = utilsUB.tilt_array_to_get_a_better_fit(conf_n, compl_linker, prev_compl_nuc, prev_compl_linker, conf_with_linker, complementary_strand, index_compl)
         return conf_n
 
@@ -489,7 +486,7 @@ def assert_possible_base_conformations_and_fit(leading_nuc, leading_array : np.n
     nuc_data = initMolecule.Nucleoside(conformations[0])
 
     # The first atom in the backbone of the nucleoside the current nucleoside attaches to
-    atomOfInterest2 = TB[json.loads(nuc_data.jsonObject["identity"])[1]][0]   # first value of the TB to parse. else make list(_VAL)[0]
+    atomOfInterest2 = TB[json.loads(prev_compl_nuc.jsonObject["identity"])[1]][0]   # first value of the TB to parse. else make list(_VAL)[0]
     bb_id = PARSE.retrieve_atom_index(prev_compl_nuc, atomOfInterest2) + index_compl + prev_compl_linker.mol_length
     bb_v = complementary_strand[bb_id]
 
@@ -578,30 +575,30 @@ def orient_the_linker_moieties_better(CONF_LIST : list, LINK_LIST : list, leadin
         Important to note is that we build the complementary strand from the top up.                         """
 
     # LEADING STRAND
-    lead_nuc = CONF_LIST[0]
-    lead_link = LINK_LIST[0]
-
-    idx_lead = leading_array.shape[0]          # Initiate the index counter for the leading strand. 
-    for nucleotide in range(len(lead_nuc) - 1):
-        # Initialise the molecules as json objects
-        nuc = initMolecule.Nucleoside(lead_nuc[nucleotide])
-        link = initMolecule.Linker(lead_link[nucleotide])
-        nextnuc = initMolecule.Nucleoside(lead_nuc[nucleotide + 1])
-
-        # Decrement the idx_lead to be able to parse the atoms from the leading strands's array
-        idx_lead -= (nuc.mol_length + link.mol_length + nextnuc.mol_length)
-
-        # Parse the required atoms from AtomParsingList
-        lead_APL = PARSE.Atom_Parsing_List(nuc, link, nextnuc)
-        ArrOfIdxBB, ArrOfIdxLink = utilsUB.parse_indexes_of_the_array_for_linker_reorientation(lead_APL, nuc, link, nextnuc, idx_lead)
-
-        # Based on the positioning, the linker moiety has or has not been rotated
-        # It is a bit overkill to override the same value (if the reorientation was not necessary), but overriding two indexes at a time is not such a large consumption of time to worry over
-        linker_array = utilsUB.assert_and_reorient_the_position_of_the_linker(ArrOfIdxBB, ArrOfIdxLink, leading_array)
-        leading_array[ArrOfIdxLink] = linker_array
-
-        # Increment for the next cycle
-        idx_lead += nextnuc.mol_length
+#    lead_nuc = CONF_LIST[0]
+#    lead_link = LINK_LIST[0]
+#
+#    idx_lead = leading_array.shape[0]          # Initiate the index counter for the leading strand. 
+#    for nucleotide in range(len(lead_nuc) - 1):
+#        # Initialise the molecules as json objects
+#        nuc = initMolecule.Nucleoside(lead_nuc[nucleotide])
+#        link = initMolecule.Linker(lead_link[nucleotide])
+#        nextnuc = initMolecule.Nucleoside(lead_nuc[nucleotide + 1])
+#
+#        # Decrement the idx_lead to be able to parse the atoms from the leading strands's array
+#        idx_lead -= (nuc.mol_length + link.mol_length + nextnuc.mol_length)
+#
+#        # Parse the required atoms from AtomParsingList
+#        lead_APL = PARSE.Atom_Parsing_List(nuc, link, nextnuc)
+#        ArrOfIdxBB, ArrOfIdxLink = utilsUB.parse_indexes_of_the_array_for_linker_reorientation(lead_APL, nextnuc, link, nuc, idx_lead)
+#
+#        # Based on the positioning, the linker moiety has or has not been rotated
+#        # It is a bit overkill to override the same value (if the reorientation was not necessary), but overriding two indexes at a time is not such a large consumption of time to worry over
+#        linker_array = utilsUB.assert_and_reorient_the_position_of_the_linker(ArrOfIdxBB, ArrOfIdxLink, leading_array)
+#        leading_array[ArrOfIdxLink] = linker_array
+#
+#        # Increment for the next cycle
+#        idx_lead += nextnuc.mol_length
 
 
     # COMPLEMENTARY STRAND

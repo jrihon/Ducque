@@ -622,9 +622,9 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linke
 def parse_indexes_of_the_array_for_linker_reorientation(APL : list, nuc, link, nucPN, idx : int = 0) -> Union[np.ndarray, np.ndarray]:
         """ Refactor the part of the code where we parse the correct indexes of the atoms we need from the array. """
 
-        nuc_atom_idx = PARSE.retrieve_atom_index(nuc, APL[1], (idx + link.mol_length + nucPN.mol_length ))
+        nuc_atom_idx = PARSE.retrieve_atom_index(nuc, APL[3], (idx + link.mol_length + nucPN.mol_length ))
         centrallink_atom_idx = PARSE.retrieve_atom_index(link, APL[2], (idx + nucPN.mol_length))
-        nucPN_atom_idx = PARSE.retrieve_atom_index(nucPN, APL[3], idx)
+        nucPN_atom_idx = PARSE.retrieve_atom_index(nucPN, APL[1], idx)
         link_atoms_idx = PARSE.retrieve_atom_index_MULTIPLE(link, link.atom_list, (idx + nucPN.mol_length))
 
         # Remove central atom from the link_atoms_idx array, since this will make it easier to calculate with later on without making mistakes
