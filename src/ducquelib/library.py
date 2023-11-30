@@ -63,6 +63,14 @@ TABLE_NUCLEOTIDES = {
 "PTC" : [DH + "photna_cytidine_3_4_twist.json", DH + "dna_phosphate.json"],
 "PTG" : [DH + "photna_guanosine_3_4_twist.json", DH + "dna_phosphate.json"],
 "PTT" : [DH + "photna_thymidine_3_4_twist.json", DH + "dna_phosphate.json"],
+"1DA" : [ DH + "s-1dna_adenosine_2endo.json", DH + "s-1dna_thiophosphate_s.json"],
+"1DG" : [ DH + "s-1dna_guanosine_2endo.json", DH + "s-1dna_thiophosphate_s.json"],
+"1DC" : [ DH + "s-1dna_cytidine_2endo.json", DH + "s-1dna_thiophosphate_s.json"],
+"1DT" : [ DH + "s-1dna_thymidine_2endo.json", DH + "s-1dna_thiophosphate_s.json"],
+"2DA" : [ DH + "s-2dna_adenosine_2endo.json", DH + "s-2dna_thiophosphate_r.json"],
+"2DG" : [ DH + "s-2dna_guanosine_2endo.json", DH + "s-2dna_thiophosphate_r.json"],
+"2DC" : [ DH + "s-2dna_cytidine_2endo.json", DH + "s-2dna_thiophosphate_r.json"],
+"2DT" : [ DH + "s-2dna_thymidine_2endo.json", DH + "s-2dna_thiophosphate_r.json"],
 }
 
 
@@ -119,6 +127,14 @@ TABLE_CONFORMATIONS = {
 "PTC" : [DH + "photna_cytidine_3_4_twist.json"],
 "PTG" : [DH + "photna_guanosine_3_4_twist.json"],
 "PTT" : [DH + "photna_thymidine_3_4_twist.json"],
+"1DA" : [ DH + "s-1dna_adenosine_2endo.json"],
+"1DG" : [ DH + "s-1dna_guanosine_2endo.json"],
+"1DC" : [ DH + "s-1dna_cytidine_2endo.json"],
+"1DT" : [ DH + "s-1dna_thymidine_2endo.json"],
+"2DA" : [ DH + "s-2dna_adenosine_2endo.json"],
+"2DG" : [ DH + "s-2dna_guanosine_2endo.json"],
+"2DC" : [ DH + "s-2dna_cytidine_2endo.json"],
+"2DT" : [ DH + "s-2dna_thymidine_2endo.json"],
 }
 
 
@@ -128,6 +144,7 @@ TABLE_CONFORMATIONS = {
 # -----------------------------------------
 TABLE_BACKBONE = {
 "PHOSPHATE" : ["P"],
+"THIOPHOSPHATE" : ["P"],
 "DNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "RNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "B-HOMODNA" : ["O4'", "C4'", "C5'", "C6'", "O6'"],
@@ -140,6 +157,8 @@ TABLE_BACKBONE = {
 "MNA" : ["N3'", "C4'", "C5'", "C6'", "O6'"],
 "TNA" : ["O2'", "C2'", "C3'", "O3'"],
 "PHOTNA" : ["O2'", "C2'", "C3'", "O3'", "CP3'"],
+"S-1DNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
+"S-2DNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 }
 
 
@@ -148,7 +167,8 @@ TABLE_BACKBONE = {
 #        LINKER BACKBONE REPOSITORY
 # -----------------------------------------
 TABLE_LINKER_BACKBONE = {
-"PHOSPHATE" : ["P", "OP2", "OP1"],
+"PHOSPHATE" : ["P", "OP1", "OP2"],
+"THIOPHOSPHATE" : ["P", "SP1", "OP2"],
 }
 
 """ Contains all the dictionaries and the tools to help the Transmutation work properly.    """
@@ -170,6 +190,8 @@ TABLE_CHEMISTRY = {
         "MNA" : "Morpholino Nucleic Acid",
         "TNA" : "Threose Nucleic Acid",
         "PHOTNA" : "Phosphonate Threose Nucleic Acid",
+        "S-1DNA" : "Thio Deoxyribonucleic acid",
+        "S-2DNA" : "Thio Deoxyribonucleic acid",
         }
 
 # -----------------------------------------
@@ -189,6 +211,8 @@ TABLE_LINKER = {
         "MNA" : "PHOSPHATE",
         "TNA" : "PHOSPHATE",
         "PHOTNA" : "PHOSPHATE", 
+        "S-1DNA" : "THIOPHOSPHATE",
+        "S-2DNA" : "THIOPHOSPHATE",
         }
 
 

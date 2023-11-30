@@ -1,0 +1,13 @@
+{
+    "pdb_properties": {
+        "Coordinates": "[[2.265, 4.478, -4.212], [2.872, 5.821, -4.353], [1.03, 4.245, -4.994]]",
+        "Shape": "[3, 3]",
+        "Atoms": "[\"P\", \"SP1\", \"OP2\"]",
+        "Symbol": "[\"P\", \"S\", \"O\"]"
+    },
+    "identity": "[\"THIOPHOSPHATE\", \"S-1DNA\"]",
+    "angles": {
+        "bond_angles": "{\"angle_1\": 109.77}",
+        "dihedrals": "{\"dihedral_1\": -155.047, \"dihedral_2\": 76.677}"
+    }
+}

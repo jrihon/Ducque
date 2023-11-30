@@ -89,7 +89,7 @@ def position_phosphate_linker(nucleoside, nucl_array : np.ndarray, linker) -> np
     # Dihedral C5' - O5' - P - OP2
     v3 = link_array[id_v3]
 
-    single_vector2 = generate_vector_of_interest(linker.get_angle("angle_1"), linker.get_dihedral("dihedral_2"), [v3, v2, v1])
+    single_vector2 = generate_vector_of_interest(linker.get_angle("angle_1"), linker.get_dihedral("dihedral_1"), [v3, v2, v1])
 
     # This is the distance from the linker's atom to the origin
     link_distance = link_array[id_v3]
@@ -119,7 +119,7 @@ def position_phosphate_linker(nucleoside, nucl_array : np.ndarray, linker) -> np
     #v5 = link_array[id_v5]
 
     # Generate vector we want to rotate P_OP1 on to
-    single_vector3 = generate_vector_of_interest(linker.get_angle("angle_1"), linker.get_dihedral("dihedral_1"), [v3, v2, v1])
+    single_vector3 = generate_vector_of_interest(linker.get_angle("angle_1"), linker.get_dihedral("dihedral_2"), [v3, v2, v1])
 
     # normalize the single vector, multiply with the set distance (P-O) and replace it with the index of OP1 in the link array, making it the new vector for OP1
     distance_P_O = 1.48

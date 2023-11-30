@@ -1,0 +1,7 @@
+--pdb ../pdb/s-2dna_cytidine_2endo.pdb
+--chemistry S-2DNA 
+--conformation 2endo 
+--moiety nucleoside 
+--nucleobase C 
+--bondangles 101.455, 118.990, 110.022, 115.760, 111.931, 119.047, 117.812 
+--dihedrals -39.202, -151.478, 30.883, 156.504, 159.121, -98.887, -99.370 

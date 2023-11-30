@@ -1,0 +1,6 @@
+--pdb ../puckerdata/ThioPhosphate/thiophosphate_linker.pdb
+--chemistry S-2DNA 
+--conformation R 
+--moiety linker 
+--bondangles 109.770 
+--dihedrals 76.677, -155.047 

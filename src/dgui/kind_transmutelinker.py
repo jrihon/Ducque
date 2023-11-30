@@ -9,7 +9,7 @@ from shutil import which   # Check if Ducque is on the $PATH
 from subprocess import run # Run Ducque
 
 import systemsDucque as SD
-from ducquelib.library import TABLE_BACKBONE, TABLE_LINKER
+from ducquelib.library import TABLE_CHEMISTRY, TABLE_LINKER
 
 #  +--------------------------------------------------+
 #  |                    TRANSMUTE                     |
@@ -140,8 +140,8 @@ class TransmuteLinkerApp(tk.Tk):
     def set_optionmenu(self):
         # chemistries
         self.choice_chem = tk.StringVar()
-        opt_chems = list(TABLE_BACKBONE.keys())
-        self.opt_chems = ["..."] + sorted([x for x in opt_chems if x != "PHOSPHATE"], key=str.casefold) # replace the phosphate key with the `...` key and sort
+        opt_chems = list(TABLE_CHEMISTRY.keys())
+        self.opt_chems = ["..."] + sorted(opt_chems) # replace the phosphate key with the `...` key and sort
         self.omenu_chem = ttk.OptionMenu(self.content, self.choice_chem, *self.opt_chems)
         self.omenu_chem.configure(width=15)
 
@@ -198,7 +198,7 @@ class TransmuteLinkerApp(tk.Tk):
 
             if flag == "--chemistry" :
                 opt = inp.strip()
-                if opt in list(TABLE_BACKBONE.keys()) : self.choice_chem.set(inp.strip())
+                if opt in list(TABLE_CHEMISTRY.keys()) : self.choice_chem.set(inp.strip())
                 else : SD.print_invalid_argument(opt, "`--chemistry`")
 
             if flag == "--conformation" :
@@ -384,11 +384,11 @@ class TransmuteLinkerApp(tk.Tk):
             SD.print_invalid_key(self.choice_chem.get().upper(), TABLE_LINKER)
             return
 
-        input_fname = self.choice_chem.get().lower() + "_" + linker.lower() + ".tinp"
-
-
+        input_fname = self.choice_chem.get().lower() + "_" + linker.lower()
         if self.choice_conf.get() != "NONE": # meaning it is either R or S
-            input_fname = self.choice_conf.get().lower() + input_fname
+            input_fname = input_fname + "_" + self.choice_conf.get().lower() 
+
+        input_fname += ".tinp"
 
         if not self.int_overwrite.get() == 1 and isfile(input_fname) :
             SD.print_no_overwrite(input_fname, getcwd())
@@ -423,12 +423,15 @@ class TransmuteLinkerApp(tk.Tk):
             SD.print_invalid_key(self.choice_chem.get().upper(), TABLE_LINKER)
             return
 
-        json_fname = chemchoice + "_" + linker.lower() + ".json"
-        input_fname = chemchoice + "_" + linker.lower() + ".tinp"
+        input_fname = chemchoice + "_" + linker.lower()
+        json_fname = chemchoice + "_" + linker.lower()
 
         if self.choice_conf.get() != "NONE": # meaning it is either R or S
-            input_fname = self.choice_conf.get().lower() + input_fname
-            json_fname = self.choice_conf.get().lower() + json_fname
+            input_fname = input_fname + "_" + self.choice_conf.get().lower() 
+            json_fname = json_fname + "_" + self.choice_conf.get().lower() 
+
+        input_fname += ".tinp"
+        json_fname += ".json"
 
         if not which("Ducque"):  # At this point, this would not be necessary, but better safe than sorry
             SD.print_cant_find_Ducque()

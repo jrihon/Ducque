@@ -238,7 +238,7 @@ class TransmuteToJson:
             name_of_linker = TABLE_LINKER[chemistry].lower()
             
             if conformation.upper() == "R" or conformation.upper() == "S":
-                return  conformation.lower() + "_" + name_of_chemistry + "_" + name_of_linker
+                return  name_of_chemistry + "_" + name_of_linker + "_" + conformation.lower()
             elif conformation.upper() != "NONE":
                 SD.print_invalid_argument(conformation, "--conformation")
             else:
