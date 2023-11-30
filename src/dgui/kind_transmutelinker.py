@@ -201,7 +201,7 @@ class TransmuteLinkerApp(tk.Tk):
                 if opt in list(TABLE_BACKBONE.keys()) : self.choice_chem.set(inp.strip())
                 else : SD.print_invalid_argument(opt, "`--chemistry`")
 
-            if flag == "--chemistry" :
+            if flag == "--conformation" :
                 opt = inp.strip()
                 if opt in ["NONE", "R", "S"] : self.choice_conf.set(inp.strip())
                 else : SD.print_invalid_argument(opt, "`--conformation`")
@@ -384,7 +384,7 @@ class TransmuteLinkerApp(tk.Tk):
             SD.print_invalid_key(self.choice_chem.get().upper(), TABLE_LINKER)
             return
 
-        input_fname = self.choice_chem.get().lower() + linker.lower() + ".tinp"
+        input_fname = self.choice_chem.get().lower() + "_" + linker.lower() + ".tinp"
 
 
         if self.choice_conf.get() != "NONE": # meaning it is either R or S

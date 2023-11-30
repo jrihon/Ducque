@@ -153,13 +153,14 @@ class TransmuteToJson:
         return base
 
 
-    def get_angles(self, #chemistry : str,
-            moietyType : str, angles_list : list, json_dict : dict) -> dict:
+    def get_angles(self, moietyType : str, angles_list : list) -> dict:
         """
         List the bond angles differently whether it belongs to a nucleoside or a linker moietyType 
         This function is used by both the bondangle parser and the dihedral parser.
 
         """
+        json_dict = {}
+
         if moietyType == "nucleoside":
             # Strip the list of (for now) string values of their comma 
             angles_list = list(map(lambda x: x.strip(","), angles_list))
@@ -186,13 +187,20 @@ class TransmuteToJson:
             # Append the values to their respective bond angles
             for ang in range(len(angles_list)):
                 json_dict[angles_of_interest[ang]] = float(angles_list[ang])
-            return json_dict
+
+            return json_dict 
 
 
-        if moietyType == "linker":
+        elif moietyType == "linker":
             angles_list = list(map(lambda x: x.strip(","), angles_list))
 
             json_dict = {}
+
+            # Check if all values are float
+            for i, val in enumerate(angles_list):
+                if not isinstance(float(val), float):
+                    SD.print_conversion_err(angles_list[i], val)
+                    SD.exit_Ducque()
 
             # Bond Angles
             if len(angles_list) == 1:
@@ -200,10 +208,13 @@ class TransmuteToJson:
 
             # Dihedrals
             elif len(angles_list) == 2:
-                json_dict["dihedral_2"] = float(angles_list[0])
-                json_dict["dihedral_1"] = float(angles_list[1])
+                json_dict["dihedral_1"] = float(angles_list[0])
+                json_dict["dihedral_2"] = float(angles_list[1])
 
-            return json_dict
+            return json_dict 
+
+        else : 
+            SD.print_invalid_argument(moietyType, "--moiety")
 
 
     def get_output_name(self, chemistry : str, moietyType : str, conformation : str, nucleobase: str) -> str:

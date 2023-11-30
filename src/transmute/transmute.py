@@ -81,14 +81,10 @@ def Transmutation(pdb_fname, nucleicAcidChemistry : str, moietyType : str, dihed
     angles = {}
 
     # Get Bond angles
-    bondangles = {} # mutable reference to a dict gets passed into the function below
-    nucleicAcid.get_angles(#nucleicAcidChemistry,
-            moietyType, anglesList, bondangles)
+    bondangles = nucleicAcid.get_angles(moietyType, anglesList)
 
     # Get dihedrals
-    torsions = {} # mutable reference to a dict gets passed into the function below
-    nucleicAcid.get_angles(#nucleicAcidChemistry,
-            moietyType, dihedralList, torsions)
+    torsions = nucleicAcid.get_angles( moietyType, dihedralList)
 
     angles["bond_angles"] = json.dumps(bondangles)
     angles["dihedrals"] = json.dumps(torsions)

@@ -1,0 +1,6 @@
+--pdb ../pdb/phosphate_linker.pdb
+--chemistry DNA 
+--conformation NONE 
+--moiety linker 
+--bondangles 109.770 
+--dihedrals 76.677, -155.047
