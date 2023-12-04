@@ -1,6 +1,7 @@
---pdb dna_thymidine_2endo.pdb
+--pdb ../puckerdata/DNA/T/dna_thymidine_2endo.pdb
 --chemistry DNA
 --conformation 2endo
 --moiety nucleoside
+--nucleobase T
 --dihedrals -39.264, -151.434, 30.883, 156.504, 159.121, -98.887, -99.638
 --bondangles 101.433, 118.980, 110.026, 115.749, 111.918, 119.026, 117.082

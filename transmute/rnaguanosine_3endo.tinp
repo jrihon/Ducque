@@ -1,4 +1,4 @@
---pdb rna_guanosine_3endo.pdb
+--pdb ../puckerdata/RNA/G/rna_guanosine_3endo.pdb
 --chemistry RNA
 --conformation 3endo
 --moiety nucleoside

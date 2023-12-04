@@ -1,4 +1,4 @@
---pdb ../puckerdata/HNA/T/min01.pdb
+--pdb ../puckerdata/HNA/T/hna_T_14chair.pdb
 --chemistry HNA 
 --conformation 1-4chair 
 --moiety nucleoside 

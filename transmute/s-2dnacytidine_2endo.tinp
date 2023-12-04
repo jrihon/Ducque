@@ -1,4 +1,4 @@
---pdb ../pdb/s-2dna_cytidine_2endo.pdb
+--pdb ../puckerdata/S-2DNA/s-2dna_cytidine_2endo.pdb
 --chemistry S-2DNA 
 --conformation 2endo 
 --moiety nucleoside 

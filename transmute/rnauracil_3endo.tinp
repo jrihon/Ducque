@@ -1,4 +1,4 @@
---pdb rna_uracil_3endo.pdb
+--pdb ../puckerdata/RNA/U/rna_uracil_3endo.pdb
 --chemistry RNA
 --conformation 3endo
 --moiety nucleoside

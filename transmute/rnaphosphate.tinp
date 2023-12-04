@@ -1,5 +1,6 @@
---pdb phosphate_linker.pdb
+--pdb ../puckerdata/Phosphate/phosphate_linker.pdb
 --chemistry RNA
 --moiety linker
+--conformation NONE
 --dihedrals -177.962, 54.154
 --bondangles 109.770

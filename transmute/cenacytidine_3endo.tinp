@@ -1,4 +1,4 @@
---pdb ../puckerdata/CeNA/C/cena_C_3endo.pdb
+--pdb ../puckerdata/CENA/C/cena_C_3endo.pdb
 --chemistry CENA 
 --conformation 3endo 
 --moiety nucleoside 

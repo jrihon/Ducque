@@ -1,4 +1,4 @@
---pdb rna_cytidine_3endo.pdb
+--pdb ../puckerdata/RNA/C/rna_cytidine_3endo.pdb
 --chemistry RNA
 --conformation 3endo
 --moiety nucleoside

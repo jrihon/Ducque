@@ -1,6 +1,7 @@
---pdb puckerdata/MNA/T/min01.pdb
+--pdb ../puckerdata/MNA/T/mna_T_14chair.pdb
 --chemistry MNA
 --conformation 1-4chair
 --moiety nucleoside
+--nucleobase T
 --dihedrals -137.246, 140.334, 58.729, 64.866, -80.768, -145.332, -153.414
 --bondangles 120.779, 105.705, 107.541, 112.054, 120.672, 118.371, 125.931

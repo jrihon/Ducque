@@ -1,4 +1,4 @@
---pdb ../pdb/phosphate_linker.pdb
+--pdb ../puckerdata/Phosphate/phosphate_linker.pdb
 --chemistry DNA 
 --conformation NONE 
 --moiety linker 

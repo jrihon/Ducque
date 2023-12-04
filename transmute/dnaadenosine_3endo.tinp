@@ -1,6 +1,7 @@
---pdb dna_adenosine_3endo.pdb
+--pdb ../puckerdata/DNA/A/dna_adenosine_3endo.pdb
 --chemistry DNA
 --conformation 3endo
 --moiety nucleoside
+--nucleobase A
 --dihedrals -83.686, -152.082, 45.447, 84.275, 179.489, -49.085, -154.170
 --bondangles 100.783, 119.348, 110.382, 115.392, 112.885, 119.960, 126.052
