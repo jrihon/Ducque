@@ -1,0 +1,65 @@
+HETATM    1  O6' DDA A  56       6.229   1.481   1.653  1.00  0.00           O
+HETATM    2  C6' DDA A  56       5.501   1.449   0.433  1.00  0.00           C
+HETATM    3 H6'1 DDA A  56       6.161   1.303  -0.422  1.00  0.00           H
+HETATM    4 H6'2 DDA A  56       4.744   0.662   0.448  1.00  0.00           H
+HETATM    5  C5' DDA A  56       4.802   2.775   0.268  1.00  0.00           C
+HETATM    6  H5' DDA A  56       3.847   2.598  -0.247  1.00  0.00           H
+HETATM    7  O5' DDA A  56       4.556   3.287   1.573  1.00  0.00           O
+HETATM    8  C1' DDA A  56       3.838   4.495   1.545  1.00  0.00           C
+HETATM    9  H1' DDA A  56       2.853   4.354   1.081  1.00  0.00           H
+HETATM   10  C2' DDA A  56       4.604   5.582   0.815  1.00  0.00           C
+HETATM   11 H2'2 DDA A  56       4.014   6.498   0.820  1.00  0.00           H
+HETATM   12  C3' DDA A  56       4.889   5.105  -0.603  1.00  0.00           C
+HETATM   13 H3'1 DDA A  56       5.488   5.839  -1.145  1.00  0.00           H
+HETATM   14 H3'2 DDA A  56       3.954   4.976  -1.154  1.00  0.00           H
+HETATM   15 H2'1 DDA A  56       5.531   5.764   1.361  1.00  0.00           H
+HETATM   16  C4' DDA A  56       5.607   3.767  -0.561  1.00  0.00           C
+HETATM   17  H4' DDA A  56       6.588   3.877  -0.091  1.00  0.00           H
+HETATM   18  O4' DDA A  56       5.723   3.178  -1.850  1.00  0.00           O
+HETATM   19  N9  DDA A  56       3.606   4.858   2.939  1.00  0.00           N
+HETATM   20  C8  DDA A  56       4.324   4.440   4.062  1.00  0.00           C
+HETATM   21  H8  DDA A  56       5.159   3.752   3.961  1.00  0.00           H
+HETATM   22  N7  DDA A  56       3.863   4.955   5.161  1.00  0.00           N
+HETATM   23  C5  DDA A  56       2.785   5.762   4.776  1.00  0.00           C
+HETATM   24  C6  DDA A  56       1.872   6.584   5.481  1.00  0.00           C
+HETATM   25  N6  DDA A  56       1.928   6.726   6.840  1.00  0.00           N
+HETATM   26  H61 DDA A  56       2.630   6.232   7.366  1.00  0.00           H
+HETATM   27  H62 DDA A  56       1.258   7.317   7.305  1.00  0.00           H
+HETATM   28  N1  DDA A  56       0.933   7.238   4.794  1.00  0.00           N
+HETATM   29  C2  DDA A  56       0.886   7.095   3.453  1.00  0.00           C
+HETATM   30  H2  DDA A  56       0.098   7.654   2.944  1.00  0.00           H
+HETATM   31  N3  DDA A  56       1.683   6.358   2.688  1.00  0.00           N
+HETATM   32  C4  DDA A  56       2.623   5.702   3.391  1.00  0.00           C
+CONECT    8    7   10    9   19
+CONECT   29   28   30   31
+CONECT   10   12   15   11    8
+CONECT   12   14   13   10   16
+CONECT   32   23   31   19
+CONECT   16    5   12   17   18
+CONECT   23   22   24   32
+CONECT    5    7    6    2   16
+CONECT   24   23   25   28
+CONECT    2    3    5    4    1
+CONECT   20   22   19   21
+CONECT    9    8
+CONECT   30   29
+CONECT   15   10
+CONECT   11   10
+CONECT   13   12
+CONECT   14   12
+CONECT   17   16
+CONECT    6    5
+CONECT    3    2
+CONECT    4    2
+CONECT   26   25
+CONECT   27   25
+CONECT   21   20
+CONECT   28   24   29
+CONECT   31   29   32
+CONECT   25   24   26   27
+CONECT   22   23   20
+CONECT   19   32    8   20
+CONECT   18   16
+CONECT    7    5    8
+CONECT    1    2
+END

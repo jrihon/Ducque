@@ -1,0 +1,65 @@
+HETATM    1  O6' DDT A  56       3.980   1.703  -2.042  1.00  0.00           O
+HETATM    2  C6' DDT A  56       3.658   0.684  -1.104  1.00  0.00           C
+HETATM    3 H6'1 DDT A  56       2.995  -0.065  -1.540  1.00  0.00           H
+HETATM    4 H6'2 DDT A  56       4.560   0.199  -0.728  1.00  0.00           H
+HETATM    5  C5' DDT A  56       2.943   1.326   0.058  1.00  0.00           C
+HETATM    6  H5' DDT A  56       3.213   0.781   0.973  1.00  0.00           H
+HETATM    7  O5' DDT A  56       3.404   2.669   0.143  1.00  0.00           O
+HETATM    8  C1' DDT A  56       2.857   3.357   1.244  1.00  0.00           C
+HETATM    9  H1' DDT A  56       3.148   2.881   2.184  1.00  0.00           H
+HETATM   10  C2' DDT A  56       1.346   3.442   1.144  1.00  0.00           C
+HETATM   11 H2'2 DDT A  56       0.962   3.978   2.012  1.00  0.00           H
+HETATM   12  C3' DDT A  56       0.780   2.030   1.065  1.00  0.00           C
+HETATM   13 H3'1 DDT A  56      -0.304   2.053   0.940  1.00  0.00           H
+HETATM   14 H3'2 DDT A  56       0.990   1.489   1.991  1.00  0.00           H
+HETATM   15 H2'1 DDT A  56       1.093   4.012   0.247  1.00  0.00           H
+HETATM   16  C4' DDT A  56       1.428   1.280  -0.085  1.00  0.00           C
+HETATM   17  H4' DDT A  56       1.167   1.749  -1.038  1.00  0.00           H
+HETATM   18  O4' DDT A  56       1.087  -0.100  -0.089  1.00  0.00           O
+HETATM   19  N1  DDT A  56       3.466   4.687   1.244  1.00  0.00           N
+HETATM   20  C2  DDT A  56       3.658   5.298   2.490  1.00  0.00           C
+HETATM   21  O2  DDT A  56       3.336   4.773   3.533  1.00  0.00           O
+HETATM   22  N3  DDT A  56       4.244   6.567   2.418  1.00  0.00           N
+HETATM   23  H3  DDT A  56       4.399   7.031   3.305  1.00  0.00           H
+HETATM   24  C4  DDT A  56       4.637   7.259   1.247  1.00  0.00           C
+HETATM   25  O4  DDT A  56       5.135   8.360   1.314  1.00  0.00           O
+HETATM   26  C5  DDT A  56       4.373   6.506  -0.018  1.00  0.00           C
+HETATM   27  C7  DDT A  56       4.773   7.188  -1.312  1.00  0.00           C
+HETATM   28  H71 DDT A  56       4.541   6.556  -2.162  1.00  0.00           H
+HETATM   29  H72 DDT A  56       4.248   8.134  -1.421  1.00  0.00           H
+HETATM   30  H73 DDT A  56       5.839   7.404  -1.312  1.00  0.00           H
+HETATM   31  C6  DDT A  56       3.822   5.302   0.051  1.00  0.00           C
+HETATM   32  H6  DDT A  56       3.622   4.702  -0.834  1.00  0.00           H
+CONECT    8    7    9   10   19
+CONECT   20   19   21   22
+CONECT   10    8   12   15   11
+CONECT   12   13   14   10   16
+CONECT   24   22   25   26
+CONECT   16    5   12   17   18
+CONECT   26   27   31   24
+CONECT    5    6    7    2   16
+CONECT   31   32   19   26
+CONECT    2    3    5    4    1
+CONECT   27   28   29   30   26
+CONECT    9    8
+CONECT   15   10
+CONECT   11   10
+CONECT   23   22
+CONECT   13   12
+CONECT   14   12
+CONECT   17   16
+CONECT    6    5
+CONECT   32   31
+CONECT    3    2
+CONECT    4    2
+CONECT   28   27
+CONECT   29   27
+CONECT   30   27
+CONECT   19    8   31   20
+CONECT   22   20   23   24
+CONECT   21   20
+CONECT   25   24
+CONECT   18   16
+CONECT    7    5    8
+CONECT    1    2
+END

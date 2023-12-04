@@ -1,0 +1,61 @@
+HETATM    1  O6' DDC A  91       2.154   2.360  -2.451  1.00  0.00           O
+HETATM    2  C6' DDC A  91       2.623   1.193  -1.787  1.00  0.00           C
+HETATM    3 H61' DDC A  91       1.919   0.367  -1.887  1.00  0.00           H
+HETATM    4 H62' DDC A  91       3.600   0.890  -2.173  1.00  0.00           H
+HETATM    5  C5' DDC A  91       2.770   1.512  -0.321  1.00  0.00           C
+HETATM    6  H5' DDC A  91       3.625   0.942   0.070  1.00  0.00           H
+HETATM    7  O5' DDC A  91       3.032   2.905  -0.216  1.00  0.00           O
+HETATM    8  C1' DDC A  91       3.275   3.301   1.115  1.00  0.00           C
+HETATM    9  H1' DDC A  91       4.149   2.784   1.522  1.00  0.00           H
+HETATM   10  C2' DDC A  91       2.063   3.047   1.991  1.00  0.00           C
+HETATM   11 H22' DDC A  91       2.286   3.372   3.006  1.00  0.00           H
+HETATM   12  C3' DDC A  91       1.726   1.563   1.936  1.00  0.00           C
+HETATM   13 H31' DDC A  91       0.825   1.348   2.514  1.00  0.00           H
+HETATM   14 H32' DDC A  91       2.540   0.978   2.371  1.00  0.00           H
+HETATM   15 H21' DDC A  91       1.236   3.647   1.604  1.00  0.00           H
+HETATM   16  C4' DDC A  91       1.541   1.130   0.493  1.00  0.00           C
+HETATM   17  H4' DDC A  91       0.678   1.637   0.052  1.00  0.00           H
+HETATM   18  O4' DDC A  91       1.421  -0.282   0.361  1.00  0.00           O
+HETATM   19  N1  DDC A  91       3.612   4.726   1.077  1.00  0.00           N
+HETATM   20  C2  DDC A  91       4.375   5.233   2.177  1.00  0.00           C
+HETATM   21  O2  DDC A  91       4.687   4.475   3.072  1.00  0.00           O
+HETATM   22  N3  DDC A  91       4.707   6.592   2.137  1.00  0.00           N
+HETATM   23  C4  DDC A  91       4.314   7.329   1.149  1.00  0.00           C
+HETATM   24  N4  DDC A  91       4.661   8.656   1.153  1.00  0.00           N
+HETATM   25  H41 DDC A  91       5.212   9.011   1.919  1.00  0.00           H
+HETATM   26  H42 DDC A  91       4.387   9.270   0.406  1.00  0.00           H
+HETATM   27  C5  DDC A  91       3.518   6.829   0.023  1.00  0.00           C
+HETATM   28  H5  DDC A  91       3.215   7.479  -0.776  1.00  0.00           H
+HETATM   29  C6  DDC A  91       3.207   5.527   0.047  1.00  0.00           C
+HETATM   30  H6  DDC A  91       2.633   5.030  -0.736  1.00  0.00           H
+CONECT    8    7    9   10   19
+CONECT   20   19   21   22
+CONECT   10   11   12    8   15
+CONECT   12   14   13   10   16
+CONECT   23   22   24   27
+CONECT   16    5   12   18   17
+CONECT   27   23   28   29
+CONECT    5    6    2    7   16
+CONECT   29   19   27   30
+CONECT    2    3    4    5    1
+CONECT    9    8
+CONECT   15   10
+CONECT   11   10
+CONECT   13   12
+CONECT   14   12
+CONECT   17   16
+CONECT   25   24
+CONECT   26   24
+CONECT   28   27
+CONECT    6    5
+CONECT   30   29
+CONECT    3    2
+CONECT    4    2
+CONECT   19    8   20   29
+CONECT   22   20   23
+CONECT   24   23   25   26
+CONECT   21   20
+CONECT   18   16
+CONECT    7    5    8
+CONECT    1    2
+END
