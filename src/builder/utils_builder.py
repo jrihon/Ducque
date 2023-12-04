@@ -572,7 +572,12 @@ def orient_the_linker_moieties_better(CONF_LIST : list, LINK_LIST : list, leadin
         This function is implemented to consider the placement of all the linker moieties. If they are unfortunately placed, moved them to a more suitable conformations.
 
         Important to note is that we build the leading strand from the bottom up.
-        Important to note is that we build the complementary strand from the top up.                         """
+        Important to note is that we build the complementary strand from the top up.                         
+
+
+        EDIT : This function is at the moment not in use.
+
+        """
 
     # LEADING STRAND
 #    lead_nuc = CONF_LIST[0]
@@ -599,35 +604,35 @@ def orient_the_linker_moieties_better(CONF_LIST : list, LINK_LIST : list, leadin
 #
 #        # Increment for the next cycle
 #        idx_lead += nextnuc.mol_length
-
-
-    # COMPLEMENTARY STRAND
-    compl_nuc = CONF_LIST[1]
-    compl_link = LINK_LIST[1]
-
-    idx_link = 0
-    idx_compl = 0                           # Initiate the index counter for the complementary strand.
-
-    for nucleotide in range(1, len(compl_nuc)):
-
-        # Initialise the molecules as json objects
-        nuc = initMolecule.Nucleoside(compl_nuc[nucleotide])
-        link = initMolecule.Linker(compl_link[idx_link])
-        prevnuc = initMolecule.Nucleoside(compl_nuc[nucleotide - 1])
-
-        # Parse the required atoms from AtomParsingList
-        compl_APL = PARSE.Atom_Parsing_List(prevnuc, link, nuc)
-        ArrOfIdxBB, ArrOfIdxLink = utilsUB.parse_indexes_of_the_array_for_linker_reorientation(compl_APL, nuc, link, prevnuc, idx_compl)
-
-        # Based on the positioning, the linker moiety has or has not been rotated
-        # It is a bit overkill to override the same value (if the reorientation was not necessary), but overriding two indexes at a time is not such a large consumption of time to worry over
-        linker_array = utilsUB.assert_and_reorient_the_position_of_the_linker(ArrOfIdxBB, ArrOfIdxLink, compl_array)
-        compl_array[ArrOfIdxLink] = linker_array
-
-        # Decrement the idx_lead to be able to parse the atoms from the leading strands's array
-        idx_compl += (prevnuc.mol_length + link.mol_length)
-
-        idx_link += 1
+#
+#
+#    # COMPLEMENTARY STRAND
+#    compl_nuc = CONF_LIST[1]
+#    compl_link = LINK_LIST[1]
+#
+#    idx_link = 0
+#    idx_compl = 0                           # Initiate the index counter for the complementary strand.
+#
+#    for nucleotide in range(1, len(compl_nuc)):
+#
+#        # Initialise the molecules as json objects
+#        nuc = initMolecule.Nucleoside(compl_nuc[nucleotide])
+#        link = initMolecule.Linker(compl_link[idx_link])
+#        prevnuc = initMolecule.Nucleoside(compl_nuc[nucleotide - 1])
+#
+#        # Parse the required atoms from AtomParsingList
+#        compl_APL = PARSE.Atom_Parsing_List(prevnuc, link, nuc)
+#        ArrOfIdxBB, ArrOfIdxLink = utilsUB.parse_indexes_of_the_array_for_linker_reorientation(compl_APL, nuc, link, prevnuc, idx_compl)
+#
+#        # Based on the positioning, the linker moiety has or has not been rotated
+#        # It is a bit overkill to override the same value (if the reorientation was not necessary), but overriding two indexes at a time is not such a large consumption of time to worry over
+#        linker_array = utilsUB.assert_and_reorient_the_position_of_the_linker(ArrOfIdxBB, ArrOfIdxLink, compl_array)
+#        compl_array[ArrOfIdxLink] = linker_array
+#
+#        # Decrement the idx_lead to be able to parse the atoms from the leading strands's array
+#        idx_compl += (prevnuc.mol_length + link.mol_length)
+#
+#        idx_link += 1
 
     return leading_array, compl_array
 
