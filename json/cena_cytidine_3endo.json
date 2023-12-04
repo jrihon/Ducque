@@ -7,7 +7,7 @@
     },
     "identity": "[\"Cylcohexenyl Nucleic acid\", \"CENA\", \"CC\", \"Cytidine\"]",
     "angles": {
-        "bond_angles": "{\"alpha\": 102.01, \"beta\": 118.321, \"gamma\": 109.874, \"delta\": 115.737, \"epsilon\": 111.939, \"zeta\": 119.373, \"chi\": 117.981}",
-        "dihedrals": "{\"alpha\": -62.108, \"beta\": -179.866, \"gamma\": 47.414, \"delta\": 83.484, \"epsilon\": -151.7, \"zeta\": -73.616, \"chi\": -166.059}"
+        "bond_angles": "{\"alpha\": 101.995, \"beta\": 118.321, \"gamma\": 109.824, \"delta\": 115.778, \"epsilon\": 112.009, \"zeta\": 119.412, \"chi\": 126.008}",
+        "dihedrals": "{\"alpha\": -61.121, \"beta\": 161.876, \"gamma\": 47.467, \"delta\": 83.439, \"epsilon\": -139.263, \"zeta\": -81.122, \"chi\": -156.69}"
     }
 }

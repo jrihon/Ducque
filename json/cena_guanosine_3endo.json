@@ -7,7 +7,7 @@
     },
     "identity": "[\"Cylcohexenyl Nucleic acid\", \"CENA\", \"CG\", \"Guanosine\"]",
     "angles": {
-        "bond_angles": "{\"alpha\": 101.993, \"beta\": 118.342, \"gamma\": 109.837, \"delta\": 115.772, \"epsilon\": 111.926, \"zeta\": 119.35, \"chi\": 125.803}",
-        "dihedrals": "{\"alpha\": -62.089, \"beta\": -179.877, \"gamma\": 47.435, \"delta\": 83.456, \"epsilon\": -151.711, \"zeta\": -73.586, \"chi\": -165.821}"
+        "bond_angles": "{\"alpha\": 101.995, \"beta\": 118.321, \"gamma\": 109.824, \"delta\": 115.778, \"epsilon\": 112.009, \"zeta\": 119.412, \"chi\": 126.008}",
+        "dihedrals": "{\"alpha\": -61.121, \"beta\": 161.876, \"gamma\": 47.467, \"delta\": 83.439, \"epsilon\": -139.263, \"zeta\": -81.122, \"chi\": -156.69}"
     }
 }

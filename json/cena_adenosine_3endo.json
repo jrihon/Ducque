@@ -8,6 +8,6 @@
     "identity": "[\"Cylcohexenyl Nucleic acid\", \"CENA\", \"CA\", \"Adenosine\"]",
     "angles": {
         "bond_angles": "{\"alpha\": 101.995, \"beta\": 118.321, \"gamma\": 109.824, \"delta\": 115.778, \"epsilon\": 112.009, \"zeta\": 119.412, \"chi\": 126.008}",
-        "dihedrals": "{\"alpha\": -61.121, \"beta\": -179.876, \"gamma\": 47.467, \"delta\": 83.439, \"epsilon\": -151.663, \"zeta\": -73.665, \"chi\": -156.69}"
+        "dihedrals": "{\"alpha\": -61.121, \"beta\": 161.876, \"gamma\": 47.467, \"delta\": 83.439, \"epsilon\": -139.263, \"zeta\": -81.122, \"chi\": -156.69}"
     }
 }
