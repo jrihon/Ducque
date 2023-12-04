@@ -5,7 +5,7 @@ from random import randint
 import numpy as np
 
 import systemsDucque as SD
-from ducquelib.library import TABLE_CHEMISTRY, TABLE_LINKER, TABLE_NUCLEOBASE
+from ducquelib.library import TABLE_CHEMISTRY, TABLE_LINKER, TABLE_NUCLEOBASE, TABLE_BACKBONE, TABLE_LINKER_BACKBONE
 
 class TransmuteToJson:
     """ This class exists to convert any *.pdb type format to an appriopriate *.json type format.
@@ -70,7 +70,7 @@ class TransmuteToJson:
                 if line[:4] == 'ATOM' or line[:6] == 'HETATM':
 
                     _name = line[12:16]
-                    atomName.append(_name)
+                    atomName.append(_name.strip())
 
                     _res = line[17:20]
                     resName.append(_res)
@@ -106,7 +106,7 @@ class TransmuteToJson:
 
     def get_atoms(self) -> list:
         """ Get atom names to a list, also strip any remaining whitespace in all the strings in the list."""
-        return list(map(lambda x: x.strip(), self.atomName))
+        return self.atomName
 
 
     def get_element_symbol(self):
@@ -114,7 +114,7 @@ class TransmuteToJson:
         return list(map(lambda x: x.strip(), self.elementSymbol))
 
 
-    def get_chemistry(self) -> str:
+    def get_resname(self) -> str:
         """ Get the chemistry of the nucleoside, also strip any remaining whitespace in all the strings in the list. """
         return self.residueName
 
@@ -148,9 +148,54 @@ class TransmuteToJson:
             base = TABLE_NUCLEOBASE[nucleobase.upper()]
         except :
             SD.print_invalid_key(nucleobase, "TABLE_NUCLEOBASE")
-            sys.exit(1)
+            SD.exit_Ducque()
         
         return base
+
+    
+    def validate_atomnames_for_building(self, moietyType: str, chemistry: str, nucleobase: str = ""): 
+        """ Check if the following atoms have already been passed to the proper TABLES and if 
+            the atoms are present in the prompted pdb file, in order to transmute properly. """
+
+        try : 
+            backbone_atoms = TABLE_BACKBONE[chemistry.upper()]
+        except :
+            SD.print_invalid_key(chemistry, "TABLE_BACKBONE")
+            SD.exit_Ducque()
+
+
+        if moietyType.upper() == "NUCLEOSIDE":
+            # Depending on the type of nucleobase, add these atoms as they are important for model building
+            # incidentally, this is almost the entire nucleobase
+            if nucleobase == "Adenosine" : backbone_atoms.extend(["N9", "C4", "C8", "N3", "C2", "N1", "C5", "C6"])
+            elif nucleobase == "Guanosine" : backbone_atoms.extend(["N9", "C4", "C8", "N3", "C2", "N1", "C5", "C6"])
+            elif nucleobase == "Cytidine" : backbone_atoms.extend(["N1", "C2", "C6", "N1", "C2", "N3", "C5", "C4"])
+            elif nucleobase == "Thymidine" : backbone_atoms.extend(["N1", "C2", "C6", "N1", "C2", "N3", "C5", "C4"])
+            elif nucleobase == "Uracil" : backbone_atoms.extend(["N1", "C2", "C6", "N1", "C2", "N3", "C5", "C4"])
+
+            for backbone_atom in backbone_atoms: 
+                if backbone_atom not in self.atomName : 
+                    SD.print_atomnotfound(backbone_atom, self.atomName)
+                    SD.exit_Ducque()
+
+        elif moietyType.upper() == "LINKER":
+
+            # not only the backbone atom is required, but also when reorienting
+            try : 
+                linker_atoms = TABLE_LINKER_BACKBONE[chemistry.upper()]
+            except :
+                SD.print_invalid_key(chemistry, "TABLE_LINKER_BACKBONE")
+                SD.exit_Ducque()
+
+            backbone_atoms.extend(linker_atoms)
+
+            for backbone_atom in backbone_atoms: 
+                if backbone_atom not in self.atomName : 
+                    SD.print_atomnotfound(backbone_atom, self.fileName)
+                    SD.exit_Ducque()
+
+        else : 
+            SD.print_invalid_argument(moietyType, "--moiety")
 
 
     def get_angles(self, moietyType : str, angles_list : list) -> dict:

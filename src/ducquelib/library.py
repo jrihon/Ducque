@@ -1,8 +1,8 @@
 import systemsDucque
 
-""" This script will function as a repository for all the atoms, angles and dihedrals that need to be parsed to build up the nucleic acid duplex"""
+""" This script will function as a repository for all the static information needed to build structures and transmute inputs  """
 
-# LEAVE THE `DH` VARIABLE ALONE ; path/to/Ducque/json
+# LEAVE THE `DH` VARIABLE UNTOUCHED ; path/to/Ducque/json
 DH = systemsDucque.return_DUCQUEHOME() + "json/"
 
 
@@ -152,7 +152,7 @@ TABLE_BACKBONE = {
 "XYNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "2-OME-RNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "2-F-RNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
-#"CENA" : ["O3'", "C3'", "C4'", "C7'", "O7'"],
+"CENA" : ["O3'", "C3'", "C4'", "C7'", "O7'"],
 "DXYNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "MNA" : ["N3'", "C4'", "C5'", "C6'", "O6'"],
 "TNA" : ["O2'", "C2'", "C3'", "O3'"],
@@ -171,49 +171,48 @@ TABLE_LINKER_BACKBONE = {
 "THIOPHOSPHATE" : ["P", "SP1", "OP2"],
 }
 
-""" Contains all the dictionaries and the tools to help the Transmutation work properly.    """
 
 # -----------------------------------------
 #           CHEMISTRY REPOSITORY
 # -----------------------------------------
 # Identify the nucleic acid chemistry
 TABLE_CHEMISTRY = {
-        "DNA" : "Deoxyribonucleic acid",
-        "RNA" : "Ribonucleic acid",
-        "B-HOMODNA" : "beta-Homo Deoxyribonucleic acid",
-        "HNA" : "Hexitol Nucleic acid",
-        "XYNA" : "Xylose Nucleic acid",
-        "2-F-RNA" : "2-Fluoro Ribonucleic acid",
-        "2-OME-RNA" : "2-O-Methyl Ribonucleic acid",
-        "CENA" : "Cylcohexenyl Nucleic acid",
-        "DXYNA" : "deoxy Xylose Nucleic Acid",
-        "MNA" : "Morpholino Nucleic Acid",
-        "TNA" : "Threose Nucleic Acid",
-        "PHOTNA" : "Phosphonate Threose Nucleic Acid",
-        "S-1DNA" : "Thio Deoxyribonucleic acid",
-        "S-2DNA" : "Thio Deoxyribonucleic acid",
-        }
+"DNA" : "Deoxyribonucleic acid",
+"RNA" : "Ribonucleic acid",
+"B-HOMODNA" : "beta-Homo Deoxyribonucleic acid",
+"HNA" : "Hexitol Nucleic acid",
+"XYNA" : "Xylose Nucleic acid",
+"2-F-RNA" : "2-Fluoro Ribonucleic acid",
+"2-OME-RNA" : "2-O-Methyl Ribonucleic acid",
+"CENA" : "Cylcohexenyl Nucleic acid",
+"DXYNA" : "deoxy Xylose Nucleic Acid",
+"MNA" : "Morpholino Nucleic Acid",
+"TNA" : "Threose Nucleic Acid",
+"PHOTNA" : "Phosphonate Threose Nucleic Acid",
+"S-1DNA" : "Thio Deoxyribonucleic acid",
+"S-2DNA" : "Thio Deoxyribonucleic acid",
+}
 
 # -----------------------------------------
 #           LINKER REPOSITORY
 # -----------------------------------------
 # Linking the nucleoside to the correct linker moiety 
 TABLE_LINKER = {
-        "DNA" : "PHOSPHATE",
-        "RNA" : "PHOSPHATE",
-        "B-HOMODNA" : "PHOSPHATE",
-        "HNA" : "PHOSPHATE",
-        "XYNA" : "PHOSPHATE",
-        "2-OME-RNA" : "PHOSPHATE",
-        "2-F-RNA" : "PHOSPHATE",
-        "CENA" : "PHOSPHATE",
-        "DXYNA" : "PHOSPHATE",
-        "MNA" : "PHOSPHATE",
-        "TNA" : "PHOSPHATE",
-        "PHOTNA" : "PHOSPHATE", 
-        "S-1DNA" : "THIOPHOSPHATE",
-        "S-2DNA" : "THIOPHOSPHATE",
-        }
+"DNA" : "PHOSPHATE",
+"RNA" : "PHOSPHATE",
+"B-HOMODNA" : "PHOSPHATE",
+"HNA" : "PHOSPHATE",
+"XYNA" : "PHOSPHATE",
+"2-OME-RNA" : "PHOSPHATE",
+"2-F-RNA" : "PHOSPHATE",
+"CENA" : "PHOSPHATE",
+"DXYNA" : "PHOSPHATE",
+"MNA" : "PHOSPHATE",
+"TNA" : "PHOSPHATE",
+"PHOTNA" : "PHOSPHATE", 
+"S-1DNA" : "THIOPHOSPHATE",
+"S-2DNA" : "THIOPHOSPHATE",
+}
 
 
 # -----------------------------------------
@@ -221,12 +220,12 @@ TABLE_LINKER = {
 # -----------------------------------------
 # Used for the filename and to fill out the identity dict in the json file
 TABLE_NUCLEOBASE = {
-        "A" : "Adenosine",
-        "C" : "Cytidine",
-        "G" : "Guanosine",
-        "T" : "Thymidine",
-        "U" : "Uracil",
-        }
+"A" : "Adenosine",
+"C" : "Cytidine",
+"G" : "Guanosine",
+"T" : "Thymidine",
+"U" : "Uracil",
+}
 
 
 

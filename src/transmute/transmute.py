@@ -50,31 +50,37 @@ def Transmutation(pdb_fname, nucleicAcidChemistry : str, moietyType : str, dihed
     # Initialise the identity list
     identity = []
 
-    if moietyType == "nucleoside":
+    if moietyType.upper() == "NUCLEOSIDE":
         # full name
         fullname = nucleicAcid.get_full_name(nucleicAcidChemistry, moietyType)
         identity.append(fullname)
 
         # abbreviated name
-        abbr = nucleicAcidChemistry
-        identity.append(abbr)
+#        abbr = nucleicAcidChemistry
+        identity.append(nucleicAcidChemistry)
 
         # molecule chemistry, which is often the same as the residue name in the pdb
-        molecule_residuename = nucleicAcid.get_chemistry()
+        molecule_residuename = nucleicAcid.get_resname()
         identity.append(molecule_residuename)
 
         # Nucleobase of the nucleic acid
         nucleobaseName = nucleicAcid.get_nucleobase(nucleobase)
         identity.append(nucleobaseName)
 
-    if moietyType == "linker":
+        # Check if atoms to build by, stated in the TABLES, are present in the pdb
+        nucleicAcid.validate_atomnames_for_building(moietyType=moietyType, chemistry=nucleicAcidChemistry, nucleobase=nucleobaseName)
+
+    if moietyType.upper() == "LINKER":
         # full name
         fullname = nucleicAcid.get_full_name(nucleicAcidChemistry, moietyType)
         identity.append(fullname)
 
         # abbreviated name
-        abbr = nucleicAcidChemistry
-        identity.append(abbr)
+#        abbr = nucleicAcidChemistry
+        identity.append(nucleicAcidChemistry)
+
+        # Check if atoms to build by, stated in the TABLES, are present in the pdb
+        nucleicAcid.validate_atomnames_for_building(moietyType=moietyType, chemistry=nucleicAcidChemistry)
 
     #------------------------------- TORSIONS AND ANGLES -----------------------------#
     # Initialise the dictionary for the dihedrals and the bond angles

@@ -102,3 +102,4 @@ def print_insuf_amount(flag):       print(f"[INVALID AMOUNT]  : Incorrect amount
 def print_conversion_err(name, x):  print(f"[CONVERSION ERROR]: Could not convert the angle `{name}` to a float `{x}` ")
 def print_launch(module):           print(f"[LAUNCH MODULE]   : {module.title()} module !")
 def print_filenotfound(fname):      print(f"[FILE NOT FOUND]  : The following file was not found at the current path `{fname}`.")
+def print_atomnotfound(atom, fl):   print(f"[INVALID QUERY]   : The following atom `{atom}` was not found in the pdb's atomnames `{fl}`.")
