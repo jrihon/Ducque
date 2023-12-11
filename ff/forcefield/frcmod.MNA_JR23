@@ -1,0 +1,577 @@
+THREOSE NUCLEIC ACID FORCEFIELD; COMBINATION OF PARM10 AND DNA.OL15 PARAMETERS
+MASS
+CF 12.01         0.878               sp3 aliphatic C, equivalent to CT
+C7 12.01         0.878               sp3 aliphatic C
+C2 12.01         0.360               sp2 C 5 memb.ring in purines
+C1 12.01         0.360               sp2 C  pyrimidines in pos. 5 & 6
+CJ 12.01
+HN 1.008         0.161               H bonded to nitrogen atoms
+
+BOND
+C -CF  317.0    1.522       JCC,7,(1986),230; AA
+CA-CF  317.0    1.510       JCC,7,(1986),230; PHE,TYR
+CD-CF  317.0    1.510       Junmei et al, 1999
+CM-CF  317.0    1.510       JCC,7,(1986),230; THY
+CS-CF  317.0    1.510       JCC,7,(1986),230; THY
+CF-CT  310.0    1.526       JCC,7,(1986),230; AA, SUGARS
+CF-CF  310.0    1.526       JCC,7,(1986),230; AA, SUGARS (was CT-CT)
+CF-HC  340.0    1.090       changed from 331 bsd on NMA nmodes; AA, SUGARS
+CF-H1  340.0    1.090       changed from 331 bsd on NMA nmodes; AA, RIBOSE
+CF-H2  340.0    1.090       changed from 331 bsd on NMA nmodes; SUGARS
+CF-H3  340.0    1.090       changed from 331 bsd on NMA nmodes; not assignedV
+CF-HP  340.0    1.090       changed from 331; AA-lysine, methyl ammonium cation
+CF-N*  337.0    1.475       JCC,7,(1986),230; ADE,CYT,GUA,THY,URA
+CF-OH  320.0    1.410       JCC,7,(1986),230; SUGARS
+CF-OS  320.0    1.410       JCC,7,(1986),230; NUCLEIC ACIDS
+CF-NT  367.0    1.471       for neutral amines 
+CF-CY  400.0    1.458       Howard et al JCC.16,243,1995
+CF-CZ  400.0    1.459       Howard et al JCC,16,243,1995
+CI-CF  310.0    1.526       parmbsc0
+C4-CF  317.0    1.510       JCC,7,(1986),230; THY
+C7-CF  310.0    1.526       JCC,7,(1986),230; AA, SUGARS
+C1-CF  317.0    1.510       JCC,7,(1986),230; THY
+CJ-CF  310.0    1.526
+C7-H1  340.0    1.090       changed from 331 bsd on NMA nmodes; AA, RIBOSE
+C7-OH  320.0    1.410       JCC,7,(1986),230; SUGARS
+C7-OS  320.0    1.410       JCC,7,(1986),230; NUCLEIC ACJDS
+C2-H5  367.0    1.080       changed from 340. bsd on C6H6 nmodes; ADE,GUA
+C2-N*  440.0    1.371       JCC,7,(1986),230; ADE,GUA
+C2-NB  529.0    1.304       JCC,7,(1986),230; ADE,GUA
+C -C1  410.0    1.444       JCC,7,(1986),230; THY,URA
+CA-C1  427.0    1.433       JCC,7,(1986),230; CYT
+C1-C1  549.0    1.350       JCC,7,(1986),230; CYT,THY,URA
+C1-HA  367.0    1.080       changed from 340. bsd on C6H6 nmodes; CYT,URA
+C1-H4  367.0    1.080       changed from 340. bsd on C6H6 nmodes; CYT,URA
+C1-N*  448.0    1.365       JCC,7,(1986),230; CYT,THY,URA
+CJ-H1  340.0    1.090
+OS-CJ  320.0    1.410
+OH-CJ  320.0    1.410
+P -CT  259.7    1.813       Phosphonate bond
+CF-N3  367.0    1.471       for neutral amines (N3 was NT)
+N3-HN  392.4    1.0190                                          SOURCE3_SOURCE5    5944	 0.0012 nitrogen - hydrogen (3' terminal) bond -- GAFF.dat
+N3-P5  367.0    1.7200                                          SOURCE1_SOURCE5     680	 0.0109 Closest to a phosphoramidate, geom. opt. data -- GAFF.dat
+N3-P   230.0    1.710                                           SOURCE : J. Am. Chem. Soc. 1997, 119, 6722-6730 ; NS is sp3 hybr.
+
+ANGLE
+CF-C -O     80.0      120.40
+CF-C -O2    70.0      117.00
+CF-C -CF    63.0      117.00    Junmei et al, 1999
+CF-C -OS    80.0      115.00    Junmei et al, 1999
+CF-C -OH    80.0      110.00    Junmei et al, 1999
+H4-C -CF    50.0      115.00    Junmei et al, 1999
+CA-CA-CF    70.0      120.00
+CD-CD-CF    70.0      120.00    Junmei et al, 1999
+CM-CD-CF    70.0      120.00    Junmei et al, 1999
+CS-CD-CF    70.0      120.00    Junmei et al, 1999
+C -CM-CF    70.0      119.70
+CM-CM-CF    70.0      119.70
+HA-CM-CF    50.0      120.00    Junmei et al, 1999
+C -CS-CF    70.0      119.70
+CM-CS-CF    70.0      119.70
+HA-CS-CF    50.0      120.00    Junmei et al, 1999
+H1-CF-H1    35.0      109.50
+H1-CF-N*    50.0      109.50    changed based on NMA nmodes
+H1-CF-N*    50.0      109.50    changed based on NMA nmodes
+H1-CF-OH    50.0      109.50    changed based on NMA nmodes 
+H1-CF-OS    50.0      109.50    changed based on NMA nmodes 
+H1-CF-CM    50.0      109.50    Junmei et al, 1999 
+H1-CF-CS    50.0      109.50    Junmei et al, 1999 
+H1-CF-CY    50.0      110.00    Junmei et al, 1999
+H1-CF-CZ    50.0      110.00    Junmei et al, 1999
+H1-CF-NT    50.0      109.50    neutral amines 
+H2-CF-N*    50.0      109.50    changed based on NMA nmodes
+H2-CF-OS    50.0      109.50    changed based on NMA nmodes
+HC-CF-HC    35.0      109.50
+HC-CF-CM    50.0      109.50    changed based on NMA nmodes
+HC-CF-CS    50.0      109.50    changed based on NMA nmodes
+HC-CF-CD    50.0      109.50    Junmei et al, 1999
+HC-CF-CZ    50.0      110.00    Junmei et al, 1999
+C -CF-OS    60.0      109.50    Junmei et al, 1999
+CM-CF-CF    63.0      111.00    Junmei et al, 1999 (last change: Mar24,99)
+CM-CF-OS    50.0      109.50    Junmei et al, 1999
+CS-CF-CF    63.0      111.00    Junmei et al, 1999 (last change: Mar24,99)
+CS-CF-OS    50.0      109.50    Junmei et al, 1999
+CF-CF-CT    40.0      109.50
+CF-CF-HC    50.0      109.50    changed based on NMA nmodes
+CF-CF-H1    50.0      109.50    changed based on NMA nmodes
+H1-CI-CF    50.0      109.50    parmbsc0
+CI-CF-H1    50.0      109.50    changed based on NMA nmodes
+CF-CF-H2    50.0      109.50    changed based on NMA nmodes
+CF-CF-HP    50.0      109.50    changed based on NMA nmodes
+CF-CX-HP    50.0      109.50    changed based on NMA nmodes (was CF-CT-HP)
+CI-CF-OS    50.0      109.50    parmbsc0
+CI-CF-CF    40.0      109.50    parmbsc0
+CF-CF-N*    50.0      109.50
+CF-CF-OH    50.0      109.50
+CF-CF-OS    50.0      109.50
+CF-OS-CF    60.0      109.50
+CI-OS-CT    60.0      109.50
+CF-OS-CT    60.0      109.50
+CF-CF-CF    40.0      109.50
+CF-CF-NT    80.0      111.20    neutral amines 
+CF-CF-CY    63.0      110.00    Junmei et al, 1999    
+CF-CF-CZ    63.0      110.00    Junmei et al, 1999
+OS-CF-OS   160.0      101.00    Junmei et al, 1999
+OS-CF-CY    50.0      110.00    Junmei et al, 1999
+OS-CF-CZ    50.0      110.00    Junmei et al, 1999
+OS-CF-N*    50.0      109.50
+H1-C7-OH    50.0      109.50    changed based on NMA nmodes 
+H1-C7-OS    50.0      109.50    changed based on NMA nmodes 
+C7-CF-CF    40.0      109.50
+CF-C7-CF    40.0      109.50
+C7-CF-HC    50.0      109.50    changed based on NMA nmodes
+C7-CF-H1    50.0      109.50    changed based on NMA nmodes
+CF-C7-H1    50.0      109.5
+CF-C7-OH    50.0      109.50
+CF-C7-OS    50.0      109.50
+C7-CF-OS    50.0      109.50
+C7-CF-OH    50.0      109.50
+C7-OS-P    100.0      120.50
+C7-OH-HO    55.0      108.50
+CJ-CF-C7    40.0      109.50
+H5-C2-N*    50.0      123.05
+H5-C2-NB    50.0      123.05
+N*-C2-NB    70.0      113.90
+CB-N*-C2    70.0      105.40
+C2-N*-CF    70.0      128.80
+CB-N*-CF    70.0      125.80
+CK-N*-CF    70.0      128.80
+CB-NB-C2    70.0      103.80
+C1-C -NA    70.0      114.10
+C1-C -O     80.0      125.30
+C1-CA-N2    70.0      120.10
+C1-CA-NC    70.0      121.50
+C -C1-C1    63.0      120.70    changed from 85.0  bsd on C6H6 nmodes; NA thy
+C -C1-CF    70.0      119.70
+C -C1-HA    50.0      119.70
+C -C1-H4    50.0      119.70
+CA-C1-C1    63.0      117.00    changed from 85.0  bsd on C6H6 nmodes; NA cyt
+CA-C1-HA    50.0      123.30
+CA-C1-H4    50.0      123.30
+C1-C1-CF    70.0      119.70
+C1-C1-HA    50.0      119.70
+C1-C1-H4    50.0      119.70
+C1-C1-N*    70.0      121.20
+H4-C1-N*    50.0      119.10
+H1-CF-C1    50.0      109.50    Junmei et al, 1999
+HC-CF-C1    50.0      109.50    changed based on NMA nmodes
+C -N*-C1    70.0      121.60
+C1-N*-CF    70.0      121.20
+C -N*-CF    70.0      117.60
+CM-N*-CF    70.0      121.20
+H1-CJ-CF    50.0      109.50
+H1-CJ-H1    35.0      109.50
+CJ-CF-H1    50.0      109.50
+CJ-CF-OS    50.0      109.50
+CJ-CF-CF    40.0      109.50
+OS-CJ-H1    50.0      109.50
+OS-CJ-CF    50.0      109.50
+P -OS-CJ   100.0      120.50
+OH-CJ-H1    50.0      109.50
+OH-CJ-CF    50.0      109.50
+HO-OH-CJ    55.0      108.50
+HO-OH-CF    55.0      108.50
+CF-OS-P    100.0      120.50
+OS-CI-CF    50.0      109.50   parmbsc0
+OH-CI-CF    50.0      109.50   parmbsc0
+O2-P -CT    39.9      112.50    Phosphonate bond   10.1021/acs.jpcb.5b08579
+OS-P -CT    40.6      103.83    Phosphonate bond   10.1021/acs.jpcb.5b08579
+CT-OS-P     78.5      118.00    Phosphonate bond   10.1021/acs.jpcb.5b08579
+P -CT-OS    39.9      112.50    Derived from MP2 Opts in agreeance with GAFF values, Phosphonate
+P -CT-H2    53.8      109.64    Derived from MP2 Opts in agreeance with GAFF values, Phosphonate
+H1-CT-N3    50.0      109.50                                    based on geom. opt. and that resembles the closest standard bond angles in leaprc.RNA.OL3
+H1-CF-N3    50.0      109.50                                    based on geom. opt. and that resembles the closest standard bond angles in leaprc.RNA.OL3
+CT-N3-HN    50.0      109.50                                    based on geom. opt. and that resembles the closest standard bond angles in leaprc.RNA.OL3
+CF-N3-HN    50.0      109.50                                    based on geom. opt. and that resembles the closest standard bond angles in leaprc.RNA.OL3
+OS-P -N3    45.0      100.50                                    SOURCE : J. Am. Chem. Soc. 1997, 119, 6722-6730 ; NS is sp3 hybr., https://doi.org/10.1021/ja963909j
+CT-N3-P    100.0      118.00                                    SOURCE : J. Am. Chem. Soc. 1997, 119, 6722-6730 ; NS is sp3 hybr., https://doi.org/10.1021/ja963909j
+CF-N3-P    100.0      118.00                                    SOURCE : J. Am. Chem. Soc. 1997, 119, 6722-6730 ; NS is sp3 hybr., https://doi.org/10.1021/ja963909j
+O2-P -N3   100.0      108.23                                    SOURCE : J. Am. Chem. Soc. 1997, 119, 6722-6730 ; NS is sp3 hybr., https://doi.org/10.1021/ja963909j
+CT-CT-N3    80.0      111.20    neutral amines (was NT)
+CF-CF-N3    80.0      111.20    neutral amines (was NT)
+CF-N3-CF    50.0      109.50    neutral amines (was CT-NT-CT)
+CT-N3-CF    50.0      109.50    neutral amines (was CT-NT-CT)
+
+DIHEDRAL
+X -C -CF-X    6    0.00          0.0             2.         JCC,7,(1986),230
+X -CA-CF-X    6    0.00          0.0             2.         JCC,7,(1986),230
+X -CC-CF-X    6    0.00          0.0             2.         JCC,7,(1986),230
+X -CD-CF-X    6    0.00          0.0             2.         Junmei et al, 1999
+X -CM-CF-X    6    0.00          0.0             3.         JCC,7,(1986),230
+X -CS-CF-X    6    0.00          0.0             3.         JCC,7,(1986),230
+X -CF-CF-X    9    1.40          0.0             3.         JCC,7,(1986),230 (added)
+X -CF-CX-X    9    1.40          0.0             3.         JCC,7,(1986),230 (was X -CF-CF-X )
+X -CF-CY-X    3    0.00          0.0             1.         Junmei et al, 1999
+X -CF-CZ-X    3    0.00          0.0             1.         Junmei et al, 1999
+X -CF-N -X    6    0.00          0.0             2.         JCC,7,(1986),230
+X -CF-N*-X    6    0.00          0.0             2.         JCC,7,(1986),230
+X -CF-N2-X    6    0.00          0.0             3.         JCC,7,(1986),230
+X -CF-NT-X    6    1.80          0.0             3.         Junmei et al, 1999
+X -CF-N3-X    9    1.40          0.0             3.         JCC,7,(1986),230
+X -CF-OH-X    3    0.50          0.0             3.         JCC,7,(1986),230
+X -CF-OS-X    3    1.15          0.0             3.         JCC,7,(1986),230
+X -C*-CF-X    6    0.00          0.0             2.         JCC,7,(1986),230
+X -C4-CF-X    6    0.00          0.0             3.         JCC,7,(1986),230
+CF-OS-CF-CI   1    0.383         0.0            -3.
+CF-OS-CF-CI   1    0.100       180.0             2.
+H1-CI-CF-OS   1    0.00          0.0            -3.
+H1-CI-CF-OS   1    0.250         0.0             1.
+H1-CI-CF-OH   1    0.000         0.0            -3.
+H1-CI-CF-OH   1    0.250         0.0             1.
+H1-CF-CI-OS   1    0.00          0.0            -3.
+H1-CF-CI-OS   1    0.250         0.0             1.
+H1-CF-CI-OH   1    0.00          0.0            -3.
+H1-CF-CI-OH   1    0.250         0.0             1.
+CI-CF-CF-CF   1    0.180         0.0            -3.
+CI-CF-CF-CF   1    0.250       180.0            -2.
+CI-CF-CF-CF   1    0.200       180.0             1.
+CF-CF-CI-OS   1    1.178040    190.97653        -1.         gamma
+CF-CF-CI-OS   1    0.092102    295.63279        -2.         gamma
+CF-CF-CI-OS   1    0.962830    348.09535         3.         gamma
+CF-CF-CI-OH   1    1.178040    190.97653        -1.         gamma
+CF-CF-CI-OH   1    0.092102    295.63279        -2.         gamma
+CF-CF-CI-OH   1    0.962830    348.09535         3.         gamma
+HC-CF-C4-C4   1    0.38        180.0            -3.         Junmei et al, 1999
+HC-CF-C4-C4   1    1.15          0.0             1.         Junmei et al, 1999
+OS-CF-N*-C5   1    0.96561      68.7902         -1.         ol3 chi ade
+OS-CF-N*-C5   1    1.07403      15.6360         -2.         ol3 chi ade
+OS-CF-N*-C5   1    0.45754     171.5787         -3.         ol3 chi ade
+OS-CF-N*-C5   1    0.30917      19.0921          4.         ol3 chi ade
+OS-CF-N*-CP   1    0.70510      74.7558         -1.         ol3 chi gua
+OS-CF-N*-CP   1    1.06546       6.2286         -2.         ol3 chi gua
+OS-CF-N*-CP   1    0.44273     168.6503         -3.         ol3 chi gua
+OS-CF-N*-CP   1    0.25602       3.9746          4.         ol3 chi gua
+OS-CF-N*-C4   1    1.22506     146.9892         -1.         ol3 chi cyt
+OS-CF-N*-C4   1    1.63459      16.4766         -2.         ol3 chi cyt
+OS-CF-N*-C4   1    0.93747     185.8774         -3.         ol3 chi cyt
+OS-CF-N*-C4   1    0.31033      32.1590          4.         ol3 chi cyt
+OS-CF-N*-CS   1    1.02514     149.8583         -1.         ol3 chi ura
+OS-CF-N*-CS   1    1.74876      16.7648         -2.         ol3 chi ura
+OS-CF-N*-CS   1    0.58150     179.3474         -3.         ol3 chi ura
+OS-CF-N*-CS   1    0.35148      16.0016          4.         ol3 chi ura
+CF-S -S -CF   1    3.50          0.0            -2.         JCC,7,(1986),230
+CF-S -S -CF   1    0.60          0.0             3.         JCC,7,(1986),230
+OH-P -OS-CF   1    0.25          0.0            -3.         JCC,7,(1986),230
+OH-P -OS-CF   1    1.20          0.0             2.         gg&gt ene.631g*/mp2
+OS-P -OS-CF   1    0.25          0.0            -3.         JCC,7,(1986),230
+OS-P -OS-CF   1    1.20          0.0             2.         gg&gt ene.631g*/mp2
+H1-CF-C -O    1    0.80          0.0            -1.         Junmei et al, 1999
+H1-CF-C -O    1    0.00          0.0            -2.         Explicit of wild card X-C-CF-X
+H1-CF-C -O    1    0.08        180.0             3.         Junmei et al, 1999
+HC-CF-C -O    1    0.80          0.0            -1.         Junmei et al, 1999
+HC-CF-C -O    1    0.00          0.0            -2.         Explicit of wild card X-C-CF-X
+HC-CF-C -O    1    0.08        180.0             3.         Junmei et al, 1999
+HC-CF-CF-HC   1    0.15          0.0             3.         Junmei et al, 1999
+HC-CF-CM-CM   1    0.38        180.0            -3.         Junmei et al, 1999
+HC-CF-CM-CM   1    1.15          0.0             1.         Junmei et al, 1999
+HC-CF-CS-CS   1    0.38        180.0            -3.         Junmei et al, 1999
+HC-CF-CS-CS   1    1.15          0.0             1.         Junmei et al, 1999
+HO-OH-CF-CF   1    0.16          0.0            -3.         Junmei et al, 1999
+HO-OH-CF-CF   1    0.25          0.0             1.         Junmei et al, 1999
+CT-OS-CF-CF   1    0.16          0.0            -3.         Junmei et al, 1999 (methyl cap)
+CT-OS-CF-CF   1    0.25          0.0             1.         Junmei et al, 1999 (methyl cap)
+H1-CT-OS-CF   1    0.00          0.0            -3.         (methyl caps)
+H1-CT-OS-CF   1    0.250         0.0             1.         (methyl caps)
+H1-CT-OS-CI   1    0.00          0.0            -3.         (methyl caps)
+H1-CT-OS-CI   1    0.250         0.0             1.         (methyl caps)
+HO-OH-CF-CX   1    0.16          0.0            -3.         Junmei et al, 1999 (was HO-OH-CF-CF)
+HO-OH-CF-CX   1    0.25          0.0             1.         Junmei et al, 1999 (was HO-OH-CF-CF)
+CF-CM-CM-CF   1    6.65        180.0            -2.         Junmei et al, 1999
+CF-CM-CM-CF   1    1.90        180.0             1.         Junmei et al, 1999
+CS-CS-C -O    1    2.175       180.0            -2.         Junmei et al, 1999
+CS-CS-C -O    1    0.30          0.0             3.         Junmei et al, 1999
+CF-CS-CS-CF   1    6.65        180.0            -2.         Junmei et al, 1999
+CF-CS-CS-CF   1    1.90        180.0             1.         Junmei et al, 1999
+CF-CF-CF-CF   1    0.18          0.0            -3.         Junmei et al, 1999
+CF-CF-CF-CF   1    0.25        180.0            -2.         Junmei et al, 1999
+CF-CF-CF-CF   1    0.20        180.0             1.         Junmei et al, 1999
+CX-CF-CF-CF   1    0.18          0.0            -3.         Junmei et al, 1999 (was CF-CF-CF-CF)
+CX-CF-CF-CF   1    0.25        180.0            -2.         Junmei et al, 1999 (was CF-CF-CF-CF)
+CX-CF-CF-CF   1    0.20        180.0             1.         Junmei et al, 1999 (was CF-CF-CF-CF)
+CF-CF-NT-CF   1    0.30          0.0            -3.         Junmei et al, 1999
+CF-CF-NT-CF   1    0.48        180.0             2.         Junmei et al, 1999
+CF-CF-OS-CF   1    0.383         0.0            -3.
+CF-CF-OS-CF   1    0.1         180.0             2.
+CF-CF-OS-C    1    0.383         0.0            -3.         Junmei et al, 1999
+CF-CF-OS-C    1    0.80        180.0             1.         Junmei et al, 1999
+CF-OS-CF-OS   1    0.10          0.0            -3.         Junmei et al, 1999
+CF-OS-CF-OS   1    0.85        180.0            -2.         Junmei et al, 1999
+CF-OS-CF-OS   1    1.35        180.0             1.         Junmei et al, 1999
+CF-OS-CF-N*   1    0.383         0.0            -3.         parm98.dat, TC,PC,PAK
+CF-OS-CF-N*   1    0.65          0.0             2.         Piotr et al.
+CF-CZ-CZ-HZ   1    0.00          0.0             1.         Junmei et al, 1999
+OS-CF-CF-OS   1    0.144         0.0            -3.         parm98, TC,PC,PAK
+OS-CF-CF-OS   1    1.175         0.0             2.         Piotr et al.     
+OS-CF-CF-OH   1    0.144         0.0            -3.         parm98, TC,PC,PAK
+OS-CF-CF-OH   1    1.175         0.0             2.         parm98, TC,PC,PAK
+OH-CF-CF-OH   1    0.144         0.0            -3.         parm98, TC,PC,PAK
+OH-CF-CF-OH   1    1.175         0.0             2.         parm98, TC,PC,PAK 
+O -C -OS-CF   1    2.70        180.0            -2.         Junmei et al, 1999
+O -C -OS-CF   1    1.40        180.0             1.         Junmei et al, 1999
+OS-CF-N*-CK   1    0.00        000.0            -2.         parm98, TC,PC,PAK
+OS-CF-N*-CK   1    2.50          0.0             1.         parm98, TC,PC,PAK
+OS-CF-N*-CM   1    0.00        000.0            -2.         parm98, TC,PC,PAK
+OS-CF-N*-CM   1    2.50          0.0             1.         parm98, TC,PC,PAK
+OS-CF-CF-OS   1    0.144         0.0            -3.         parm98, TC,PC,PAK
+OS-CF-CF-OS   1    1.175         0.0             2.         Piotr et al.     
+OS-CF-CF-OH   1    0.144         0.0            -3.         parm98, TC,PC,PAK
+OS-CF-CF-OH   1    1.175         0.0             2.         parm98, TC,PC,PAK
+OH-CF-CF-OH   1    0.144         0.0            -3.         parm98, TC,PC,PAK
+OH-CF-CF-OH   1    1.175         0.0             2.         parm98, TC,PC,PAK 
+H1-CF-CF-OS   1    0.000         0.0            -3.         JCC,7,(1986),230
+H1-CF-CF-OS   1    0.25          0.0             1.         Junmei et al, 1999
+H1-CF-CF-OH   1    0.000         0.0            -3.         JCC,7,(1986),230
+H1-CF-CF-OH   1    0.25          0.0             1.         Junmei et al, 1999
+H1-CX-CF-OH   1    0.000         0.0            -3.         JCC,7,(1986),230 (was H1-CF-CF-OH)
+H1-CX-CF-OH   1    0.25          0.0             1.         Junmei et al, 1999 (was H1-CF-CF-OH)
+HC-CF-CF-OS   1    0.000         0.0            -3.         JCC,7,(1986),230
+HC-CF-CF-OS   1    0.25          0.0             1.         Junmei et al, 1999
+HC-CF-CF-OH   1    0.000         0.0            -3.         JCC,7,(1986),230
+HC-CF-CF-OH   1    0.25          0.0             1.         Junmei et al, 1999
+HC-CT-CT-HC   1    0.15          0.0             3.         Junmei et al, 1999
+H1-CF-CF-H1   1    0.15          0.0             3.         Junmei et al, 1999 (was HC-CT-CT-HC)
+H2-CF-CF-H1   1    0.15          0.0             3.         Junmei et al, 1999 (was HC-CT-CT-HC)
+X -CI-CT-X    9    1.400         0.0             3.
+X -CI-CF-X    9    1.400         0.0             3.
+N -CF-CF-OH   1    0.000         0.000          -1.         HYP
+N -CF-CF-OH   1    1.490         0.000          -2.         HYP  (JCC 26:1612,2005)
+N -CF-CF-OH   1    0.156         0.000          -3.         HYP
+N -CF-CF-OH   1    0.000         0.000           4.         HYP
+CJ-OS-P-O2    3    0.75          0.0             3.         to alpha 
+C7-OS-P-O2    1    0.29407     358.284           3.         zet OL1
+X -C7-OH-X    3    0.50          0.0             3.         JCC,7,(1986),230
+X -C7-OS-X    3    1.15          0.0             3.         JCC,7,(1986),230
+X -C7-CF-X    9    1.40          0.0             3.         JCC,7,(1986),230
+CF-C7-OS-P    1    0.15259     162.4967         -3.         eps OL1 
+CF-C7-OS-P    1    0.64681     139.8342         -2.         eps OL1
+CF-C7-OS-P    1    1.77488     205.9192          1.         eps OL1
+OH-P -OS-C7   1    0.29407     358.284          -3.         zet OL1
+OH-P -OS-C7   1    0.97425     350.8820         -2.         zet OL1
+OH-P -OS-C7   1    0.92887       1.7533          1.         zet OL1
+OS-P -OS-C7   1    0.29407     358.284          -3.         zet OL1
+OS-P -OS-C7   1    0.97425     350.8820         -2.         zet OL1
+OS-P -OS-C7   1    0.92887       1.7533          1.         zet OL1
+HC-CF-C7-CF   1    0.16          0.0             3.         Junmei et al, 1999
+HO-OH-C7-CF   1    0.16          0.0            -3.         Junmei et al, 1999
+HO-OH-C7-CF   1    0.25          0.0             1.         Junmei et al, 1999
+CF-CF-C7-CF   1    0.18          0.0            -3.         Junmei et al, 1999
+CF-CF-C7-CF   1    0.25        180.0            -2.         Junmei et al, 1999
+CF-CF-C7-CF   1    0.20        180.0             1.         Junmei et al, 1999
+C7-CF-OS-CF   1    0.383         0.0            -3.
+C7-CF-OS-CF   1    0.1         180.0             2.
+OS-C7-CF-OS   1    0.144         0.0            -3.         parm98, TC,PC,PAK
+OS-C7-CF-OS   1    1.175         0.0             2.         Piotr et al.     
+OS-C7-CF-OH   1    0.144         0.0            -3.         parm98, TC,PC,PAK
+OS-C7-CF-OH   1    1.175         0.0             2.         Piotr et al.
+OS-CF-C7-OH   1    0.144         0.0            -3.         parm98, TC,PC,PAK
+OS-CF-C7-OH   1    1.175         0.0             2.         Piotr et al.
+OH-CF-C7-OH   1    0.144         0.0            -3.         parm98, TC,PC,PAK
+OH-CF-C7-OH   1    1.175         0.0             2.         Piotr et al.
+H1-C7-CF-OS   1    0.000         0.0            -3.         JCC,7,(1986),230
+H1-C7-CF-OS   1    0.25          0.0             1.         Junmei et al, 1999
+H1-CF-C7-OS   1    0.000         0.0            -3.         JCC,7,(1986),230
+H1-CF-C7-OS   1    0.25          0.0             1.         Junmei et al, 1999
+H1-CF-C7-OH   1    0.000         0.0            -3.         JCC,7,(1986),230
+H1-CF-C7-OH   1    0.25          0.0             1.         Junmei et al, 1999
+H1-C7-CF-OH   1    0.000         0.0            -3.         JCC,7,(1986),230
+H1-C7-CF-OH   1    0.25          0.0             1.         Junmei et al, 1999
+HC-CF-C7-OS   1    0.000         0.0            -3.         JCC,7,(1986),230
+HC-CF-C7-OS   1    0.25          0.0             1.         Junmei et al, 1999
+HC-CF-C7-OH   1    0.000         0.0            -3.         JCC,7,(1986),230
+HC-CF-C7-OH   1    0.25          0.0             1.         Junmei et al, 1999
+CJ-CF-C7-CF   1    0.180         0.0            -3.0
+CJ-CF-C7-CF   1    0.250       180.0            -2.0
+CJ-CF-C7-CF   1    0.200       180.0             1.0
+C7-CF-CJ-OS   1    1.178040    190.97653        -1.0        gamma bsc0
+C7-CF-CJ-OS   1    0.092102    295.63279        -2.0        gamma bsc0
+C7-CF-CJ-OS   1    0.962830    348.09535         3.0        gamma bsc0
+C7-CF-CJ-OH   1    1.178040    190.97653        -1.0        gamma bsc0
+C7-CF-CJ-OH   1    0.092102    295.63279        -2.0        gamma bsc0
+C7-CF-CJ-OH   1    0.962830    348.09535         3.0        gamma bsc0
+X -C2-N*-X    4    6.80        180.0             2.         JCC,7,(1986),230
+X -C2-NB-X    2   20.00        180.0             2.         JCC,7,(1986),230
+X -C -C1-X    4    8.70        180.0             2.         intrpol.bsd.on C6H6
+X -CA-C1-X    4   10.20        180.0             2.         intrpol.bsd.on C6H6
+X -C1-C1-X    4   26.60        180.0             2.         intrpol.bsd.on C6H6
+X -C1-CF-X    6    0.00          0.0             3.         JCC,7,(1986),230
+X -C1-N*-X    4    7.40        180.0             2.         JCC,7,(1986),230
+HC-CF-C1-C1   1    0.38        180.0            -3.         Junmei et al, 1999
+HC-CF-C1-C1   1    1.15          0.0             1.         Junmei et al, 1999
+C1-C1-C -O    1    2.175       180.0            -2.         Junmei et al, 1999
+C1-C1-C -O    1    0.30          0.0             3.         Junmei et al, 1999
+OS-CF-N*-C2   1    1.54499      40.5923         -1.         OL4 chi ade
+OS-CF-N*-C2   1    1.82864     356.5233         -2.         OL4 chi ade
+OS-CF-N*-C2   1    0.57384     179.0053          3.         OL4 chi ade
+OS-CF-N*-CK   1    1.18653      43.9252         -1.         OL4 chi gua
+OS-CF-N*-CK   1    1.82910     350.8842         -2.         OL4 chi gua
+OS-CF-N*-CK   1    0.66563     175.4175          3.         OL4 chi gua
+OS-CF-N*-C1   1    0.68753     111.3175         -1.         OL4 chi cyt
+OS-CF-N*-C1   1    2.14047     360.2802         -2.         OL4 chi cyt
+OS-CF-N*-C1   1    1.20618     170.6402         -3.         OL4 chi cyt
+OS-CF-N*-C1   1    0.25998      94.1874          4.         OL4 chi cyt
+OS-CF-N*-CM   1    0.56323      94.7062         -1.         OL4 chi ura,thy
+OS-CF-N*-CM   1    2.17812     357.8520         -2.         OL4 chi ura,thy
+OS-CF-N*-CM   1    0.67757     178.4857         -3.         OL4 chi ura,thy
+OS-CF-N*-CM   1    0.13771      85.3644          4.         OL4 chi ura,thy
+X -CJ-OS-X    3    1.150         0.0             3.0
+X -CJ-OH-X    3    0.500         0.0             3.0
+X -CJ-CF-X    9    1.400         0.0             3.0
+CF-OS-CF-CJ   1    0.383         0.0            -3.0
+CF-OS-CF-CJ   1    0.100       180.0             2.0
+H1-CJ-CF-OS   1    0.250         0.0             1.0
+H1-CJ-CF-OH   1    0.250         0.0             1.0
+H1-CF-CJ-OS   1    0.250         0.0             1.0
+H1-CF-CJ-OH   1    0.250         0.0             1.0
+CJ-CF-CF-CF   1    0.180         0.0            -3.0
+CJ-CF-CF-CF   1    0.250       180.0            -2.0
+CJ-CF-CF-CF   1    0.200       180.0             1.0
+OS-P -OS-CJ   1    0.185181     31.79508        -1.0        alfa bsc0
+OS-P -OS-CJ   1    1.256531    351.95960        -2.0        alfa bsc0
+OS-P -OS-CJ   1    0.354858    357.24748         3.0        alfa bsc0
+OH-P -OS-CJ   1    0.185181     31.79508        -1.0        alfa bsc0
+OH-P -OS-CJ   1    1.256531    351.95960        -2.0        alfa bsc0
+OH-P -OS-CJ   1    0.354858    357.24748         3.0        alfa bsc0
+CF-CF-CJ-OS   1    1.178040    190.97653        -1.0        gamma bsc0
+CF-CF-CJ-OS   1    0.092102    295.63279        -2.0        gamma bsc0
+CF-CF-CJ-OS   1    0.962830    348.09535         3.0        gamma bsc0
+CF-CF-CJ-OH   1    1.178040    190.97653        -1.0        gamma bsc0
+CF-CF-CJ-OH   1    0.092102    295.63279        -2.0        gamma bsc0
+CF-CF-CJ-OH   1    0.962830    348.09535         3.0        gamma bsc0
+CF-CJ-OS-P    1    0.527950     23.57816        -1.0        beta OL1
+CF-CJ-OS-P    1    0.091274    223.64797        -2.0        beta OL1
+CF-CJ-OS-P    1    0.535535    181.60702        -3.0        beta OL1
+CF-CJ-OS-P    1    0.079760    215.18103         4.0        beta OL1
+OS-P -CT-H2   1    0.800       180.0             2.         Phosphonates, 
+CT-P -OS-CT   1    2.400         0.0             2.         Phosphonates, 
+CT-P -OS-CF   1    2.400         0.0             2.         Phosphonates, 
+X -CT-OS-X    3    1.15          0.0             3.         Phosphonates, JCC,7,(1986),230
+X -CT-OS-X    3    1.15          0.0             3.         Phosphonates, JCC,7,(1986),230
+X -CF-P -X    9    0.200         0.000           3.         Phosphonates, GAFF
+X -CF-P -X    9    0.200         0.000           3.         Phosphonates, GAFF
+CT-N3-P -OS   1    1.200         0.000          -2.000         SOURCE : J. Am. Chem. Soc. 1997, 119, 6722-6730, https://doi.org/10.1021/ja963909j
+CT-N3-P -OS   1    0.125         0.000           3.000         SOURCE : J. Am. Chem. Soc. 1997, 119, 6722-6730, https://doi.org/10.1021/ja963909j
+CF-N3-P -OS   1    1.200         0.000          -2.000         SOURCE : J. Am. Chem. Soc. 1997, 119, 6722-6730, https://doi.org/10.1021/ja963909j
+CF-N3-P -OS   1    0.125         0.000           3.000         SOURCE : J. Am. Chem. Soc. 1997, 119, 6722-6730, https://doi.org/10.1021/ja963909j
+N3-P -OS-CI   1    0.600         0.000          -2.000         SOURCE : J. Am. Chem. Soc. 1997, 119, 6722-6730, https://doi.org/10.1021/ja963909j
+N3-P -OS-CI   1    0.250         0.000           3.000         SOURCE : J. Am. Chem. Soc. 1997, 119, 6722-6730, https://doi.org/10.1021/ja963909j
+X -N3-P -X    6    0.750         0.000           3.000         SOURCE : J. Am. Chem. Soc. 1997, 119, 6722-6730, https://doi.org/10.1021/ja963909j
+H1-CT-N3-CT   1    0.1686       -2.2573          3.000         SOURCE : J. Am. Chem. Soc. 1997, 119, 6722-6730, https://doi.org/10.1021/ja963909j
+H1-CT-N3-CF   1    0.1686       -2.2573          3.000         SOURCE : J. Am. Chem. Soc. 1997, 119, 6722-6730, https://doi.org/10.1021/ja963909j
+H1-CF-N3-CF   1    0.1686       -2.2573          3.000         SOURCE : J. Am. Chem. Soc. 1997, 119, 6722-6730, https://doi.org/10.1021/ja963909j
+H1-CF-N3-CT   1    0.1686       -2.2573          3.000         SOURCE : J. Am. Chem. Soc. 1997, 119, 6722-6730, https://doi.org/10.1021/ja963909j
+N*-CF-CF-H1   1    1.9842        0.0000         -1.0000    (PARAMFIT TORSION VALUES ON MORPHOLINO ADENOSINE METHYL CAPPED)
+N*-CF-CF-H1   1   -0.6774        0.0000          3.0000    (PARAMFIT TORSION VALUES ON MORPHOLINO ADENOSINE METHYL CAPPED)
+H2-CF-CF-N3   1    1.7556        0.0000          3.0000    (PARAMFIT TORSION VALUES ON MORPHOLINO ADENOSINE METHYL CAPPED)
+OS-CF-CF-H1   1    0.1512        0.0000         -1.0000    (PARAMFIT TORSION VALUES ON MORPHOLINO ADENOSINE METHYL CAPPED)
+OS-CF-CF-H1   1   -0.7014        0.0000          3.0000    (PARAMFIT TORSION VALUES ON MORPHOLINO ADENOSINE METHYL CAPPED)
+H1-CF-CF-N3   1   -0.1013        0.0000          3.0000    (PARAMFIT TORSION VALUES ON MORPHOLINO ADENOSINE METHYL CAPPED)
+N*-CF-CF-N3   1    0.0293        0.0000          3.0000    (PARAMFIT TORSION VALUES ON MORPHOLINO ADENOSINE METHYL CAPPED)
+CF-OS-CF-CF   1    0.0492      180.0001         -2.0000    (PARAMFIT TORSION VALUES ON MORPHOLINO ADENOSINE METHYL CAPPED)
+CF-OS-CF-CF   1    0.3052        0.0000          3.0000    (PARAMFIT TORSION VALUES ON MORPHOLINO ADENOSINE METHYL CAPPED)
+CF-CF-N3-CF   1    0.4461      180.0001         -2.0000    (PARAMFIT TORSION VALUES ON MORPHOLINO ADENOSINE METHYL CAPPED)
+CF-CF-N3-CF   1    0.2754        0.0000          3.0000    (PARAMFIT TORSION VALUES ON MORPHOLINO ADENOSINE METHYL CAPPED)
+CF-CF-N3-CT   1    0.2698        0.0000          3.0000    (PARAMFIT TORSION VALUES ON MORPHOLINO ADENOSINE METHYL CAPPED)
+OS-CF-CF-N3   1    1.0584      180.0001         -2.0000    (PARAMFIT TORSION VALUES ON MORPHOLINO ADENOSINE METHYL CAPPED)
+OS-CF-CF-N3   1    0.2235        0.0000          3.0000    (PARAMFIT TORSION VALUES ON MORPHOLINO ADENOSINE METHYL CAPPED)
+CI-CF-CF-N3   1    0.4378        0.0000          2.0000    (PARAMFIT TORSION VALUES ON MORPHOLINO ADENOSINE METHYL CAPPED)
+
+IMPROPER
+X -X -C2-H5         1.1          180.          2.
+CB-C2-N*-CF         1.0          180.          2.
+X -X -C1-H4         1.1          180.          2.
+X -X -C1-HA         1.1          180.          2.
+C -C1-N*-CF         1.0          180.          2.           dac guess, 9/94
+C -C1-C1-CF         1.1          180.          2.           dac guess, 9/94
+C1-N2-CA-NC         1.1          180.          2.           dac guess, 9/94
+X -X -C -O          10.5         180.          2.           JCC,7,(1986),230
+X -O2-C -O2         10.5         180.          2.           JCC,7,(1986),230
+X -X -N -H          1.0          180.          2.           JCC,7,(1986),230
+X -X -N2-H          1.0          180.          2.           JCC,7,(1986),230
+X -X -NA-H          1.0          180.          2.           JCC,7,(1986),230
+X -N2-CA-N2         10.5         180.          2.           JCC,7,(1986),230
+X -CF-N -CF         1.0          180.          2.           JCC,7,(1986),230
+X -CF-N -CX         1.0          180.          2.           JCC,7,(1986),230 (was X -CF-N -CF)
+X -X -CA-HA         1.1          180.          2.           bsd.on C6H6 nmodes
+X -X -CW-H4         1.1          180.          2.
+X -X -CR-H5         1.1          180.          2.
+X -X -CV-H4         1.1          180.          2.
+X -X -CQ-H5         1.1          180.          2.
+X -X -CK-H5         1.1          180.          2.
+X -X -CP-H5         1.1          180.          2.
+X -X -CM-H4         1.1          180.          2.
+X -X -CM-HA         1.1          180.          2.
+X -X -CS-H4         1.1          180.          2.
+X -X -CS-HA         1.1          180.          2.
+X -X -CA-H4         1.1          180.          2.           bsd.on C6H6 nmodes 
+X -X -CA-H5         1.1          180.          2.           bsd.on C6H6 nmodes
+CB-CK-N*-CF         1.0          180.          2.
+CB-CP-N*-CF         1.0          180.          2.
+C -CM-N*-CF         1.0          180.          2.           dac guess, 9/94
+C -CS-N*-CF         1.0          180.          2.           dac guess, 9/94
+C -CS-CM-CF         1.1          180.          2. 
+CF-O -C -OH         10.5         180.          2.
+CF-CV-CC-NA         1.1          180.          2.
+CF-CW-CC-NB         1.1          180.          2.
+CF-CW-CC-NA         1.1          180.          2.
+CB-CF-C*-CW         1.1          180.          2.
+CA-CA-CA-CF         1.1          180.          2. 
+C -CM-CM-CF         1.1          180.          2.           dac guess, 9/94
+C -CS-CS-CF         1.1          180.          2.           dac guess, 9/94
+CM-N2-CA-NC         1.1          180.          2.           dac guess, 9/94
+CS-N2-CA-NC         1.1          180.          2.           dac guess, 9/94
+CB-N2-CA-NC         1.1          180.          2.           dac, 10/94
+N2-NA-CA-NC         1.1          180.          2.           dac, 10/94
+CA-CA-C -OH         1.1          180.          2.           (not used in tyr!)
+CA-CA-CA-OH         1.1          180.          2.           in tyr
+H5-O -C -OH         1.1          180.          2.           Junmei et al.1999
+H5-O -C -OS         1.1          180.          2.           
+CM-CF-CM-HA         1.1          180.          2.           Junmei et al.1999
+CS-CF-CS-HA         1.1          180.          2.           Junmei et al.1999
+Br-CA-CA-CA         1.1          180.          2.           Junmei et al.1999
+CM-H4-C -O          1.1          180.          2.           Junmei et al.1999
+CS-H4-C -O          1.1          180.          2.           Junmei et al.1999
+C -CF-N -H          1.1          180.          2.           Junmei et al.1999
+C -CX-N -H          1.1          180.          2.           Junmei et al.1999 (was C -CF-N -H )
+C -CF-N -O          1.1          180.          2.           Junmei et al.1999
+X -X -C5-H5         1.1          180.          2.
+CB-C5-N*-CF         1.0          180.          2.
+X -X -C4-H4         1.1          180.          2.
+X -X -C4-HA         1.1          180.          2.
+C -C4-N*-CF         1.0          180.          2.           dac guess, 9/94
+C -C4-C4-CF         1.1          180.          2.           dac guess, 9/94
+C4-N2-CA-NC         1.1          180.          2.           dac guess, 9/94
+CA-CA-C -OS         1.1          180.          2.           phosphotyrosine
+CR-CC-NA-P          1.1          180.          2.           phosphohistine
+X -CF-N -CF         1.0          180.          2.           JCC,7,(1986),230
+X -CF-N -CX         1.0          180.          2.           JCC,7,(1986),230 (was X -CF-N -CF)
+CB-CK-N*-CF         1.0          180.          2.
+CB-CP-N*-CF         1.0          180.          2.
+C -CM-N*-CF         1.0          180.          2.           dac guess, 9/94
+C -CS-N*-CF         1.0          180.          2.           dac guess, 9/94
+C -CS-CM-CF         1.1          180.          2. 
+CF-O -C -OH         10.5         180.          2.
+CF-CV-CC-NA         1.1          180.          2.
+CF-CW-CC-NB         1.1          180.          2.
+CF-CW-CC-NA         1.1          180.          2.
+CB-CF-C*-CW         1.1          180.          2.
+CA-CA-CA-CF         1.1          180.          2. 
+C -CM-CM-CF         1.1          180.          2.           dac guess, 9/94
+C -CS-CS-CF         1.1          180.          2.           dac guess, 9/94
+CM-CF-CM-HA         1.1          180.          2.           Junmei et al.1999
+CS-CF-CS-HA         1.1          180.          2.           Junmei et al.1999
+C -CF-N -H          1.1          180.          2.           Junmei et al.1999
+C -CF-N -O          1.1          180.          2.           Junmei et al.1999
+X -X -C5-H5         1.1          180.          2.
+CB-C5-N*-CF         1.0          180.          2.
+C -C4-N*-CF         1.0          180.          2.           dac guess, 9/94
+C -C4-C4-CF         1.1          180.          2.           dac guess, 9/94
+
+
+NONBOND
+C7          1.9080  0.1094             Spellmeyer
+C2          1.9080  0.0860             Spellmeyer
+C1          1.9080  0.0860             Spellmeyer
+CJ          1.9080  0.1094 
+CF          1.9080  0.1094             Spellmeyer
+HN          0.6000  0.0157                                    !Ferguson base pair geom. -- GAFF.dat
+
