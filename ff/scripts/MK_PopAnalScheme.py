@@ -21,12 +21,15 @@ Description: Generate a Connolly surface (Solvent Excluded Surface) around the m
 
 
 
-Source : _______________
+
+------------------------------------------------------------------------
+Usage : $ python MK_PopAnalScheme.py template_Orca
+    Where `template_Orca` is the name of the (HF - 6-31G*) outputfile generated.
 
 ------------------------------------------------------------------------
 Arguments : As the first variable, give the basename of the file that was outputted when computing the HF 6-31G* single point energy.
 
-        This script will take the standard XXX_model.pdb in the current working directory to parse the atom names to assign vdW radii
+        This script will search for `reoriented_*.pdb` in the current working directory to parse the atom names to assign vdW radii
         So make sure to have used the `reorient_nucleosides.py` before using this script!
 
 
@@ -35,9 +38,9 @@ Arguments : As the first variable, give the basename of the file that was output
 def parse_pdb_for_scraps() -> list:
     """ Atom name :       line 13 - 16 """
 
-    pdb_suffix = "model"
+    pdb_prefix = "reoriented"
 
-    cwd_list = [ i for i in os.listdir(os.getcwd()) if pdb_suffix in i ]
+    cwd_list = [ i for i in os.listdir(os.getcwd()) if i.startswith(pdb_prefix) ]
 
     # if cwd_list is empty, stop the software
     if len(cwd_list) == 0:
