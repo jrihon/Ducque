@@ -116,14 +116,21 @@ def position_phosphate_linker(nucleoside, nucl_array : np.ndarray, linker) -> np
 
     # Dihedral C5' - O5' - P - OP1
     id_v5 = PARSE.retrieve_atom_index(linker, APL[5])
-    #v5 = link_array[id_v5]
+    v5 = link_array[id_v5]
 
     # Generate vector we want to rotate P_OP1 on to
     single_vector3 = generate_vector_of_interest(linker.get_angle("angle_1"), linker.get_dihedral("dihedral_2"), [v3, v2, v1])
 
-    # normalize the single vector, multiply with the set distance (P-O) and replace it with the index of OP1 in the link array, making it the new vector for OP1
-    distance_P_O = 1.48
-    link_array[id_v5] = (MATH.return_normalized(single_vector3) * distance_P_O) + link_array[id_v3]
+    # move the linker to the origin, by positioning the phosphorus at [0,0,0]
+    link_at_origin = MATH.move_vector_to_origin(link_array, link_distance)
+    p3_5 = MATH.return_normalized(v5 - v3)
+
+    # Get quaternion to rotate the linker a first time and rotate it
+    quaternion_P2 = MATH.get_quaternion(single_vector3 , p3_5)
+    rotated_link_at_origin = MATH.rotate_with_quaternion(quaternion_P2, link_at_origin)
+
+    # Move the rotated linker back to the calculated position of the phosphorus atom
+    link_array = MATH.move_vector_to_loc(rotated_link_at_origin, link_distance)
 
     # Stack the arrays on top of each other
     nucleotide = np.vstack((link_array, nucl_array))
