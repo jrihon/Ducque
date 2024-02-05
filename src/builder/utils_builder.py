@@ -110,9 +110,6 @@ def position_phosphate_linker(nucleoside, nucl_array : np.ndarray, linker) -> np
     # Move the rotated linker back to the calculated position of the phosphorus atom
     link_array = MATH.move_vector_to_loc(rotated_link_at_origin, link_distance)
 
-    # Rotate the linker moiety a second time, but now the vector P_OP2 is the direction axis
-    # Since we have rotated the linker, we need to override the vector again from the array 'link' we just overrided
-    v4 = link_array[id_v4]
 
     # Dihedral C5' - O5' - P - OP1
     id_v5 = PARSE.retrieve_atom_index(linker, APL[5])
@@ -120,17 +117,21 @@ def position_phosphate_linker(nucleoside, nucl_array : np.ndarray, linker) -> np
 
     # Generate vector we want to rotate P_OP1 on to
     single_vector3 = generate_vector_of_interest(linker.get_angle("angle_1"), linker.get_dihedral("dihedral_2"), [v3, v2, v1])
-
-    # move the linker to the origin, by positioning the phosphorus at [0,0,0]
-    link_at_origin = MATH.move_vector_to_origin(link_array, link_distance)
     p3_5 = MATH.return_normalized(v5 - v3)
 
+    # move the linker to the origin, by positioning the phosphorus at [0,0,0]
+    link_at_origin2 = MATH.move_vector_to_origin(link_array, link_distance)
+
     # Get quaternion to rotate the linker a first time and rotate it
+    # Rotate only part that needs to be moved
     quaternion_P2 = MATH.get_quaternion(single_vector3 , p3_5)
-    rotated_link_at_origin = MATH.rotate_with_quaternion(quaternion_P2, link_at_origin)
+    part_to_rotate = link_at_origin2[id_v5:]
+    rotated_part_at_origin2 = MATH.rotate_with_quaternion(quaternion_P2, part_to_rotate)
+
+    link_array_at_origin = np.vstack((link_at_origin2[:id_v5], rotated_part_at_origin2))
 
     # Move the rotated linker back to the calculated position of the phosphorus atom
-    link_array = MATH.move_vector_to_loc(rotated_link_at_origin, link_distance)
+    link_array = MATH.move_vector_to_loc(link_array_at_origin, link_distance)
 
     # Stack the arrays on top of each other
     nucleotide = np.vstack((link_array, nucl_array))
