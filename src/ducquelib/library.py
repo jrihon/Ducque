@@ -55,15 +55,6 @@ TABLE_NUCLEOTIDES = {
 "MG" : [DH + "mna_guanosine_1-4chair.json", DH + "dna_phosphate.json"],
 "MC" : [DH + "mna_cytidine_1-4chair.json", DH + "dna_phosphate.json"],
 "MT" : [DH + "mna_thymidine_1-4chair.json", DH + "dna_phosphate.json"],
-"TA" : [DH + "tna_adenosine_3_4_twist.json", DH + "dna_phosphate.json"],
-"TC" : [DH + "tna_cytidine_3_4_twist.json", DH + "dna_phosphate.json"],
-"TG" : [DH + "tna_guanosine_3_4_twist.json", DH + "dna_phosphate.json"],
-"TT" : [DH + "tna_thymidine_3_4_twist.json", DH + "dna_phosphate.json"],
-"PTA" : [DH + "photna_adenosine_3_4_twist.json", DH + "dna_phosphate.json"],
-"PTC" : [DH + "photna_cytidine_3_4_twist.json", DH + "dna_phosphate.json"],
-"PTG" : [DH + "photna_guanosine_3_4_twist.json", DH + "dna_phosphate.json"],
-"PTT" : [DH + "photna_thymidine_3_4_twist.json", DH + "dna_phosphate.json"],
-#"PTU" : [DH + "photna_uracil_3_4_twist.json", DH + "dna_phosphate.json"],
 "1DA" : [ DH + "s-1dna_adenosine_2endo.json", DH + "s-1dna_thiophosphate_r.json"],
 "1DG" : [ DH + "s-1dna_guanosine_2endo.json", DH + "s-1dna_thiophosphate_r.json"],
 "1DC" : [ DH + "s-1dna_cytidine_2endo.json", DH + "s-1dna_thiophosphate_r.json"],
@@ -72,6 +63,10 @@ TABLE_NUCLEOTIDES = {
 "2DG" : [ DH + "s-2dna_guanosine_2endo.json", DH + "s-2dna_thiophosphate_s.json"],
 "2DC" : [ DH + "s-2dna_cytidine_2endo.json", DH + "s-2dna_thiophosphate_s.json"],
 "2DT" : [ DH + "s-2dna_thymidine_2endo.json", DH + "s-2dna_thiophosphate_s.json"],
+"RMA" : [ DH + "r-mep-mna_adenosine_1-4chair.json", DH + "r-mep-mna_methylphosphonate_r.json"],
+"RMC" : [ DH + "r-mep-mna_cytidine_1-4chair.json", DH + "r-mep-mna_methylphosphonate_r.json"],
+"RMG" : [ DH + "r-mep-mna_guanosine_1-4chair.json", DH + "r-mep-mna_methylphosphonate_r.json"],
+"RMT" : [ DH + "r-mep-mna_thymidine_1-4chair.json", DH + "r-mep-mna_methylphosphonate_r.json"],
 }
 
 
@@ -120,15 +115,6 @@ TABLE_CONFORMATIONS = {
 "MG" : [DH + "mna_guanosine_1-4chair.json"],
 "MC" : [DH + "mna_cytidine_1-4chair.json"],
 "MT" : [DH + "mna_thymidine_1-4chair.json"],
-"TA" : [DH + "tna_adenosine_3_4_twist.json"],
-"TC" : [DH + "tna_cytidine_3_4_twist.json"],
-"TG" : [DH + "tna_guanosine_3_4_twist.json"],
-"TT" : [DH + "tna_thymidine_3_4_twist.json"],
-"PTA" : [DH + "photna_adenosine_3_4_twist.json"],
-"PTC" : [DH + "photna_cytidine_3_4_twist.json"],
-"PTG" : [DH + "photna_guanosine_3_4_twist.json"],
-"PTT" : [DH + "photna_thymidine_3_4_twist.json"],
-#"PTU" : [DH + "photna_uracil_3_4_twist.json"],
 "1DA" : [ DH + "s-1dna_adenosine_2endo.json"],
 "1DG" : [ DH + "s-1dna_guanosine_2endo.json"],
 "1DC" : [ DH + "s-1dna_cytidine_2endo.json"],
@@ -137,6 +123,10 @@ TABLE_CONFORMATIONS = {
 "2DG" : [ DH + "s-2dna_guanosine_2endo.json"],
 "2DC" : [ DH + "s-2dna_cytidine_2endo.json"],
 "2DT" : [ DH + "s-2dna_thymidine_2endo.json"],
+"RMA" : [ DH + "r-mep-mna_adenosine_1-4chair.json"],
+"RMC" : [ DH + "r-mep-mna_cytidine_1-4chair.json"],
+"RMG" : [ DH + "r-mep-mna_guanosine_1-4chair.json"],
+"RMT" : [ DH + "r-mep-mna_thymidine_1-4chair.json"],
 }
 
 
@@ -145,8 +135,11 @@ TABLE_CONFORMATIONS = {
 #           BACKBONE REPOSITORY
 # -----------------------------------------
 TABLE_BACKBONE = {
+# Linker
 "PHOSPHATE" : ["P"],
 "THIOPHOSPHATE" : ["P"],
+"METHYLPHOSPHONATE" : ["P"],
+# Nucleosides
 "DNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "RNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "B-HOMODNA" : ["O4'", "C4'", "C5'", "C6'", "O6'"],
@@ -157,10 +150,9 @@ TABLE_BACKBONE = {
 "CENA" : ["O3'", "C3'", "C4'", "C7'", "O7'"],
 "DXYNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "MNA" : ["N3'", "C4'", "C5'", "C6'", "O6'"],
-"TNA" : ["O2'", "C2'", "C3'", "O3'"],
-"PHOTNA" : ["O2'", "C2'", "C3'", "O3'", "CP3'"],
 "S-1DNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "S-2DNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
+"R-MEP-MNA" : ["N3'", "C4'", "C5'", "C6'", "O6'"],
 }
 
 
@@ -171,6 +163,7 @@ TABLE_BACKBONE = {
 TABLE_LINKER_BACKBONE = {
 "PHOSPHATE" : ["P", "OP1", "OP2"],
 "THIOPHOSPHATE" : ["P", "SP1", "OP2"],
+"METHYLPHOSPHONATE" : ["P", "OP", "CP"],
 }
 
 
@@ -189,10 +182,9 @@ TABLE_CHEMISTRY = {
 "CENA" : "Cylcohexenyl Nucleic acid",
 "DXYNA" : "deoxy Xylose Nucleic Acid",
 "MNA" : "Morpholino Nucleic Acid",
-"TNA" : "Threose Nucleic Acid",
-"PHOTNA" : "Phosphonate Threose Nucleic Acid",
 "S-1DNA" : "Thio Deoxyribonucleic acid",
 "S-2DNA" : "Thio Deoxyribonucleic acid",
+"R-MEP-MNA" : "R-Methyl Phosphonate Morpholino Nucleic Acid",
 }
 
 # -----------------------------------------
@@ -210,10 +202,9 @@ TABLE_LINKER = {
 "CENA" : "PHOSPHATE",
 "DXYNA" : "PHOSPHATE",
 "MNA" : "PHOSPHATE",
-"TNA" : "PHOSPHATE",
-"PHOTNA" : "PHOSPHATE", 
 "S-1DNA" : "THIOPHOSPHATE",
 "S-2DNA" : "THIOPHOSPHATE",
+"R-MEP-MNA" : "METHYLPHOSPHONATE",
 }
 
 

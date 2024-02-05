@@ -1,11 +1,6 @@
 __pycache__
 ff/src_pdf/
 docs/src_pdf/
-input_sequences/
 tests/
-transmute/tna*
-transmute/photna*
 transmute/hold/
 json/hold/
-json/tna*
-json/photna*
