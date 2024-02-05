@@ -80,6 +80,7 @@ def Transmutation(pdb_fname, nucleicAcidChemistry : str, moietyType : str, dihed
         identity.append(nucleicAcidChemistry)
 
         # Check if atoms to build by, stated in the TABLES, are present in the pdb
+        print(nucleicAcidChemistry)
         nucleicAcid.validate_atomnames_for_building(moietyType=moietyType, chemistry=nucleicAcidChemistry)
 
     #------------------------------- TORSIONS AND ANGLES -----------------------------#

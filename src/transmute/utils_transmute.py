@@ -157,14 +157,15 @@ class TransmuteToJson:
         """ Check if the following atoms have already been passed to the proper TABLES and if 
             the atoms are present in the prompted pdb file, in order to transmute properly. """
 
-        try : 
-            backbone_atoms = TABLE_BACKBONE[chemistry.upper()]
-        except :
-            SD.print_invalid_key(chemistry, "TABLE_BACKBONE")
-            SD.exit_Ducque()
-
 
         if moietyType.upper() == "NUCLEOSIDE":
+
+            try : 
+                backbone_atoms = TABLE_BACKBONE[chemistry.upper()]
+            except :
+                SD.print_invalid_key(chemistry, "TABLE_BACKBONE")
+                SD.exit_Ducque()
+
             # Depending on the type of nucleobase, add these atoms as they are important for model building
             # incidentally, this is almost the entire nucleobase
             if nucleobase == "Adenosine" : backbone_atoms.extend(["N9", "C4", "C8", "N3", "C2", "N1", "C5", "C6"])
@@ -180,18 +181,30 @@ class TransmuteToJson:
 
         elif moietyType.upper() == "LINKER":
 
-            # not only the backbone atom is required, but also when reorienting
+            # Check if (nucleoside - linker) pair has been assigned in TABLE_LINKER
             try : 
-                linker_atoms = TABLE_LINKER_BACKBONE[chemistry.upper()]
+                linkerChemistry = TABLE_LINKER[chemistry.upper()]
             except :
-                SD.print_invalid_key(chemistry, "TABLE_LINKER_BACKBONE")
+                SD.print_invalid_key(chemistry, "TABLE_LINKER")
                 SD.exit_Ducque()
 
-            backbone_atoms.extend(linker_atoms)
+            # Check if (nucleoside - linker) pair has been assigned in TABLE_LINKER
+            try : 
+                _ = TABLE_BACKBONE[linkerChemistry.upper()]
+            except :
+                SD.print_invalid_key(chemistry, "TABLE_BACKBONE")
+                SD.exit_Ducque()
 
-            for backbone_atom in backbone_atoms: 
-                if backbone_atom not in self.atomName : 
-                    SD.print_atomnotfound(backbone_atom, self.fileName)
+            # retrieve atoms for reorientation from the 
+            try : 
+                linker_atoms = TABLE_LINKER_BACKBONE[linkerChemistry.upper()]
+            except :
+                SD.print_invalid_key(linkerChemistry, "TABLE_LINKER_BACKBONE")
+                SD.exit_Ducque()
+
+            for linker_atom in linker_atoms: 
+                if linker_atom not in self.atomName : 
+                    SD.print_atomnotfound(linker_atom, self.fileName)
                     SD.exit_Ducque()
 
         else : 
