@@ -63,10 +63,6 @@ TABLE_NUCLEOTIDES = {
 "2DG" : [ DH + "s-2dna_guanosine_2endo.json", DH + "s-2dna_thiophosphate_s.json"],
 "2DC" : [ DH + "s-2dna_cytidine_2endo.json", DH + "s-2dna_thiophosphate_s.json"],
 "2DT" : [ DH + "s-2dna_thymidine_2endo.json", DH + "s-2dna_thiophosphate_s.json"],
-"RMA" : [ DH + "r-mep-mna_adenosine_1-4chair.json", DH + "r-mep-mna_methylphosphonate_r.json"],
-"RMC" : [ DH + "r-mep-mna_cytidine_1-4chair.json", DH + "r-mep-mna_methylphosphonate_r.json"],
-"RMG" : [ DH + "r-mep-mna_guanosine_1-4chair.json", DH + "r-mep-mna_methylphosphonate_r.json"],
-"RMT" : [ DH + "r-mep-mna_thymidine_1-4chair.json", DH + "r-mep-mna_methylphosphonate_r.json"],
 }
 
 
@@ -123,10 +119,6 @@ TABLE_CONFORMATIONS = {
 "2DG" : [ DH + "s-2dna_guanosine_2endo.json"],
 "2DC" : [ DH + "s-2dna_cytidine_2endo.json"],
 "2DT" : [ DH + "s-2dna_thymidine_2endo.json"],
-"RMA" : [ DH + "r-mep-mna_adenosine_1-4chair.json"],
-"RMC" : [ DH + "r-mep-mna_cytidine_1-4chair.json"],
-"RMG" : [ DH + "r-mep-mna_guanosine_1-4chair.json"],
-"RMT" : [ DH + "r-mep-mna_thymidine_1-4chair.json"],
 }
 
 
@@ -152,7 +144,6 @@ TABLE_BACKBONE = {
 "MNA" : ["N3'", "C4'", "C5'", "C6'", "O6'"],
 "S-1DNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
 "S-2DNA" : ["O3'", "C3'", "C4'", "C5'", "O5'"],
-"R-MEP-MNA" : ["N3'", "C4'", "C5'", "C6'", "O6'"],
 }
 
 
@@ -163,7 +154,6 @@ TABLE_BACKBONE = {
 TABLE_LINKER_BACKBONE = {
 "PHOSPHATE" : ["P", "OP1", "OP2"],
 "THIOPHOSPHATE" : ["P", "SP1", "OP2"],
-"METHYLPHOSPHONATE" : ["P", "OP", "CP"],
 }
 
 
@@ -184,7 +174,6 @@ TABLE_CHEMISTRY = {
 "MNA" : "Morpholino Nucleic Acid",
 "S-1DNA" : "Thio Deoxyribonucleic acid",
 "S-2DNA" : "Thio Deoxyribonucleic acid",
-"R-MEP-MNA" : "R-Methyl Phosphonate Morpholino Nucleic Acid",
 }
 
 # -----------------------------------------
@@ -204,7 +193,6 @@ TABLE_LINKER = {
 "MNA" : "PHOSPHATE",
 "S-1DNA" : "THIOPHOSPHATE",
 "S-2DNA" : "THIOPHOSPHATE",
-"R-MEP-MNA" : "METHYLPHOSPHONATE",
 }
 
 
