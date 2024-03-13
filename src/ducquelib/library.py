@@ -172,8 +172,8 @@ TABLE_CHEMISTRY = {
 "CENA" : "Cylcohexenyl Nucleic acid",
 "DXYNA" : "deoxy Xylose Nucleic Acid",
 "MNA" : "Morpholino Nucleic Acid",
-"S-1DNA" : "Thio Deoxyribonucleic acid",
-"S-2DNA" : "Thio Deoxyribonucleic acid",
+"S-1DNA" : "R-Thio Deoxyribonucleic acid",
+"S-2DNA" : "S-Thio Deoxyribonucleic acid",
 }
 
 # -----------------------------------------

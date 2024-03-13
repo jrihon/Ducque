@@ -1,4 +1,4 @@
---pdb ../puckerdata/S-1DNA/s-1dna_guanosine_2endo.pdb
+--pdb ../puckerdata/S-1DNA/G/s-1dna_guanosine_2endo.pdb
 --chemistry S-1DNA 
 --conformation 2endo 
 --moiety nucleoside 
