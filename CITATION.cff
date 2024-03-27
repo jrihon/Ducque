@@ -1,0 +1,71 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  Structural insights into the morpholino nucleic acid/RNA
+  duplex using the new XNA builder Ducque in a molecular
+  modeling pipeline
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Jérôme
+    family-names: Rihon
+    email: jeromerihon@gmail.com
+    affiliation: >-
+      Laboratory of Medicinal Chemistry, Rega Institute for
+      Medical Research, Herestraat 49, Box 1030, B-3000
+      Leuven, Belgium
+    orcid: 'https://orcid.org/0000-0002-9207-1556'
+  - given-names: Charles-Alexandre
+    family-names: Mattelaer
+    affiliation: >-
+      Quantum Chemistry and Physical Chemistry,
+      Celestijnenlaan 200f, Box 2404, B-3001, Leuven,
+      Belgium
+  - given-names: Rinaldo
+    family-names: ' Wander Montalvão'
+    affiliation: >-
+      Gain Therapeutics sucursal en España, Barcelona
+      Science Park, Baldiri Reixac 4-10, 08028 Barcelona,
+      Spain
+  - given-names: Mathy
+    family-names: Froeyen
+    affiliation: >-
+      Laboratory of Medicinal Chemistry, Rega Institute for
+      Medical Research, Herestraat 49, Box 1030, B-3000
+      Leuven, Belgium
+  - given-names: Vitor
+    family-names: Berardes Pinheiro
+    affiliation: >-
+      Laboratory of Medicinal Chemistry, Rega Institute for
+      Medical Research, Herestraat 49, Box 1030, B-3000
+      Leuven, Belgium
+  - given-names: Eveline
+    family-names: Lescrinier
+    email: eveline.lescrinier@kuleuven.be
+    orcid: 'https://orcid.org/0000-0001-7066-4329'
+    affiliation: >-
+      Laboratory of Medicinal Chemistry, Rega Institute for
+      Medical Research, Herestraat 49, Box 1030, B-3000
+      Leuven, Belgium
+identifiers:
+  - type: doi
+    value: 10.1093/nar/gkae135
+  - type: url
+    value: 'https://doi.org/10.1093/nar/gkae135'
+repository-code: 'https://github.com/jrihon/Ducque'
+abstract: >-
+  The Ducque model builder to build virtual (X)NA duplexes,
+  for a pure in silico molecular modeling pipeline
+keywords:
+  - Xenobiotic Nucleic Acid
+  - Model builder
+  - Structural Biology
+  - Cheminformatics
+  - Molecular Modeling
+license: MIT
+version: '1.0'
+date-released: '2024-02-19'
