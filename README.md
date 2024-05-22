@@ -22,5 +22,22 @@ The `How_To_Create_A_Forcefield.pdf` file guides the user through the correct pr
 If you've used Ducque or any of its parts, or you've used the `How_To_Create_A_Forcefield.pdf` as a guide for your own research, please cite the following published article : 
 
 [1] Jérôme Rihon, Charles-Alexandre Mattelaer, Rinaldo Wander Montalvão, Mathy Froeyen, Vitor Bernardes Pinheiro, Eveline Lescrinier, Structural insights into the morpholino nucleic acid/RNA duplex using the new XNA builder Ducque in a molecular modeling pipeline, Nucleic Acids Research, 2024; DOI: 10.1093/nar/gkae135, [https://doi.org/10.1093/nar/gkae135](https://doi.org/10.1093/nar/gkae135)
+
+```bibtex
+@article{Rihon_2024,
+    title={Structural insights into the morpholino nucleic acid/RNA duplex using the new XNA builder Ducque in a molecular modeling pipeline},
+    volume={52},
+    ISSN={1362-4962},
+    url={http://dx.doi.org/10.1093/nar/gkae135},
+    DOI={10.1093/nar/gkae135},
+    number={6},
+    journal={Nucleic Acids Research},
+    publisher={Oxford University Press (OUP)},
+    author={Rihon, Jérôme and Mattelaer, Charles-Alexandre and Montalvão, Rinaldo Wander and Froeyen, Mathy and Pinheiro, Vitor Bernardes and Lescrinier, Eveline},
+    year={2024},
+    month=feb,
+    pages={2836–2847}
+}
+```
 ## Authors
 Jérôme Rihon ([@jrihon](https://www.github.com/jrihon) )
