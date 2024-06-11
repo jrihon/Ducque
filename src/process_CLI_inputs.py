@@ -2,6 +2,7 @@ import systemsDucque as SD
 import os
 
 from ducquelib.library import TABLE_NUCLEOTIDES, TABLE_CHEMISTRY
+from nucleobase.utils_nucleobase import Nucleobase
 
 """ When the user prompts the wrong values or flags, this python script intercepts most errors that happen at the start """
 
@@ -263,7 +264,6 @@ def xyz_to_pdb(CONVERSIONINPUT):
                 os.path.isfile(xyz_fname)
             except FileNotFoundError:
                 SD.print_filenotfound(xyz_fname)
-#                print(f"File {xyz_fname} was not found. Please revise either its name or its location on your system.\n")
                 SD.exit_Ducque()
 
         if flag == "--residue":
@@ -290,3 +290,102 @@ def gui_module(GUIINPUT):
         SD.print_invalid_flag(GUIINPUT)
 
     return GUIINPUT
+
+
+def nucleobase(NBASEINPUT) -> tuple[str, list[Nucleobase]]:
+
+    if not NBASEINPUT.name.endswith(".ninp"): 
+        SD.print_inputfile("`--nbase`", "`.ninp`")
+
+    fileNbases = remove_blank_lines(list(map(lambda x: x.strip(), NBASEINPUT.readlines())))
+    list_of_mods = list()
+
+    pdb_nbase_fname = ""
+
+    # find the --pdb flag 
+    for line in fileNbases : 
+        lList = line.split()
+        if lList[0] == "--pdb" : 
+            try : 
+                pdb_nbase_fname = lList[1]
+            except IndexError :
+                SD.print_empty_query("--pdb")
+                SD.exit_Ducque()
+
+            if not os.path.isfile(pdb_nbase_fname): 
+                SD.print_filenotfound(pdb_nbase_fname)
+                SD.exit_Ducque()
+
+            break
+
+    # If the --pdb flag is not found, exit early
+    if pdb_nbase_fname == '': 
+        SD.print_empty_query("--pdb")
+        SD.exit_Ducque()
+
+
+    argumentless_flags = ["--nucleobase" ,"-reorient"]
+    # Fill out `list_of_mods` with Nucleobase objects
+    isFirstObjectedCreated = False
+    for argument in fileNbases : 
+        flag = argument.split()[0]
+
+        # nucleobase and reorient are two flags that do not take an argument
+        # if we cannot index into a second element of the other flags, crash it
+        if flag not in argumentless_flags: 
+            try : 
+                arg = argument.split()[1]
+            except IndexError : 
+                SD.print_empty_query(flag)
+                SD.exit_Ducque()
+            
+
+        # if line starts with `--nucleobase`
+        if flag == "--nucleobase" : 
+
+            # if there are no entries yet, instance a Nucleobase()
+            if not isFirstObjectedCreated : 
+                nbase = Nucleobase()
+                isFirstObjectedCreated = True
+                continue
+
+            else : 
+                # If we encounter another instance of --nucleobase
+                # append the current one to the list
+                list_of_mods.append(nbase)
+
+                # Clean wipe data and initalise new Nucleobase() class
+                nbase = Nucleobase()
+                continue
+
+
+        if flag == "-position": 
+            nbase.set_position(arg, pdb_nbase_fname)
+
+        if flag == "-mod": 
+            nbase.set_mod(arg)
+
+        if flag == "-resname": 
+            nbase.set_new_resname(arg)
+
+        if flag == "-reorient": 
+            nbase.set_reorient()
+
+    # append last instance of --nucleobase
+    list_of_mods.append(nbase)
+#    for nb in list_of_mods : 
+#        print(nb.position)
+#        print(nb.from_mod)
+#        print(nb.to_mod)
+#        print(nb.new_resname)
+#        print(nb.reorient)
+#        print()
+#    print(len(list_of_mods))
+            
+
+    # Catch errors early
+    if len(list_of_mods) == 0 : 
+        SD.print_empty_query("--nucleobase")
+        SD.exit_Ducque()
+
+    return pdb_nbase_fname, list_of_mods

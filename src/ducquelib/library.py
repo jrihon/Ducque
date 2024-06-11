@@ -209,6 +209,16 @@ TABLE_NUCLEOBASE = {
 }
 
 
+# -----------------------------------------
+#     NUCLEOBASE MODIFICATION REPOSITORY
+# -----------------------------------------
+TABLE_NUCLEOBASE_MODS = {
+"A" : [ DH + "adenosine.json"],
+"C" : [ DH + "cytidine.json"],
+"G" : [ DH + "guanosine.json"],
+"T" : [ DH + "thymidine.json"],
+"U" : [ DH + "uracil.json"],
+}
 
 #------------------------ HOLDING ON TO THIS IDEA FOR LATER (?) ----------------------------------------------------
 #def get_base_type(base : str) -> str:

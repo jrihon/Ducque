@@ -91,6 +91,7 @@ def print_build():                  print(f"\033[96m[BUILD]           : Generati
 def print_transmute(PDB_FNAME) :    print(f"\033[96m[TRANSMUTE]       : Converting {PDB_FNAME} to a json file\033[39m\n")
 def print_xyz(XYZ_FNAME):           print(f"\033[96m[XYZ -> PDB]      : Converting {XYZ_FNAME} to a .pdb format file\033[39m\n")
 def print_rand():                   print(f"\033[96m[RANDOMISE]       : Randomisation of the given inputs!\033[39m\n")
+def print_nbase(PDB_FNAME):         print(f"\033[96m[NUCLEOBASE]      : Modification of nucleobases in {PDB_FNAME}!\033[39m\n")
 def print_dupl_ln(num_nucl):        print(f"[DUPLEX LENGTH]   : {num_nucl} nucleotides")
 def print_writing(outfile):         print(f"\033[94m[WRITE FILE]      : {outfile} \033[39m")
 def print_invalid_chemistry(chem):  print(f"[INVALID QUERY]   : `{chem}`. Please revise your inputs for --chemistry")
@@ -103,3 +104,4 @@ def print_conversion_err(name, x):  print(f"[CONVERSION ERROR]: Could not conver
 def print_launch(module):           print(f"[LAUNCH MODULE]   : {module.title()} module !")
 def print_filenotfound(fname):      print(f"[FILE NOT FOUND]  : The following file was not found at the current path `{fname}`.")
 def print_atomnotfound(atom, fl):   print(f"[INVALID QUERY]   : The following atom `{atom}` was not found in the pdb's atomnames `{fl}`.")
+def print_already_set(fl,arg,farg): print(f"[ARGUMENT READILY SET] : The following argument `{fl}` was queried a second time. Set with `{arg}`, cannot change to `{farg}`.")

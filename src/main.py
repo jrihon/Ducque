@@ -9,6 +9,7 @@ SD.check_environment()
 from builder import builder             # Build the duplex
 from transmute import transmute         # Convert a given pdb file to a custom json format
 from randomise import randomise         # Output a random sequence
+from nucleobase import nucleobase       # Nucleobase modification module
 import process_CLI_inputs               # Exceptions and custom errors
 
 def main():
@@ -54,6 +55,9 @@ def main():
     options.add_argument("--gui", type=str, nargs='?', action="append", const="NO_FLAG",
             help="Call Ducque's GUI to access clickable actions (instead of using CLI).")
 
+    options.add_argument("--nbase", type=argparse.FileType("r"),
+            help="Modify an existing `*.pdb` by the nucleobases of the nucleotide chain.")
+
     options.add_argument("--help", action="help",
             help="Prompt Ducque's help message to appear")
 
@@ -79,6 +83,10 @@ def main():
         # If we want to convert XYZ file to PDB
         if arguments.xyz_pdb:
             XYZ_FNAME, ATOM_ID, ATOMNAME_LIST = process_CLI_inputs.xyz_to_pdb(arguments.xyz_pdb)
+
+        # If we want to convert XYZ file to PDB
+        if arguments.nbase:
+            PDB_NBASE_FNAME, LIST_OF_NBASE_MODIFICATIONS = process_CLI_inputs.nucleobase(arguments.nbase)
 
         # If we want to use the GUI
         if arguments.gui :
@@ -112,6 +120,9 @@ def main():
         randomise.randomiser(CHEMISTRY_R, LENGTH_SEQUENCE, SEQUENCE, COMPL_SEQ, OUTFILE)
         sys.exit(0)
 
+    if arguments.nbase:
+        SD.print_nbase(PDB_NBASE_FNAME)
+        nucleobase.modify_nucleobases(PDB_NBASE_FNAME, LIST_OF_NBASE_MODIFICATIONS)
     # Use the GUI module. This gets loaded at the back because GUI users do not mind efficiency
     if arguments.gui :
         from dgui import ducqueGUI 
