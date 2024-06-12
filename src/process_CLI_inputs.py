@@ -298,7 +298,7 @@ def nucleobase(NBASEINPUT) -> tuple[str, list[Nucleobase]]:
         SD.print_inputfile("`--nbase`", "`.ninp`")
 
     fileNbases = remove_blank_lines(list(map(lambda x: x.strip(), NBASEINPUT.readlines())))
-    list_of_mods = list()
+    list_of_modifications = list()
 
     pdb_nbase_fname = ""
 
@@ -325,8 +325,9 @@ def nucleobase(NBASEINPUT) -> tuple[str, list[Nucleobase]]:
 
 
     argumentless_flags = ["--nucleobase" ,"-reorient"]
-    # Fill out `list_of_mods` with Nucleobase objects
+    # Fill out `list_of_modifications` with Nucleobase objects
     isFirstObjectedCreated = False
+    nb_instance=  0
     for argument in fileNbases : 
         flag = argument.split()[0]
 
@@ -345,17 +346,19 @@ def nucleobase(NBASEINPUT) -> tuple[str, list[Nucleobase]]:
 
             # if there are no entries yet, instance a Nucleobase()
             if not isFirstObjectedCreated : 
-                nbase = Nucleobase()
+                nb_instance += 1
+                nbase = Nucleobase(nb_instance)
                 isFirstObjectedCreated = True
                 continue
 
             else : 
                 # If we encounter another instance of --nucleobase
                 # append the current one to the list
-                list_of_mods.append(nbase)
+                list_of_modifications.append(nbase)
 
                 # Clean wipe data and initalise new Nucleobase() class
-                nbase = Nucleobase()
+                nb_instance += 1
+                nbase = Nucleobase(nb_instance)
                 continue
 
 
@@ -371,21 +374,18 @@ def nucleobase(NBASEINPUT) -> tuple[str, list[Nucleobase]]:
         if flag == "-reorient": 
             nbase.set_reorient()
 
-    # append last instance of --nucleobase
-    list_of_mods.append(nbase)
-#    for nb in list_of_mods : 
-#        print(nb.position)
-#        print(nb.from_mod)
-#        print(nb.to_mod)
-#        print(nb.new_resname)
-#        print(nb.reorient)
-#        print()
-#    print(len(list_of_mods))
-            
-
-    # Catch errors early
-    if len(list_of_mods) == 0 : 
+    # try to append last instance of --nucleobase
+    try : 
+        list_of_modifications.append(nbase)
+    # if it fails, that means the --nucleobase flag was never encountered and a Nucleobase() object was never instanced
+    except : 
         SD.print_empty_query("--nucleobase")
         SD.exit_Ducque()
+            
+    # Final check before releasing it into the wild
+    for nb in list_of_modifications : 
+        nb.check_empty_attributes()                     # checks for empty position and empty mod arguments
+        nb.check_if_resname_queried(pdb_nbase_fname)    # checks if residue name is passed in argument or 
+                                                        #   can be parsed from given pdb
 
-    return pdb_nbase_fname, list_of_mods
+    return pdb_nbase_fname, list_of_modifications

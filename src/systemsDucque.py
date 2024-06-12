@@ -56,6 +56,10 @@ def print_invalid_argument(argument : str, flag : str):
     print(f"[INVALID ARGUMENT] : {flag} does not receive `{argument}`.")
     exit_Ducque()
 
+def print_invalid_argument_nb(argument: str, flag: str, pos: int):
+    print(f"[INVALID ARGUMENT] : {flag} does not receive `{argument}`, at `--nucleobase` position `{pos}`.")
+    exit_Ducque()
+
 def print_insufficient_flag(amount : int):
     print(f"[INVALID QUERY]    : Insufficient amount of arguments. Required amount : {amount}.")
     exit_Ducque()
@@ -98,6 +102,7 @@ def print_invalid_chemistry(chem):  print(f"[INVALID QUERY]   : `{chem}`. Please
 def print_invalid_nucleoside(NA):   print(f"[INVALID QUERY]   : One or more of the nucleotides in the given sequence is invalid `{NA}`")
 def print_invalid_key(key, table):  print(f"[INVALID KEY]     : The key `{key}` is not present in the table `{table}`")
 def print_empty_query(flag) :       print(f"[EMPTY QUERY]     : No input(s) found for `{flag}`.")
+def print_empty_query_nb(fl, pos):  print(f"[EMPTY QUERY]     : No input(s) found for `{fl}` at `--nucleobase` position `{pos}`.")
 def print_cant_find_Ducque():       print(f"[NOT FOUND]       : Ducque not found in the $PATH. Please add `Ducque` to the search path.")
 def print_insuf_amount(flag):       print(f"[INVALID AMOUNT]  : Incorrect amount of queries to properly fill the `{flag}` entry")
 def print_conversion_err(name, x):  print(f"[CONVERSION ERROR]: Could not convert the angle `{name}` to a float `{x}` ")
