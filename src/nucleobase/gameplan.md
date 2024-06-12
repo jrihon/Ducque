@@ -32,8 +32,21 @@ $ Ducque --bases INPUTFILE.txt
 - make tables for querying if nucleobases exist
 - parse pdb file to see if it some of the queries are viable
 
+2. TRANSMUTE NUCLEOBASE
+NEED IN Transmute Nucleobase file
+    - pdb file for atomic structure => passed by user
+        -> atomic coordinates  > parsed from pdb
+        -> atom names          > parsed from pdb
+        -> size [x,3]          > parsed from pdb
+    - abbr. name of res. (key)      => passed by user
+    - atoms to rotate by            => passed by user
 
-2. MODIFICATION
+
+    # name of the residue is given by the TABLE_NUCLEOBASE
+    - name of residue               => passed by user in ducquelib/library.py
+
+
+3. MODIFICATION
 - iterate over pdb file make Pdb() instances of the nucleobases
 - Copy all the pdb data and make into a class PdbFragment() or something
 - Take note of the indices at which the residues that are going to be modified start and end (or their size) 

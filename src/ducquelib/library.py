@@ -213,11 +213,11 @@ TABLE_NUCLEOBASE = {
 #     NUCLEOBASE MODIFICATION REPOSITORY
 # -----------------------------------------
 TABLE_NUCLEOBASE_MODS = {
-"A" : [ DH + "adenosine.json"],
+"A" : [ DH + "adenine.json"],
 "C" : [ DH + "cytidine.json"],
-"G" : [ DH + "guanosine.json"],
-"T" : [ DH + "thymidine.json"],
-"U" : [ DH + "uracil.json"],
+"G" : [ DH + "guanine.json"],
+"T" : [ DH + "thymine.json"],
+"U" : [ DH + "uridine.json"],
 }
 
 #------------------------ HOLDING ON TO THIS IDEA FOR LATER (?) ----------------------------------------------------
