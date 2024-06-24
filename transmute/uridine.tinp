@@ -1,0 +1,4 @@
+--pdb ../puckerdata/NucleoBases/uridine.pdb
+--chemistry uridine
+--moiety nucleobase
+--atoms N1, C2, C6

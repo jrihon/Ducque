@@ -1,0 +1,4 @@
+--pdb ../puckerdata/NucleoBases/adenine.pdb
+--chemistry adenine
+--moiety nucleobase
+--atoms N9, C4, C8

@@ -7,7 +7,7 @@
     },
     "identity": "[\"PHOSPHATE\", \"RNA\"]",
     "angles": {
-        "dihedrals": "{\"dihedral_2\": -177.962, \"dihedral_1\": 54.154}",
-        "bond_angles": "{\"angle_1\": 109.77}"
+        "bond_angles": "{\"angle_1\": 109.77}",
+        "dihedrals": "{\"dihedral_1\": -177.962, \"dihedral_2\": 54.154}"
     }
 }
