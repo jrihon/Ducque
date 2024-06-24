@@ -74,7 +74,8 @@ def main():
 
         # If we want to convert a pdb to a json file
         if arguments.transmute:
-            PDB_FNAME, CHEMISTRY_T, MOIETY, DIHEDRALS, ANGLES, CONFORMATION, NUCLEOBASE = process_CLI_inputs.transmute(arguments.transmute)
+            TRANSMUTE_OBJECT = process_CLI_inputs.transmute(arguments.transmute)
+#            PDB_FNAME, CHEMISTRY_T, MOIETY, DIHEDRALS, ANGLES, CONFORMATION, NUCLEOBASE = process_CLI_inputs.transmute(arguments.transmute)
 
         # If we want to call for a randomised sequence
         if arguments.randomise:
@@ -104,8 +105,8 @@ def main():
 
     # Convert pdb to json
     if arguments.transmute:
-        SD.print_transmute(PDB_FNAME)
-        transmute.Transmutation(PDB_FNAME, CHEMISTRY_T, MOIETY, DIHEDRALS, ANGLES, CONFORMATION, NUCLEOBASE)
+        SD.print_transmute(TRANSMUTE_OBJECT.pdb_fname)
+        transmute.Transmutation(TRANSMUTE_OBJECT)
         sys.exit(0)
 
     # Convert an xyz coordinate file to a pdb file

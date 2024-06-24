@@ -1,8 +1,9 @@
 import systemsDucque as SD
 import os
 
+from transmute.utils_transmute import LinkerTransmute, NucleosideTransmute, NucleobaseTransmute
 from ducquelib.library import TABLE_NUCLEOTIDES, TABLE_CHEMISTRY
-from nucleobase.utils_nucleobase import Nucleobase
+from nucleobase.utils_nucleobase import NucleobaseMod
 
 """ When the user prompts the wrong values or flags, this python script intercepts most errors that happen at the start """
 
@@ -101,7 +102,7 @@ def build(BUILDINPUT):
 
 
 
-def transmute(TRANSMUTEINPUT):
+def transmute(TRANSMUTEINPUT) -> LinkerTransmute | NucleosideTransmute | NucleobaseTransmute :
 
     if not TRANSMUTEINPUT.name.endswith(".tinp"): 
         SD.print_inputfile("`--transmute`", "`.tinp`")
@@ -109,61 +110,93 @@ def transmute(TRANSMUTEINPUT):
     # Read the input file and create a list object of the sequence. Removes any whitespace.
     fileTransmute = remove_blank_lines(list(map(lambda x: x.strip(), TRANSMUTEINPUT.readlines())))
 
-    # Check if amount of inputs are valid
-    list_of_valid_flags = ["--pdb", "--chemistry", "--moiety", "--conformation", "--dihedrals", "--bondangles"]
-    # iterate early over the possible inputs to check if `nucleoside` or `linker` is prompted
+#    # Check if amount of inputs are valid
+#    list_of_valid_flags = ["--pdb", "--chemistry", "--moiety", "--conformation", "--dihedrals", "--bondangles"]
+    # iterate over the possible inputs to check if `nucleoside`, `linker` or `nucleobase` is prompted
+    moiety = ""
     for x in fileTransmute:
         line = x.split() 
         flag = line[0]
         if flag == "--moiety": 
             SD.check_for_empty_string(x, flag)
-            if line[1] == "nucleoside":
-                list_of_valid_flags.append("--nucleobase")
+            if line[1] == "nucleoside": moiety += "nucleoside"
+            elif line[1] == "linker": moiety += "linker"
+            elif line[1] == "nucleobase": moiety += "nucleobase"
+            else : 
+                SD.print_invalid_argument("--moiety", line[1])
+
+    # Prepare nucleoside transmutation
+    if moiety == "nucleoside" : 
+
+        nucT = NucleosideTransmute()
+        nucT.set_attributes(fileTransmute)
+
+        return nucT
+
+    # Prepare linker transmutation
+    elif moiety == "linker" : 
+
+        linkT = LinkerTransmute()
+        linkT.set_attributes(fileTransmute)
+
+        return linkT
 
 
-    if not len(fileTransmute) == len(list_of_valid_flags):
-        SD.print_insufficient_flag(len(list_of_valid_flags))
+    # Prepare nucleobase transmutation
+    elif moiety == "nucleobase" : 
 
-    for argument in fileTransmute:
-        flag = argument.split()[0]
-        args = argument.split() 
+        baseT = NucleobaseTransmute()
+        baseT.set_attributes(fileTransmute)
 
-        # Check if flags are valid. If a given flag is not a valid one, shut it down
-        if not flag in list_of_valid_flags:
-            SD.print_invalid_flag(flag)
+        return baseT
 
-        # See if all arguments have been prompted
-        SD.check_for_empty_string(argument, flag)
 
-        # Save the prompted arguments according to the respective flags
-        if flag == "--pdb":
-            pdb_fname = args[1]
+    else : 
+        SD.print_empty_query("--moiety")
 
-        if flag == "--chemistry":
-            chemistry = args[1]
-
-        if flag == "--conformation":
-            conformation = args[1]
-
-        if flag == "--moiety": 
-            moiety = args[1]
-
-        if flag == "--nucleobase": # `nucleoside only` flag
-            nucleobase = args[1]
-
-        if flag == "--dihedrals":
-            dihedrals = args[1:]
-
-        if flag == "--bondangles":
-            angles = args[1:]
-
-    # If nucleobase is not prompted, the linker moiety is queried
-    try : 
-        nucleobase
-    except :
-        nucleobase = ""
-
-    return pdb_fname, chemistry, moiety, dihedrals, angles, conformation, nucleobase
+#    if not len(fileTransmute) == len(list_of_valid_flags):
+#        SD.print_insufficient_flag(len(list_of_valid_flags))
+#
+#    for argument in fileTransmute:
+#        flag = argument.split()[0]
+#        args = argument.split() 
+#
+#        # Check if flags are valid. If a given flag is not a valid one, shut it down
+#        if not flag in list_of_valid_flags:
+#            SD.print_invalid_flag(flag)
+#
+#        # See if all arguments have been prompted
+#        SD.check_for_empty_string(argument, flag)
+#
+#        # Save the prompted arguments according to the respective flags
+#        if flag == "--pdb":
+#            pdb_fname = args[1]
+#
+#        if flag == "--chemistry":
+#            chemistry = args[1]
+#
+#        if flag == "--conformation":
+#            conformation = args[1]
+#
+#        if flag == "--moiety": 
+#            moiety = args[1]
+#
+#        if flag == "--nucleobase": # `nucleoside only` flag
+#            nucleobase = args[1]
+#
+#        if flag == "--dihedrals":
+#            dihedrals = args[1:]
+#
+#        if flag == "--bondangles":
+#            angles = args[1:]
+#
+#    # If nucleobase is not prompted, the linker moiety is queried, make this variable empty
+#    try : 
+#        nucleobase
+#    except :
+#        nucleobase = ""
+#
+#    return pdb_fname, chemistry, moiety, dihedrals, angles, conformation, nucleobase
 
 
 
@@ -292,7 +325,7 @@ def gui_module(GUIINPUT):
     return GUIINPUT
 
 
-def nucleobase(NBASEINPUT) -> tuple[str, list[Nucleobase]]:
+def nucleobase(NBASEINPUT) -> tuple[str, list[NucleobaseMod]]:
 
     if not NBASEINPUT.name.endswith(".ninp"): 
         SD.print_inputfile("`--nbase`", "`.ninp`")
@@ -325,7 +358,7 @@ def nucleobase(NBASEINPUT) -> tuple[str, list[Nucleobase]]:
 
 
     argumentless_flags = ["--nucleobase" ,"-reorient"]
-    # Fill out `list_of_modifications` with Nucleobase objects
+    # Fill out `list_of_modifications` with NucleobaseMod objects
     isFirstObjectedCreated = False
     nb_instance=  0
     for argument in fileNbases : 
@@ -344,10 +377,10 @@ def nucleobase(NBASEINPUT) -> tuple[str, list[Nucleobase]]:
         # if line starts with `--nucleobase`
         if flag == "--nucleobase" : 
 
-            # if there are no entries yet, instance a Nucleobase()
+            # if there are no entries yet, instance a NucleobaseMod()
             if not isFirstObjectedCreated : 
                 nb_instance += 1
-                nbase = Nucleobase(nb_instance)
+                nbase = NucleobaseMod(nb_instance)
                 isFirstObjectedCreated = True
                 continue
 
@@ -356,9 +389,9 @@ def nucleobase(NBASEINPUT) -> tuple[str, list[Nucleobase]]:
                 # append the current one to the list
                 list_of_modifications.append(nbase)
 
-                # Clean wipe data and initalise new Nucleobase() class
+                # Clean wipe data and initalise new NucleobaseMod() class
                 nb_instance += 1
-                nbase = Nucleobase(nb_instance)
+                nbase = NucleobaseMod(nb_instance)
                 continue
 
 
@@ -377,7 +410,7 @@ def nucleobase(NBASEINPUT) -> tuple[str, list[Nucleobase]]:
     # try to append last instance of --nucleobase
     try : 
         list_of_modifications.append(nbase)
-    # if it fails, that means the --nucleobase flag was never encountered and a Nucleobase() object was never instanced
+    # if it fails, that means the --nucleobase flag was never encountered and a NucleobaseMod() object was never instanced
     except : 
         SD.print_empty_query("--nucleobase")
         SD.exit_Ducque()

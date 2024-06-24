@@ -1,9 +1,9 @@
 # first file of the WIP
-from nucleobase.utils_nucleobase import Nucleobase
+from nucleobase.utils_nucleobase import NucleobaseMod
 
 
 
-def modify_nucleobases(PDB_NBASE_FNAME: str, LIST_OF_NBASE_MODIFICATIONS : list[Nucleobase]) -> None : 
+def modify_nucleobases(PDB_NBASE_FNAME: str, LIST_OF_NBASE_MODIFICATIONS : list[NucleobaseMod]) -> None : 
     """ 
     take in the CLI inputs
     -> pdb file 

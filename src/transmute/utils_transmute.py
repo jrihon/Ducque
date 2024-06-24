@@ -1,4 +1,3 @@
-import sys
 from os.path import isfile, basename, dirname
 from os import getcwd
 from random import randint
@@ -7,6 +6,166 @@ import numpy as np
 import systemsDucque as SD
 from ducquelib.library import TABLE_CHEMISTRY, TABLE_LINKER, TABLE_NUCLEOBASE, TABLE_BACKBONE, TABLE_LINKER_BACKBONE
 
+
+class LinkerTransmute: 
+
+    def __init__(self) -> None:
+        self.list_of_valid_flags = ["--pdb", "--chemistry", "--moiety", "--conformation", "--dihedrals", "--bondangles"]
+        self.pdb_fname = ""
+        self.chemistry = ""
+        self.conformation = ""
+        self.moiety = ""
+        self.dihedrals = list()
+        self.angles = list()
+
+    def set_attributes(self, fileTransmute) -> None : 
+
+        if not len(fileTransmute) == len(self.list_of_valid_flags):
+            SD.print_insufficient_flag(len(self.list_of_valid_flags))
+
+        for argument in fileTransmute:
+            flag = argument.split()[0]
+            args = argument.split() 
+
+            # Check if flags are valid. If a given flag is not a valid one, shut it down
+            if not flag in self.list_of_valid_flags:
+                SD.print_invalid_flag(flag)
+
+            # See if all arguments have been prompted
+            SD.check_for_empty_string(argument, flag)
+
+            # Save the prompted arguments according to the respective flags
+            if flag == "--pdb":
+                self.pdb_fname = args[1]
+
+            if flag == "--chemistry":
+                self.chemistry = args[1]
+
+            if flag == "--conformation":
+                self.conformation = args[1]
+
+            if flag == "--moiety": 
+                self.moiety = args[1].upper()
+
+            if flag == "--dihedrals":
+                self.dihedrals = args[1:]
+
+            if flag == "--bondangles":
+                self.angles = args[1:]
+
+class NucleosideTransmute: 
+
+    def __init__(self) -> None:
+        self.list_of_valid_flags = ["--pdb", "--chemistry", "--moiety", "--conformation", "--dihedrals", "--bondangles", "--nucleobase"]
+        self.pdb_fname = ""
+        self.chemistry = ""
+        self.conformation = ""
+        self.nucleobase = ""
+        self.moiety = ""
+        self.dihedrals = list()
+        self.angles = list()
+
+
+    def set_attributes(self, fileTransmute) -> None : 
+
+        if not len(fileTransmute) == len(self.list_of_valid_flags):
+            SD.print_insufficient_flag(len(self.list_of_valid_flags))
+
+        for argument in fileTransmute:
+            flag = argument.split()[0]
+            args = argument.split() 
+
+            # Check if flags are valid. If a given flag is not a valid one, shut it down
+            if not flag in self.list_of_valid_flags:
+                SD.print_invalid_flag(flag)
+
+            # See if all arguments have been prompted
+            SD.check_for_empty_string(argument, flag)
+
+            # Save the prompted arguments according to the respective flags
+            if flag == "--pdb":
+                self.pdb_fname = args[1]
+
+            if flag == "--chemistry":
+                self.chemistry = args[1]
+
+            if flag == "--conformation":
+                self.conformation = args[1]
+
+            if flag == "--moiety": 
+                self.moiety = args[1].upper()
+
+            if flag == "--nucleobase": # `nucleoside only` flag
+                self.nucleobase = args[1]
+
+            if flag == "--dihedrals":
+                self.dihedrals = args[1:]
+
+            if flag == "--bondangles":
+                self.angles = args[1:]
+
+
+class NucleobaseTransmute: 
+
+    def __init__(self) -> None:
+        """ 
+        --atoms : atoms to rotate by
+        """
+        self.list_of_valid_flags = ["--pdb", "--chemistry", "--moiety", "--atoms"]
+        self.pdb_fname = ""
+        self.chemistry = ""
+        self.moiety = ""
+        self.atoms = ""
+
+
+
+    def set_attributes(self, fileTransmute) -> None : 
+
+        if not len(fileTransmute) == len(self.list_of_valid_flags):
+            SD.print_insufficient_flag(len(self.list_of_valid_flags))
+
+        for argument in fileTransmute:
+            flag = argument.split()[0]
+            args = argument.split() 
+
+            # Check if flags are valid. If a given flag is not a valid one, shut it down
+            if not flag in self.list_of_valid_flags:
+                SD.print_invalid_flag(flag)
+
+            # See if all arguments have been prompted
+            SD.check_for_empty_string(argument, flag)
+
+            # Save the prompted arguments according to the respective flags
+            if flag == "--pdb":
+                self.pdb_fname = args[1]
+
+            if flag == "--chemistry":
+                self.chemistry = args[1]
+
+            if flag == "--moiety": 
+                self.moiety = args[1].upper()
+
+            if flag == "--atoms": 
+                self.atoms = args[1:]
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 class TransmuteToJson:
     """ This class exists to convert any *.pdb type format to an appriopriate *.json type format.
 
@@ -117,33 +276,32 @@ class TransmuteToJson:
     def get_resname(self) -> str:
         """ Get the chemistry of the nucleoside, also strip any remaining whitespace in all the strings in the list. """
         return self.residueName
+#
+#
+#
+#
+#
+#
+#
+#
+class TransmuteToJsonNucleoside(TransmuteToJson): 
 
+    def __init__(self, pdbfile):
+        super().__init__(pdbfile)
 
-    def get_full_name(self, chemistry : str, moietyType) -> str:
-        """ Get the full name of the nucleic acid chemistry or linker moietyType we want to convert to a json """
+    def get_full_name(self, chemistry : str) -> str:
+        """ Get the full name of the nucleic acid chemistry moiety we want to convert to a json """
 
-        if moietyType.upper() == "NUCLEOSIDE":
-            try : 
-                chemistry = TABLE_CHEMISTRY[chemistry.upper()]
-            except :
-                SD.print_invalid_key(chemistry, "TABLE_CHEMISTRY")
-                sys.exit(1)
-            
-            return chemistry
-
-        if moietyType.upper() == "LINKER":
-            try : 
-                 link = TABLE_LINKER[chemistry.upper()]
-            except :
-                SD.print_invalid_key(chemistry.upper(), "TABLE_LINKER")
-                sys.exit(1)
-            
-            return link
-
+        try : 
+            chemistry = TABLE_CHEMISTRY[chemistry.upper()]
+        except :
+            SD.print_invalid_key(chemistry, "TABLE_CHEMISTRY")
+            SD.exit_Ducque()
+        
+        return chemistry
 
     def get_nucleobase(self, nucleobase: str) -> str:
-        """ Get the base that corresponds with this nucleic acid. Take the last character of the string Residue Name and
-            look for it in the dictionary """
+        """ Get the base that corresponds with this nucleic acid. Take passed `nucleobase` and query the dictionary """
         try : 
             base = TABLE_NUCLEOBASE[nucleobase.upper()]
         except :
@@ -152,66 +310,31 @@ class TransmuteToJson:
         
         return base
 
-    
-    def validate_atomnames_for_building(self, moietyType: str, chemistry: str, nucleobase: str = ""): 
+    def validate_atomnames_for_building(self, chemistry: str, nucleobase: str = ""): 
         """ Check if the following atoms have already been passed to the proper TABLES and if 
             the atoms are present in the prompted pdb file, in order to transmute properly. """
 
 
-        if moietyType.upper() == "NUCLEOSIDE":
+        try : 
+            backbone_atoms = TABLE_BACKBONE[chemistry.upper()]
+        except :
+            SD.print_invalid_key(chemistry, "TABLE_BACKBONE")
+            SD.exit_Ducque()
 
-            try : 
-                backbone_atoms = TABLE_BACKBONE[chemistry.upper()]
-            except :
-                SD.print_invalid_key(chemistry, "TABLE_BACKBONE")
+        # Depending on the type of nucleobase, add these atoms as they are important for model building
+        # incidentally, this is almost the entire nucleobase
+        if nucleobase == "Adenosine" : backbone_atoms.extend(["N9", "C4", "C8", "N3", "C2", "N1", "C5", "C6"])
+        elif nucleobase == "Guanosine" : backbone_atoms.extend(["N9", "C4", "C8", "N3", "C2", "N1", "C5", "C6"])
+        elif nucleobase == "Cytidine" : backbone_atoms.extend(["N1", "C2", "C6", "N1", "C2", "N3", "C5", "C4"])
+        elif nucleobase == "Thymidine" : backbone_atoms.extend(["N1", "C2", "C6", "N1", "C2", "N3", "C5", "C4"])
+        elif nucleobase == "Uracil" : backbone_atoms.extend(["N1", "C2", "C6", "N1", "C2", "N3", "C5", "C4"])
+
+        for backbone_atom in backbone_atoms: 
+            if backbone_atom not in self.atomName : 
+                SD.print_atomnotfound(backbone_atom, self.atomName)
                 SD.exit_Ducque()
 
-            # Depending on the type of nucleobase, add these atoms as they are important for model building
-            # incidentally, this is almost the entire nucleobase
-            if nucleobase == "Adenosine" : backbone_atoms.extend(["N9", "C4", "C8", "N3", "C2", "N1", "C5", "C6"])
-            elif nucleobase == "Guanosine" : backbone_atoms.extend(["N9", "C4", "C8", "N3", "C2", "N1", "C5", "C6"])
-            elif nucleobase == "Cytidine" : backbone_atoms.extend(["N1", "C2", "C6", "N1", "C2", "N3", "C5", "C4"])
-            elif nucleobase == "Thymidine" : backbone_atoms.extend(["N1", "C2", "C6", "N1", "C2", "N3", "C5", "C4"])
-            elif nucleobase == "Uracil" : backbone_atoms.extend(["N1", "C2", "C6", "N1", "C2", "N3", "C5", "C4"])
-
-            for backbone_atom in backbone_atoms: 
-                if backbone_atom not in self.atomName : 
-                    SD.print_atomnotfound(backbone_atom, self.atomName)
-                    SD.exit_Ducque()
-
-        elif moietyType.upper() == "LINKER":
-
-            # Check if (nucleoside - linker) pair has been assigned in TABLE_LINKER
-            try : 
-                linkerChemistry = TABLE_LINKER[chemistry.upper()]
-            except :
-                SD.print_invalid_key(chemistry, "TABLE_LINKER")
-                SD.exit_Ducque()
-
-            # Check if (nucleoside - linker) pair has been assigned in TABLE_LINKER
-            try : 
-                _ = TABLE_BACKBONE[linkerChemistry.upper()]
-            except :
-                SD.print_invalid_key(chemistry, "TABLE_BACKBONE")
-                SD.exit_Ducque()
-
-            # retrieve atoms for reorientation from the 
-            try : 
-                linker_atoms = TABLE_LINKER_BACKBONE[linkerChemistry.upper()]
-            except :
-                SD.print_invalid_key(linkerChemistry, "TABLE_LINKER_BACKBONE")
-                SD.exit_Ducque()
-
-            for linker_atom in linker_atoms: 
-                if linker_atom not in self.atomName : 
-                    SD.print_atomnotfound(linker_atom, self.fileName)
-                    SD.exit_Ducque()
-
-        else : 
-            SD.print_invalid_argument(moietyType, "--moiety")
-
-
-    def get_angles(self, moietyType : str, angles_list : list) -> dict:
+    def get_angles(self, angles_list : list) -> dict:
         """
         List the bond angles differently whether it belongs to a nucleoside or a linker moietyType 
         This function is used by both the bondangle parser and the dihedral parser.
@@ -219,63 +342,135 @@ class TransmuteToJson:
         """
         json_dict = {}
 
-        if moietyType == "nucleoside":
-            # Strip the list of (for now) string values of their comma 
-            angles_list = list(map(lambda x: x.strip(","), angles_list))
-            if len(angles_list) == 7:
-                angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "chi"]
-            elif len(angles_list) == 8:
-                angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "nu", "chi"]
-            elif len(angles_list) == 6:
-                angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "chi"]
-            else:
-                print("Amount of dihedrals prompted is not aligned with the standard amount of dihedrals.")
+        # Strip the list of (for now) string values of their comma 
+        angles_list = list(map(lambda x: x.strip(","), angles_list))
+        if len(angles_list) == 7:
+            angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "chi"]
+        elif len(angles_list) == 8:
+            angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "nu", "chi"]
+        elif len(angles_list) == 6:
+            angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "chi"]
+        else:
+            print("Amount of dihedrals prompted is not aligned with the standard amount of dihedrals.")
+            SD.exit_Ducque()
+
+
+        # Check if all values are float
+        for i, val in enumerate(angles_list):
+            if not isinstance(float(val), float):
+                SD.print_conversion_err(angles_of_interest[i], val)
+                SD.exit_Ducque()
+
+        # Check if size of the prompted dihedral values is the same as the amount of required dihedrals
+        assert len(angles_of_interest) == len(angles_list),  "Check your input for missing dihedral values or missplaced commas.\nNote: the decimal values should be denoted by a point and not a comma."
+
+        # Append the values to their respective bond angles
+        for ang in range(len(angles_list)):
+            json_dict[angles_of_interest[ang]] = float(angles_list[ang])
+
+        return json_dict 
+
+    def get_output_name(self, chemistry : str, conformation : str, nucleobase: str) -> str:
+        """ Create the name of the file based on the chemistry of the nucleic acid chemistry and its corresponding base 
+            This function creates the name of the json file
+
+            If moietyType == linker, then the nucleobase == "" (empty). 
+            The conformation is optional and is prompted as either R or S stereochemistry.
+        """
+
+        name_of_chemistry = chemistry.lower()
+        name_of_base = self.get_nucleobase(nucleobase).lower()
+
+        conformation = conformation.lower()
+        return name_of_chemistry + "_" + name_of_base + "_" + conformation
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+class TransmuteToJsonLinker(TransmuteToJson): 
+
+    def __init__(self, pdbfile):
+        super().__init__(pdbfile)
+
+
+    def get_full_name(self, chemistry : str) -> str:
+        """ Get the full name of linker moiety we want to convert to a json """
+
+        try : 
+             link = TABLE_LINKER[chemistry.upper()]
+        except :
+            SD.print_invalid_key(chemistry.upper(), "TABLE_LINKER")
+            SD.exit_Ducque()
+        
+        return link
+
+    def validate_atomnames_for_building(self, chemistry: str): 
+        """ Check if the following atoms have already been passed to the proper TABLES and if 
+            the atoms are present in the prompted pdb file, in order to transmute properly. """
+
+        # Check if (nucleoside - linker) pair has been assigned in TABLE_LINKER
+        try : 
+            linkerChemistry = TABLE_LINKER[chemistry.upper()]
+        except :
+            SD.print_invalid_key(chemistry, "TABLE_LINKER")
+            SD.exit_Ducque()
+
+        # Check if (nucleoside - linker) pair has been assigned in TABLE_LINKER
+        try : 
+            _ = TABLE_BACKBONE[linkerChemistry.upper()]
+        except :
+            SD.print_invalid_key(chemistry, "TABLE_BACKBONE")
+            SD.exit_Ducque()
+
+        # retrieve atoms for reorientation from the 
+        try : 
+            linker_atoms = TABLE_LINKER_BACKBONE[linkerChemistry.upper()]
+        except :
+            SD.print_invalid_key(linkerChemistry, "TABLE_LINKER_BACKBONE")
+            SD.exit_Ducque()
+
+        for linker_atom in linker_atoms: 
+            if linker_atom not in self.atomName : 
+                SD.print_atomnotfound(linker_atom, self.fileName)
                 SD.exit_Ducque()
 
 
-            # Check if all values are float
-            for i, val in enumerate(angles_list):
-                if not isinstance(float(val), float):
-                    SD.print_conversion_err(angles_of_interest[i], val)
-                    SD.exit_Ducque()
+    def get_angles(self, angles_list : list) -> dict:
+        """
+        List the bond angles differently whether it belongs to a nucleoside or a linker moietyType 
+        This function is used by both the bondangle parser and the dihedral parser.
 
-            # Check if size of the prompted dihedral values is the same as the amount of required dihedrals
-            assert len(angles_of_interest) == len(angles_list),  "Check your input for missing dihedral values or missplaced commas.\nNote: the decimal values should be denoted by a point and not a comma."
+        """
+        json_dict = {}
 
-            # Append the values to their respective bond angles
-            for ang in range(len(angles_list)):
-                json_dict[angles_of_interest[ang]] = float(angles_list[ang])
+        angles_list = list(map(lambda x: x.strip(","), angles_list))
 
-            return json_dict 
+        # Check if all values are float
+        for i, val in enumerate(angles_list):
+            if not isinstance(float(val), float):
+                SD.print_conversion_err(angles_list[i], val)
+                SD.exit_Ducque()
 
+        # Bond Angles
+        if len(angles_list) == 1:
+            json_dict["angle_1"] = float(angles_list[0])
 
-        elif moietyType == "linker":
-            angles_list = list(map(lambda x: x.strip(","), angles_list))
+        # Dihedrals
+        elif len(angles_list) == 2:
+            json_dict["dihedral_1"] = float(angles_list[0])
+            json_dict["dihedral_2"] = float(angles_list[1])
 
-            json_dict = {}
-
-            # Check if all values are float
-            for i, val in enumerate(angles_list):
-                if not isinstance(float(val), float):
-                    SD.print_conversion_err(angles_list[i], val)
-                    SD.exit_Ducque()
-
-            # Bond Angles
-            if len(angles_list) == 1:
-                json_dict["angle_1"] = float(angles_list[0])
-
-            # Dihedrals
-            elif len(angles_list) == 2:
-                json_dict["dihedral_1"] = float(angles_list[0])
-                json_dict["dihedral_2"] = float(angles_list[1])
-
-            return json_dict 
-
-        else : 
-            SD.print_invalid_argument(moietyType, "--moiety")
+        return json_dict 
 
 
-    def get_output_name(self, chemistry : str, moietyType : str, conformation : str, nucleobase: str) -> str:
+    def get_output_name(self, chemistry : str, conformation : str) -> str:
         """ Create the name of the file based on the chemistry of the nucleic acid chemistry and its corresponding base 
             This function creates the name of the json file
 
@@ -284,26 +479,252 @@ class TransmuteToJson:
         """
 
 
-        if moietyType == "nucleoside":
-            name_of_chemistry = chemistry.lower()
-            name_of_base = self.get_nucleobase(nucleobase).lower()
+        name_of_chemistry = chemistry.lower()
+        name_of_linker = TABLE_LINKER[chemistry].lower()
+        
+        if conformation.upper() == "R" or conformation.upper() == "S":
+            return  name_of_chemistry + "_" + name_of_linker + "_" + conformation.lower()
+        elif conformation.upper() != "NONE":
+            SD.print_invalid_argument(conformation, "--conformation")
 
-            conformation = conformation.lower()
-            return name_of_chemistry + "_" + name_of_base + "_" + conformation
+        return name_of_chemistry + "_" + name_of_linker
 
-        elif moietyType == "linker":
-            name_of_chemistry = chemistry.lower()
-            name_of_linker = TABLE_LINKER[chemistry].lower()
-            
-            if conformation.upper() == "R" or conformation.upper() == "S":
-                return  name_of_chemistry + "_" + name_of_linker + "_" + conformation.lower()
-            elif conformation.upper() != "NONE":
-                SD.print_invalid_argument(conformation, "--conformation")
-            else:
-                return name_of_chemistry + "_" + name_of_linker
+#
+#
+#
+#
 
-        else :
-            sys.exit("The molecule is not annotated with either `nucleoside` or `linker`. Please revise the inputs")
+class TransmuteToJsonNucleobase(TransmuteToJson): 
+
+    def __init__(self, pdbfile):
+        super().__init__(pdbfile)
+
+
+
+    def get_full_name(self, chemistry : str) -> str:
+        """ Get the full name of linker moiety we want to convert to a json """
+
+        if not chemistry == "" : 
+            return chemistry.lower()
+        else : 
+            SD.print_empty_query("--chemistry")
+            SD.exit_Ducque()
+
+    def validate_atomnames_for_building(self, atoms: str): 
+        """ Check if the following atoms are present in the pdb, in order to transmute properly. """
+
+        atoms_list = list(map(lambda x: x.strip(","), atoms))
+        for atom in atoms_list: 
+            if atom not in self.atomName : 
+                SD.print_atomnotfound(atom, self.fileName)
+                SD.exit_Ducque()
+
+    def get_atoms_for_rotation(self, atoms : str) -> list[str]:
+        """
+        List the bond angles differently whether it belongs to a nucleoside or a linker moietyType 
+        This function is used by both the bondangle parser and the dihedral parser.
+
+        """
+
+        return list(map(lambda x: x.strip(","), atoms))
+
+
+    def get_output_name(self, chemistry : str) -> str:
+        """ Create the name of the file based on the chemistry of the nucleic acid chemistry and its corresponding base 
+            This function creates the name of the json file
+            The conformation is optional and is prompted as either R or S stereochemistry.
+        """
+
+        return chemistry.lower()
+
+
+
+
+#    def get_full_name(self, chemistry : str, moietyType) -> str:
+#        """ Get the full name of the nucleic acid chemistry or linker moietyType we want to convert to a json """
+#
+#        if moietyType.upper() == "NUCLEOSIDE":
+#            try : 
+#                chemistry = TABLE_CHEMISTRY[chemistry.upper()]
+#            except :
+#                SD.print_invalid_key(chemistry, "TABLE_CHEMISTRY")
+#                sys.exit(1)
+#            
+#            return chemistry
+#
+#        if moietyType.upper() == "LINKER":
+#            try : 
+#                 link = TABLE_LINKER[chemistry.upper()]
+#            except :
+#                SD.print_invalid_key(chemistry.upper(), "TABLE_LINKER")
+#                sys.exit(1)
+#            
+#            return link
+#
+#
+#    def get_nucleobase(self, nucleobase: str) -> str:
+#        """ Get the base that corresponds with this nucleic acid. Take the last character of the string Residue Name and
+#            look for it in the dictionary """
+#        try : 
+#            base = TABLE_NUCLEOBASE[nucleobase.upper()]
+#        except :
+#            SD.print_invalid_key(nucleobase, "TABLE_NUCLEOBASE")
+#            SD.exit_Ducque()
+#        
+#        return base
+#
+#    
+#    def validate_atomnames_for_building(self, moietyType: str, chemistry: str, nucleobase: str = ""): 
+#        """ Check if the following atoms have already been passed to the proper TABLES and if 
+#            the atoms are present in the prompted pdb file, in order to transmute properly. """
+#
+#
+#        if moietyType.upper() == "NUCLEOSIDE":
+#
+#            try : 
+#                backbone_atoms = TABLE_BACKBONE[chemistry.upper()]
+#            except :
+#                SD.print_invalid_key(chemistry, "TABLE_BACKBONE")
+#                SD.exit_Ducque()
+#
+#            # Depending on the type of nucleobase, add these atoms as they are important for model building
+#            # incidentally, this is almost the entire nucleobase
+#            if nucleobase == "Adenosine" : backbone_atoms.extend(["N9", "C4", "C8", "N3", "C2", "N1", "C5", "C6"])
+#            elif nucleobase == "Guanosine" : backbone_atoms.extend(["N9", "C4", "C8", "N3", "C2", "N1", "C5", "C6"])
+#            elif nucleobase == "Cytidine" : backbone_atoms.extend(["N1", "C2", "C6", "N1", "C2", "N3", "C5", "C4"])
+#            elif nucleobase == "Thymidine" : backbone_atoms.extend(["N1", "C2", "C6", "N1", "C2", "N3", "C5", "C4"])
+#            elif nucleobase == "Uracil" : backbone_atoms.extend(["N1", "C2", "C6", "N1", "C2", "N3", "C5", "C4"])
+#
+#            for backbone_atom in backbone_atoms: 
+#                if backbone_atom not in self.atomName : 
+#                    SD.print_atomnotfound(backbone_atom, self.atomName)
+#                    SD.exit_Ducque()
+#
+#        elif moietyType.upper() == "LINKER":
+#
+#            # Check if (nucleoside - linker) pair has been assigned in TABLE_LINKER
+#            try : 
+#                linkerChemistry = TABLE_LINKER[chemistry.upper()]
+#            except :
+#                SD.print_invalid_key(chemistry, "TABLE_LINKER")
+#                SD.exit_Ducque()
+#
+#            # Check if (nucleoside - linker) pair has been assigned in TABLE_LINKER
+#            try : 
+#                _ = TABLE_BACKBONE[linkerChemistry.upper()]
+#            except :
+#                SD.print_invalid_key(chemistry, "TABLE_BACKBONE")
+#                SD.exit_Ducque()
+#
+#            # retrieve atoms for reorientation from the 
+#            try : 
+#                linker_atoms = TABLE_LINKER_BACKBONE[linkerChemistry.upper()]
+#            except :
+#                SD.print_invalid_key(linkerChemistry, "TABLE_LINKER_BACKBONE")
+#                SD.exit_Ducque()
+#
+#            for linker_atom in linker_atoms: 
+#                if linker_atom not in self.atomName : 
+#                    SD.print_atomnotfound(linker_atom, self.fileName)
+#                    SD.exit_Ducque()
+#
+#        else : 
+#            SD.print_invalid_argument(moietyType, "--moiety")
+#
+#
+#    def get_angles(self, moietyType : str, angles_list : list) -> dict:
+#        """
+#        List the bond angles differently whether it belongs to a nucleoside or a linker moietyType 
+#        This function is used by both the bondangle parser and the dihedral parser.
+#
+#        """
+#        json_dict = {}
+#
+#        if moietyType.upper() == "NUCLEOSIDE":
+#            # Strip the list of (for now) string values of their comma 
+#            angles_list = list(map(lambda x: x.strip(","), angles_list))
+#            if len(angles_list) == 7:
+#                angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "chi"]
+#            elif len(angles_list) == 8:
+#                angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "nu", "chi"]
+#            elif len(angles_list) == 6:
+#                angles_of_interest = ["alpha", "beta", "gamma", "delta", "epsilon", "chi"]
+#            else:
+#                print("Amount of dihedrals prompted is not aligned with the standard amount of dihedrals.")
+#                SD.exit_Ducque()
+#
+#
+#            # Check if all values are float
+#            for i, val in enumerate(angles_list):
+#                if not isinstance(float(val), float):
+#                    SD.print_conversion_err(angles_of_interest[i], val)
+#                    SD.exit_Ducque()
+#
+#            # Check if size of the prompted dihedral values is the same as the amount of required dihedrals
+#            assert len(angles_of_interest) == len(angles_list),  "Check your input for missing dihedral values or missplaced commas.\nNote: the decimal values should be denoted by a point and not a comma."
+#
+#            # Append the values to their respective bond angles
+#            for ang in range(len(angles_list)):
+#                json_dict[angles_of_interest[ang]] = float(angles_list[ang])
+#
+#            return json_dict 
+#
+#
+#        elif moietyType.upper() == "LINKER":
+#            angles_list = list(map(lambda x: x.strip(","), angles_list))
+#
+#            json_dict = {}
+#
+#            # Check if all values are float
+#            for i, val in enumerate(angles_list):
+#                if not isinstance(float(val), float):
+#                    SD.print_conversion_err(angles_list[i], val)
+#                    SD.exit_Ducque()
+#
+#            # Bond Angles
+#            if len(angles_list) == 1:
+#                json_dict["angle_1"] = float(angles_list[0])
+#
+#            # Dihedrals
+#            elif len(angles_list) == 2:
+#                json_dict["dihedral_1"] = float(angles_list[0])
+#                json_dict["dihedral_2"] = float(angles_list[1])
+#
+#            return json_dict 
+#
+#        else : 
+#            SD.print_invalid_argument(moietyType, "--moiety")
+#
+#
+#    def get_output_name(self, chemistry : str, moietyType : str, conformation : str, nucleobase: str) -> str:
+#        """ Create the name of the file based on the chemistry of the nucleic acid chemistry and its corresponding base 
+#            This function creates the name of the json file
+#
+#            If moietyType == linker, then the nucleobase == "" (empty). 
+#            The conformation is optional and is prompted as either R or S stereochemistry.
+#        """
+#
+#
+#        if moietyType.upper() == "NUCLEOSIDE":
+#            name_of_chemistry = chemistry.lower()
+#            name_of_base = self.get_nucleobase(nucleobase).lower()
+#
+#            conformation = conformation.lower()
+#            return name_of_chemistry + "_" + name_of_base + "_" + conformation
+#
+#        elif moietyType.upper() == "LINKER":
+#            name_of_chemistry = chemistry.lower()
+#            name_of_linker = TABLE_LINKER[chemistry].lower()
+#            
+#            if conformation.upper() == "R" or conformation.upper() == "S":
+#                return  name_of_chemistry + "_" + name_of_linker + "_" + conformation.lower()
+#            elif conformation.upper() != "NONE":
+#                SD.print_invalid_argument(conformation, "--conformation")
+#            else:
+#                return name_of_chemistry + "_" + name_of_linker
+#
+#        else :
+#            sys.exit("The molecule is not annotated with either `nucleoside` or `linker`. Please revise the inputs")
 
 
 class TransmuteToPdb:

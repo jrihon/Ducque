@@ -7,7 +7,7 @@ from ducquelib.library import TABLE_NUCLEOBASE_MODS
 #-mod Psi        (required)
 #-resname pU     (optional, if omitted take the resname of original pdb)
 #-orientation HG (optional)
-class Nucleobase: 
+class NucleobaseMod: 
 
     def __init__(self, nb_instance: int) -> None:
 

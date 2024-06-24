@@ -7,7 +7,7 @@ import transmute.utils_transmute as UT
 
 
 
-def Transmutation(pdb_fname, nucleicAcidChemistry : str, moietyType : str, dihedralList : list, anglesList : list, conformation : str , nucleobase : str):
+def Transmutation(transmuteObject : UT.NucleosideTransmute | UT.LinkerTransmute | UT.NucleobaseTransmute) -> None :
     """This function converts a pdb formatted file into a json file.
     Json files make for a much easier data parsing format, are computationally much more efficient and require less memory to be held.
 
@@ -23,98 +23,319 @@ def Transmutation(pdb_fname, nucleicAcidChemistry : str, moietyType : str, dihed
             The dihedrals of the backbone and the glycosidic dihedral
             The bond angles that correspond with the three last atoms of the respective dihedral
 
+        Admittedly quite a large function, but I'll take readability over refactoring in this case
     """
-    ## Read pdb and convert to dataframe
-    nucleicAcid = UT.TransmuteToJson(pdb_fname)
-    nucleicAcid.pdb_for_attributes()
+    if transmuteObject.moiety.upper() == "NUCLEOSIDE" : 
+        ## Read pdb and convert to pdbobject
+        nucleosidePdb = UT.TransmuteToJsonNucleoside(transmuteObject.pdb_fname)
+        nucleosidePdb.pdb_for_attributes()
 
 
-    ## Initialise the main dictionary
-    molecule = {}
+        ## Initialise the main dictionary
+        molecule = {}
 
-    #-------------------------------- PDB PROPERTIES --------------------------------#
-    # Initialise pdb properties dictionary
-    pdb_properties = {}
+        #-------------------------------- PDB PROPERTIES --------------------------------#
+        # Initialise pdb properties dictionary
+        pdb_properties = {}
 
-    # Coordinates and Shape
-    pdb_properties["Coordinates"] = json.dumps(nucleicAcid.get_array())
-    pdb_properties["Shape"] = json.dumps(nucleicAcid.get_shape_array())
+        # Coordinates and Shape
+        pdb_properties["Coordinates"] = json.dumps(nucleosidePdb.get_array())
+        pdb_properties["Shape"] = json.dumps(nucleosidePdb.get_shape_array())
 
-    # Get Atom namelist             NB: json outputs double quotations as \" XX \" for strings (escape characters)
-    pdb_properties["Atoms"] = json.dumps(nucleicAcid.get_atoms())
+        # Get Atom namelist             NB: json outputs double quotations as \" XX \" for strings (escape characters)
+        pdb_properties["Atoms"] = json.dumps(nucleosidePdb.get_atoms())
 
-    # Get the element symbol
-    pdb_properties["Symbol"] = json.dumps(nucleicAcid.get_element_symbol())
+        # Get the element symbol
+        pdb_properties["Symbol"] = json.dumps(nucleosidePdb.get_element_symbol())
 
-    #----------------------------------- IDENTITY -----------------------------------#
-    # Initialise the identity list
-    identity = []
-
-    if moietyType.upper() == "NUCLEOSIDE":
+        molecule["pdb_properties"] = pdb_properties
+        #----------------------------------- IDENTITY -----------------------------------#
+        # Initialise the identity list
+        identity = []
         # full name
-        fullname = nucleicAcid.get_full_name(nucleicAcidChemistry, moietyType)
+        fullname = nucleosidePdb.get_full_name(transmuteObject.chemistry)
         identity.append(fullname)
 
         # abbreviated name
-#        abbr = nucleicAcidChemistry
-        identity.append(nucleicAcidChemistry)
-
+#        abbr = nucleosidePdbChemistry
+        identity.append(transmuteObject.chemistry)
+#
         # molecule chemistry, which is often the same as the residue name in the pdb
-        molecule_residuename = nucleicAcid.get_resname()
+        molecule_residuename = nucleosidePdb.get_resname()
         identity.append(molecule_residuename)
 
         # Nucleobase of the nucleic acid
-        nucleobaseName = nucleicAcid.get_nucleobase(nucleobase)
+        nucleobaseName = nucleosidePdb.get_nucleobase(transmuteObject.nucleobase)
         identity.append(nucleobaseName)
 
         # Check if atoms to build by, stated in the TABLES, are present in the pdb
-        nucleicAcid.validate_atomnames_for_building(moietyType=moietyType, chemistry=nucleicAcidChemistry, nucleobase=nucleobaseName)
+        nucleosidePdb.validate_atomnames_for_building(chemistry=transmuteObject.chemistry,
+                                                    nucleobase=transmuteObject.nucleobase
+                                                    )
+        molecule["identity"] = json.dumps(identity)
 
-    if moietyType.upper() == "LINKER":
+        #------------------------------- TORSIONS AND ANGLES -----------------------------#
+        # Initialise the dictionary for the dihedrals and the bond angles
+        angles = {}
+
+        # Get Bond angles
+        bondangles = nucleosidePdb.get_angles(transmuteObject.angles)
+
+        # Get dihedrals
+        torsions = nucleosidePdb.get_angles(transmuteObject.dihedrals)
+
+        angles["bond_angles"] = json.dumps(bondangles)
+        angles["dihedrals"] = json.dumps(torsions)
+
+        #----------------- DUMP EVERYTHING INTO THE MOLECULE DICTIONARY -----------------#
+        molecule["angles"] = angles
+
+        #----------------------------- WRITE OUT A JSON FILE ----------------------------#
+        # The json dump() method always requires us to dump it to a file in the current directory
+        fname = nucleosidePdb.get_output_name(transmuteObject.chemistry, transmuteObject.conformation, transmuteObject.nucleobase)
+
+        # Get Ducque home
+        DUCQUEHOME = SD.return_DUCQUEHOME()
+
+        # Write the inputfile to the Ducque home directory
+        with open(DUCQUEHOME + "json/" + fname + ".json", "w") as filejson:
+            json.dump(molecule, filejson, indent=4)
+
+        SD.print_writing(f"{DUCQUEHOME}json/{fname}.json")
+
+
+    elif transmuteObject.moiety.upper() == "LINKER" : 
+        ## Read pdb and convert to pdbobject
+        linkerPdb = UT.TransmuteToJsonLinker(transmuteObject.pdb_fname)
+        linkerPdb.pdb_for_attributes()
+
+
+        ## Initialise the main dictionary
+        molecule = {}
+
+        #-------------------------------- PDB PROPERTIES --------------------------------#
+        # Initialise pdb properties dictionary
+        pdb_properties = {}
+
+        # Coordinates and Shape
+        pdb_properties["Coordinates"] = json.dumps(linkerPdb.get_array())
+        pdb_properties["Shape"] = json.dumps(linkerPdb.get_shape_array())
+
+        # Get Atom namelist             NB: json outputs double quotations as \" XX \" for strings (escape characters)
+        pdb_properties["Atoms"] = json.dumps(linkerPdb.get_atoms())
+
+        # Get the element symbol
+        pdb_properties["Symbol"] = json.dumps(linkerPdb.get_element_symbol())
+
+        molecule["pdb_properties"] = pdb_properties
+        #----------------------------------- IDENTITY -----------------------------------#
+        # Initialise the identity list
+        identity = []
         # full name
-        fullname = nucleicAcid.get_full_name(nucleicAcidChemistry, moietyType)
+        fullname = linkerPdb.get_full_name(transmuteObject.chemistry)
         identity.append(fullname)
 
         # abbreviated name
-#        abbr = nucleicAcidChemistry
-        identity.append(nucleicAcidChemistry)
+#        abbr = linkerPdbChemistry
+        identity.append(transmuteObject.chemistry)
 
         # Check if atoms to build by, stated in the TABLES, are present in the pdb
-        print(nucleicAcidChemistry)
-        nucleicAcid.validate_atomnames_for_building(moietyType=moietyType, chemistry=nucleicAcidChemistry)
+        linkerPdb.validate_atomnames_for_building(chemistry=transmuteObject.chemistry)
 
+        molecule["identity"] = json.dumps(identity)
+
+        #------------------------------- TORSIONS AND ANGLES -----------------------------#
+        # Initialise the dictionary for the dihedrals and the bond angles
+        angles = {}
+
+        # Get Bond angles
+        bondangles = linkerPdb.get_angles(transmuteObject.angles)
+
+        # Get dihedrals
+        torsions = linkerPdb.get_angles(transmuteObject.dihedrals)
+
+        angles["bond_angles"] = json.dumps(bondangles)
+        angles["dihedrals"] = json.dumps(torsions)
+
+        #----------------- DUMP EVERYTHING INTO THE MOLECULE DICTIONARY -----------------#
+        molecule["angles"] = angles
+
+        #----------------------------- WRITE OUT A JSON FILE ----------------------------#
+        # The json dump() method always requires us to dump it to a file in the current directory
+        fname = linkerPdb.get_output_name(transmuteObject.chemistry, transmuteObject.conformation)
+
+        # Get Ducque home
+        DUCQUEHOME = SD.return_DUCQUEHOME()
+
+        # Write the inputfile to the Ducque home directory
+        with open(DUCQUEHOME + "json/" + fname + ".json", "w") as filejson:
+            json.dump(molecule, filejson, indent=4)
+
+        SD.print_writing(f"{DUCQUEHOME}json/{fname}.json")
+
+
+
+
+    elif transmuteObject.moiety.upper() == "NUCLEOBASE" : 
+        ## Read pdb and convert to pdbobject
+        nucleobasePdb = UT.TransmuteToJsonNucleobase(transmuteObject.pdb_fname)
+        nucleobasePdb.pdb_for_attributes()
+
+
+        ## Initialise the main dictionary
+        molecule = {}
+
+        #-------------------------------- PDB PROPERTIES --------------------------------#
+        # Initialise pdb properties dictionary
+        pdb_properties = {}
+
+        # Coordinates and Shape
+        pdb_properties["Coordinates"] = json.dumps(nucleobasePdb.get_array())
+        pdb_properties["Shape"] = json.dumps(nucleobasePdb.get_shape_array())
+
+        # Get Atom namelist             NB: json outputs double quotations as \" XX \" for strings (escape characters)
+        pdb_properties["Atoms"] = json.dumps(nucleobasePdb.get_atoms())
+
+        # Get the element symbol
+        pdb_properties["Symbol"] = json.dumps(nucleobasePdb.get_element_symbol())
+
+        molecule["pdb_properties"] = pdb_properties
+        #----------------------------------- IDENTITY -----------------------------------#
+        # Initialise the identity list
+        identity = nucleobasePdb.get_full_name(transmuteObject.chemistry)
+
+        # abbreviated name
+#        abbr = nucleobasePdbChemistry
+#        identity.append(transmuteObject.chemistry)
+
+        # Check if atoms to build by, stated in the TABLES, are present in the pdb
+        nucleobasePdb.validate_atomnames_for_building(transmuteObject.atoms)
+        molecule["identity"] = json.dumps(identity)
+
+        #----------------------------- ATOMS FOR ROTATION ----------------------------#
+        atoms_rotation = nucleobasePdb.get_atoms_for_rotation(transmuteObject.atoms)
+        molecule["atoms_rotation"] = json.dumps(atoms_rotation)
+
+        #----------------------------- WRITE OUT A JSON FILE ----------------------------#
+        # The json dump() method always requires us to dump it to a file in the current directory
+        fname = nucleobasePdb.get_output_name(transmuteObject.chemistry)
+
+        # Get Ducque home
+        DUCQUEHOME = SD.return_DUCQUEHOME()
+
+        # Write the inputfile to the Ducque home directory
+        with open(DUCQUEHOME + "json/" + fname + ".json", "w") as filejson:
+            json.dump(molecule, filejson, indent=4)
+
+        SD.print_writing(f"{DUCQUEHOME}json/{fname}.json")
+
+    else :
+        SD.print_invalid_argument(transmuteObject.moiety, "--moiety")
+
+#    ## Read pdb and convert to pdbobject
+#    nucleicAcid = UT.TransmuteToJson(transmuteObject.pdb_fname)
+#    nucleicAcid.pdb_for_attributes()
+#
+#
+#    ## Initialise the main dictionary
+#    molecule = {}
+#
+#    #-------------------------------- PDB PROPERTIES --------------------------------#
+#    # Initialise pdb properties dictionary
+#    pdb_properties = {}
+#
+#    # Coordinates and Shape
+#    pdb_properties["Coordinates"] = json.dumps(nucleicAcid.get_array())
+#    pdb_properties["Shape"] = json.dumps(nucleicAcid.get_shape_array())
+#
+#    # Get Atom namelist             NB: json outputs double quotations as \" XX \" for strings (escape characters)
+#    pdb_properties["Atoms"] = json.dumps(nucleicAcid.get_atoms())
+#
+#    # Get the element symbol
+#    pdb_properties["Symbol"] = json.dumps(nucleicAcid.get_element_symbol())
+#
+#    molecule["pdb_properties"] = pdb_properties
+#    #----------------------------------- IDENTITY -----------------------------------#
+#    # Initialise the identity list
+#    identity = []
+#
+#    if transmuteObject.moiety.upper() == "NUCLEOSIDE":
+#        # full name
+#        fullname = nucleicAcid.get_full_name(transmuteObject.chemistry, transmuteObject.moiety)
+#
+#        # abbreviated name
+#        identity.append(transmuteObject.chemistry)
+#
+#        # molecule chemistry, which is often the same as the residue name in the pdb
+#        molecule_residuename = nucleicAcid.get_resname()
+#        identity.append(molecule_residuename)
+#
+#        # Nucleobase of the nucleic acid
+#        nucleobaseName = nucleicAcid.get_nucleobase(transmuteObject.nucleobase)
+#        identity.append(nucleobaseName)
+#
+#        # Check if atoms to build by, stated in the TABLES, are present in the pdb
+#        nucleicAcid.validate_atomnames_for_building(moietyType=transmuteObject.moiety,
+#                                                    chemistry=transmuteObject.chemistry,
+#                                                    nucleobase=transmuteObject.nucleobase
+#                                                    )
+#        molecule["identity"] = json.dumps(identity)
+#
+#    if transmuteObject.moiety.upper() == "LINKER" or transmuteObject.moiety.upper() == "NUCLEOBASE":
+#
+#        # full name
+#        fullname = nucleicAcid.get_full_name(transmuteObject.chemistry, transmuteObject.moiety)
+#        identity.append(fullname)
+#
+#        # abbreviated name
+#        abbr = nucleicAcidChemistry
+#        identity.append(transmuteObject.chemistry)
+#
+#        # Check if atoms to build by, stated in the TABLES, are present in the pdb
+#        nucleicAcid.validate_atomnames_for_building(moietyType=transmuteObject.moiety, chemistry=transmuteObject.chemistry)
+#
+#        molecule["identity"] = json.dumps(identity)
+#
+#
     #------------------------------- TORSIONS AND ANGLES -----------------------------#
-    # Initialise the dictionary for the dihedrals and the bond angles
-    angles = {}
-
-    # Get Bond angles
-    bondangles = nucleicAcid.get_angles(moietyType, anglesList)
-
-    # Get dihedrals
-    torsions = nucleicAcid.get_angles( moietyType, dihedralList)
-
-    angles["bond_angles"] = json.dumps(bondangles)
-    angles["dihedrals"] = json.dumps(torsions)
-
-    #----------------- DUMP EVERYTHING INTO THE MOLECULE DICTIONARY -----------------#
-    molecule["pdb_properties"] = pdb_properties
-    molecule["identity"] = json.dumps(identity)
-    molecule["angles"] = angles
-
-    #----------------------------- WRITE OUT A JSON FILE ----------------------------#
-    # The json dump() method always requires us to dump it to a file in the current directory
-    fname = nucleicAcid.get_output_name(nucleicAcidChemistry, moietyType, conformation, nucleobase)
-
-    # Get Ducque home
-    DUCQUEHOME = SD.return_DUCQUEHOME()
-
-    # Write the inputfile to the Ducque home directory
-    with open(DUCQUEHOME + "json/" + fname + ".json", "w") as filejson:
-        json.dump(molecule, filejson, indent=4)
-
-    SD.print_writing(f"{DUCQUEHOME}json/{fname}.json")
-
-
+#    if transmuteObject.moiety.upper() == "LINKER" or transmuteObject.moiety.upper() == "NUCLEOSIDE":
+#        # Initialise the dictionary for the dihedrals and the bond angles
+#        angles = {}
+#
+#        # Get Bond angles
+#        bondangles = nucleicAcid.get_angles(transmuteObject.moiety, transmuteObject.angles)
+#
+#        # Get dihedrals
+#        torsions = nucleicAcid.get_angles(transmuteObject.moiety, transmuteObject.dihedrals)
+#
+#        angles["bond_angles"] = json.dumps(bondangles)
+#        angles["dihedrals"] = json.dumps(torsions)
+#
+#        #----------------- DUMP EVERYTHING INTO THE MOLECULE DICTIONARY -----------------#
+#        molecule["angles"] = angles
+#
+#
+#    #----------------------------- WRITE OUT A JSON FILE ----------------------------#
+#    # The json dump() method always requires us to dump it to a file in the current directory
+#    fname = nucleicAcid.get_output_name(transmuteObject.chemistry, transmuteObject.moiety, transmuteObject.conformation, transmuteObject.nucleobase)
+#
+#    # Get Ducque home
+#    DUCQUEHOME = SD.return_DUCQUEHOME()
+#
+#    # Write the inputfile to the Ducque home directory
+#    with open(DUCQUEHOME + "json/" + fname + ".json", "w") as filejson:
+#        json.dump(molecule, filejson, indent=4)
+#
+#    SD.print_writing(f"{DUCQUEHOME}json/{fname}.json")
+#
+#
+#
+#
+#
+#
+#
+#
+#
 
 def convert_XYZ_to_PDB(xyzFname : str, residue : str, atomNameList : list):
     """ the main function that convert an xyz formatted file to the required pdb format """
