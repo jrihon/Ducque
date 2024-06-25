@@ -57,7 +57,7 @@ def print_invalid_argument(argument : str, flag : str):
     exit_Ducque()
 
 def print_invalid_argument_nb(argument: str, flag: str, pos: int):
-    print(f"[INVALID ARGUMENT] : {flag} does not receive `{argument}`, at `--nucleobase` position `{pos}`.")
+    print(f"[INVALID ARGUMENT] : {flag} does not receive `{argument}`, at `--nucleobase` query number ({pos}).")
     exit_Ducque()
 
 def print_insufficient_flag(amount : int):

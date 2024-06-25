@@ -6,7 +6,7 @@ from numpy import pi, asarray, arange, ndarray
 from builder.utils_builder import generate_complementary_sequence
 import builder.parse_or_write as PARSE
 
-""" Initialise the molecules (nucleoside or linker) as json objects. These objects are used to parse the data of the nucleosides of interest """
+""" Initialise the molecules (nucleoside, linker or nucleobase) as json objects. These objects are used to parse the data of the nucleosides of interest """
 
 class Nucleoside:
     """ nucleoside = Nucleoside(codex_acidum_nucleicum[nucleic_acid-string][0]) """
@@ -46,6 +46,22 @@ class Linker(Nucleoside):
     def get_nucleic_acid_code(self) -> str:
         """ returns the type of chemistry of the nucleic acid. """
         return json.loads(self.jsonObject["identity"])[0]
+
+
+class Nucleobase:
+
+    def __init__(self, jsonfile) -> None:
+        """ Load in nucleobase.json file into memory """
+
+        with open(jsonfile, "r") as jsonf:
+            self.jsonObject = json.load(jsonf)
+
+        self.array: ndarray = asarray(json.loads(self.jsonObject["pdb_properties"]["Coordinates"]), dtype=float)
+        self.atom_list: list[str] = json.loads(self.jsonObject["pdb_properties"]["Atoms"])
+        self.mol_length: int = int(json.loads(self.jsonObject["pdb_properties"]["Shape"])[0])
+        self.filename: str = jsonfile
+        self.identity: str = json.loads(self.jsonObject["identity"])
+        self.atomsRotation : list[str] = json.loads(self.jsonObject["atoms_rotation"])
 
 
 

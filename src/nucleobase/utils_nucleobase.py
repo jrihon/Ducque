@@ -1,19 +1,29 @@
 import systemsDucque as SD
+from initMolecule import Nucleobase
 from ducquelib.library import TABLE_NUCLEOBASE_MODS
+from numpy import array, ndarray
 
 
 #--nucleobase 
 #-position 15.A  (required, where chain is optional)
 #-mod Psi        (required)
 #-resname pU     (optional, if omitted take the resname of original pdb)
-#-orientation HG (optional)
+#-reorient       (optional)
 class NucleobaseMod: 
 
     def __init__(self, nb_instance: int) -> None:
+        """ 
+            nb_instance: The user queries a variable amount of modifications to apply to the prompted model.
+                         The `nb_instance` variable just counts the nth time a modification is queried.
+
+            first_match: stores the index at which the position was first found.
+                         This means we start parsing the PdbFragment at position[first_match], 
+                            so we do not have to reiterate over and over again
+        """
 
         self.position = ("", "")
-        self.from_mod = ""
-        self.to_mod = ""
+        self.modify_from = ""
+        self.modify_to = ""
         self.new_resname = ""
         self.reorient = False
         self.first_match = -1 
@@ -88,7 +98,7 @@ class NucleobaseMod:
 
     def set_mod(self, mod): 
 
-        if self.from_mod == "" or self.to_mod == "" : 
+        if self.modify_from == "" or self.modify_to == "" : 
             # TODO: Check in the nucleobase modification table if this key exists
             # TODO: Make the nucleobase table modification (done?)
 
@@ -102,41 +112,41 @@ class NucleobaseMod:
 
                 m = mod.split(",")
                 try : 
-                    from_mod = m[0] 
-                    to_mod = m[1] 
+                    modify_from = m[0] 
+                    modify_to = m[1] 
                 except IndexError : 
                     SD.print_empty_query_nb("-mod", self.nb_instance)
                     SD.exit_Ducque()
 
-                if to_mod == "": #if this variable is empty, the query was incomplete
+                if modify_to == "": #if this variable is empty, the query was incomplete
                     SD.print_invalid_argument_nb(mod, "-mod", self.nb_instance)
 
                 # set attributes
-                self.from_mod = from_mod    # from modification
-                self.to_mod = to_mod        # to modification 
+                self.modify_from = modify_from    # from modification
+                self.modify_to = modify_to        # to modification 
                 
-            ## 2. State where we don't do anything, but populate the self.to_mod and self.from_mod
+            ## 2. State where we don't do anything, but populate the self.modify_to and self.modify_from
             # Very likely this position will get a reorientation, but that is handled explicitly elsewhere 
             else : 
-                self.from_mod = mod     # from modification
-                self.to_mod = mod       # to modification
+                self.modify_from = mod     # from modification
+                self.modify_to = mod       # to modification
 
 
-            # Check if self.from_mod and self.to_mod are valid keys in the available nucleobase present in the Ducque library
+            # Check if self.modify_from and self.modify_to are valid keys in the available nucleobase present in the Ducque library
             try : 
-                _ = TABLE_NUCLEOBASE_MODS[self.from_mod]
+                _ = TABLE_NUCLEOBASE_MODS[self.modify_from]
             except KeyError : 
-                SD.print_invalid_key(self.from_mod, "TABLE_NUCLEOBASE_MODS")
+                SD.print_invalid_key(self.modify_from, "TABLE_NUCLEOBASE_MODS")
                 SD.exit_Ducque()
 
             try : 
-                _ = TABLE_NUCLEOBASE_MODS[self.to_mod]
+                _ = TABLE_NUCLEOBASE_MODS[self.modify_to]
             except KeyError : 
-                SD.print_invalid_key(self.to_mod, "TABLE_NUCLEOBASE_MODS")
+                SD.print_invalid_key(self.modify_to, "TABLE_NUCLEOBASE_MODS")
                 SD.exit_Ducque()
 
         else : 
-            SD.print_already_set("-mod", self.from_mod + "," + self.to_mod, mod)
+            SD.print_already_set("-mod", self.modify_from + "," + self.modify_to, mod)
             SD.exit_Ducque()
 
 
@@ -159,22 +169,22 @@ class NucleobaseMod:
 
     def check_if_resname_queried(self, pdb_nbase_fname: str):
         """
-        At this point in the software, we have already checked if self.position and self.from_mod are filled in
+        At this point in the software, we have already checked if self.position and self.modify_from are filled in
 
         There are two options here : 
-            1. The `-mod` query only passes a parameter to `self.from_mod`
+            1. The `-mod` query only passes a parameter to `self.modify_from`
                 If this is the case, this means we anticipate for a simple reorientation, and the residue is not altered chemically.
                 We query the residue name from the pdb file
                 https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/tutorials/pdbintro.html
                 residue name 18:20 -> index([17:20])
 
-            2. The `-mod` query contains both a value for `self.from_mod` and `self.to_mod`
+            2. The `-mod` query contains both a value for `self.modify_from` and `self.modify_to`
                 If this is the case, this means that the `-resname` is required, because we modify the nucleobase here.
                 We need to know the new name for the molecule
         """
 
         # case where resname can be inferred from the pdb
-        if self.from_mod == self.to_mod : 
+        if self.modify_from == self.modify_to : 
         
             if self.new_resname == "" : 
                 # We have already checked if there is a match or not, so this is safe
@@ -184,7 +194,7 @@ class NucleobaseMod:
                     print(self.new_resname)
 
         # case where resname is mandatory
-        elif not self.from_mod == "" and not self.to_mod == "": 
+        elif not self.modify_from == "" and not self.modify_to == "": 
             if self.new_resname == "" : 
                 SD.print_empty_query_nb("-resname", self.nb_instance)
                 SD.exit_Ducque()
@@ -199,8 +209,8 @@ class NucleobaseMod:
         """ 
         Check if any of the required attributes are set or not
         (required) position         -> only the first of the tuple is required
-        (required) from_mod 
-        (optional) to_mod           -> sometimes we do not want a modification, just a reorientation
+        (required) modify_from 
+        (optional) modify_to           -> sometimes we do not want a modification, just a reorientation
         (optional) new_resname      -> if not set by the user, default to the current one in the pdb
         (optional) reorient         -> flipping the orientation is not always the goal
         """
@@ -209,7 +219,153 @@ class NucleobaseMod:
             SD.print_empty_query_nb('-position', self.nb_instance)
             SD.exit_Ducque()
 
-        if self.from_mod == "" : 
+        if self.modify_from == "" : 
             SD.print_empty_query_nb('-mod', self.nb_instance)
             SD.exit_Ducque()
 
+
+
+
+
+
+
+class PdbFragment: 
+
+
+    def __init__(self, pdbFragmentContent : list[str], ) -> None:
+        """ Receives a list of assigned pdb fragment to convert to a proper object 
+            
+            What we need from the pdb residue is : 
+            - atomname list (list[str])
+            - atomic coordinates  (np.ndarray)
+            - residue number (int)
+            - chain letter (str)
+            - residue name (str) -> in case not prompted, we default to the present one
+
+            What we already have from the nucleobase.json file
+            - coordinate of moiety
+            - shape of moiety 
+            - atomname list 
+            - element list 
+            - name of moiety (identity)
+            - atoms to rotate by
+
+
+            Atom name :       line 13 - 16
+            Residue name:     line 18 - 20
+            Chain :           line 22
+            Sequence number:  line 23 - 26
+            X_coord:          line 31 - 38 )
+            Y_coord:          line 39 - 46 ) self.array
+            Z_coord:          line 47 - 54 )
+        """
+
+        # Parse the position from the pdb file (residuenumber, chain)
+        self.chainLetter = pdbFragmentContent[0][21]
+        self.residueName = pdbFragmentContent[0][17:20]
+        self.residueNumber = int(pdbFragmentContent[0][22:26])
+
+        atomNames = list()
+        xCoords = list()
+        yCoords = list()
+        zCoords = list()
+
+        for line in pdbFragmentContent :
+
+            # Check whenever the residueNumber has been incremented
+            residueNumberUnchanged = self.residueNumber == line[17:20]
+
+            # if incremented, break the loop 
+            if not residueNumberUnchanged : 
+                break
+
+            # parse atomnames
+            atomNames.append(line[12:16].strip())
+
+            # parse coordinates
+            xCoords.append(line[30:38])
+            yCoords.append(line[38:46])
+            zCoords.append(line[46:54])
+
+
+        self.atomNames : list[str] = atomNames
+        self.array: ndarray = array([xCoords, yCoords, zCoords], dtype=float).T
+
+
+
+    def validate_atomnames_from_query(self, nucleobase : Nucleobase) -> bool :
+        """ 
+            modAtomNames is a list of atom names e.g. : [N9, C4, C8]
+            The atom names come from the queried pdb file and need to match the `modify_from` queried nucleobase
+        """
+
+        for atomRotation in nucleobase.atomsRotation: 
+            if atomRotation not in self.atomNames : 
+                print(f"[INVALID QUERY]   : Atomname `{atomRotation}`, from `{nucleobase.identity}.json` not found in prompted pdb, at position `{(self.residueNumber, self.chainLetter)}`")
+                return False
+
+        return True
+
+
+
+
+
+def write_out_pdb_file_with_modified_nucleobases(PDB_NBASE_FNAME: str, pdbFileContent : list[str], LIST_OF_NBASE_MODIFICATIONS : list[NucleobaseMod]) -> None : 
+
+    # Change name of the output file
+    outputfile = PDB_NBASE_FNAME.split(".")[:-1] # grab everything except the file extension
+    outputfile += "_modified.pdb"
+
+
+#    ATOM      4  H5'  DT J   1       4.851   4.813  33.865  1.00  0.00           H
+#    ATOM      5 H5''  DT J   1       6.303   5.832  33.718  1.00  0.00           H
+#    ATOM      6  C4'  DT J   1       6.305   4.096  32.467  1.00  0.00           C
+#    ATOM      7  H4'  DT J   1       7.036   3.609  33.112  1.00  0.00           H
+
+    # 1. KEYWORD  : ATOM
+    # 2. The atom number needs to be actively modified for the entire file.
+    # 3. AtomNames come from NucleobaseMod
+    # 4. ResidueName is to be altered to the modification (NucleobaseMod.new_resname)
+    # 5. ChainLetter stays the same (NucleobaseMod.position[1])
+    # 6. ResidueNumber stays the same (NucleobaseMod.position[0])
+    # 7. Coordinates are changed at the site itself
+    # 8. All the things after are whatever
+    # 9. ElementSymbols follow the same as AtomNames (NucleobaseMod)
+
+    ## => 
+    # Whenever we output, we can pass the unmodified residues as is, except for their atom number
+
+    # Upon encountering a residue we have modified, we need to do two things : 
+    #   Take out the coordinates and atomnames of the original nucleobase
+    #   -> All atomnames that do not contain an apostrophe are per definition nucleobase atoms
+    #       Instead of stacking a new array, just do not include old coordinates in the new file, 
+    #       just include the new ones and skip the old ones 'idx, line in enumerate(xxx): if idx == oldcoordinate: continue'
+    # 
+    #   Insert the coordinates and atomnames of the modified nucleobase
+    #   -> Insert the modified array at the instance of the base-atom (i.e. N9 for purines, N1 for pyrimdines)
+    #   -> Insert the new set of atomnames also at that instance 
+
+
+#    with open(outfile, "w") as PDB:
+#        # Write out Leading Strand
+#        for idxL in range(len(leadingStrand.AtomNumber)):
+#            line = [leadingStrand.RecordName,
+#                    leadingStrand.AtomNumber[idxL],
+#                    leadingStrand.AtomName[idxL],
+#                    leadingStrand.ResidueName[idxL],
+#                    leadingStrand.Chain,
+#                    leadingStrand.SequenceNumber[idxL],
+#                    leadingStrand.x[idxL], leadingStrand.y[idxL],leadingStrand.z[idxL],
+#                    leadingStrand.Occupancy, leadingStrand.TempFactor,
+#                    leadingStrand.ElementSymbol[idxL] ]
+#
+#            PDB.write("%-4s  %5d %4s %3s %s%4d    %8s%8s%8s%6s%6s          %2s\n" % tuple(line))
+#
+#        # Add TER line in between the two strands
+#        PDB.write("TER\n")
+#
+#
+#
+
+
+    pass

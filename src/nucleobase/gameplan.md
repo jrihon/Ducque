@@ -33,13 +33,13 @@ $ Ducque --bases INPUTFILE.txt
 
 1. TRANSMUTE NUCLEOBASE
 
-[ ] Rework transmute system!
-    - [ ] Make class for sugars
-    - [ ] Make class for linkers
-    - [ ] Make class for nucleobase
+[X] Rework transmute system!
+    - [X] Make class for sugars
+    - [X] Make class for linkers
+    - [X] Make class for nucleobase
 
-[ ] Make Transmute module
-    - [ ] Make tinp file for transmute nucleobases
+[X] Make Transmute module
+    - [X] Make tinp file for transmute nucleobases
         - pdb file for atomic structure => passed by user
             -> atomic coordinates  > parsed from pdb
             -> atom names          > parsed from pdb
@@ -48,12 +48,23 @@ $ Ducque --bases INPUTFILE.txt
         - atoms to rotate by            => passed by user ; N1, C2, C6
         - chemistry : name of the residue implemented. This becomes the filename.json 
     - [ ] GUI : Make --tbase flag to transmute nucleobases
-    - [ ] Allow --moiety `nucleobase` to be added
+    - [X] Allow --moiety `nucleobase` 
 
         "--pdb"
         "--chemistry"
         "--moiety"
         "--atoms"
+
+    - [ ] For the Transmute GUI module : 
+        - Write the queries out to a file 
+        - Keep a counter on the GUI of how many modifications have been written to the file 
+        - If by accident, the same query is written to the file, check against the values and disregard the write command if similar
+            - When written to the file, clear all queries
+        - Do not spawn extra elements in the GUI, make do with what is present, will work just fine
+
+
+
+
 
 2. MODIFICATION
 - make tables for querying if nucleobases exist
@@ -66,4 +77,7 @@ $ Ducque --bases INPUTFILE.txt
 
 [ ] Make PdbFragment() class to instance the specific residue that needs to be modified.
     - [ ] Check if queries against PdbFile prompted is valid
+    - [ ] Only parse the residues in need of modification
+    - [ ] Apply modification only on those specific residues
+    - [ ] Write out new file => DONT inplace modify the file
 
