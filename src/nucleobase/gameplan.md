@@ -76,8 +76,8 @@ $ Ducque --bases INPUTFILE.txt
 [X] Make table in ducquelib/library.p for parsing nucleobases => TABLE_NUCLEOBASE_MODS
 
 [ ] Make PdbFragment() class to instance the specific residue that needs to be modified.
-    - [ ] Check if queries against PdbFile prompted is valid
-    - [ ] Only parse the residues in need of modification
-    - [ ] Apply modification only on those specific residues
+    - [X] Check if queries against PdbFile prompted is valid
+    - [X] Only parse the residues in need of modification
+    - [X] Apply modification only on those specific residues
     - [ ] Write out new file => DONT inplace modify the file
 

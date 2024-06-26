@@ -16,18 +16,19 @@ class NucleobaseMod:
             nb_instance: The user queries a variable amount of modifications to apply to the prompted model.
                          The `nb_instance` variable just counts the nth time a modification is queried.
 
-            first_match: stores the index at which the position was first found.
-                         This means we start parsing the PdbFragment at position[first_match], 
+            start_match: stores the index at which the position was first found.
+                         This means we start parsing the PdbFragment at position[start_match], 
                             so we do not have to reiterate over and over again
         """
 
-        self.position = ("", "")
-        self.modify_from = ""
-        self.modify_to = ""
-        self.new_resname = ""
-        self.reorient = False
-        self.first_match = -1 
-        self.nb_instance = nb_instance
+        self.position: tuple[str,str] = ("", "")
+        self.modify_from: str = ""
+        self.modify_to: str = ""
+        self.new_resname: str = ""
+        self.reorient: bool = False
+        self.start_match: int = -1 
+        self.end_match: int = -1 
+        self.nb_instance: int = nb_instance
 
     def set_position(self, position, pdb_nbase_fname): 
         """ 
@@ -56,14 +57,22 @@ class NucleobaseMod:
                     pdbContent = pdbFile.readlines()
 
 
+                    IsQueryMatched = False
                     for idx, linePdbContent in enumerate(pdbContent) :
                         if linePdbContent.startswith("ATOM"):
                             if linePdbContent[21] == chainLetter and linePdbContent[22:26].strip() == residueNumber : 
-                                IsQueryMatched = True
-                                self.first_match = idx
-                                break
+                                # If we find the first match, remember the index
+                                if not IsQueryMatched :
+                                    self.start_match = idx
+                                    IsQueryMatched = True
+                            else : 
+                                # If we match on a residue that does not correspond with our matching residue, we are at a new residue
+                                # => remember the idx (exclusive range ending), break the loop as we are finished iterating
+                                if IsQueryMatched :
+                                    self.end_match = idx 
+                                    break
 
-                if not IsQueryMatched : 
+                if IsQueryMatched == 0 : 
                     SD.print_invalid_argument_nb(position, "position", self.nb_instance)
 
                 self.position = (residueNumber, chainLetter)
@@ -73,16 +82,23 @@ class NucleobaseMod:
             # residueNumber is then just the variable `position`
             else : 
                 # See if the position in the pdb matches with the query `-position`
-                IsQueryMatched = False
                 with open(pdb_nbase_fname, "r") as pdbFile : 
                     pdbContent = pdbFile.readlines()
 
+                    IsQueryMatched = False
                     for idx, linePdbContent in enumerate(pdbContent) :
                         if linePdbContent.startswith("ATOM"):
                             if linePdbContent[22:26].strip() == position : 
-                                IsQueryMatched = True
-                                self.first_match = idx
-                                break
+                                # If we find the first match, remember the index
+                                if not IsQueryMatched :
+                                    self.start_match = idx
+                                    IsQueryMatched = True
+                            else : 
+                                # If we match on a residue that does not correspond with our matching residue, we are at a new residue
+                                # => remember the idx (exclusive range ending), break the loop as we are finished iterating
+                                if IsQueryMatched :
+                                    self.end_match = idx 
+                                    break
 
                 if not IsQueryMatched : 
                     SD.print_invalid_argument_nb(position, "position", self.nb_instance)
@@ -189,7 +205,7 @@ class NucleobaseMod:
             if self.new_resname == "" : 
                 # We have already checked if there is a match or not, so this is safe
                 with open(pdb_nbase_fname, "r") as pdbFile : 
-                    matchedLine = pdbFile.readlines()[self.first_match]
+                    matchedLine = pdbFile.readlines()[self.start_match]
                     self.new_resname = matchedLine[17:20].strip()
                     print(self.new_resname)
 
@@ -261,14 +277,15 @@ class PdbFragment:
         """
 
         # Parse the position from the pdb file (residuenumber, chain)
-        self.chainLetter = pdbFragmentContent[0][21]
-        self.residueName = pdbFragmentContent[0][17:20]
-        self.residueNumber = int(pdbFragmentContent[0][22:26])
+        self.chainLetter: str = pdbFragmentContent[0][21]
+        self.residueName: str = pdbFragmentContent[0][17:20]
+        self.residueNumber: int = int(pdbFragmentContent[0][22:26])
 
-        atomNames = list()
+        atomNames: list[str] = list()
         xCoords = list()
         yCoords = list()
         zCoords = list()
+        elements = list()
 
         for line in pdbFragmentContent :
 
@@ -287,9 +304,12 @@ class PdbFragment:
             yCoords.append(line[38:46])
             zCoords.append(line[46:54])
 
+            elements.append(line[76:78].strip())
+
 
         self.atomNames : list[str] = atomNames
         self.array: ndarray = array([xCoords, yCoords, zCoords], dtype=float).T
+        self.elements = elements
 
 
 
@@ -308,14 +328,164 @@ class PdbFragment:
 
 
 
+def change_pdbfragments_by_modification(pdbFragment : PdbFragment, nucleobaseFrom : Nucleobase, nucleobaseTo : Nucleobase) -> PdbFragment : 
+    """
+    From the PdbFragment() class, we need only to modify the 
+        `.atomnames` 
+        `.array` 
+        attributes
+
+    From the Nucleobase() class, we need to read from the 
+        `.atom_list`
+        `.array`
+        `.atomsRotation` 
+        attributes
+
+    """
+
+    # We want to retrieve the index of the atoms in the residue we want to modifiy
+    # Take the `From` molecule and parse the original PdbFragment
+    idx_list: list[int] = list()
+    for atomFrom in nucleobaseFrom.atom_list : 
+        for idx, atomPdb in enumerate(pdbFragment.atomNames) :
+            if atomFrom == atomPdb : 
+                idx_list.append(idx)
+
+    # make new instances of the attributes we need to change
+    coordinatesPdb = list()
+    atomNamesPdb = list()
+    elementsPdb = list()
+
+    # On the first instance of a match, we export the entire nucleobaseTo (the modified nucleobase) to the pdbFragment
+    isAlreadyMatched = False
+    for ith, (coordinate, atomname, element) in enumerate(zip(pdbFragment.array, pdbFragment.atomNames, pdbFragment.elements)): 
+
+        if ith in idx_list : 
+            
+            # Skip the original nucleobase atoms
+            if isAlreadyMatched : 
+                continue
+            else : 
+                # extend the growing list with all this data
+                coordinatesPdb.extend(nucleobaseTo.array)
+                atomNamesPdb.extend(nucleobaseTo.atom_list)
+                elementsPdb.extend(nucleobaseTo.elements)
+                # set to True so we do this just once
+                isAlreadyMatched = True
+
+        else : 
+            coordinatesPdb.append(coordinate)
+            atomNamesPdb.append(atomname)
+
+    pdbFragment.array = array(coordinatesPdb)
+    pdbFragment.atomNames = atomNamesPdb
+
+    # This returns a modified version of the pdb fragment
+    return pdbFragment
 
 
-def write_out_pdb_file_with_modified_nucleobases(PDB_NBASE_FNAME: str, pdbFileContent : list[str], LIST_OF_NBASE_MODIFICATIONS : list[NucleobaseMod]) -> None : 
+
+
+def write_out_pdb_file_with_modified_nucleobases(PDB_NBASE_FNAME: str, pdbFileContent : list[str],
+                                                 LIST_OF_NBASE_MODIFICATIONS : list[NucleobaseMod],
+                                                 modifiedPdbFragments: list[PdbFragment]
+                                                 ) -> None : 
+    """ 
+    Write out the pdb file with modifications implemented
+    """
+
+
+    def convert_integer_to_string(number: int) -> str : 
+
+        if number > 10 : 
+            return "   " + str(number)
+        elif number > 100 : 
+            return "  " + str(number)
+        elif number > 1000 : 
+            return " " + str(number)
+        else :  # above 1000
+            return str(number)
+
 
     # Change name of the output file
     outputfile = PDB_NBASE_FNAME.split(".")[:-1] # grab everything except the file extension
-    outputfile += "_modified.pdb"
+    outputfile.append("_modified.pdb")
+    outputfile = "".join(outputfile)
 
+    # Keep track of the place where our modified-residue should go
+    counter = 0
+    start_match = LIST_OF_NBASE_MODIFICATIONS[counter].start_match
+    end_match = LIST_OF_NBASE_MODIFICATIONS[counter].end_match
+    matchFound = False
+
+    # make a new pdb file
+    with open(outputfile, "w") as pdbFileOutput :
+
+        for i, line in enumerate(pdbFileContent): 
+
+            # If an atom-line is encountered
+            if line.startswith("ATOM"): 
+
+                # Make the prefix : 
+                prefix = "ATOM  " + convert_integer_to_string(i)
+
+                # Check if matchFound has ended; we are passed iterating over the residue we intended to modify 
+                if end_match == i :
+                    # Set values
+                    counter += 1
+                    matchFound = False
+
+                    # Possible we index outside of the array
+                    try : 
+                        start_match = LIST_OF_NBASE_MODIFICATIONS[counter].start_match
+                        end_match = LIST_OF_NBASE_MODIFICATIONS[counter].end_match
+                    except IndexError: 
+                        # Set to zero, because have gone through all modifications and 
+                        # the rest is going to get written from the original file
+                        start_match = 0
+                        end_match = 0
+
+
+                    pdbFileOutput.write(prefix + line[12:]) 
+                    continue
+
+
+                # If a match has been found, continue the loop,
+                # as the entire residue has been modified
+                if matchFound : 
+                    continue
+
+                if start_match == i :
+                    matchFound = True
+                    modifiedFragment = modifiedPdbFragments[counter] # We will never index out-of-bonds here, so no need for (try except)
+
+                    # Pump and dump all the data into the pdb file being written
+                    for j in range(len(modifiedFragment.atomNames)):
+                        line = ["ATOM",
+                                convert_integer_to_string(i),
+                                modifiedFragment.atomNames[j],
+                                modifiedFragment.residueName,
+                                modifiedFragment.chainLetter,
+                                modifiedFragment.residueNumber,
+                                # x coordinate              , y coordinate                , z coordinate
+                                modifiedFragment.array[j][0], modifiedFragment.array[j][1],modifiedFragment.array[j][2],
+                                "1.00", "0.00",
+                                modifiedFragment.elements[j] ]
+
+                        pdbFileOutput.write("%-4s  %5d %4s %3s %s%4d    %8s%8s%8s%6s%6s          %2s\n" % tuple(line))
+
+
+                # If nothing matches or the curent residue is not one we want to modify, just stream the original content into the new pdb
+                else : 
+                    pdbFileOutput.write(prefix + line[12:]) 
+            #
+            # If a TER-line is encountered
+            elif line.startswith("TER"): 
+                pdbFileOutput.write(line) 
+            #
+            # Skip any other lines
+            else : 
+                continue
 
 #    ATOM      4  H5'  DT J   1       4.851   4.813  33.865  1.00  0.00           H
 #    ATOM      5 H5''  DT J   1       6.303   5.832  33.718  1.00  0.00           H
@@ -344,28 +514,3 @@ def write_out_pdb_file_with_modified_nucleobases(PDB_NBASE_FNAME: str, pdbFileCo
     #   Insert the coordinates and atomnames of the modified nucleobase
     #   -> Insert the modified array at the instance of the base-atom (i.e. N9 for purines, N1 for pyrimdines)
     #   -> Insert the new set of atomnames also at that instance 
-
-
-#    with open(outfile, "w") as PDB:
-#        # Write out Leading Strand
-#        for idxL in range(len(leadingStrand.AtomNumber)):
-#            line = [leadingStrand.RecordName,
-#                    leadingStrand.AtomNumber[idxL],
-#                    leadingStrand.AtomName[idxL],
-#                    leadingStrand.ResidueName[idxL],
-#                    leadingStrand.Chain,
-#                    leadingStrand.SequenceNumber[idxL],
-#                    leadingStrand.x[idxL], leadingStrand.y[idxL],leadingStrand.z[idxL],
-#                    leadingStrand.Occupancy, leadingStrand.TempFactor,
-#                    leadingStrand.ElementSymbol[idxL] ]
-#
-#            PDB.write("%-4s  %5d %4s %3s %s%4d    %8s%8s%8s%6s%6s          %2s\n" % tuple(line))
-#
-#        # Add TER line in between the two strands
-#        PDB.write("TER\n")
-#
-#
-#
-
-
-    pass

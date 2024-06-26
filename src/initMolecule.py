@@ -58,6 +58,7 @@ class Nucleobase:
 
         self.array: ndarray = asarray(json.loads(self.jsonObject["pdb_properties"]["Coordinates"]), dtype=float)
         self.atom_list: list[str] = json.loads(self.jsonObject["pdb_properties"]["Atoms"])
+        self.elements: list[str] = json.loads(self.jsonObject["pdb_properties"]["Symbol"])
         self.mol_length: int = int(json.loads(self.jsonObject["pdb_properties"]["Shape"])[0])
         self.filename: str = jsonfile
         self.identity: str = json.loads(self.jsonObject["identity"])

@@ -2,6 +2,7 @@
 from os.path import isfile
 
 import nucleobase.utils_nucleobase as UN
+from nucleobase.utils_nucleobase import NucleobaseMod, PdbFragment
 import systemsDucque as SD
 from ducquelib.library import TABLE_NUCLEOBASE_MODS
 from initMolecule import Nucleobase
@@ -34,20 +35,40 @@ def modify_nucleobases(PDB_NBASE_FNAME: str, LIST_OF_NBASE_MODIFICATIONS : list[
     with open(PDB_NBASE_FNAME, "r") as pdbFile : 
         pdbFileContent = pdbFile.readlines()
 
+
+    # Sort LIST_OF_NBASE_MODIFICATIONS by the start_match attribute
+    # This way we can iterate over the LIST_OF_NBASE_MODIFICATIONS later on when writing out the pdb
+    sortedListOfModifications: list[NucleobaseMod] = list()
+    _tmplist = [x.start_match for x in LIST_OF_NBASE_MODIFICATIONS]
+    _tmplist.sort(key=int)
+
+    for start_match in _tmplist : 
+        for element in LIST_OF_NBASE_MODIFICATIONS : 
+            if start_match == element.start_match : 
+                sortedListOfModifications.append(element)
+
+
+
     # Make a list of the PdbFragments
-    pdbFragments: list[UN.PdbFragment] = list()
+    # A PdbFragment is a class that contains all the information of the residue (from the prompted pdb) we want to modify 
+    pdbFragments: list[PdbFragment] = list()
+
     for modification in LIST_OF_NBASE_MODIFICATIONS : 
         
-        # Pass fileContent starting from a certain index
+        # Pass fileContent starting within a precomputed range ; one full residue
         # Append the fragments to the list
-        pdbFragments.append( UN.PdbFragment(pdbFileContent[modification.first_match:]) ) 
+        pdbFragments.append( 
+                            PdbFragment( pdbFileContent[modification.start_match:modification.end_match] ) 
+                            ) 
 
 
     # Iterate over both objects, as every ith fragment corresponds the ith modification 
+    modifiedPdbFragments : list[PdbFragment] = list()
     for fragment, modification in zip(pdbFragments, LIST_OF_NBASE_MODIFICATIONS): 
 
         # Query from modifications we need to modify from
         nucleobaseModFromJson = TABLE_NUCLEOBASE_MODS[modification.modify_from]
+        # A Nucleobase() class retrieves and stores all data from the nucleobase.json file
         nucleobaseFrom = Nucleobase(nucleobaseModFromJson)
 
         # Check if atoms, to be used rotations, are valid
@@ -59,6 +80,9 @@ def modify_nucleobases(PDB_NBASE_FNAME: str, LIST_OF_NBASE_MODIFICATIONS : list[
         # Query the modification we need to modify to
         nucleobaseModToJson = TABLE_NUCLEOBASE_MODS[modification.modify_to]
         nucleobaseTo = Nucleobase(nucleobaseModToJson)
+
+
+
 
         ## GET THE QUATERNION TO ROTATE WITH
 
@@ -108,6 +132,11 @@ def modify_nucleobases(PDB_NBASE_FNAME: str, LIST_OF_NBASE_MODIFICATIONS : list[
         if modification.reorient : 
             print("Will implement later")
 
+        # Modifiy the original residues with the modifications
+        modifiedPdbFragment = UN.change_pdbfragments_by_modification(fragment, nucleobaseFrom, nucleobaseTo)
+
+        # Append to the list
+        modifiedPdbFragments.append(modifiedPdbFragment)
 
     # Write out a pdb file with the modified nucleobases
-    UN.write_out_pdb_file_with_modified_nucleobases(PDB_NBASE_FNAME, pdbFileContent, LIST_OF_NBASE_MODIFICATIONS) 
+    UN.write_out_pdb_file_with_modified_nucleobases(PDB_NBASE_FNAME, pdbFileContent, LIST_OF_NBASE_MODIFICATIONS, modifiedPdbFragments) 
