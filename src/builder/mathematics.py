@@ -132,7 +132,7 @@ def assert_dot_product(dotProduct : np.ndarray) -> bool :
     return False
 
 
-def reorient_nucleoside_array(complementary_array : np.ndarray) -> np.ndarray :
+def reorient_nucleoside_array(complementary_array : np.ndarray, index : int = 0) -> np.ndarray :
     """ Reorient the array that has the weird, gimmicky dotproduct equals -1 thing from up above.
 
         What we did here is choose the standard x axis to rotate over, bring the nucleoside array by a random atom to the origin
@@ -141,7 +141,7 @@ def reorient_nucleoside_array(complementary_array : np.ndarray) -> np.ndarray :
     # Custom axis and custom angle to rotate. We rotate over an angle of 45 degrees just because it rotates it enough to steer away from the point
     _quaternion_custom = get_quaternion_custom_axis(np.array([1,0,0]), (np.pi/4))
 
-    return move_to_origin_ROTATE_move_back_to_loc(_quaternion_custom, complementary_array, complementary_array[0])
+    return move_to_origin_ROTATE_move_back_to_loc(_quaternion_custom, complementary_array, complementary_array[index])
 
 
 def dihedral_array(atoms_in_dihr : np.ndarray, cone_vector : np.ndarray) -> np.ndarray :

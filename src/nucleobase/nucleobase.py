@@ -97,9 +97,16 @@ def modify_nucleobases(PDB_NBASE_FNAME: str, LIST_OF_NBASE_MODIFICATIONS : list[
         # Then we need v1(N9 -> C4) and v2(N9 -> C8)
 
         # Get plane of the original nucleobase, which is the plane we rotate onto
-        directionAxisOriginal = mathematics.get_normal_vector_of_plane( fragment.array[indicesArrayFrom[1]] - fragment.array[indicesArrayFrom[0]],
-                                                                          fragment.array[indicesArrayFrom[2]] - fragment.array[indicesArrayFrom[0]]
-                                                                            )
+        # If we want this reoriented, we flip the direction axis
+        if modification.reorient : 
+            directionAxisOriginal = mathematics.get_normal_vector_of_plane( fragment.array[indicesArrayFrom[2]] - fragment.array[indicesArrayFrom[0]],
+                                                                           fragment.array[indicesArrayFrom[1]] - fragment.array[indicesArrayFrom[0]]
+                                                                                )
+        else : 
+            directionAxisOriginal = mathematics.get_normal_vector_of_plane( fragment.array[indicesArrayFrom[1]] - fragment.array[indicesArrayFrom[0]],
+                                                                           fragment.array[indicesArrayFrom[2]] - fragment.array[indicesArrayFrom[0]]
+                                                                                )
+
         directionAxisModification = mathematics.get_normal_vector_of_plane( nucleobaseTo.array[indicesArrayTo[1]] - nucleobaseTo.array[indicesArrayTo[0]],
                                                                             nucleobaseTo.array[indicesArrayTo[2]] - nucleobaseTo.array[indicesArrayTo[0]]
                                                                             )
@@ -117,24 +124,63 @@ def modify_nucleobases(PDB_NBASE_FNAME: str, LIST_OF_NBASE_MODIFICATIONS : list[
         rotatedModification = mathematics.rotate_with_quaternion(quaternionNucleobase, movedToOriginModification)
 
         # Second rotation involves aligned the modified nucleobase with the original nucleobase
-        quaternionAlign = mathematics.get_quaternion(vector_to_rotate_from= rotatedModification[indicesArrayTo[1]] - rotatedModification[indicesArrayTo[0]],
-                                                     vector_to_rotate_onto= fragment.array[indicesArrayFrom[1]] - fragment.array[indicesArrayFrom[0]] 
-                                                    )
+        # If we want this reoriented, assign a different alignment
+        if modification.reorient : 
+            quaternionAlign = mathematics.get_quaternion(vector_to_rotate_from=(rotatedModification[indicesArrayTo[0]] - rotatedModification[indicesArrayTo[1]]),
+                                                         vector_to_rotate_onto=(fragment.array[indicesArrayFrom[0]] - fragment.array[indicesArrayFrom[2]]) 
+                                                        )
+        else :
+            quaternionAlign = mathematics.get_quaternion(vector_to_rotate_from=(rotatedModification[indicesArrayTo[2]] - rotatedModification[indicesArrayTo[0]]),
+                                                         vector_to_rotate_onto=(fragment.array[indicesArrayFrom[2]] - fragment.array[indicesArrayFrom[0]]) 
+                                                        )
         finalRotatedModification = mathematics.rotate_with_quaternion(quaternionAlign, rotatedModification)
-
+#
         # Move to location of original nucleobase we want to modifiy
         # Move array to Nucleobase object
         nucleobaseTo.array = mathematics.move_vector_to_loc(finalRotatedModification, 
                                                             distance_to_loc=fragment.array[indicesArrayFrom[0]]
                                                             )
-#        nucleobaseTo.array = mathematics.move_vector_to_loc(rotatedModification, 
-#                                                            distance_to_loc=fragment.array[indicesArrayFrom[0]]
-#                                                            )
+#        # If the user wants to reorient (from watson crick franklin -> hoogsteen), then we invert the plane (directionAxis) we rotate onto
+#        if modification.reorient : 
+#
+#            # One of the absolutely DUMBEST things about the scipy.quaternion implementation is that for some reason, 
+#            # I can never get rotation of a full 180 degrees to just fricking work. So now we have to do a stupid workaround
+#            # We just flip the coordinates by pi/4 (45 degrees), so it is out of the clear and then we do the actual rotation
+#
+#            # invert the direction to flip the orientation of the nucleobase
+#            directionAxisToFlip = mathematics.get_normal_vector_of_plane( nucleobaseTo.array[indicesArrayTo[1]] - nucleobaseTo.array[indicesArrayTo[0]],
+#                                                                            nucleobaseTo.array[indicesArrayTo[2]] - nucleobaseTo.array[indicesArrayTo[0]]
+#                                                                            ) * -1
+#
+#            # flip by a random direction
+#            # The name of this function and its parameters is not generalised, but works all the same. Not going to bother renaming it
+#            reorientedNucleobase = mathematics.reorient_nucleoside_array(nucleobaseTo.array, indicesArrayTo[0])
+#
+#            directionAxisFromFlip = mathematics.get_normal_vector_of_plane( nucleobaseTo.array[indicesArrayTo[1]] - nucleobaseTo.array[indicesArrayTo[0]],
+#                                                                            nucleobaseTo.array[indicesArrayTo[2]] - nucleobaseTo.array[indicesArrayTo[0]]
+#                                                                            )
+#            directionAxisFromFlip = mathematics.get_normal_vector_of_plane( reorientedNucleobase[indicesArrayTo[1]] - reorientedNucleobase[indicesArrayTo[0]],
+#                                                                            reorientedNucleobase[indicesArrayTo[2]] - reorientedNucleobase[indicesArrayTo[0]]
+#                                                                            )
+#
+#            quaternionFlip = mathematics.get_quaternion(vector_to_rotate_onto=directionAxisToFlip,
+#                                                        vector_to_rotate_from=directionAxisFromFlip
+#                                                     )
+#
+#            movedToOriginFlip = mathematics.move_vector_to_origin(nucleobaseTo.array,
+#                                                                    distance_to_origin=nucleobaseTo.array[indicesArrayTo[0]]
+#                                                                )
+#            movedToOriginFlip = mathematics.move_vector_to_origin(reorientedNucleobase,
+#                                                                    distance_to_origin=nucleobaseTo.array[indicesArrayTo[0]]
+#                                                                )
+#
+#            FlippedModification = mathematics.rotate_with_quaternion(quaternionFlip, movedToOriginFlip)
+#
+#            nucleobaseTo.array = mathematics.move_vector_to_loc(FlippedModification, 
+#                                                                distance_to_loc=nucleobaseTo.array[indicesArrayTo[0]]
+#                                                                )
 
 
-        # If the user wants to reorient (from watson crick franklin -> hoogsteen), then we invert the plane (directionAxis) we rotate onto
-        if modification.reorient : 
-            print("Will implement later")
 
         # Modifiy the original residues with the modifications
         modifiedPdbFragment = UN.change_pdbfragments_by_modification(fragment, nucleobaseFrom, nucleobaseTo)

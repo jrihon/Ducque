@@ -418,16 +418,16 @@ def write_out_pdb_file_with_modified_nucleobases(PDB_NBASE_FNAME: str, pdbFileCo
     """
 
 
-#    def convert_integer_to_string(number: int) -> str : 
-#
-#        if number > 10 : 
-#            return "    " + str(number)
-#        elif number > 100 : 
-#            return "  " + str(number)
-#        elif number > 1000 : 
-#            return " " + str(number)
-#        else :  # above 1000
-#            return str(number)
+    def convert_integer_to_string(number: int) -> str : 
+
+        if number > 10 : 
+            return "   " + str(number)
+        elif number > 100 : 
+            return "  " + str(number)
+        elif number > 1000 : 
+            return " " + str(number)
+        else :  # above 1000
+            return str(number)
 
 
     # Change name of the output file
@@ -445,7 +445,6 @@ def write_out_pdb_file_with_modified_nucleobases(PDB_NBASE_FNAME: str, pdbFileCo
     with open(outputfile, "w") as pdbFileOutput :
 
         for i, line in enumerate(pdbFileContent): 
-#            atomNumber = i + 1
 
             # If an atom-line is encountered
             if line.startswith("ATOM"): 
@@ -468,6 +467,7 @@ def write_out_pdb_file_with_modified_nucleobases(PDB_NBASE_FNAME: str, pdbFileCo
                         # the rest is going to get written from the original file
                         start_match = 0
                         end_match = 0
+
 
 
                     pdbFileOutput.write(line) 
@@ -512,6 +512,8 @@ def write_out_pdb_file_with_modified_nucleobases(PDB_NBASE_FNAME: str, pdbFileCo
             # Skip any other lines
             else : 
                 continue
+
+
 
 #    ATOM      4  H5'  DT J   1       4.851   4.813  33.865  1.00  0.00           H
 #    ATOM      5 H5''  DT J   1       6.303   5.832  33.718  1.00  0.00           H
