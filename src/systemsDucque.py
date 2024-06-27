@@ -110,3 +110,4 @@ def print_launch(module):           print(f"[LAUNCH MODULE]   : {module.title()}
 def print_filenotfound(fname):      print(f"[FILE NOT FOUND]  : The following file was not found at the current path `{fname}`.")
 def print_atomnotfound(atom, fl):   print(f"[INVALID QUERY]   : The following atom `{atom}` was not found in the pdb's atomnames `{fl}`.")
 def print_already_set(fl,arg,farg): print(f"[ARGUMENT READILY SET] : The following argument `{fl}` was queried a second time. Set with `{arg}`, cannot change to `{farg}`.")
+def print_mismatch_nbase(nb,pdb):   print(f"[INVALID QUERY]   : Prompted `From` modification `{nb}` does not match all atoms in residue `{pdb.residueName} {pdb.residueNumber} {pdb.chainLetter}`.")

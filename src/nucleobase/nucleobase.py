@@ -57,6 +57,7 @@ def modify_nucleobases(PDB_NBASE_FNAME: str, LIST_OF_NBASE_MODIFICATIONS : list[
         
         # Pass fileContent starting within a precomputed range ; one full residue
         # Append the fragments to the list
+#        print(pdbFileContent[modification.start_match:modification.end_match])
         pdbFragments.append( 
                             PdbFragment( pdbFileContent[modification.start_match:modification.end_match] ) 
                             ) 
@@ -67,7 +68,7 @@ def modify_nucleobases(PDB_NBASE_FNAME: str, LIST_OF_NBASE_MODIFICATIONS : list[
     for fragment, modification in zip(pdbFragments, LIST_OF_NBASE_MODIFICATIONS): 
 
         # Query from modifications we need to modify from
-        nucleobaseModFromJson = TABLE_NUCLEOBASE_MODS[modification.modify_from]
+        nucleobaseModFromJson = TABLE_NUCLEOBASE_MODS[modification.modify_from][0]
         # A Nucleobase() class retrieves and stores all data from the nucleobase.json file
         nucleobaseFrom = Nucleobase(nucleobaseModFromJson)
 
@@ -78,7 +79,7 @@ def modify_nucleobases(PDB_NBASE_FNAME: str, LIST_OF_NBASE_MODIFICATIONS : list[
 
 
         # Query the modification we need to modify to
-        nucleobaseModToJson = TABLE_NUCLEOBASE_MODS[modification.modify_to]
+        nucleobaseModToJson = TABLE_NUCLEOBASE_MODS[modification.modify_to][0]
         nucleobaseTo = Nucleobase(nucleobaseModToJson)
 
 
@@ -87,7 +88,7 @@ def modify_nucleobases(PDB_NBASE_FNAME: str, LIST_OF_NBASE_MODIFICATIONS : list[
         ## GET THE QUATERNION TO ROTATE WITH
 
         # get indices of the Coordinates in the array
-        indicesArrayFrom = parse_or_write.retrieve_atom_index_MULTIPLE(nucleobaseFrom, nucleobaseFrom.atomsRotation)
+        indicesArrayFrom = fragment.retrieve_atom_index_MULTIPLE(nucleobaseFrom.atomsRotation)
         indicesArrayTo = parse_or_write.retrieve_atom_index_MULTIPLE(nucleobaseTo, nucleobaseTo.atomsRotation)
 
 
@@ -96,14 +97,14 @@ def modify_nucleobases(PDB_NBASE_FNAME: str, LIST_OF_NBASE_MODIFICATIONS : list[
         # Then we need v1(N9 -> C4) and v2(N9 -> C8)
 
         # Get plane of the original nucleobase, which is the plane we rotate onto
-        directionAxisNucleobase = mathematics.get_normal_vector_of_plane( nucleobaseFrom.array[indicesArrayFrom[1]] - nucleobaseFrom.array[indicesArrayFrom[0]],
-                                                                          nucleobaseFrom.array[indicesArrayFrom[2]] - nucleobaseFrom.array[indicesArrayFrom[0]]
+        directionAxisOriginal = mathematics.get_normal_vector_of_plane( fragment.array[indicesArrayFrom[1]] - fragment.array[indicesArrayFrom[0]],
+                                                                          fragment.array[indicesArrayFrom[2]] - fragment.array[indicesArrayFrom[0]]
                                                                             )
         directionAxisModification = mathematics.get_normal_vector_of_plane( nucleobaseTo.array[indicesArrayTo[1]] - nucleobaseTo.array[indicesArrayTo[0]],
                                                                             nucleobaseTo.array[indicesArrayTo[2]] - nucleobaseTo.array[indicesArrayTo[0]]
                                                                             )
 
-        quaternionNucleobase = mathematics.get_quaternion(vector_to_rotate_onto=directionAxisNucleobase,
+        quaternionNucleobase = mathematics.get_quaternion(vector_to_rotate_onto=directionAxisOriginal,
                                                           vector_to_rotate_from=directionAxisModification
                                                  )
 
@@ -117,15 +118,18 @@ def modify_nucleobases(PDB_NBASE_FNAME: str, LIST_OF_NBASE_MODIFICATIONS : list[
 
         # Second rotation involves aligned the modified nucleobase with the original nucleobase
         quaternionAlign = mathematics.get_quaternion(vector_to_rotate_from= rotatedModification[indicesArrayTo[1]] - rotatedModification[indicesArrayTo[0]],
-                                                     vector_to_rotate_onto= nucleobaseFrom.array[indicesArrayFrom[1]] - nucleobaseFrom.array[indicesArrayFrom[0]] 
+                                                     vector_to_rotate_onto= fragment.array[indicesArrayFrom[1]] - fragment.array[indicesArrayFrom[0]] 
                                                     )
         finalRotatedModification = mathematics.rotate_with_quaternion(quaternionAlign, rotatedModification)
 
         # Move to location of original nucleobase we want to modifiy
         # Move array to Nucleobase object
         nucleobaseTo.array = mathematics.move_vector_to_loc(finalRotatedModification, 
-                                                            distance_to_loc=nucleobaseFrom.array[indicesArrayFrom[0]]
+                                                            distance_to_loc=fragment.array[indicesArrayFrom[0]]
                                                             )
+#        nucleobaseTo.array = mathematics.move_vector_to_loc(rotatedModification, 
+#                                                            distance_to_loc=fragment.array[indicesArrayFrom[0]]
+#                                                            )
 
 
         # If the user wants to reorient (from watson crick franklin -> hoogsteen), then we invert the plane (directionAxis) we rotate onto

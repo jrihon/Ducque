@@ -1,7 +1,7 @@
 import systemsDucque as SD
 from initMolecule import Nucleobase
 from ducquelib.library import TABLE_NUCLEOBASE_MODS
-from numpy import array, ndarray
+from numpy import array, ndarray, asarray, zeros
 
 
 #--nucleobase 
@@ -278,7 +278,7 @@ class PdbFragment:
 
         # Parse the position from the pdb file (residuenumber, chain)
         self.chainLetter: str = pdbFragmentContent[0][21]
-        self.residueName: str = pdbFragmentContent[0][17:20]
+        self.residueName: str = pdbFragmentContent[0][17:20].strip()
         self.residueNumber: int = int(pdbFragmentContent[0][22:26])
 
         atomNames: list[str] = list()
@@ -288,13 +288,14 @@ class PdbFragment:
         elements = list()
 
         for line in pdbFragmentContent :
-
-            # Check whenever the residueNumber has been incremented
-            residueNumberUnchanged = self.residueNumber == line[17:20]
-
-            # if incremented, break the loop 
-            if not residueNumberUnchanged : 
-                break
+#            print(line)
+#
+#            # Check whenever the residueNumber has been incremented
+#            residueNumberUnchanged = self.residueNumber == line[22:26].strip()
+#
+#            # if incremented, break the loop 
+#            if not residueNumberUnchanged : 
+#                break
 
             # parse atomnames
             atomNames.append(line[12:16].strip())
@@ -327,6 +328,16 @@ class PdbFragment:
         return True
 
 
+    def retrieve_atom_index_MULTIPLE(self, atoms : list) :
+        """ Retrieves the index in the json_object.array of the atom of interest
+            This integer will be used to retrieve the vector of the atom of interest """
+        array_of_indexes = zeros(len(atoms), dtype=int)
+
+        for i in range(len(atoms)):
+            array_of_indexes[i] = self.atomNames.index(atoms[i])
+
+        return list(array_of_indexes)
+
 
 def change_pdbfragments_by_modification(pdbFragment : PdbFragment, nucleobaseFrom : Nucleobase, nucleobaseTo : Nucleobase) -> PdbFragment : 
     """
@@ -346,10 +357,20 @@ def change_pdbfragments_by_modification(pdbFragment : PdbFragment, nucleobaseFro
     # We want to retrieve the index of the atoms in the residue we want to modifiy
     # Take the `From` molecule and parse the original PdbFragment
     idx_list: list[int] = list()
+#    print(nucleobaseFrom.atom_list)
+#    print(pdbFragment.atomNames)
     for atomFrom in nucleobaseFrom.atom_list : 
         for idx, atomPdb in enumerate(pdbFragment.atomNames) :
             if atomFrom == atomPdb : 
                 idx_list.append(idx)
+
+    # All atoms from the queried nucleobaseFrom have to be found in the original residue 
+    # so we can remove them correctly and insert the modified nucleobase (nucleobaseTo)
+    # If the `idx_list` does not match the length of the `pdbFragment.atomNames`, then something went wrong
+
+    if len(idx_list) != len(nucleobaseFrom.atom_list) : 
+        SD.print_mismatch_nbase(nucleobaseFrom.identity, pdbFragment)
+        SD.exit_Ducque()
 
     # make new instances of the attributes we need to change
     coordinatesPdb = list()
@@ -376,9 +397,11 @@ def change_pdbfragments_by_modification(pdbFragment : PdbFragment, nucleobaseFro
         else : 
             coordinatesPdb.append(coordinate)
             atomNamesPdb.append(atomname)
+            elementsPdb.append(element)
 
-    pdbFragment.array = array(coordinatesPdb)
+    pdbFragment.array = asarray(coordinatesPdb, dtype=float)
     pdbFragment.atomNames = atomNamesPdb
+    pdbFragment.elements = elementsPdb
 
     # This returns a modified version of the pdb fragment
     return pdbFragment
@@ -395,16 +418,16 @@ def write_out_pdb_file_with_modified_nucleobases(PDB_NBASE_FNAME: str, pdbFileCo
     """
 
 
-    def convert_integer_to_string(number: int) -> str : 
-
-        if number > 10 : 
-            return "   " + str(number)
-        elif number > 100 : 
-            return "  " + str(number)
-        elif number > 1000 : 
-            return " " + str(number)
-        else :  # above 1000
-            return str(number)
+#    def convert_integer_to_string(number: int) -> str : 
+#
+#        if number > 10 : 
+#            return "    " + str(number)
+#        elif number > 100 : 
+#            return "  " + str(number)
+#        elif number > 1000 : 
+#            return " " + str(number)
+#        else :  # above 1000
+#            return str(number)
 
 
     # Change name of the output file
@@ -422,12 +445,13 @@ def write_out_pdb_file_with_modified_nucleobases(PDB_NBASE_FNAME: str, pdbFileCo
     with open(outputfile, "w") as pdbFileOutput :
 
         for i, line in enumerate(pdbFileContent): 
+#            atomNumber = i + 1
 
             # If an atom-line is encountered
             if line.startswith("ATOM"): 
 
-                # Make the prefix : 
-                prefix = "ATOM  " + convert_integer_to_string(i)
+#                # Make the prefix : 
+#                prefix = "ATOM  " + convert_integer_to_string(atomNumber)
 
                 # Check if matchFound has ended; we are passed iterating over the residue we intended to modify 
                 if end_match == i :
@@ -446,7 +470,7 @@ def write_out_pdb_file_with_modified_nucleobases(PDB_NBASE_FNAME: str, pdbFileCo
                         end_match = 0
 
 
-                    pdbFileOutput.write(prefix + line[12:]) 
+                    pdbFileOutput.write(line) 
                     continue
 
 
@@ -458,13 +482,14 @@ def write_out_pdb_file_with_modified_nucleobases(PDB_NBASE_FNAME: str, pdbFileCo
                 if start_match == i :
                     matchFound = True
                     modifiedFragment = modifiedPdbFragments[counter] # We will never index out-of-bonds here, so no need for (try except)
+                    newResidueName = LIST_OF_NBASE_MODIFICATIONS[counter].new_resname
 
                     # Pump and dump all the data into the pdb file being written
                     for j in range(len(modifiedFragment.atomNames)):
                         line = ["ATOM",
-                                convert_integer_to_string(i),
+                                (i + j + 1),
                                 modifiedFragment.atomNames[j],
-                                modifiedFragment.residueName,
+                                newResidueName,
                                 modifiedFragment.chainLetter,
                                 modifiedFragment.residueNumber,
                                 # x coordinate              , y coordinate                , z coordinate
@@ -472,12 +497,13 @@ def write_out_pdb_file_with_modified_nucleobases(PDB_NBASE_FNAME: str, pdbFileCo
                                 "1.00", "0.00",
                                 modifiedFragment.elements[j] ]
 
-                        pdbFileOutput.write("%-4s  %5d %4s %3s %s%4d    %8s%8s%8s%6s%6s          %2s\n" % tuple(line))
+#                        pdbFileOutput.write("%-4s  %5s %4s %3s %s%4d    %8s%8s%8s%6s%6s          %2s\n" % tuple(line))
+                        pdbFileOutput.write("%-4s  %5s %4s %3s %s%4d    %8.3f%8.3f%8.3f%6s%6s          %2s\n" % tuple(line))
 
 
                 # If nothing matches or the curent residue is not one we want to modify, just stream the original content into the new pdb
                 else : 
-                    pdbFileOutput.write(prefix + line[12:]) 
+                    pdbFileOutput.write(line) 
             #
             # If a TER-line is encountered
             elif line.startswith("TER"): 
