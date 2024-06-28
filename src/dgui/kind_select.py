@@ -7,6 +7,8 @@ import dgui.kind_build as KB
 import dgui.kind_rand as KR
 import dgui.kind_transmute as KT
 import dgui.kind_transmutelinker as KTL
+import dgui.kind_nbase as KN
+import dgui.kind_transmutenbase as KTN
 #import dgui.kind_xyzpdb as KX # disabled module
 
 #  +--------------------------------------------------+
@@ -57,9 +59,13 @@ class SelectApp(tk.Tk):
         self.app = App(module)
         self.mainloop()         # ... RUN ! DUH DUUUH DUNDUNDUDUNUDDDUUNNN
 
+
     def gui_module(self, module):
         if module == "build" :
             self.start_module(KB.BuildApp, module)
+
+        if module == "nbase" :
+            self.start_module(KN.NbaseApp, module)
 
         if module == "randomise" :
             self.start_module(KR.RandomiseApp, module)
@@ -70,6 +76,8 @@ class SelectApp(tk.Tk):
         if module == "tlinker" :
             self.start_module(KTL.TransmuteLinkerApp, module)
 
+        if module == "tbase" :
+            self.start_module(KTN.TransmuteTbaseApp, module)
 
         # This module has been disabled for the GUI
         # if module == "xyz_pdb" :
@@ -79,8 +87,10 @@ class SelectApp(tk.Tk):
     def set_omenu(self):
         self.module_choices = tk.StringVar()
         module_opts = ["build",
+                       "nbase",
                        "transmute",
                        "tlinker",
+                       "tbase",
                        "randomise",
                      # "xyz_pdb" # This module has been disabled for the GUI
                         ]

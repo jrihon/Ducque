@@ -101,6 +101,8 @@ def print_writing(outfile):         print(f"\033[94m[WRITE FILE]      : {outfile
 def print_invalid_chemistry(chem):  print(f"[INVALID QUERY]   : `{chem}`. Please revise your inputs for --chemistry")
 def print_invalid_nucleoside(NA):   print(f"[INVALID QUERY]   : One or more of the nucleotides in the given sequence is invalid `{NA}`")
 def print_invalid_key(key, table):  print(f"[INVALID KEY]     : The key `{key}` is not present in the table `{table}`")
+def print_invalid_query(flag) :     print(f"[INVALID QUERY]   : Invalid query found for `{flag}`.")
+def print_invalid_file(file) :      print(f"[INVALID FILE]    : Content of `{file}` is invalid or incomplete.")
 def print_empty_query(flag) :       print(f"[EMPTY QUERY]     : No input(s) found for `{flag}`.")
 def print_empty_query_nb(fl, pos):  print(f"[EMPTY QUERY]     : No input(s) found for `{fl}` at `--nucleobase` position `{pos}`.")
 def print_cant_find_Ducque():       print(f"[NOT FOUND]       : Ducque not found in the $PATH. Please add `Ducque` to the search path.")
@@ -111,3 +113,4 @@ def print_filenotfound(fname):      print(f"[FILE NOT FOUND]  : The following fi
 def print_atomnotfound(atom, fl):   print(f"[INVALID QUERY]   : The following atom `{atom}` was not found in the pdb's atomnames `{fl}`.")
 def print_already_set(fl,arg,farg): print(f"[ARGUMENT READILY SET] : The following argument `{fl}` was queried a second time. Set with `{arg}`, cannot change to `{farg}`.")
 def print_mismatch_nbase(nb,pdb):   print(f"[INVALID QUERY]   : Prompted `From` modification `{nb}` does not match all atoms in residue `{pdb.residueName} {pdb.residueNumber} {pdb.chainLetter}`.")
+def print_mismatch_flag(file,flag): print(f"[INVALID QUERY]   : Prompted file `{file}` does not match the given flag for `{flag}`.")

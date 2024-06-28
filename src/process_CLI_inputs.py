@@ -317,7 +317,7 @@ def gui_module(GUIINPUT):
     if GUIINPUT == "NO_FLAG" : 
         return GUIINPUT
 
-    list_of_valid_flags = ["build", "transmute", "randomise", "xyz_pdb", "tlinker"]
+    list_of_valid_flags = ["build", "transmute", "randomise", "xyz_pdb", "tlinker", "nbase", "tbase"]
 
     if not GUIINPUT in list_of_valid_flags:
         SD.print_invalid_flag(GUIINPUT)
