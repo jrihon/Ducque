@@ -2,10 +2,11 @@ import numpy as np
 import os
 import sys
 import subprocess
+from typing import Tuple
 
 """
 
-(c) 2022 Jérôme Rihon
+(c) 2024 Jérôme Rihon
 
 License: MIT
 
@@ -23,8 +24,14 @@ Description: Generate a Connolly surface (Solvent Excluded Surface) around the m
 
 
 ------------------------------------------------------------------------
-Usage : $ python MK_PopAnalScheme.py template_Orca
+Usage :
+    `$ cmd    script              argument0    `
+    `$ python MK_PopAnalScheme.py template_Orca`
+
     Where `template_Orca` is the name of the (HF - 6-31G*) outputfile generated.
+
+    Usage assumes the molecule has been reoriented onto the XY plane at the origin
+    and that a Hartree-Fock calculation has been carried out.
 
 ------------------------------------------------------------------------
 Arguments : As the first variable, give the basename of the file that was outputted when computing the HF 6-31G* single point energy.
@@ -35,17 +42,74 @@ Arguments : As the first variable, give the basename of the file that was output
 
 """
 
-def parse_pdb_for_scraps() -> list:
+def main():
+    """ The steps are as follows :
+        (1) Write out a MYFILE_PARSED.xyz file
+        (2) Call the MSMS program to write out the vertices of the triangulated surface. This is your grid.
+        (3) Call the orca_vpot program from orca to use the densities and the grid to calculate ESP charges for the gridpoints
+
+        (4) Parse the data created and write out a esp.dat, resp.in and a shell script to run the resp script from AMBER
+
+        (5) DO NOT FORGET TO QUOTE THE PAPER FROM PROF. DR. MICHEL SANNER """
+
+
+    # Name of files in the current working directory
+    try:
+        basename = sys.argv[1]
+    except IndexError:
+        sys.exit("No file basename has been prompted as the first argument.\n"
+                "Prompt the basename of the *.out file of the Hartree-Fock Single Point calculation.\n ")
+    outfileName = basename + ".out"
+
+    ### (1)
+    # Initialise and check-up for writing out a proper MYFILE_PARSED.xyz in AENGSTROM
+    # If the outfile is not in the current working directory, exit the script
+    if os.path.isfile("./" + outfileName) :
+        write_out_xyzfile(outfileName)
+    else :
+        sys.exit(f"Could not find the {basename}.out in the current working directory\n"
+                "Make sure it is present in the current working directory for the script to work.\n")
+
+    ### (2)
+    # Parse everything up until actually running the RUN_MSMS.sh script.
+    # NB : generates *_PARSED.xyz , `.vert` `.xyzr` files and a script to run the `msms` software
+    call_MSMS_for_grid(basename)
+    subprocess.check_call(["bash", "RUN_MSMS.sh"])
+    print("Running RUN_MSMS.sh\n")
+
+    # Prepare the orca_vpot input
+    npoints = prepare_vpot_input(basename)
+
+    ### (3)
+    subprocess.check_call(['orca_vpot', basename + '.gbw', basename + '.scfp', basename + '_vpot.grid', basename + '_vpot.out'])
+
+    ### (4)
+    # Write everything to files formatted that are suitable for the `resp` software
+    write_ESP_grid_file(basename, npoints)
+    write_RESP_input_file(basename)
+    write_RESP_input_script()
+
+    ### (5)
+    REFERENCE_MICHEL_SANNER()
+
+
+
+
+
+def parse_pdb_for_scraps() -> Tuple[list, list]:
     """ Atom name :       line 13 - 16 """
 
     pdb_prefix = "reoriented"
-
     cwd_list = [ i for i in os.listdir(os.getcwd()) if i.startswith(pdb_prefix) ]
 
-    # if cwd_list is empty, stop the software
+    # if cwd_list is empty, crash the script
     if len(cwd_list) == 0:
-        sys.exit("There are no files in the current working directory that has 'model' in the name of a pdb file.\n"
+        sys.exit("There are no pdb files in the current working directory that have 'reoriented*' in the name of a pdb file.\n"
                 "Make sure you have reoriented your molecules before parametrisation!\n")
+
+    if len(cwd_list) > 1 : 
+        sys.exit("There is more than one file named `reoriented*`. Ambiguous search, crashing software ...\n")
+
 
     if isinstance(cwd_list, list):
         pdb_fname = cwd_list[0]
@@ -53,29 +117,32 @@ def parse_pdb_for_scraps() -> list:
         pdb_fname = cwd_list
 
 
-    # Check if file is in cwd or in the pdb directory
-    try:
-        os.path.isfile(pdb_fname)
-    except FileNotFoundError:
-        print(f"Could not find {pdb_fname} in the directory.\n")
+#    # Check if file is in cwd or in the pdb directory
+#    try:
+#        os.path.isfile(pdb_fname)
+#    except FileNotFoundError:
+#        print(f"Could not find {pdb_fname} in the directory.\n")
 
     # Start new lists to append it all
     atomname = []
+    elements = []
 
     # Read the file and fill out the dataframe
     with open(pdb_fname) as pdbfile:
         for line in pdbfile:
             if line[:4] == 'ATOM' or line[:6] == 'HETATM':
                 atomname.append(line[12:16])
+                elements.append(line[76:78])
 
 
     # Add the atom name list as an attribute
-    atomname_list = list(map(lambda x : x.strip(), atomname))
+    atomname_list = list(map(lambda a : a.strip(), atomname))
+    elements_list = list(map(lambda e : e.strip(), elements))
 
-    return atomname_list
+    return atomname_list, elements_list
 
 
-def parse_xyz_for_scraps(xyz_fname) -> np.ndarray:
+def parse_xyz_for_scraps(xyz_fname) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """ parse coordinates  """
 
     x, y, z = np.loadtxt(xyz_fname, usecols=[1,2,3], skiprows=2, unpack=True)
@@ -128,7 +195,7 @@ def write_out_xyzfile(outfileName):
     print(f"Writing {basename}_PARSED.xyz \n\n")
 
 
-def assign_vdW_radii(atomname_list : list) -> np.array :
+def assign_vdW_radii(elements_list : list) -> list :
     """ Radius data retrieved from antechamber and tleap.
         Converted prmtop and crd file, through pdb4amber, to a pqr format with atom radii.
 
@@ -143,25 +210,32 @@ def assign_vdW_radii(atomname_list : list) -> np.array :
             "P" : 1.800,
             }
 
-    vdW_radii = np.zeros(shape=len(atomname_list))
 
-    for i, atom in enumerate(atomname_list):
-        vdW_radii[i] = radii_dict[atom[0]]
+    # the first character in the 
+    return list(map(lambda atom: radii_dict[atom], elements_list))
 
-    return vdW_radii
 
+#    vdW_radii = np.zeros(shape=len(atomname_list))
+#
+#    for i, atom in enumerate(atomname_list):
+#        vdW_radii[i] = radii_dict[atom[0]]
+#
+#    return vdW_radii
+#
 
 def call_MSMS_for_grid(basename):
     """ Generate a couple of xyzr files to be read in by `msms`
         This will generated a couple *.vert files that will be used to parse the grid from. """
     # Parse atomname list from the pdb
-    atomname_list = parse_pdb_for_scraps()
+#    atomname_list, elements = parse_pdb_for_scraps()
+    _, elements = parse_pdb_for_scraps()
     # Parse radii by calling the pdb
-    vdW_radii = assign_vdW_radii(atomname_list)
+    vdW_radii = assign_vdW_radii(elements)
     # Parse xyz array
     x, y, z = parse_xyz_for_scraps(basename + "_PARSED.xyz")
     # Write an array from 1.4 to 2.0 to map electrostatic potential onto gridpoints, in A.U.
-    factors = np.around(np.linspace(1.4, 2.0, num=4, endpoint=True), decimals=1)
+#    factors = np.around(np.linspace(1.4, 2.0, num=4, endpoint=True), decimals=1)
+    factors = [1.4, 1.6, 1.8, 2.0]
     factors_name = [str(x).split(".")[0] + str(x).split(".")[1] for x in factors]
 
     # Start the shell script to run the `msms` program
@@ -172,7 +246,7 @@ def call_MSMS_for_grid(basename):
 
     # Write out the the files
     for i, factor in enumerate(factors):
-        vdW_radii_sized = vdW_radii * factor
+        vdW_radii_sized = list(map(lambda vdW_radius: vdW_radius * factor, vdW_radii))
         with open("tmp_" + factors_name[i] + ".xyzr", "w") as tmpfile:
             for j in range(len(x)):
                 tmpfile.write("{0:8.3f}{1:9.3f}{2:9.3f}{3:9.2f}\n".format(x[j], y[j], z[j], vdW_radii_sized[j]))
@@ -195,8 +269,7 @@ def prepare_vpot_input(basename) -> int:
     factors = np.around(np.linspace(1.4, 2.0, num=4, endpoint=True), decimals=1)
     tmp_fnames_prefix = [str(x).split(".")[0] + str(x).split(".")[1] for x in factors]
 
-    sizeof = 0
-
+    final_array = np.empty(shape=(0,3))
 
     for i, prefix in enumerate(tmp_fnames_prefix):
         # Parse the array properly
@@ -215,17 +288,17 @@ def prepare_vpot_input(basename) -> int:
     y = np.array(final_array[:,1]) * ang_to_au
     z = np.array(final_array[:,2]) * ang_to_au
 
-    sizeof = x.shape[0]
+    sizeOfArray = x.shape[0]
 
     with open("./" + basename + "_vpot.grid", "w") as GRID:
-        GRID.write("{0:5d}\n".format(sizeof))
+        GRID.write("{0:5d}\n".format(sizeOfArray))
 
         for i, _ in enumerate(x):
             GRID.write("{0:12.6f}{1:12.6f}{2:12.6f}\n".format(x[i], y[i], z[i]))
 
     print("Writing "+ basename + "_vpot.grid\n")
 
-    return sizeof
+    return sizeOfArray
 
 
 def write_ESP_grid_file(basename : str, npoints : int):
@@ -340,12 +413,12 @@ def write_RESP_input_script():
             )
 
     # commandline prompt
-    RESP_SCRIPT.write(f"{AMBERHOME}/bin/resp -O \ \n"
-                        "                    -i resp.in \ \n"
-                        "                    -o resp.out \ \n"
-                        "                    -p resp.dat \ \n"
-                        "                    -e esp.dat \ \n"
-                        "                    -t qout \ \n")
+    RESP_SCRIPT.write(f"{AMBERHOME}/bin/resp -O \\ \n"
+                        "                    -i resp.in \\ \n"
+                        "                    -o resp.out \\ \n"
+                        "                    -p resp.dat \\ \n"
+                        "                    -e esp.dat \\ \n"
+                        "                    -t qout \\ \n")
 #                        "                    -q qin \n" )
 
     RESP_SCRIPT.close()
@@ -373,57 +446,6 @@ def REFERENCE_MICHEL_SANNER():
     """
 
     print(reference)
-
-
-def main():
-    """ The steps are as follows :
-        (1) Write out a MYFILE_PARSED.xyz file
-        (2) Call the MSMS program to write out the vertices of the triangulated surface. This is your grid.
-        (3) Call the orca_vpot program from orca to use the densities and the grid to calculate ESP charges for the gridpoints
-
-        (4) Parse the data created and write out a esp.dat, resp.in and a shell script to run the resp script from AMBER
-
-        (5) DO NOT FORGET TO QUOTE THE PAPER FROM PROF. DR. MICHEL SANNER """
-
-
-    # Name of files in the current working directory
-    try:
-        basename = sys.argv[1]
-    except IndexError:
-        sys.exit("No file basename has been prompted as the first argument.\n"
-                "Prompt the basename of the *.out file of the Hartree-Fock Single Point calculation.\n ")
-    outfileName = basename + ".out"
-
-    ### (1)
-    # Initialise and check-up for writing out a proper MYFILE_PARSED.xyz in AENGSTROM
-    # If the outfile is not in the current working directory, exit the script
-    if os.path.isfile("./" + outfileName) :
-        write_out_xyzfile(outfileName)
-    else :
-        sys.exit(f"Could not find the {basename}.out in the current working directory\n"
-                "Make sure it is present in the current working directory for the script to work.\n")
-
-    ### (2)
-    # Parse everything up until actually running the RUN_MSMS.sh script.
-    # NB : generates *_PARSED.xyz , `.vert` `.xyzr` files and a script to run the `msms` software
-    call_MSMS_for_grid(basename)
-    subprocess.check_call(["bash", "RUN_MSMS.sh"])
-    print("Running RUN_MSMS.sh\n")
-
-    # Prepare the orca_vpot input
-    npoints = prepare_vpot_input(basename)
-
-    ### (3)
-    subprocess.check_call(['orca_vpot', basename + '.gbw', basename + '.scfp', basename + '_vpot.grid', basename + '_vpot.out'])
-
-    ### (4)
-    # Write everything to files formatted that are suitable for the `resp` software
-    write_ESP_grid_file(basename, npoints)
-    write_RESP_input_file(basename)
-    write_RESP_input_script()
-
-    ### (5)
-    REFERENCE_MICHEL_SANNER()
 
 
 #------------------------------------------------------------------------------------
