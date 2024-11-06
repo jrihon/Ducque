@@ -1,10 +1,11 @@
 # Ducque
+The model builder of choice to generate helical structures. Provides an interface for the user to supply the Ducque library with user-defined, custom chemistries so you can build virtual structures with never-seen-before molecules!
 
 Ducque has four (4) main functions:
-- `--build` : the nucleic acid builder
-- `--transmute` : converts a given pdb file to the correct json format.
-- `--xyz_pdb` : converts a given xyz file to the proper pdb format.
-- `--randomise` : returns a randomised sequence to the user.
+- `--build` : module to generate (X)NA helical models.
+- `--transmute` : module to insert user-defined chemistries into Ducque's library.
+- `--xyz_pdb` : module to convert a given xyz file to the pdb format.
+- `--randomise` : module to randomise a sequence, used for `--build` .
 - `--gui` opens the GUI to use the modules up above, instead of the CLI. The `tlinker` module, in the `gui` module, is a specific preset for implementing linker fragments.
 
 ## Model building documentation
