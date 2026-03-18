@@ -607,15 +607,9 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linke
 
         # If the distance is already showing extreme values, something went wrong and to method is not working as it should.
         # This returns the nucleotide that has not been fitted; it is just on the plane of the leading strand's nucleobase
+        # 5 Aengstrom is a cut-off for reasonable distances that can still be minimized correctly. (source : me)
         print(_storedAngles)
-        if _storedDistances.min() > 4.5 : 
-            return compl_nuc_arr
-
-        # The same for if the angle is very close to 2pi or 0, this gives very weird rotations using scipy quaternions
-        # rougly 3 degrees = 0.05 radians
-        is_close_to_2pi = np.abs(2*np.pi - _storedAngles.min()) < 0.05
-        is_close_to_zero = np.abs(2*np.pi - _storedAngles.min()) < 0.05
-        if is_close_to_2pi or is_close_to_zero:
+        if _storedDistances.min() > 5.0 : 
             return compl_nuc_arr
 
         # Check to see if distance or angle fits the best of our needs
