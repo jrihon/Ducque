@@ -114,7 +114,7 @@ def generate_and_rotate_single_vector(interpolated_theta_angle : float, phi : fl
     return rotated_vector
 
 
-def assert_dot_product(dotProduct : np.ndarray) -> bool :
+def assert_dot_product(dotProduct : float) -> bool :
     """ We have noticed that whenever two vectors (i.e. j1 and j2, where j1 is imposed upon j2) make a dot product of
         -1 or -180 degrees, that the rotation of the quaternion spazzes out. To combat this, we will test whether or not
         j1 and j2 have a dot product nearing this value.
@@ -123,13 +123,10 @@ def assert_dot_product(dotProduct : np.ndarray) -> bool :
         the nucleoside array.
 
         if the difference(-1, _dotProduct) is close to zero, then change the orientation. """
-    testAgainst = - 1 - dotProduct
-    #print(_testAgainst)
+    testagainst = np.abs(- 1 - dotProduct)
 
     # Check if the asserted dot product is close to zero, from the negative range up
-    if -0.1 <= testAgainst <= 0 :
-        return True
-    return False
+    return 0.1 >= testagainst
 
 
 def reorient_nucleoside_array(complementary_array : np.ndarray) -> np.ndarray :
@@ -138,8 +135,8 @@ def reorient_nucleoside_array(complementary_array : np.ndarray) -> np.ndarray :
         What we did here is choose the standard x axis to rotate over, bring the nucleoside array by a random atom to the origin
         and rotate it, only to put it back to its original location."""
 
-    # Custom axis and custom angle to rotate. We rotate over an angle of 45 degrees just because it rotates it enough to steer away from the point
-    _quaternion_custom = get_quaternion_custom_axis(np.array([1,0,0]), (np.pi/4))
+    # Custom axis and custom angle to rotate. We rotate over an angle of 90 degrees just because it rotates it enough to steer away from the point
+    _quaternion_custom = get_quaternion_custom_axis(np.array([1,0,0]), (np.pi/2))
 
     return move_to_origin_ROTATE_move_back_to_loc(_quaternion_custom, complementary_array, complementary_array[0])
 
