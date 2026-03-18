@@ -504,8 +504,8 @@ def distance_or_angle(distances_arr : np.array, angles_arr : np.array, ref_dista
 
     # Pick an index from the most suitable one
     if rel_angle < rel_distance:
-        return np.where(stored_angles == stored_angles.min())[0]
-    return np.where(stored_distances == stored_distances.min())[0]
+        return np.where(stored_angles == stored_angles.min())[0].item(0)
+    return np.where(stored_distances == stored_distances.min())[0].item(0)
 
 
 def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linker, compl_nuc_arr : np.ndarray, complementary_strand : np.ndarray, index_compl : int) -> np.ndarray :
@@ -605,16 +605,23 @@ def tilt_array_to_get_a_better_fit(compl_nuc, compl_linker, prev_nuc, prev_linke
                 return testnuc
 
 
-        #print("Keep flat")
-        # If the angle or distance assertion is not working, just return it as is
+        # If the distance is already showing extreme values, something went wrong and to method is not working as it should.
         # This returns the nucleotide that has not been fitted; it is just on the plane of the leading strand's nucleobase
-        #return compl_nuc_arr
+        print(_storedAngles)
+        if _storedDistances.min() > 4.5 : 
+            return compl_nuc_arr
 
+        # The same for if the angle is very close to 2pi or 0, this gives very weird rotations using scipy quaternions
+        # rougly 3 degrees = 0.05 radians
+        is_close_to_2pi = np.abs(2*np.pi - _storedAngles.min()) < 0.05
+        is_close_to_zero = np.abs(2*np.pi - _storedAngles.min()) < 0.05
+        if is_close_to_2pi or is_close_to_zero:
+            return compl_nuc_arr
 
         # Check to see if distance or angle fits the best of our needs
-        _indexMin = distance_or_angle(_storedDistances, _storedAngles, 1.6, angle_to_fit)
-        _angleOfRot = _anglesOfRotation[_indexMin]
-        nuc1_quaternion = MATH.get_quaternion_custom_axis(v_direction, float(_angleOfRot))
+        idx_smallest_value = distance_or_angle(_storedDistances, _storedAngles, 1.6, angle_to_fit)
+        angle_of_rotation: float = _anglesOfRotation.item(idx_smallest_value)
+        nuc1_quaternion = MATH.get_quaternion_custom_axis(v_direction, angle_of_rotation)
 
         return MATH.move_to_origin_ROTATE_move_back_to_loc(nuc1_quaternion, compl_nuc_arr, compl_nuc_arr[_idxDirNucleobaseAtom2])
 
