@@ -21,13 +21,13 @@ def retrieve_index_of_best_conformation(stored_bb_distances, stored_bb_bools):
             diff_distances[i] = abs(stored_bb_distances[i] - 1.6)
 
         smallest_diff = diff_distances.min()
-        index_smallest_dif = np.where(diff_distances == smallest_diff)[0]
+        index_smallest_dif = np.where(diff_distances == smallest_diff)[0].item(0)
         return int(index_smallest_dif)
 
     # Check if some are True. If there is only one True, just take that conformation. If there are multiple Trues, test them against eachother
     if np.any(stored_bb_bools == True):
         if np.count_nonzero(stored_bb_bools == True) == 1:
-            only_true_conf = np.where(True == stored_bb_bools)[0]
+            only_true_conf = np.where(True == stored_bb_bools)[0].item(0)
             return int(only_true_conf)
 
         multiple_true_conf = np.where(True == stored_bb_distances)[0]
@@ -36,7 +36,7 @@ def retrieve_index_of_best_conformation(stored_bb_distances, stored_bb_bools):
             diff_distances[i] = abs(stored_bb_distances[i] - 1.6)
 
         smallest_diff = diff_distances.min()
-        index_smallest_dif = np.where(diff_distances == smallest_diff)[0]
+        index_smallest_dif = np.where(diff_distances == smallest_diff)[0].item(0)
         return int(index_smallest_dif)
 
     # if the program reaches this part, no distances were suitable. Just test them all against the 1.6 and get the smallest value of it, return that
@@ -45,7 +45,7 @@ def retrieve_index_of_best_conformation(stored_bb_distances, stored_bb_bools):
         diff_distances[i] = abs(stored_bb_distances[i] - 1.6)
 
     smallest_diff = diff_distances.min()
-    index_smallest_dif = np.where(diff_distances == smallest_diff)[0]
+    index_smallest_dif = np.where(diff_distances == smallest_diff)[0].item(0)
     return int(index_smallest_dif)
 
 
@@ -357,7 +357,7 @@ def assert_rotation_of_bases_by_distance(array_nucs : list, v_directions: list, 
 
 
         _storedDistances = MATH.smallest_difference(_storedDistances, 1.6)
-        _indexMin = np.where(_storedDistances == _storedDistances.min())[0][0]
+        _indexMin = np.where(_storedDistances == _storedDistances.min())[0].item(0)
         # index_min == 0 is rotation 2.5 -> 30 degrees 
         # index_min == 1 is rotation 357.5 -> 330 degrees
         return _returnAnglesOfRotation[0] if _indexMin == 0 else _returnAnglesOfRotation[1]
@@ -399,7 +399,7 @@ def assert_rotation_of_bases_by_distance(array_nucs : list, v_directions: list, 
 
 
         _storedDistances = MATH.smallest_difference(_storedDistances, 1.6)
-        _indexMin = np.where(_storedDistances == _storedDistances.min())[0][0]
+        _indexMin = np.where(_storedDistances == _storedDistances.min())[0].item(0)
         return _returnAnglesOfRotation[_indexMin][0], _returnAnglesOfRotation[_indexMin][1]
 
 
@@ -446,7 +446,7 @@ def assert_rotation_of_bases_by_angle(array_nucs : list, v_directions : list,  i
 
         # Find the angle with the lowest difference possible and use that specific set of rotations
         _storedAngles = MATH.smallest_difference(_storedAngles, angle_to_fit)
-        _indexMin = np.where(_storedAngles == _storedAngles.min())[0][0]
+        _indexMin = np.where(_storedAngles == _storedAngles.min())[0].item(0)
         return _returnAnglesOfRotation[0] if _indexMin == 0 else _returnAnglesOfRotation[1]
 
     # Two sets of directions to check
@@ -489,11 +489,11 @@ def assert_rotation_of_bases_by_angle(array_nucs : list, v_directions : list,  i
 
         # Find the angle with the lowest difference possible and use that specific set of rotations
         _storedAngles = MATH.smallest_difference(_storedAngles, angle_to_fit)
-        _indexMin = np.where(_storedAngles == _storedAngles.min())[0][0]
+        _indexMin = np.where(_storedAngles == _storedAngles.min())[0].item(0)
         return _returnAnglesOfRotation[_indexMin][0], _returnAnglesOfRotation[_indexMin][1]
 
 
-def distance_or_angle(distances_arr : np.array, angles_arr : np.array, ref_distance : float, ref_angle : float) -> int:
+def distance_or_angle(distances_arr : np.ndarray, angles_arr : np.ndarray, ref_distance : float, ref_angle : float) -> int:
     """ Check to see if the nucleoside fits best distance-bounds or the angle-bounds. Return the index of the array where it is the smallest. """
     stored_distances = MATH.smallest_difference(distances_arr, ref_distance)
     stored_angles = MATH.smallest_difference(angles_arr, ref_angle)
