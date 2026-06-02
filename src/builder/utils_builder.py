@@ -255,7 +255,7 @@ def assert_leading_strand_nucleotide_conformation(conformations, prev_nucleoside
 
 #    stored_distances = MATH.smallest_difference(radians_product_array, 1)
     smallest_distance = radians_product_array.min()
-    index_smallest_distance = np.where(radians_product_array == smallest_distance)[0][0]
+    index_smallest_distance = np.where(radians_product_array == smallest_distance)[0].item(0)
 
     return conformations[index_smallest_distance]
 
