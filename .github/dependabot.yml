@@ -1,0 +1,11 @@
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "monthly" # Solo project friendly: updates once a week
+    open-pull-requests-limit: 3 # Prevents your repo from getting flooded
+    groups:
+      python-dependencies:
+        patterns:
+          - "*" # Groups all Python updates into a single PR to save you time
