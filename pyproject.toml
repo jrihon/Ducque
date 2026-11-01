@@ -1,0 +1,26 @@
+[project]
+name = "ducque"
+version = "0.0.0"
+requires-python = "==3.13.18"
+
+
+dependencies = [
+    "numpy>=2.5.4",
+    "scipy>=1.18.1",
+]
+
+[project.scripts]
+ducque = "ducque.main:main"
+
+
+[tool.rumdl.MD013]
+line-length = 200
+code-blocks = true
+headings = true
+reflow = true
+# tables = false
+
+
+[tool.ruff.lint]
+
+[tool.ruff.format]
