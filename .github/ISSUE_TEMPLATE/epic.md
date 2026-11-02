@@ -21,7 +21,6 @@ This needs to be finished in order for this epic to be considered done :
 - [ ] Requirement 1
 - [ ] Requirement 2
 
-
 ## Linked Tasks / Features
 
 - #IssueNumber

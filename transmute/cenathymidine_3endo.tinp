@@ -1,7 +1,7 @@
 --pdb ../puckerdata/CENA/T/cena_T_3endo.pdb
---chemistry CENA 
---conformation 3endo 
---moiety nucleoside 
---nucleobase T 
---bondangles 101.995, 118.321, 109.824, 115.778, 112.009, 119.412, 126.008 
---dihedrals -61.121, 161.876, 47.467, 83.439, -139.263, -81.122, -156.690 
+--chemistry CENA
+--conformation 3endo
+--moiety nucleoside
+--nucleobase T
+--bondangles 101.995, 118.321, 109.824, 115.778, 112.009, 119.412, 126.008
+--dihedrals -61.121, 161.876, 47.467, 83.439, -139.263, -81.122, -156.690

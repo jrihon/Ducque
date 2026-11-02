@@ -145,10 +145,10 @@ addAtomTypes {
 #
 
 addPdbResMap {
-  { 0 "MG" "MG6"  } { 1 "MG" "MG3"  }  
-  { 0 "MA" "MA6"  } { 1 "MA" "MA3"  }  
-  { 0 "MC" "MC6"  } { 1 "MC" "MC3"  }  
-  { 0 "MT" "MT6"  } { 1 "MT" "MT3"  }  
+  { 0 "MG" "MG6"  } { 1 "MG" "MG3"  }
+  { 0 "MA" "MA6"  } { 1 "MA" "MA3"  }
+  { 0 "MC" "MC6"  } { 1 "MC" "MC3"  }
+  { 0 "MT" "MT6"  } { 1 "MT" "MT3"  }
 }
 #
 #   Add atom types from OL15

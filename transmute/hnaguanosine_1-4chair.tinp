@@ -1,7 +1,7 @@
 --pdb ../puckerdata/HNA/G/hna_G_14chair.pdb
---chemistry HNA 
---conformation 1-4chair 
---moiety nucleoside 
---nucleobase G 
---bondangles 104.779, 120.705, 107.541, 112.054, 105.672, 118.371, 122.931 
---dihedrals -61.246, 165.334, 58.729, 64.866, -144.282, -76.000, -149.414 
+--chemistry HNA
+--conformation 1-4chair
+--moiety nucleoside
+--nucleobase G
+--bondangles 104.779, 120.705, 107.541, 112.054, 105.672, 118.371, 122.931
+--dihedrals -61.246, 165.334, 58.729, 64.866, -144.282, -76.000, -149.414

@@ -1,0 +1,34 @@
+[project]
+name = "ducque"
+version = "0.0.0"
+requires-python = "==3.13.18"
+
+
+dependencies = [
+    "numpy>=2.5.4",
+    "scipy>=1.18.1",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.6,<0.14"]
+build-backend = "uv_build"
+
+[project.scripts]
+ducque = "ducque.main:main"
+
+
+[tool.rumdl.MD013]
+line-length = 200
+code-blocks = true
+headings = true
+reflow = true
+# tables = false
+
+
+[tool.ruff.lint]
+
+[tool.ruff.lint.flake8-tidy-imports]
+# Disallow all relative imports.
+ban-relative-imports = "all"
+
+[tool.ruff.format]
