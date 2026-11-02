@@ -1,4 +1,4 @@
-## What Changed?
+# What Changed?
 
 A quick summary of the changes introduced in this PR.
 
@@ -9,7 +9,7 @@ A quick summary of the changes introduced in this PR.
 
 A brief overview of what the task changes in a coherent manner.,
 
-## 💭 Have you thought about ...
+## 💭 Have you thought about
 
 - [ ] Update documentation
 - [ ] Update CICD
