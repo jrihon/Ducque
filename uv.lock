@@ -5,7 +5,7 @@ requires-python = "==3.13.18"
 [[package]]
 name = "ducque"
 version = "0.0.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "numpy" },
     { name = "scipy" },

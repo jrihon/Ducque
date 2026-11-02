@@ -1,5 +1,5 @@
-import randomise.utils_randomise as UR
-import systems_ducque as SD
+import ducque.randomise.utils_randomise as UR
+import ducque.refactorlater.systems_ducque as SD
 
 """ This script is used to randomise an outputted sequence based on a given input of parameters. """
 

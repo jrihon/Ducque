@@ -169,7 +169,7 @@ def generate_complementary_sequence(
     """sequence list is the given input.
     complement will specify what the complementary strand will look like. choices between homo - DNA - RNA"""
 
-    from ducque.process_cli_inputs import (
+    from ducque.refactorlater.process_cli_inputs import (
         check_if_chemistry_is_valid,
         check_if_nucleotides_are_valid,
     )

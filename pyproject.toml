@@ -9,6 +9,10 @@ dependencies = [
     "scipy>=1.18.1",
 ]
 
+[build-system]
+requires = ["uv_build>=0.13.6,<0.14"]
+build-backend = "uv_build"
+
 [project.scripts]
 ducque = "ducque.main:main"
 
@@ -22,5 +26,9 @@ reflow = true
 
 
 [tool.ruff.lint]
+
+[tool.ruff.lint.flake8-tidy-imports]
+# Disallow all relative imports.
+ban-relative-imports = "all"
 
 [tool.ruff.format]

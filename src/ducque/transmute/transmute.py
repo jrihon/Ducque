@@ -2,8 +2,8 @@ import json
 from os import getcwd, listdir
 from os.path import isdir, isfile
 
-import systems_ducque as SD
-import transmute.utils_transmute as UT
+import ducque.refactorlater.systems_ducque as SD
+import ducque.transmute.utils_transmute as UT
 
 
 def Transmutation(

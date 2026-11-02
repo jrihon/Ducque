@@ -4,7 +4,7 @@ from ducque.builder.parse_or_write import return_chemistrycode
 
 # from builder.builder_library import TABLE_NUCLEOTIDES
 from ducque.ducquelib.library import TABLE_NUCLEOTIDES
-from ducque.process_cli_inputs import (
+from ducque.refactorlater.process_cli_inputs import (
     check_if_chemistry_is_valid,
 )
 

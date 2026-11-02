@@ -154,8 +154,3 @@ def main():
         print(" <^)    Ducque")
         print(" ( 3 )   [GUI]")
         ducqueGUI.select_window(GUI_OPT)
-
-
-## ---------------------------------------- S T A R T   T H E   S H O W ---------------------------------------- ##
-if __name__ == "__main__":
-    main()

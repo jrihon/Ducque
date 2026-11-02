@@ -1,7 +1,5 @@
 import os
 
-from matplotlib.units import ConversionError
-
 import ducque.refactorlater.systems_ducque as SD
 from ducque.ducquelib.library import TABLE_CHEMISTRY, TABLE_NUCLEOTIDES
 
@@ -218,7 +216,7 @@ def randomise(RANDOMISEINPUT):
         if flag == "--length":
             try:
                 int(args[1])
-            except ConversionError:
+            except TypeError:
                 SD.print_invalid_argument(args[1], "--length")
             else:
                 length_sequence = int(args[1])

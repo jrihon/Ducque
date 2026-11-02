@@ -3,7 +3,8 @@ import json
 from numpy import arange, asarray, ndarray, pi
 
 import ducque.builder.parse_or_write as PARSE
-from ducque.builder.utils_builder import generate_complementary_sequence
+
+# from ducque.builder.utils_builder import generate_complementary_sequence
 
 """ Initialise the molecules (nucleoside or linker) as json objects. These objects are used to parse the data of the nucleosides of interest """
 
@@ -52,16 +53,16 @@ class Linker(Nucleoside):
         return json.loads(self.jsonObject["identity"])[0]
 
 
-class NucleotideSequence:
-    """Create an object to hold all the information about the nucleic acid sequences being prompted by the user"""
-
-    def __init__(self, leading_strand_sequence: list[str], complement: list[str] | str):
-        """Standard __init__ function"""
-
-        self.leadingStrandSequence = leading_strand_sequence[::-1]
-        self.complementaryStrandSequence = generate_complementary_sequence(
-            self.leadingStrandSequence, complement
-        )
+# class NucleotideSequence:
+#    """Create an object to hold all the information about the nucleic acid sequences being prompted by the user"""
+#
+#    def __init__(self, leading_strand_sequence: list[str], complement: list[str] | str):
+#        """Standard __init__ function"""
+#
+#        self.leadingStrandSequence = leading_strand_sequence[::-1]
+#        self.complementaryStrandSequence = generate_complementary_sequence(
+#            self.leadingStrandSequence, complement
+#        )
 
 
 class PdbInstance:

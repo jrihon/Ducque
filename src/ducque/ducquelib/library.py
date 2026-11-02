@@ -1,9 +1,9 @@
-import systems_ducque
+from ducque.refactorlater.systems_ducque import return_DUCQUEHOME
 
 """ This script will function as a repository for all the static information needed to build structures and transmute inputs  """
 
 # LEAVE THE `DH` VARIABLE UNTOUCHED ; path/to/Ducque/json
-DH = systems_ducque.return_DUCQUEHOME() + "json/"
+DH = return_DUCQUEHOME() + "json/"
 
 
 # -----------------------------------------
