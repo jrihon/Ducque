@@ -1,4 +1,4 @@
-! HF 6-31G* KeepDens NoKeepInts 
+! HF 6-31G* KeepDens NoKeepInts
 
 # KeepDens is very important because we require the .scfp file, which contains the densities
 # Convergence of the SCF and geometry optimisation. We only do SCF calculations here though.

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-# Two ways of using this shell script : 
+# Two ways of using this shell script :
 # $ ./OrcaExec.sh BASENAME
 #
 # $ bash OrcaExec.sh BASENAME
@@ -24,4 +24,3 @@
 INP=$1
 
 $HOME/Orca-5.0.2-openmpi4.1.1/orca $INP.inp "--use-hwthread-cpus" > $INP.out # v5.0.2
-

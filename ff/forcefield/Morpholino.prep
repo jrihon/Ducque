@@ -42,7 +42,7 @@ Morpholino Adenosine : Head fragment - HO6', N3' minus (-)
 
 IMPROPER
  C8   C4   N9   C1'
- C6   H61  N6   H62 
+ C6   H61  N6   H62
  N7   N9   C8   H8
  N1   N3   C2   H2
  C5   N1   C6   N6
@@ -97,7 +97,7 @@ Morpholino Adenosine : Internal fragment - O6' minus (-), N3' minus (-)
 
 IMPROPER
  C8   C4   N9   C1'
- C6   H61  N6   H62 
+ C6   H61  N6   H62
  N7   N9   C8   H8
  N1   N3   C2   H2
  C5   N1   C6   N6
@@ -153,7 +153,7 @@ Morpholino Adenosine : Tail fragment - O6' minus (-), HN3'
 
 IMPROPER
  C8   C4   N9   C1'
- C6   H61  N6   H62 
+ C6   H61  N6   H62
  N7   N9   C8   H8
  N1   N3   C2   H2
  C5   N1   C6   N6
@@ -207,7 +207,7 @@ Morpholino Adenosine : Neutral nucleoside - HO6', HN3'
 
 IMPROPER
  C8   C4   N9   C1'
- C6   H61  N6   H62 
+ C6   H61  N6   H62
  N7   N9   C8   H8
  N1   N3   C2   H2
  C5   N1   C6   N6
@@ -218,7 +218,7 @@ LOOP CLOSING EXPLICIT
  C4   N9
 
 DONE
-Morpholino Cytidine : Head fragment - HO6', N3' minus (-) 
+Morpholino Cytidine : Head fragment - HO6', N3' minus (-)
 
  MC6  INT     1
  CORRECT NOMIT DU   BEG
@@ -259,7 +259,7 @@ Morpholino Cytidine : Head fragment - HO6', N3' minus (-)
 IMPROPER
  C6   C2   N1   C1'
  N1   N3   C2   O2
- C4   H41  N4   H42 
+ C4   H41  N4   H42
  N1   C5   C6   H6
  C6   C4   C5   H5
  N3   C5   C4   N4
@@ -312,7 +312,7 @@ Morpholino Cytidine : Internal fragment - O6' minus (-), N3' minus (-)
 IMPROPER
  C6   C2   N1   C1'
  N1   N3   C2   O2
- C4   H41  N4   H42 
+ C4   H41  N4   H42
  N1   C5   C6   H6
  C6   C4   C5   H5
  N3   C5   C4   N4
@@ -366,7 +366,7 @@ Morpholino Cytidine : Tail fragment - O6' minus (-), HN3'
 IMPROPER
  C6   C2   N1   C1'
  N1   N3   C2   O2
- C4   H41  N4   H42 
+ C4   H41  N4   H42
  N1   C5   C6   H6
  C6   C4   C5   H5
  N3   C5   C4   N4
@@ -418,7 +418,7 @@ Morpholino Cytosine : Neutral nucleoside - HO6', HN3'
 IMPROPER
  C6   C2   N1   C1'
  N1   N3   C2   O2
- C4   H41  N4   H42 
+ C4   H41  N4   H42
  N1   C5   C6   H6
  C6   C4   C5   H5
  N3   C5   C4   N4
@@ -428,7 +428,7 @@ LOOP CLOSING EXPLICIT
  C2   N1
 
 DONE
-Morpholino Guanosine : Head fragment - HO6', N3' minus (-) 
+Morpholino Guanosine : Head fragment - HO6', N3' minus (-)
 
  MG6  INT     1
  CORRECT NOMIT DU   BEG
@@ -473,7 +473,7 @@ IMPROPER
  C8   C4   N9   C1'
  C5   N1   C6   O6
  C6   C2   N1   H1
- C2   H21  N2   H22 
+ C2   H21  N2   H22
  N7   N9   C8   H8
  N1   N3   C2   N2
 
@@ -530,7 +530,7 @@ IMPROPER
  C8   C4   N9   C1'
  C5   N1   C6   O6
  C6   C2   N1   H1
- C2   H21  N2   H22 
+ C2   H21  N2   H22
  N7   N9   C8   H8
  N1   N3   C2   N2
 
@@ -588,7 +588,7 @@ IMPROPER
  C8   C4   N9   C1'
  C5   N1   C6   O6
  C6   C2   N1   H1
- C2   H21  N2   H22 
+ C2   H21  N2   H22
  N7   N9   C8   H8
  N1   N3   C2   N2
 
@@ -644,7 +644,7 @@ IMPROPER
  C8   C4   N9   C1'
  C5   N1   C6   O6
  C6   C2   N1   H1
- C2   H21  N2   H22 
+ C2   H21  N2   H22
  N7   N9   C8   H8
  N1   N3   C2   N2
 
@@ -654,7 +654,7 @@ LOOP CLOSING EXPLICIT
  C4   N9
 
 DONE
-Morpholino Thymidine : Head fragment - HO6', N3' minus (-) 
+Morpholino Thymidine : Head fragment - HO6', N3' minus (-)
 
  MT6  INT     1
  CORRECT NOMIT DU   BEG
@@ -948,7 +948,7 @@ Morpholino Adenosine : Neutral nucleoside - Methyl Capped
 
 IMPROPER
  C8   C4   N9   C1'
- C6   H61  N6   H62 
+ C6   H61  N6   H62
  N7   N9   C8   H8
  N1   N3   C2   H2
  C5   N1   C6   N6
@@ -1007,7 +1007,7 @@ Morpholino Cytidine : Neutral nucleoside - Methyl Capped
 IMPROPER
  C6   C2   N1   C1'
  N1   N3   C2   O2
- C4   H41  N4   H42 
+ C4   H41  N4   H42
  N1   C5   C6   H6
  C6   C4   C5   H5
  N3   C5   C4   N4
@@ -1069,7 +1069,7 @@ IMPROPER
  C8   C4   N9   C1'
  C5   N1   C6   O6
  C6   C2   N1   H1
- C2   H21  N2   H22 
+ C2   H21  N2   H22
  N7   N9   C8   H8
  N1   N3   C2   N2
 
