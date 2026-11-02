@@ -1,22 +1,23 @@
 import tkinter as tk
 from tkinter import ttk
 
-import systemsDucque as SD
-from dgui.grid_geometry import Geometry as G
 import dgui.kind_build as KB
 import dgui.kind_rand as KR
 import dgui.kind_transmute as KT
 import dgui.kind_transmutelinker as KTL
-#import dgui.kind_xyzpdb as KX # disabled module
+import systems_ducque as SD
+from dgui.grid_geometry import Geometry as G
+
+# import dgui.kind_xyzpdb as KX # disabled module
+
 
 #  +--------------------------------------------------+
 #  |                   SELECT                         |
 #  +--------------------------------------------------+
 class SelectApp(tk.Tk):
-
-    def __init__(self, title : str): #master
+    def __init__(self, title: str):  # master
         # baseline stuff
-        super().__init__() #master
+        super().__init__()  # master
         self.title("Ducque : " + title)
         self.geometry(G.window_size_SELECT)
 
@@ -38,8 +39,10 @@ class SelectApp(tk.Tk):
     def start(self):
         self.mainloop()
 
-    def set_labels(self): 
-        self.label_title = ttk.Label(self.content, text="Choose one of the following modules : ")
+    def set_labels(self):
+        self.label_title = ttk.Label(
+            self.content, text="Choose one of the following modules : "
+        )
 
         self.label_empty = ttk.Label(self.content, text="")
 
@@ -55,43 +58,44 @@ class SelectApp(tk.Tk):
 
     def start_module(self, App, module):
         self.app = App(module)
-        self.mainloop()         # ... RUN ! DUH DUUUH DUNDUNDUDUNUDDDUUNNN
+        self.mainloop()  # ... RUN ! DUH DUUUH DUNDUNDUDUNUDDDUUNNN
 
     def gui_module(self, module):
-        if module == "build" :
+        if module == "build":
             self.start_module(KB.BuildApp, module)
 
-        if module == "randomise" :
+        if module == "randomise":
             self.start_module(KR.RandomiseApp, module)
 
-        if module == "transmute" :
+        if module == "transmute":
             self.start_module(KT.TransmuteApp, module)
 
-        if module == "tlinker" :
+        if module == "tlinker":
             self.start_module(KTL.TransmuteLinkerApp, module)
-
 
         # This module has been disabled for the GUI
         # if module == "xyz_pdb" :
         #     self.start_module(KX.FormatPdbApp, module)
 
-
     def set_omenu(self):
         self.module_choices = tk.StringVar()
-        module_opts = ["build",
-                       "transmute",
-                       "tlinker",
-                       "randomise",
-                     # "xyz_pdb" # This module has been disabled for the GUI
-                        ]
+        module_opts = [
+            "build",
+            "transmute",
+            "tlinker",
+            "randomise",
+            # "xyz_pdb" # This module has been disabled for the GUI
+        ]
 
-        self.module_choices.set("build") # default value
-        self.omenu_module = tk.OptionMenu(self.content, self.module_choices, *module_opts)
+        self.module_choices.set("build")  # default value
+        self.omenu_module = tk.OptionMenu(
+            self.content, self.module_choices, *module_opts
+        )
         self.omenu_module.configure(width=G.SELECT_optmenu)
 
-    def place_widgets(self): 
+    def place_widgets(self):
 
-        self.content.grid(column=0,row=0)
+        self.content.grid(column=0, row=0)
         # labels
         self.label_title.grid(column=1, row=1, columnspan=2)
 

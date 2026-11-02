@@ -1,14 +1,18 @@
-import systemsDucque as SD
 import os
 
-from ducquelib.library import TABLE_NUCLEOTIDES, TABLE_CHEMISTRY
+from matplotlib.units import ConversionError
+
+import ducque.refactorlater.systems_ducque as SD
+from ducque.ducquelib.library import TABLE_CHEMISTRY, TABLE_NUCLEOTIDES
 
 """ When the user prompts the wrong values or flags, this python script intercepts most errors that happen at the start """
+
 
 class InputExclusivity(Exception):
     Except = " These flags are mutually exclusive; --transmute     --build "
 
-def remove_blank_lines(fileList : list) -> list:
+
+def remove_blank_lines(fileList: list) -> list:
 
     # intialise new list
     newList = []
@@ -19,8 +23,9 @@ def remove_blank_lines(fileList : list) -> list:
 
     return newList
 
-def check_if_nucleotides_are_valid(input_sequence : list) -> bool:
-    """ Check if any of the prompted nucleotides is not valid. """
+
+def check_if_nucleotides_are_valid(input_sequence: list) -> bool:
+    """Check if any of the prompted nucleotides is not valid."""
     # Retrieve the keys of the dictionary from which we parse the data
     keysOfDict = TABLE_NUCLEOTIDES.keys()
     # Check if any of the prompted nucleotides is not found in the sequence
@@ -32,10 +37,9 @@ def check_if_nucleotides_are_valid(input_sequence : list) -> bool:
     return True
 
 
-def check_if_chemistry_is_valid(chemistry : str) -> str:
-    """ If the chemistry is invalid, stop the script.
-        If the chemistry is actually valid, return the keys of the dictionary as a list. """
-
+def check_if_chemistry_is_valid(chemistry: str) -> str:
+    """If the chemistry is invalid, stop the script.
+    If the chemistry is actually valid, return the keys of the dictionary as a list."""
 
     # Get the value from the transmute_constants nucleoside dictionary, to get the full name of the chemistry
     try:
@@ -49,13 +53,12 @@ def check_if_chemistry_is_valid(chemistry : str) -> str:
 
 def build(BUILDINPUT):
 
-    if not BUILDINPUT.name.endswith(".binp"): 
+    if not BUILDINPUT.name.endswith(".binp"):
         SD.print_inputfile("`--build`", "`.binp`")
-
 
     list_of_valid_flags = ["--sequence", "--complement", "--pdbname"]
     # Read the input file and create a list object of the sequence. Removes any whitespace.
-    fileDucque = remove_blank_lines(list(map(lambda x: x.strip(), BUILDINPUT.readlines())))
+    fileDucque = remove_blank_lines([line.strip() for line in BUILDINPUT.readlines()])
 
     # Check if amount of inputs are valid
     if len(fileDucque) != len(list_of_valid_flags):
@@ -63,7 +66,7 @@ def build(BUILDINPUT):
 
     for argument in fileDucque:
         flag = argument.split()[0]
-        args = argument.split() # split the string into separate values
+        args = argument.split()  # split the string into separate values
 
         # Check if flags are valid. If a given flag is not a valid one, shut it down
         if not flag in list_of_valid_flags:
@@ -73,59 +76,71 @@ def build(BUILDINPUT):
         SD.check_for_empty_string(argument, flag)
 
         if flag == "--sequence":
-            nucleicAcidList = list(map(lambda x: x.strip(",").upper(), args[1:]))
+            nucleicAcidList = [seqarg.strip(",").upper() for seqarg in args[1:]]
 
         if flag == "--complement":
             try:
-                args[2] # if there is a third element, we are dealing with a list
-            except:
-                complement = args[1] # else it is just a single keyword
+                args[2]  # if there is a third element, we are dealing with a list
+            except IndexError:
+                complement = args[1]  # else it is just a single keyword
             else:
-                complement =  list(map(lambda x: x.strip(",").upper(), args[1:]))
+                complement = [comp.strip(",").upper() for comp in args[1:]]
 
-        if flag == "--pdbname" :
+        if flag == "--pdbname":
             pdbName = args[1]
-
 
     # If the leading strand is valid
     if not check_if_nucleotides_are_valid(nucleicAcidList):
         SD.exit_Ducque()
 
     # if the complementary strand is valid
-    if isinstance(complement, list) and len(complement) > 2 :
-        if not check_if_nucleotides_are_valid(complement):
-            SD.exit_Ducque()
+    is_list = isinstance(complement, list)
+    is_larger_than_two = len(complement) > 2
+
+    if (
+        is_list
+        and is_larger_than_two
+        and not check_if_nucleotides_are_valid(complement)
+    ):
+        SD.exit_Ducque()
 
     return nucleicAcidList, complement, pdbName
 
 
-
 def transmute(TRANSMUTEINPUT):
 
-    if not TRANSMUTEINPUT.name.endswith(".tinp"): 
+    if not TRANSMUTEINPUT.name.endswith(".tinp"):
         SD.print_inputfile("`--transmute`", "`.tinp`")
 
     # Read the input file and create a list object of the sequence. Removes any whitespace.
-    fileTransmute = remove_blank_lines(list(map(lambda x: x.strip(), TRANSMUTEINPUT.readlines())))
+    fileTransmute = remove_blank_lines(
+        [line.strip() for line in TRANSMUTEINPUT.readlines()]
+    )
 
     # Check if amount of inputs are valid
-    list_of_valid_flags = ["--pdb", "--chemistry", "--moiety", "--conformation", "--dihedrals", "--bondangles"]
+    list_of_valid_flags = [
+        "--pdb",
+        "--chemistry",
+        "--moiety",
+        "--conformation",
+        "--dihedrals",
+        "--bondangles",
+    ]
     # iterate early over the possible inputs to check if `nucleoside` or `linker` is prompted
     for x in fileTransmute:
-        line = x.split() 
+        line = x.split()
         flag = line[0]
-        if flag == "--moiety": 
+        if flag == "--moiety":
             SD.check_for_empty_string(x, flag)
             if line[1] == "nucleoside":
                 list_of_valid_flags.append("--nucleobase")
 
-
-    if not len(fileTransmute) == len(list_of_valid_flags):
+    if len(fileTransmute) != len(list_of_valid_flags):
         SD.print_insufficient_flag(len(list_of_valid_flags))
 
     for argument in fileTransmute:
         flag = argument.split()[0]
-        args = argument.split() 
+        args = argument.split()
 
         # Check if flags are valid. If a given flag is not a valid one, shut it down
         if not flag in list_of_valid_flags:
@@ -144,10 +159,10 @@ def transmute(TRANSMUTEINPUT):
         if flag == "--conformation":
             conformation = args[1]
 
-        if flag == "--moiety": 
+        if flag == "--moiety":
             moiety = args[1]
 
-        if flag == "--nucleobase": # `nucleoside only` flag
+        if flag == "--nucleobase":  # `nucleoside only` flag
             nucleobase = args[1]
 
         if flag == "--dihedrals":
@@ -157,24 +172,24 @@ def transmute(TRANSMUTEINPUT):
             angles = args[1:]
 
     # If nucleobase is not prompted, the linker moiety is queried
-    try : 
-        nucleobase
-    except :
+    try:
+        _ = nucleobase
+    except UnboundLocalError:
         nucleobase = ""
 
     return pdb_fname, chemistry, moiety, dihedrals, angles, conformation, nucleobase
 
 
-
-
 def randomise(RANDOMISEINPUT):
 
-    if not RANDOMISEINPUT.name.endswith(".rinp"): 
+    if not RANDOMISEINPUT.name.endswith(".rinp"):
         SD.print_inputfile("`--randomise`", "`.rinp`")
 
-    fileRandomise = remove_blank_lines(list(map(lambda x: x.strip(), RANDOMISEINPUT.readlines())))
+    fileRandomise = remove_blank_lines(
+        [line.strip() for line in RANDOMISEINPUT.readlines()]
+    )
 
-    # Check list of valid inputs 
+    # Check list of valid inputs
     list_of_valid_flags = ["--chemistry", "--length", "--sequence", "--complement"]
     if len(fileRandomise) != 3:
         SD.print_insufficient_flag(3)
@@ -201,11 +216,11 @@ def randomise(RANDOMISEINPUT):
                 chemistry = args[1]
 
         if flag == "--length":
-            try : 
+            try:
                 int(args[1])
-            except :
+            except ConversionError:
                 SD.print_invalid_argument(args[1], "--length")
-            else :
+            else:
                 length_sequence = int(args[1])
                 sequence = None
 
@@ -215,7 +230,7 @@ def randomise(RANDOMISEINPUT):
 
         if flag == "--complement":
             if len(args) > 2:
-                complement =  list(map(lambda x: x.strip(","), args[1:]))
+                complement = [comparg.strip(",") for comparg in args[1:]]
                 if not check_if_nucleotides_are_valid(complement):
                     SD.exit_Ducque()
                 continue
@@ -226,11 +241,11 @@ def randomise(RANDOMISEINPUT):
             if complement not in compl_test_against:
                 SD.print_invalid_argument(complement, "--complement")
 
-#    # If the variable chemistry has not been instantiated, then
-#    try:
-#        chemistry
-#    except NameError:
-#        SD.print_invalid_argument('', "--chemistry")
+    #    # If the variable chemistry has not been instantiated, then
+    #    try:
+    #        chemistry
+    #    except NameError:
+    #        SD.print_invalid_argument('', "--chemistry")
 
     outFile = RANDOMISEINPUT.name.split(".")[0]
     return chemistry, length_sequence, sequence, complement, outFile
@@ -238,9 +253,11 @@ def randomise(RANDOMISEINPUT):
 
 def xyz_to_pdb(CONVERSIONINPUT):
 
-    fileConversion = remove_blank_lines(list(map(lambda x: x.strip(), CONVERSIONINPUT.readlines())))
+    fileConversion = remove_blank_lines(
+        [line.strip() for line in CONVERSIONINPUT.readlines()]
+    )
 
-    # Check list of valid inputs 
+    # Check list of valid inputs
     list_of_valid_flags = ["--xyz", "--residue", "--atomname_list"]
     if len(fileConversion) != 3:
         SD.print_insufficient_flag(3)
@@ -263,7 +280,7 @@ def xyz_to_pdb(CONVERSIONINPUT):
                 os.path.isfile(xyz_fname)
             except FileNotFoundError:
                 SD.print_filenotfound(xyz_fname)
-#                print(f"File {xyz_fname} was not found. Please revise either its name or its location on your system.\n")
+                #                print(f"File {xyz_fname} was not found. Please revise either its name or its location on your system.\n")
                 SD.exit_Ducque()
 
         if flag == "--residue":
@@ -276,12 +293,13 @@ def xyz_to_pdb(CONVERSIONINPUT):
 
     return xyz_fname, residue, atomname_list
 
-def gui_module(GUIINPUT): 
+
+def gui_module(GUIINPUT):
 
     # Take GUIINPUT out of the list
     GUIINPUT = GUIINPUT[0]
 
-    if GUIINPUT == "NO_FLAG" : 
+    if GUIINPUT == "NO_FLAG":
         return GUIINPUT
 
     list_of_valid_flags = ["build", "transmute", "randomise", "xyz_pdb", "tlinker"]

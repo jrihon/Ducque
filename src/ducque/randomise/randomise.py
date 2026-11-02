@@ -1,11 +1,10 @@
-from typing import Union
-
 import randomise.utils_randomise as UR
-import systemsDucque as SD
+import systems_ducque as SD
 
 """ This script is used to randomise an outputted sequence based on a given input of parameters. """
 
-def write_sequence_to_file(outFile : str, outputSequence : str, complement : str):
+
+def write_sequence_to_file(outFile: str, outputSequence: str, complement: str):
 
     fname = outFile + ".binp"
     with open("./" + fname, "w") as seq:
@@ -14,8 +13,14 @@ def write_sequence_to_file(outFile : str, outputSequence : str, complement : str
     SD.print_writing(fname)
 
 
-def randomiser(chemistry : Union[str, list], lengthSequence : int, sequence : list, complementSequence : list, outFile : str):
-    """ the 'MAIN' function in the Ducque.randomise script """
+def randomiser(
+    chemistry: str | list,
+    lengthSequence: int,
+    sequence: list,
+    complementSequence: list,
+    outFile: str,
+):
+    """the 'MAIN' function in the Ducque.randomise script"""
 
     # RANDOMISE A SEQUENCE FOR A SINGLE CHEMISTRY
     if isinstance(chemistry, str) and lengthSequence:
@@ -49,4 +54,3 @@ def randomiser(chemistry : Union[str, list], lengthSequence : int, sequence : li
 
         write_sequence_to_file(outFile, outputSequence, complementSequence)
         return
-
