@@ -7,7 +7,10 @@ repo = "builtin"
 hooks = [
     { id = "trailing-whitespace" },
     { id = "end-of-file-fixer" },
-    { id = "check-added-large-files" },
+    # Default 500 KB limit everywhere, except the figure directories of the docs
+    { id = "check-added-large-files", exclude = '^docs/(.+/)?figures/' },
+    # Figures embed raster images, so allow up to 5 MB (5120 KB) there
+    { id = "check-added-large-files", name = "check added large files (docs figures, max 5 MB)", files = '^docs/(.+/)?figures/', args = ["--maxkb=5120"] },
 ]
 
 [[repos]]
