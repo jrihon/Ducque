@@ -7,6 +7,7 @@ import ducque.refactorlater.systems_ducque as SD  # Retrieves system information
 SD.check_environment()
 
 from ducque.builder import builder  # Build the duplex
+from ducque.nucleobase import nucleobase  # Output a random sequence
 from ducque.randomise import randomise  # Output a random sequence
 from ducque.refactorlater import process_cli_inputs  # Exceptions and custom errors
 from ducque.transmute import (
@@ -59,6 +60,12 @@ def main():
     )
 
     options.add_argument(
+        "--nbase",
+        type=argparse.FileType("r"),
+        help="Modify an existing `*.pdb` by the nucleobases of the nucleotide chain.",
+    )
+
+    options.add_argument(
         "--xyz_pdb",
         type=argparse.FileType("r"),
         help="Convert an `*.xyz` file to a formatted `*.pdb` file.",
@@ -71,6 +78,12 @@ def main():
         action="append",
         const="NO_FLAG",
         help="Call Ducque's GUI to access clickable actions (instead of using CLI).",
+    )
+
+    options.add_argument(
+        "--nbase",
+        type=argparse.FileType("r"),
+        help="Modify an existing `*.pdb` by the nucleobases of the nucleotide chain.",
     )
 
     options.add_argument(
@@ -92,15 +105,8 @@ def main():
 
         # If we want to convert a pdb to a json file
         if arguments.transmute:
-            (
-                PDB_FNAME,
-                CHEMISTRY_T,
-                MOIETY,
-                DIHEDRALS,
-                ANGLES,
-                CONFORMATION,
-                NUCLEOBASE,
-            ) = process_cli_inputs.transmute(arguments.transmute)
+            TRANSMUTE_OBJECT = process_cli_inputs.transmute(arguments.transmute)
+        #            PDB_FNAME, CHEMISTRY_T, MOIETY, DIHEDRALS, ANGLES, CONFORMATION, NUCLEOBASE = process_CLI_inputs.transmute(arguments.transmute)
 
         # If we want to call for a randomised sequence
         if arguments.randomise:
@@ -112,6 +118,12 @@ def main():
         if arguments.xyz_pdb:
             XYZ_FNAME, ATOM_ID, ATOMNAME_LIST = process_cli_inputs.xyz_to_pdb(
                 arguments.xyz_pdb
+            )
+
+        # If we want to convert XYZ file to PDB
+        if arguments.nbase:
+            PDB_NBASE_FNAME, LIST_OF_NBASE_MODIFICATIONS = (
+                process_cli_inputs.nucleobase(arguments.nbase)
             )
 
         # If we want to use the GUI
@@ -129,10 +141,8 @@ def main():
 
     # Convert pdb to json
     if arguments.transmute:
-        SD.print_transmute(PDB_FNAME)
-        transmute.Transmutation(
-            PDB_FNAME, CHEMISTRY_T, MOIETY, DIHEDRALS, ANGLES, CONFORMATION, NUCLEOBASE
-        )
+        SD.print_transmute(TRANSMUTE_OBJECT.pdb_fname)
+        transmute.Transmutation(TRANSMUTE_OBJECT)
         sys.exit(0)
 
     # Convert an xyz coordinate file to a pdb file
@@ -147,10 +157,13 @@ def main():
         randomise.randomiser(CHEMISTRY_R, LENGTH_SEQUENCE, SEQUENCE, COMPL_SEQ, OUTFILE)
         sys.exit(0)
 
+    if arguments.nbase:
+        SD.print_nbase(PDB_NBASE_FNAME)
+        nucleobase.modify_nucleobases(PDB_NBASE_FNAME, LIST_OF_NBASE_MODIFICATIONS)
     # Use the GUI module. This gets loaded at the back because GUI users do not mind efficiency
     if arguments.gui:
-        from ducque.dgui import ducqueGUI
+        from ducque.dgui import ducque_gui
 
         print(" <^)    Ducque")
         print(" ( 3 )   [GUI]")
-        ducqueGUI.select_window(GUI_OPT)
+        ducque_gui.select_window(GUI_OPT)

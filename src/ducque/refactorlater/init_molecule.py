@@ -6,7 +6,7 @@ import ducque.builder.parse_or_write as PARSE
 
 # from ducque.builder.utils_builder import generate_complementary_sequence
 
-""" Initialise the molecules (nucleoside or linker) as json objects. These objects are used to parse the data of the nucleosides of interest """
+""" Initialise the molecules (nucleoside, linker or nucleobase) as json objects. These objects are used to parse the data of the nucleosides of interest """
 
 
 class Nucleoside:
@@ -63,6 +63,30 @@ class Linker(Nucleoside):
 #        self.complementaryStrandSequence = generate_complementary_sequence(
 #            self.leadingStrandSequence, complement
 #        )
+
+
+class Nucleobase:
+    def __init__(self, jsonfile) -> None:
+        """Load in nucleobase.json file into memory"""
+
+        with open(jsonfile, "r") as jsonf:
+            self.jsonObject = json.load(jsonf)
+
+        self.array: ndarray = asarray(
+            json.loads(self.jsonObject["pdb_properties"]["Coordinates"]), dtype=float
+        )
+        self.atom_list: list[str] = json.loads(
+            self.jsonObject["pdb_properties"]["Atoms"]
+        )
+        self.elements: list[str] = json.loads(
+            self.jsonObject["pdb_properties"]["Symbol"]
+        )
+        self.mol_length: int = int(
+            json.loads(self.jsonObject["pdb_properties"]["Shape"])[0]
+        )
+        self.filename: str = jsonfile
+        self.identity: str = json.loads(self.jsonObject["identity"])
+        self.atomsRotation: list[str] = json.loads(self.jsonObject["atoms_rotation"])
 
 
 class PdbInstance:

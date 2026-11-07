@@ -1,0 +1,4 @@
+--pdb ../puckerdata/NucleoBases/cytidine.pdb
+--chemistry cytidine
+--moiety nucleobase
+--atoms N1, C2, C6

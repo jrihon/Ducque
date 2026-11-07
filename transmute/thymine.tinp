@@ -1,0 +1,4 @@
+--pdb ../puckerdata/NucleoBases/thymine.pdb
+--chemistry thymine
+--moiety nucleobase
+--atoms N1, C2, C6

@@ -191,7 +191,6 @@ TABLE_LINKER = {
     "S-2DNA": "THIOPHOSPHATE",
 }
 
-
 # -----------------------------------------
 #           NUCLEOBASE REPOSITORY
 # -----------------------------------------
@@ -202,4 +201,16 @@ TABLE_NUCLEOBASE = {
     "G": "Guanosine",
     "T": "Thymidine",
     "U": "Uracil",
+}
+
+
+# -----------------------------------------
+#     NUCLEOBASE MODIFICATION REPOSITORY
+# -----------------------------------------
+TABLE_NUCLEOBASE_MODS = {
+    "A": [DH + "adenine.json"],
+    "C": [DH + "cytidine.json"],
+    "G": [DH + "guanine.json"],
+    "T": [DH + "thymine.json"],
+    "U": [DH + "uridine.json"],
 }
