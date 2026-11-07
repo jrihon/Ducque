@@ -12,6 +12,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest>=9.2.0",
+    "zensical>=0.1.0",
 ]
 
 [build-system]

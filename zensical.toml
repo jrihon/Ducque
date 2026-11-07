@@ -1,0 +1,30 @@
+[project]
+site_name = "Ducque"
+docs_dir = "docs"
+site_dir = "site"
+
+nav = [
+  { "How to create a Forcefield" = [
+    "how-to-create-a-forcefield.md",
+    { "Start a prep file" = "forcefield/prep-file.md" },
+    { "RESP Charge derivation" = "forcefield/resp-charge-derivation.md" },
+    { "Forcefield file generation" = "forcefield/forcefield-file-generation.md" },
+    { "Miscellaneous" = "forcefield/miscellaneous.md" },
+  ] },
+  { "Developer" = [
+    { "Developer setup" = "developer/developer-setup.md" },
+    { "Zensical usage" = "developer/zensical-usage.md" },
+  ] },
+]
+
+# Footnotes and pymdownx.arithmatex (generic) are enabled by Zensical's default
+# markdown extensions; MathJax only needs to be loaded to render the equations.
+extra_javascript = [
+  "javascripts/mathjax.js",
+  "https://unpkg.com/mathjax@3.2.2/es5/tex-mml-chtml.js",
+]
+
+[project.theme]
+features = [
+  "navigation.footer", # previous/next page links at the bottom, following the nav order
+]
