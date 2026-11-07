@@ -162,8 +162,8 @@ def main():
         nucleobase.modify_nucleobases(PDB_NBASE_FNAME, LIST_OF_NBASE_MODIFICATIONS)
     # Use the GUI module. This gets loaded at the back because GUI users do not mind efficiency
     if arguments.gui:
-        from ducque.dgui import ducqueGUI
+        from ducque.dgui import ducque_gui
 
         print(" <^)    Ducque")
         print(" ( 3 )   [GUI]")
-        ducqueGUI.select_window(GUI_OPT)
+        ducque_gui.select_window(GUI_OPT)
