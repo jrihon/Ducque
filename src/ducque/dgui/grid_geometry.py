@@ -5,14 +5,15 @@ class Geometry:
     # "width * height"
     window_size_SELECT = "300x100"
     window_size_RANDOMISE = "512x300"
-    window_size_BUILD = "512x300"
     window_size_XYZ = "512x300"  # unused module
     window_size_TRANSMUTE = "1500x400"
+    window_size_BUILD = "632x300"
 
     padx = 5
     pady = 6
 
     E = "e"  # align labels to east
+    C = "center"  # align labels to east
 
     # SELECT attributes
     SELECT_launch = 13  # fit to the size of the option menu

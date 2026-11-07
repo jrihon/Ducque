@@ -69,6 +69,13 @@ def print_invalid_argument(argument: str, flag: str):
     exit_Ducque()
 
 
+def print_invalid_argument_nb(argument: str, flag: str, pos: int):
+    print(
+        f"[INVALID ARGUMENT] : {flag} does not receive `{argument}`, at `--nucleobase` query number ({pos})."
+    )
+    exit_Ducque()
+
+
 def print_insufficient_flag(amount: int):
     print(
         f"[INVALID QUERY]    : Insufficient amount of arguments. Required amount : {amount}."
@@ -187,3 +194,37 @@ def print_atomnotfound(atom, fl):
     print(
         f"[INVALID QUERY]   : The following atom `{atom}` was not found in the pdb's atomnames `{fl}`."
     )
+
+
+def print_nbase(PDB_FNAME):
+    print(
+        f"\033[96m[NUCLEOBASE]      : Modification of nucleobases in {PDB_FNAME}!\033[39m\n"
+    )
+
+
+def print_mismatch_nbase(nb, pdb):
+    print(
+        f"[INVALID QUERY]   : Prompted `From` modification `{nb}` does not match all atoms in residue `{pdb.residueName} {pdb.residueNumber} {pdb.chainLetter}`."
+    )
+
+
+def print_empty_query_nb(fl, pos):
+    print(
+        f"[EMPTY QUERY]     : No input(s) found for `{fl}` at `--nucleobase` position `{pos}`."
+    )
+
+
+def print_already_set(fl, arg, farg):
+    print(
+        f"[ARGUMENT READILY SET] : The following argument `{fl}` was queried a second time. Set with `{arg}`, cannot change to `{farg}`."
+    )
+
+
+def print_mismatch_flag(file, flag):
+    print(
+        f"[INVALID QUERY]   : Prompted file `{file}` does not match the given flag for `{flag}`."
+    )
+
+
+def print_invalid_query(flag):
+    print(f"[INVALID QUERY]   : Invalid query found for `{flag}`.")

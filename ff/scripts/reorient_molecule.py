@@ -1,37 +1,38 @@
 import os
 import sys
+from io import TextIOWrapper
 
 import numpy as np
 from numpy.linalg import norm
-from scipy.spatial.transform.rotation import Rotation as R
+from scipy.spatial.transform import Rotation
 
-# LIBRARIES : NUMPY, SCIPY, PANDAS
+# DEPENDECIES : NUMPY, SCIPY
 
-# The first this strategy, the ﬁrst selected atom is translated to the origin of axes, the ﬁrst two atoms deﬁne the (0, X) axis while the third one is used to
-# deﬁne the (0, X, Y) plane. The (0, Z) axis is automatically set as the cross-product between the (0, X) and (0, Y) axes. This approach can be used for every optimized molecular
-# geometry, and is the basis for multiple orientation charge ﬁtting.
+# The first this strategy, the ﬁrst selected atom is translated to the origin of axes, the first two atoms define the X-axis while the third one is used to
+# define the (X, Y) plane. The Z-axis is the normal to the cross-product between the X- and Y-axis. This approach can be used for every optimized molecular
+# geometry, and is the basis for multiple orientation charge fitting.
 
 # ---- Pseudo-code
 #   1. Define which atoms you want to rotate on.
+#       - Suppose `atoms = ["C1'", "C6'", "N3'"]`
 #       - The C1' will be at the center of the cartesian system; C1' location([0,0,0])
-#       - The C6' will be the axis([1,0,0]) on which to impose the first rotation (C1' -> C6')
-#       - The N3' will be the next axis([0,0,1]) as the direction axis, so the three selected atoms will lie in the 0-X-Y plane.
+#       - The C6' will be the axis([1,0,0]) on which to impose the first rotation (vector :: C1' -> C6')
+#       - The N3' will be the next axis([0,0,1]) as the direction axis, so the three selected atoms will lie in the ORIGIN-X-Y plane.
 #       - This plane will be the plane upon which all other nucleosides are rotated on, reference from the first nucleoside that is being parsed.
 #
 
 
 """
-This scripts requires three libraries in python : NumPy, SciPy, Pandas
+This scripts requires the following dependecies in Python3 : NumPy, SciPy
 
 IMPORTANT : in the main() function there is a variable called atoms.
     -- 'atoms' is a list variable, where the names of the atoms are contained in.
-        changes this to your needs. Remember that the three atoms are in a plane.
-        If possible, make it consistent with how DNA/RNA are superposed onto the (0, X, Y).
+        changes this to your needs. Remember that three atoms form a plane.
 
 
 
 ARGUMENTS :
-    The scripts takes in one argument, the pdb file
+    The scripts takes in one argument, the molecule's pdb file in need of reorienting
 
 """
 
@@ -43,54 +44,78 @@ def main():
     try:
         MOLECULE_ARG = sys.argv[1]
     except IndexError:
-        print("No arguments prompted")
+        print("No arguments prompted. Prompt molecule pdb file to reorient.")
+        sys.exit(1)
 
     if not os.path.isfile(MOLECULE_ARG):
         sys.exit(f"FileNotFoundError : {MOLECULE_ARG} is not present. ")
 
-    ### Start program
+    # ------------------------------
+    # ------------------------------
+    # ------------------------------
+    # ADD ATOM NAMES OF PLANE MOLECULES HERE
     atoms = ["C1'", "C2'", "C4'"]
+
     atomOne = atoms[0]
     atomTwo = atoms[1]
     atomThree = atoms[2]
+    # ------------------------------
+    # ------------------------------
+    # ------------------------------
 
+    # start program
     pdb_instance = pdbMolecule(MOLECULE_ARG)
+    pdb_instance.parse_data()
 
-    pdb_instance.pdb_to_dataframe()
-    array_of_atoms = pdb_instance.retrieve_atom_index_MULTIPLE(
+    # get indices of atoms by name reference
+    indices_of_atoms = pdb_instance.retrieve_atom_index_MULTIPLE(
         [atomOne, atomTwo, atomThree]
     )
 
-    # Get nucleoside array to origin, also instantiate a duplicate array to work with
-    nuc_array = pdb_instance.array - pdb_instance.array[array_of_atoms[0]]
+    # move coordinate array to origin
+    nuc_array = (
+        pdb_instance.coordinateArray - pdb_instance.coordinateArray[indices_of_atoms[0]]
+    )
 
-    # Turn the first time onto the x-axis [1,0,0]
+    # Rotate the first time onto the x-axis [1,0,0]
     Xaxis = np.array([1, 0, 0])
-    vec0 = return_normalized(nuc_array[array_of_atoms[1]])
+    vec0 = return_normalized(nuc_array[indices_of_atoms[1]])
     quatX = get_quaternion(Xaxis, vec0)
     nuc_array = quatX.apply(nuc_array)
 
-    # Turn the second time onto the X-Z plane, by rotating the direction axis onto the y-axis [0,0,1]
-    vec2 = return_normalized(nuc_array[array_of_atoms[2]])
-    vec1 = return_normalized(nuc_array[array_of_atoms[1]])
+    # Rotate the second time onto the X-Y plane, by rotating the coordinate array's direction axis onto the z-axis [0,0,1]
+    Yaxis = np.array([0, 1, 0])
+    vec2 = return_normalized(nuc_array[indices_of_atoms[2]])
+    vec1 = return_normalized(nuc_array[indices_of_atoms[1]])
     directionAxis1 = get_direction_of_rotation(vec1, vec2)
-    Yaxis = np.array([0, 0, 1])
     quatY = get_quaternion(Yaxis, directionAxis1)
     nuc_array = quatY.apply(nuc_array)
 
+    Zaxis = np.array([0, 0, 1])
+    quatY = get_quaternion(Zaxis, directionAxis1)
+
+    # push reoriented coordinate array back into the pdbMolecule()'s attribute
+    pdb_instance.coordinateArray = quatY.apply(nuc_array)
+
+    # write to file
     with open("./reoriented_" + pdb_instance.filename, "w") as pdb:
-        pdb_instance.Write_Out_Pdb(nuc_array, pdb)
+        pdb_instance.write_out_pdb(pdb)
+
+
+class PdbDataFrame:
+    def __init__(self) -> None:
+        pass
 
 
 class pdbMolecule:
     def __init__(self, pdbfile):
         """Initialise the object and create object properties"""
-        self.splitted = pdbfile.split(".")[0]
-        self.pdb_dataframe = {}
-        self.array = np.array([])
+        self.splittedFilename = pdbfile.split(".")[0]
+        #        self.pdb_dataframe = PdbDataFrame()
+        #        self.array = np.array([])
         self.filename = pdbfile
 
-    def pdb_to_dataframe(self):
+    def parse_data(self):
         """
         Reads the name of the file and converts the entire file into a workable dataframe.
         By convention of the columns, below, the dataframe is set up like this.
@@ -114,7 +139,7 @@ class pdbMolecule:
         """
         # Start new lists to append it all
         AtomName, ResName, X_coords, Y_coords, Z_coords, ElementSymbol = (
-            [] for i in range(6)
+            [] for _ in range(6)
         )
 
         # Check if file is in cwd or in the pdb directory
@@ -123,6 +148,7 @@ class pdbMolecule:
             os.path.isfile(pdb_fname)
         except FileNotFoundError:
             print(f"Could not find {pdb_fname} in the directory.\n")
+            sys.exit(1)
 
         # Read the file and fill out the dataframe
         with open(pdb_fname) as pdbfile:
@@ -146,85 +172,78 @@ class pdbMolecule:
                     ElemSym = line[76:78]
                     ElementSymbol.append(ElemSym)
 
-            self.pdb_dataframe["AtomName"] = AtomName
-            self.pdb_dataframe["ResName"] = ResName
-            self.pdb_dataframe["X_Coord"] = X_coords
-            self.pdb_dataframe["Y_Coord"] = Y_coords
-            self.pdb_dataframe["Z_Coord"] = Z_coords
-            self.pdb_dataframe["ElementSymbol"] = ElementSymbol
+            # Add the coordinate array
+            self.coordinateArray = np.array(
+                [X_coords, Y_coords, Z_coords], dtype=float
+            ).T
 
-            # Add the array as an attribute
-            self.array = np.array([X_coords, Y_coords, Z_coords], dtype=float).T
+            # Add the atom name list
+            self.atom_list: list[str] = [an.strip() for an in AtomName]
 
-            # Add the atom name list as an attribute
-            self.atom_list = [an.strip() for an in AtomName]
-
-            # Add elements as an attribute
+            # Add element list
             self.elements = [es.strip() for es in ElementSymbol]
 
             # Add residue name
-            self.resname = ResName[0].strip()
+            self.resName = str(ResName[0].strip())
 
-    def retrieve_atom_index_MULTIPLE(
-        self, atoms: list, index_counter: int = 0
-    ) -> np.ndarray:
-        """Retrieves the index in the self.array of the atom of interest
-        This integer will be used to retrieve the vector of the atom of interest"""
-        array_of_indexes = np.zeros(len(atoms), dtype=int)
+    def retrieve_atom_index_MULTIPLE(self, atoms: list) -> list:
+        """Retrieves the indices in the self.coordinateArray of the atom of interest
+        These indices will be used to retrieve the vector of the atom of interest"""
 
-        for i in range(len(atoms)):
-            array_of_indexes[i] = self.atom_list.index(atoms[i]) + index_counter
+        return [self.atom_list.index(atom) for atom in atoms]
 
-        return array_of_indexes
+    #        indices_of_atoms = np.zeros(len(atoms), dtype=int)
+    #        for i in range(len(atoms)):
+    #            indices_of_atoms[i] = self.atom_list.index(atoms[i])
+    #
+    #        return indices_of_atoms
 
-    def Write_Out_Pdb(self, atom_array: np.ndarray, pdb):
+    def write_out_pdb(self, pdb: TextIOWrapper):
         """Write out the data for the pdb filename
-        @param : pdb . This is a file that has already opened
         https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/tutorials/framepdbintro.html"""
 
+        # precompute size
+        sizeMolecule = len(self.atom_list)
         pdb_line_format = "{:-6s}{:5s}{:5s}{:s}{:3s}{:2s}{:5d}  {:8s}{:8s}{:9s}{:6s}{:7s}{:4s}     {:2s}\n"
-        # LEADING STRAND
-        df_nucleoside = {}
 
-        df_nucleoside["RecName"] = ["ATOM" for _ in range(atom_array.shape[0])]
-        df_nucleoside["AtomNum"] = np.arange(start=1, stop=atom_array.shape[0] + 1)
-        df_nucleoside["AtomName"] = self.atom_list
-        df_nucleoside["AltLoc"] = " "
-        df_nucleoside["ResName"] = self.resname
-        df_nucleoside["Chain"] = "J"
-        df_nucleoside["Sequence"] = 1
-        df_nucleoside["X_coord"] = [f"{x:.3f}" for x in atom_array[:, 0]]
-        df_nucleoside["Y_coord"] = [f"{x:.3f}" for x in atom_array[:, 1]]
-        df_nucleoside["Z_coord"] = [f"{x:.3f}" for x in atom_array[:, 2]]
-        df_nucleoside["Occupancy"] = "1.00"
-        df_nucleoside["Temp"] = "0.00"
-        df_nucleoside["SegmentID"] = "   "
-        df_nucleoside["ElementSymbol"] = self.elements
+        # Pdb Format File
+        recordName = "ATOM"
+        atomNumber = [str(x) for x in range(1, sizeMolecule + 1)]
+        # self.atom_list
+        alternativeLocator = " "
+        # self.resname
+        chainletter = "A"
+        sequenceNumber = "1"
+        # coordinates
+        xCoord = [f"{x:.3f}" for x in self.coordinateArray[:, 0]]
+        yCoord = [f"{x:.3f}" for x in self.coordinateArray[:, 1]]
+        zCoord = [f"{x:.3f}" for x in self.coordinateArray[:, 2]]
+        occupancy = "1.00"
+        temperature = "0.00"
+        segmentId = "   "
+        # self.elements
 
         # Write out the pdb file
-        for _index, row in df_nucleoside.iterrows():
-            pdb.write(pdb_line_format).format(
-                row[0],
-                row[1],
-                row[2],
-                row[3],
-                row[4],
-                row[5],
-                row[6],
-                row[7],
-                row[8],
-                row[9],
-                row[10],
-                row[11],
-                row[12],
-                row[13],
+        for idx in range(sizeMolecule):
+            formatted_line = pdb_line_format.format(
+                [
+                    recordName,
+                    atomNumber[idx],
+                    self.atom_list[idx],
+                    alternativeLocator,
+                    self.resName,
+                    chainletter,
+                    sequenceNumber,
+                    xCoord[idx],
+                    yCoord[idx],
+                    zCoord[idx],
+                    occupancy,
+                    temperature,
+                    segmentId,
+                    self.elements[idx],
+                ]
             )
-
-
-#            pdb.write(
-#                "%-6s%5s%5s%s%3s%2s%5d  %8s%8s%9s%6s%7s%4s     %2s\n"
-#                % tuple(split_line)
-#            )
+            pdb.write(formatted_line)
 
 
 # MATHEMATICS
@@ -257,7 +276,7 @@ def get_angle_of_rotation(
 # MATHEMATICS
 def get_quaternion(
     vector_to_rotate_onto: np.ndarray, vector_to_rotate_from: np.ndarray
-) -> np.array:
+) -> Rotation:
     """Quaternion mathematics using the scipy.spatial.transform.Rotation library
     Create the quaternion that is associated with the angle and axis of rotation
     Apply it to the vector you want to rotate."""
@@ -277,9 +296,7 @@ def get_quaternion(
     qz = axis[2] * np.sin(theta)
     qw = np.cos(theta)
 
-    quaternion = R.from_quat([qx, qy, qz, qw])
-
-    return quaternion
+    return Rotation.from_quat([qx, qy, qz, qw])
 
 
 if __name__ == "__main__":

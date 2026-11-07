@@ -1,12 +1,14 @@
 import tkinter as tk
 from tkinter import ttk
 
-import dgui.kind_build as KB
-import dgui.kind_rand as KR
-import dgui.kind_transmute as KT
-import dgui.kind_transmutelinker as KTL
-import systems_ducque as SD
-from dgui.grid_geometry import Geometry as G
+import ducque.dgui.kind_build as KB
+import ducque.dgui.kind_nbase as KN
+import ducque.dgui.kind_rand as KR
+import ducque.dgui.kind_transmute as KT
+import ducque.dgui.kind_transmutelinker as KTL
+import ducque.dgui.kind_transmutenbase as KTN
+import ducque.refactorlater.systems_ducque as SD
+from ducque.dgui.grid_geometry import Geometry as G
 
 # import dgui.kind_xyzpdb as KX # disabled module
 
@@ -64,6 +66,9 @@ class SelectApp(tk.Tk):
         if module == "build":
             self.start_module(KB.BuildApp, module)
 
+        if module == "nbase":
+            self.start_module(KN.NbaseApp, module)
+
         if module == "randomise":
             self.start_module(KR.RandomiseApp, module)
 
@@ -73,6 +78,9 @@ class SelectApp(tk.Tk):
         if module == "tlinker":
             self.start_module(KTL.TransmuteLinkerApp, module)
 
+        if module == "tbase":
+            self.start_module(KTN.TransmuteTbaseApp, module)
+
         # This module has been disabled for the GUI
         # if module == "xyz_pdb" :
         #     self.start_module(KX.FormatPdbApp, module)
@@ -81,8 +89,10 @@ class SelectApp(tk.Tk):
         self.module_choices = tk.StringVar()
         module_opts = [
             "build",
+            "nbase",
             "transmute",
             "tlinker",
+            "tbase",
             "randomise",
             # "xyz_pdb" # This module has been disabled for the GUI
         ]
