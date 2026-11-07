@@ -1,5 +1,5 @@
 [project]
-site_name = "Ducque"
+site_name = "ducque"
 docs_dir = "docs"
 site_dir = "site"
 
@@ -13,6 +13,7 @@ nav = [
       { "Build" = "manual/usage/build.md" },
       { "Transmute Nucleoside" = "manual/usage/transmute-nucleoside.md" },
       { "Transmute Linker" = "manual/usage/transmute-linker.md" },
+      { "Transmute Nucleobase" = "manual/usage/transmute-nucleobase.md" },
       { "Randomise" = "manual/usage/randomise.md" },
       { "XYZ → PDB" = "manual/usage/xyz-to-pdb.md" },
       { "GUI" = "manual/usage/gui.md" },
