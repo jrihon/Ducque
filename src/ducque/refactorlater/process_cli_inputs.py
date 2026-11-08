@@ -62,53 +62,55 @@ def build(BUILDINPUT):
 
     list_of_valid_flags = ["--sequence", "--complement", "--pdbname"]
     # Read the input file and create a list object of the sequence. Removes any whitespace.
-    fileDucque = remove_blank_lines([line.strip() for line in BUILDINPUT.readlines()])
 
-    # Check if amount of inputs are valid
-    if len(fileDucque) != len(list_of_valid_flags):
-        SD.print_insufficient_flag(3)
+    with open(BUILDINPUT, "r") as build_filehandler:
+        fileDucque = remove_blank_lines([line.strip() for line in build_filehandler])
 
-    for argument in fileDucque:
-        flag = argument.split()[0]
-        args = argument.split()  # split the string into separate values
+        # Check if amount of inputs are valid
+        if len(fileDucque) != len(list_of_valid_flags):
+            SD.print_insufficient_flag(3)
 
-        # Check if flags are valid. If a given flag is not a valid one, shut it down
-        if not flag in list_of_valid_flags:
-            SD.print_invalid_flag(flag)
+        for argument in fileDucque:
+            flag = argument.split()[0]
+            args = argument.split()  # split the string into separate values
 
-        # See if all arguments have been prompted
-        SD.check_for_empty_string(argument, flag)
+            # Check if flags are valid. If a given flag is not a valid one, shut it down
+            if not flag in list_of_valid_flags:
+                SD.print_invalid_flag(flag)
 
-        if flag == "--sequence":
-            nucleicAcidList = [seqarg.strip(",").upper() for seqarg in args[1:]]
+            # See if all arguments have been prompted
+            SD.check_for_empty_string(argument, flag)
 
-        if flag == "--complement":
-            try:
-                args[2]  # if there is a third element, we are dealing with a list
-            except IndexError:
-                complement = args[1]  # else it is just a single keyword
-            else:
-                complement = [comp.strip(",").upper() for comp in args[1:]]
+            if flag == "--sequence":
+                nucleicAcidList = [seqarg.strip(",").upper() for seqarg in args[1:]]
 
-        if flag == "--pdbname":
-            pdbName = args[1]
+            if flag == "--complement":
+                try:
+                    args[2]  # if there is a third element, we are dealing with a list
+                except IndexError:
+                    complement = args[1]  # else it is just a single keyword
+                else:
+                    complement = [comp.strip(",").upper() for comp in args[1:]]
 
-    # If the leading strand is valid
-    if not check_if_nucleotides_are_valid(nucleicAcidList):
-        SD.exit_Ducque()
+            if flag == "--pdbname":
+                pdbName = args[1]
 
-    # if the complementary strand is valid
-    is_list = isinstance(complement, list)
-    is_larger_than_two = len(complement) > 2
+        # If the leading strand is valid
+        if not check_if_nucleotides_are_valid(nucleicAcidList):
+            SD.exit_Ducque()
 
-    if (
-        is_list
-        and is_larger_than_two
-        and not check_if_nucleotides_are_valid(complement)
-    ):
-        SD.exit_Ducque()
+        # if the complementary strand is valid
+        is_list = isinstance(complement, list)
+        is_larger_than_two = len(complement) > 2
 
-    return nucleicAcidList, complement, pdbName
+        if (
+            is_list
+            and is_larger_than_two
+            and not check_if_nucleotides_are_valid(complement)
+        ):
+            SD.exit_Ducque()
+
+        return nucleicAcidList, complement, pdbName
 
 
 def transmute(
@@ -119,51 +121,52 @@ def transmute(
         SD.print_inputfile("`--transmute`", "`.tinp`")
 
     # Read the input file and create a list object of the sequence. Removes any whitespace.
-    fileTransmute = remove_blank_lines(
-        [line.strip() for line in TRANSMUTEINPUT.readlines()]
-    )
+    with open(TRANSMUTEINPUT, "r") as transmute_filehandler:
+        fileTransmute = remove_blank_lines(
+            [line.strip() for line in transmute_filehandler]
+        )
 
-    #    # Check if amount of inputs are valid
-    #    list_of_valid_flags = ["--pdb", "--chemistry", "--moiety", "--conformation", "--dihedrals", "--bondangles"]
-    # iterate over the possible inputs to check if `nucleoside`, `linker` or `nucleobase` is prompted
-    moiety = ""
-    for x in fileTransmute:
-        line = x.split()
-        flag = line[0]
-        if flag == "--moiety":
-            SD.check_for_empty_string(x, flag)
-            if line[1] == "nucleoside":
-                moiety += "nucleoside"
-            elif line[1] == "linker":
-                moiety += "linker"
-            elif line[1] == "nucleobase":
-                moiety += "nucleobase"
-            else:
-                SD.print_invalid_argument("--moiety", line[1])
+        #    # Check if amount of inputs are valid
+        #    list_of_valid_flags = ["--pdb", "--chemistry", "--moiety", "--conformation", "--dihedrals", "--bondangles"]
+        # iterate over the possible inputs to check if `nucleoside`, `linker` or `nucleobase` is prompted
+        moiety = ""
+        for x in fileTransmute:
+            line = x.split()
+            flag = line[0]
+            if flag == "--moiety":
+                SD.check_for_empty_string(x, flag)
+                if line[1] == "nucleoside":
+                    moiety += "nucleoside"
+                elif line[1] == "linker":
+                    moiety += "linker"
+                elif line[1] == "nucleobase":
+                    moiety += "nucleobase"
+                else:
+                    SD.print_invalid_argument("--moiety", line[1])
 
-    # Prepare nucleoside transmutation
-    if moiety == "nucleoside":
-        nucT = NucleosideTransmute()
-        nucT.set_attributes(fileTransmute)
+        # Prepare nucleoside transmutation
+        if moiety == "nucleoside":
+            nucT = NucleosideTransmute()
+            nucT.set_attributes(fileTransmute)
 
-        return nucT
+            return nucT
 
-    # Prepare linker transmutation
-    elif moiety == "linker":
-        linkT = LinkerTransmute()
-        linkT.set_attributes(fileTransmute)
+        # Prepare linker transmutation
+        elif moiety == "linker":
+            linkT = LinkerTransmute()
+            linkT.set_attributes(fileTransmute)
 
-        return linkT
+            return linkT
 
-    # Prepare nucleobase transmutation
-    elif moiety == "nucleobase":
-        baseT = NucleobaseTransmute()
-        baseT.set_attributes(fileTransmute)
+        # Prepare nucleobase transmutation
+        elif moiety == "nucleobase":
+            baseT = NucleobaseTransmute()
+            baseT.set_attributes(fileTransmute)
 
-        return baseT
+            return baseT
 
-    else:
-        SD.print_empty_query("--moiety")
+        else:
+            SD.print_empty_query("--moiety")
 
 
 #    if not len(fileTransmute) == len(list_of_valid_flags):
@@ -216,70 +219,71 @@ def randomise(RANDOMISEINPUT):
     if not RANDOMISEINPUT.name.endswith(".rinp"):
         SD.print_inputfile("`--randomise`", "`.rinp`")
 
-    fileRandomise = remove_blank_lines(
-        [line.strip() for line in RANDOMISEINPUT.readlines()]
-    )
+    with open(RANDOMISEINPUT, "r") as randomiser_filehandler:
+        fileRandomise = remove_blank_lines(
+            [line.strip() for line in randomiser_filehandler]
+        )
 
-    # Check list of valid inputs
-    list_of_valid_flags = ["--chemistry", "--length", "--sequence", "--complement"]
-    if len(fileRandomise) != 3:
-        SD.print_insufficient_flag(3)
+        # Check list of valid inputs
+        list_of_valid_flags = ["--chemistry", "--length", "--sequence", "--complement"]
+        if len(fileRandomise) != 3:
+            SD.print_insufficient_flag(3)
 
-    # Check if flags are valid
-    for argument in fileRandomise:
-        flag = argument.split()[0]
-        args = argument.split()
+        # Check if flags are valid
+        for argument in fileRandomise:
+            flag = argument.split()[0]
+            args = argument.split()
 
-        # If a given flag is not a valid one, shut it down
-        if not flag in list_of_valid_flags:
-            SD.print_invalid_flag(flag)
+            # If a given flag is not a valid one, shut it down
+            if not flag in list_of_valid_flags:
+                SD.print_invalid_flag(flag)
 
-        # See if all arguments have been prompted
-        SD.check_for_empty_string(argument, flag)
+            # See if all arguments have been prompted
+            SD.check_for_empty_string(argument, flag)
 
-        # Save the prompted arguments according to their respective flags
-        if flag == "--chemistry":
-            # If multiple chemistries are prompted
-            if len(flag) > 2:
-                chemistry = args[1:]
-            # If one chemistry is prompted
-            elif len(flag) == 2:
-                chemistry = args[1]
+            # Save the prompted arguments according to their respective flags
+            if flag == "--chemistry":
+                # If multiple chemistries are prompted
+                if len(flag) > 2:
+                    chemistry = args[1:]
+                # If one chemistry is prompted
+                elif len(flag) == 2:
+                    chemistry = args[1]
 
-        if flag == "--length":
-            try:
-                int(args[1])
-            except TypeError:
-                SD.print_invalid_argument(args[1], "--length")
-            else:
-                length_sequence = int(args[1])
-                sequence = None
+            if flag == "--length":
+                try:
+                    int(args[1])
+                except TypeError:
+                    SD.print_invalid_argument(args[1], "--length")
+                else:
+                    length_sequence = int(args[1])
+                    sequence = None
 
-        if flag == "--sequence":
-            sequence = args[1:]
-            length_sequence = 0
+            if flag == "--sequence":
+                sequence = args[1:]
+                length_sequence = 0
 
-        if flag == "--complement":
-            if len(args) > 2:
-                complement = [comparg.strip(",") for comparg in args[1:]]
-                if not check_if_nucleotides_are_valid(complement):
-                    SD.exit_Ducque()
-                continue
+            if flag == "--complement":
+                if len(args) > 2:
+                    complement = [comparg.strip(",") for comparg in args[1:]]
+                    if not check_if_nucleotides_are_valid(complement):
+                        SD.exit_Ducque()
+                    continue
 
-            # Check if the complement flag contains either the 'homo' flag or a valid chemistry.
-            complement = args[1]
-            compl_test_against = ["HOMO"] + list(TABLE_CHEMISTRY.keys())
-            if complement not in compl_test_against:
-                SD.print_invalid_argument(complement, "--complement")
+                # Check if the complement flag contains either the 'homo' flag or a valid chemistry.
+                complement = args[1]
+                compl_test_against = ["HOMO"] + list(TABLE_CHEMISTRY.keys())
+                if complement not in compl_test_against:
+                    SD.print_invalid_argument(complement, "--complement")
 
-    #    # If the variable chemistry has not been instantiated, then
-    #    try:
-    #        chemistry
-    #    except NameError:
-    #        SD.print_invalid_argument('', "--chemistry")
+        #    # If the variable chemistry has not been instantiated, then
+        #    try:
+        #        chemistry
+        #    except NameError:
+        #        SD.print_invalid_argument('', "--chemistry")
 
-    outFile = RANDOMISEINPUT.name.split(".")[0]
-    return chemistry, length_sequence, sequence, complement, outFile
+        outFile = RANDOMISEINPUT.name.split(".")[0]
+        return chemistry, length_sequence, sequence, complement, outFile
 
 
 def xyz_to_pdb(CONVERSIONINPUT):

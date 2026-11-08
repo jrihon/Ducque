@@ -33,6 +33,8 @@ Examples of queries for the randomisation module:
 
 **B.** Prepend a given sequence with a chemistry
 
+TODO: take this out. Prepending a sequence, nobody every used it
+
 ```text title="prepend_sequence.rinp"
 --chemistry DNA
 --sequence A, G, G, C, T, A, A, G, T, T, A, C

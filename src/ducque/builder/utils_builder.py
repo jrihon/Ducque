@@ -584,9 +584,14 @@ def assert_starting_bases_of_complementary_strand(
     _storedDistances = MATH.smallest_difference(_storedDistances, angle_to_fit)
     # If this part of the code is reached, that means none of the evaluated distances are suitable. Let's search the shortest one in the list
     _indexMin = np.where(_storedDistances == _storedDistances.min())[0]
+    # _angleOfRot is a one dimension, single item, array
     _angleOfRot = _arrayOfRotationAngles2[_indexMin]
-    _quaternionNuc1 = MATH.get_quaternion_custom_axis(v_direction1, float(_angleOfRot))
-    _quaternionNuc2 = MATH.get_quaternion_custom_axis(v_direction2, float(_angleOfRot))
+    _quaternionNuc1 = MATH.get_quaternion_custom_axis(
+        v_direction1, float(_angleOfRot[0])
+    )
+    _quaternionNuc2 = MATH.get_quaternion_custom_axis(
+        v_direction2, float(_angleOfRot[0])
+    )
 
     #    nuc1 = MATH.move_to_origin_ROTATE_move_back_to_loc(quat_nuc1, arr_nuc1, arr_nuc1[id_nuc1_origin])
     #    nuc2 = MATH.move_to_origin_ROTATE_move_back_to_loc(quat_nuc2, arr_nuc2, arr_nuc2[id_nuc2_origin])
@@ -950,7 +955,7 @@ def create_PDB_from_array_final(
     if outfile.split(".")[-1] != "pdb":
         outfile = outfile + ".pdb"
 
-    pdb_format = "{:-4s}  {:5d {:4s} {:3s} {:s}{:4d}    {:8s}{:8s}{:8s}{:6s}{:6s}          {:2s}\n"
+    pdb_format = "{:>4s}  {:5d} {:4s} {:3s} {:s}{:4d}    {:8s}{:8s}{:8s}{:6s}{:6s}          {:2s}\n"
 
     # Write out the *.pdb file
     with open(outfile, "w") as PDB:
