@@ -804,7 +804,7 @@ def tilt_array_to_get_a_better_fit(
         # If the distance is already showing extreme values, something went wrong and to method is not working as it should.
         # This returns the nucleotide that has not been fitted; it is just on the plane of the leading strand's nucleobase
         # 5 Aengstrom is a cut-off for reasonable distances that can still be minimized correctly. (source : me)
-        print(_storedAngles)
+        # print(_storedAngles)
         if _storedDistances.min() > 5.0:
             return compl_nuc_arr
 

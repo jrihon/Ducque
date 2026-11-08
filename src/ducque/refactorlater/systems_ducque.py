@@ -1,5 +1,5 @@
-import os
 from importlib.util import find_spec
+from pathlib import Path
 from sys import exit
 
 """
@@ -36,14 +36,17 @@ def check_environment():
 
 def return_DUCQUEHOME():
     """Return the home directory of Ducque"""
-    DUCQUEHOME = (
-        os.path.dirname(
-            os.path.dirname(
-                os.path.realpath(__file__)
-            )  # retrieve path of called module
-        )
-        + "/"
-    )
+
+    # goes to refactorlater -> ducque -> src -> Ducque root
+    DUCQUEHOME = str(Path(__file__).parents[3]) + "/"
+    #    DUCQUEHOME = (
+    #        os.path.dirname(
+    #            os.path.dirname(
+    #                os.path.realpath(__file__)
+    #            )  # retrieve path of called module
+    #        )
+    #        + "/"
+    #    )
 
     return DUCQUEHOME
 

@@ -62,53 +62,55 @@ def build(BUILDINPUT):
 
     list_of_valid_flags = ["--sequence", "--complement", "--pdbname"]
     # Read the input file and create a list object of the sequence. Removes any whitespace.
-    fileDucque = remove_blank_lines([line.strip() for line in BUILDINPUT.readlines()])
 
-    # Check if amount of inputs are valid
-    if len(fileDucque) != len(list_of_valid_flags):
-        SD.print_insufficient_flag(3)
+    with open(BUILDINPUT, "r") as build_filehandler:
+        fileDucque = remove_blank_lines([line.strip() for line in build_filehandler])
 
-    for argument in fileDucque:
-        flag = argument.split()[0]
-        args = argument.split()  # split the string into separate values
+        # Check if amount of inputs are valid
+        if len(fileDucque) != len(list_of_valid_flags):
+            SD.print_insufficient_flag(3)
 
-        # Check if flags are valid. If a given flag is not a valid one, shut it down
-        if not flag in list_of_valid_flags:
-            SD.print_invalid_flag(flag)
+        for argument in fileDucque:
+            flag = argument.split()[0]
+            args = argument.split()  # split the string into separate values
 
-        # See if all arguments have been prompted
-        SD.check_for_empty_string(argument, flag)
+            # Check if flags are valid. If a given flag is not a valid one, shut it down
+            if not flag in list_of_valid_flags:
+                SD.print_invalid_flag(flag)
 
-        if flag == "--sequence":
-            nucleicAcidList = [seqarg.strip(",").upper() for seqarg in args[1:]]
+            # See if all arguments have been prompted
+            SD.check_for_empty_string(argument, flag)
 
-        if flag == "--complement":
-            try:
-                args[2]  # if there is a third element, we are dealing with a list
-            except IndexError:
-                complement = args[1]  # else it is just a single keyword
-            else:
-                complement = [comp.strip(",").upper() for comp in args[1:]]
+            if flag == "--sequence":
+                nucleicAcidList = [seqarg.strip(",").upper() for seqarg in args[1:]]
 
-        if flag == "--pdbname":
-            pdbName = args[1]
+            if flag == "--complement":
+                try:
+                    args[2]  # if there is a third element, we are dealing with a list
+                except IndexError:
+                    complement = args[1]  # else it is just a single keyword
+                else:
+                    complement = [comp.strip(",").upper() for comp in args[1:]]
 
-    # If the leading strand is valid
-    if not check_if_nucleotides_are_valid(nucleicAcidList):
-        SD.exit_Ducque()
+            if flag == "--pdbname":
+                pdbName = args[1]
 
-    # if the complementary strand is valid
-    is_list = isinstance(complement, list)
-    is_larger_than_two = len(complement) > 2
+        # If the leading strand is valid
+        if not check_if_nucleotides_are_valid(nucleicAcidList):
+            SD.exit_Ducque()
 
-    if (
-        is_list
-        and is_larger_than_two
-        and not check_if_nucleotides_are_valid(complement)
-    ):
-        SD.exit_Ducque()
+        # if the complementary strand is valid
+        is_list = isinstance(complement, list)
+        is_larger_than_two = len(complement) > 2
 
-    return nucleicAcidList, complement, pdbName
+        if (
+            is_list
+            and is_larger_than_two
+            and not check_if_nucleotides_are_valid(complement)
+        ):
+            SD.exit_Ducque()
+
+        return nucleicAcidList, complement, pdbName
 
 
 def transmute(
