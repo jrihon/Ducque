@@ -34,7 +34,8 @@ reflow = true
 
 
 [tool.ruff]
-exclude = ["tests/test-data/snapshots/"]
+exclude = ["tests/test-data/snapshots/*"]
+
 [tool.ruff.lint]
 
 [tool.ruff.lint.flake8-tidy-imports]
