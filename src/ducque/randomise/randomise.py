@@ -6,8 +6,10 @@ import ducque.refactorlater.systems_ducque as SD
 
 def write_sequence_to_file(outFile: str, outputSequence: str, complement: str):
 
-    fname = outFile + ".binp"
-    with open("./" + fname, "w") as seq:
+    fname = outFile
+    if not outFile.endswith(".binp"):
+        fname = outFile + ".binp"
+    with open(fname, "w") as seq:
         seq.write(f"--sequence {outputSequence}\n--complement {complement}\n")
 
     SD.print_writing(fname)

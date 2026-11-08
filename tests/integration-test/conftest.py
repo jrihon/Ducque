@@ -39,8 +39,13 @@ def construct_dna_rna_inputfile() -> Path:
 
 
 @pytest.fixture
-def randomise_inputfile() -> Path:
-    return Path("tests/test-data/randomise/randomise-sequence.rinp")
+def randomise_homo_inputfile() -> Path:
+    return Path("tests/test-data/randomise/randomise-sequence-homo.rinp")
+
+
+@pytest.fixture
+def randomise_hetero_inputfile() -> Path:
+    return Path("tests/test-data/randomise/randomise-sequence-hetero.rinp")
 
 
 @pytest.fixture
