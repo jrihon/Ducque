@@ -8,7 +8,11 @@ from ducque.refactorlater.process_cli_inputs import build
 
 @pytest.mark.parametrize(
     "construct_inputfile_fixture",
-    ["construct_dna_inputfile", "construct_rna_inputfile"],
+    [
+        "construct_dna_inputfile",
+        "construct_rna_inputfile",
+        "construct_dna_rna_inputfile",
+    ],
 )
 def test_construct_build(
     snapshot_main_directory: Path,
