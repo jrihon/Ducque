@@ -1,0 +1,71 @@
+name: Release to PyPI
+# Runs only when a GitHub Release is published (e.g. tag `v0.9.1`).
+# The release tag must match the version in pyproject.toml.
+on:
+  release:
+    types: [published]
+permissions:
+  contents: read
+jobs:
+  prek:
+    name: prek (lint & format)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      - name: Run prek
+        uses: ./.github/actions/prek
+  pytest:
+    name: pytest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      - name: Run pytest
+        uses: ./.github/actions/pytest
+  build:
+    name: Build distribution
+    needs: [prek, pytest]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Check release tag matches project version
+        shell: bash
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          version="$(uv version --short)"
+          if [ "$tag" != "$version" ]; then
+            echo "::error::Release tag '$GITHUB_REF_NAME' does not match pyproject.toml version '$version'"
+            exit 1
+          fi
+      - name: Build sdist and wheel
+        run: uv build
+      - name: Smoke-test the built wheel
+        run: uv run --isolated --no-project --with dist/*.whl python -c "import ducque"
+      - name: Upload distribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+  publish:
+    name: Publish to PyPI
+    needs: [build]
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/ducque/
+    steps:
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Download distribution
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - name: Publish to PyPI
+        run: uv publish
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
