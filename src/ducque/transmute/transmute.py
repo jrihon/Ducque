@@ -1,16 +1,80 @@
 import json
 from os import getcwd, listdir
 from os.path import isdir, isfile
+from pathlib import Path
+from typing import Any
 
 import ducque.refactorlater.systems_ducque as SD
 import ducque.transmute.utils_transmute as UT
+from ducque.transmute.utils_transmute import (
+    LinkerTransmute,
+    NucleobaseTransmute,
+    NucleosideTransmute,
+    TransmuteToJsonLinker,
+    TransmuteToJsonNucleobase,
+    TransmuteToJsonNucleoside,
+)
+
+
+def derive_transmute_filename(
+    transmute_to_json: TransmuteToJsonNucleoside
+    | TransmuteToJsonNucleobase
+    | TransmuteToJsonLinker,
+    transmute_object: NucleosideTransmute | LinkerTransmute | NucleobaseTransmute,
+) -> str:
+    # The json dump() method always requires us to dump it to a file in the current directory
+    if isinstance(transmute_to_json, TransmuteToJsonNucleoside) and isinstance(
+        transmute_object, NucleosideTransmute
+    ):
+        return transmute_to_json.get_output_name(
+            transmute_object.chemistry,
+            transmute_object.conformation,
+            transmute_object.nucleobase,
+        )
+    elif isinstance(transmute_to_json, TransmuteToJsonNucleobase) and isinstance(
+        transmute_object, NucleobaseTransmute
+    ):
+        return transmute_to_json.get_output_name(transmute_object.chemistry)
+    elif isinstance(transmute_to_json, TransmuteToJsonLinker) and isinstance(
+        transmute_object, LinkerTransmute
+    ):
+        return transmute_to_json.get_output_name(
+            transmute_object.chemistry,
+            transmute_object.conformation,
+        )
+    else:
+        raise FileNotFoundError
+
+
+def transmute_to_library(
+    transmute_to_json: TransmuteToJsonNucleoside
+    | TransmuteToJsonNucleobase
+    | TransmuteToJsonLinker,
+    transmute_object: NucleosideTransmute | LinkerTransmute | NucleobaseTransmute,
+    molecule: dict[str, Any],
+    path_to_write_to: Path | None = None,
+    filename_to_get: str | None = None,
+):
+    if not filename_to_get:
+        filename_to_get = derive_transmute_filename(transmute_to_json, transmute_object)
+
+    # Get Ducque home or other path to write to
+    if not path_to_write_to:
+        path_to_write_to = SD.return_DUCQUEHOME() + "json/"
+
+    # Write the inputfile to the Ducque home directory
+    output_filename = path_to_write_to / str(filename_to_get + ".json")
+    with open(output_filename, "w") as filejson:
+        json.dump(molecule, filejson, indent=4)
+
+    SD.print_writing(output_filename)
 
 
 def Transmutation(
     transmuteObject: UT.NucleosideTransmute
     | UT.LinkerTransmute
     | UT.NucleobaseTransmute,
-) -> None:
+):
     """This function converts a pdb formatted file into a json file.
     Json files make for a much easier data parsing format, are computationally much more efficient and require less memory to be held.
 
@@ -92,21 +156,22 @@ def Transmutation(
         molecule["angles"] = angles
 
         # ----------------------------- WRITE OUT A JSON FILE ----------------------------#
-        # The json dump() method always requires us to dump it to a file in the current directory
-        fname = nucleosidePdb.get_output_name(
-            transmuteObject.chemistry,
-            transmuteObject.conformation,
-            transmuteObject.nucleobase,
-        )
+        return nucleosidePdb, transmuteObject, molecule
 
-        # Get Ducque home
-        DUCQUEHOME = SD.return_DUCQUEHOME()
-
-        # Write the inputfile to the Ducque home directory
-        with open(DUCQUEHOME + "json/" + fname + ".json", "w") as filejson:
-            json.dump(molecule, filejson, indent=4)
-
-        SD.print_writing(f"{DUCQUEHOME}json/{fname}.json")
+    #        fname = nucleosidePdb.get_output_name(
+    #            transmuteObject.chemistry,
+    #            transmuteObject.conformation,
+    #            transmuteObject.nucleobase,
+    #        )
+    #
+    #        # Get Ducque home
+    #        DUCQUEHOME = SD.return_DUCQUEHOME()
+    #
+    #        # Write the inputfile to the Ducque home directory
+    #        with open(DUCQUEHOME + "json/" + fname + ".json", "w") as filejson:
+    #            json.dump(molecule, filejson, indent=4)
+    #
+    #        SD.print_writing(f"{DUCQUEHOME}json/{fname}.json")
 
     elif transmuteObject.moiety.upper() == "LINKER":
         ## Read pdb and convert to pdbobject
@@ -165,18 +230,7 @@ def Transmutation(
 
         # ----------------------------- WRITE OUT A JSON FILE ----------------------------#
         # The json dump() method always requires us to dump it to a file in the current directory
-        fname = linkerPdb.get_output_name(
-            transmuteObject.chemistry, transmuteObject.conformation
-        )
-
-        # Get Ducque home
-        DUCQUEHOME = SD.return_DUCQUEHOME()
-
-        # Write the inputfile to the Ducque home directory
-        with open(DUCQUEHOME + "json/" + fname + ".json", "w") as filejson:
-            json.dump(molecule, filejson, indent=4)
-
-        SD.print_writing(f"{DUCQUEHOME}json/{fname}.json")
+        return linkerPdb, transmuteObject, molecule
 
     elif transmuteObject.moiety.upper() == "NUCLEOBASE":
         ## Read pdb and convert to pdbobject
@@ -218,17 +272,7 @@ def Transmutation(
         molecule["atoms_rotation"] = json.dumps(atoms_rotation)
 
         # ----------------------------- WRITE OUT A JSON FILE ----------------------------#
-        # The json dump() method always requires us to dump it to a file in the current directory
-        fname = nucleobasePdb.get_output_name(transmuteObject.chemistry)
-
-        # Get Ducque home
-        DUCQUEHOME = SD.return_DUCQUEHOME()
-
-        # Write the inputfile to the Ducque home directory
-        with open(DUCQUEHOME + "json/" + fname + ".json", "w") as filejson:
-            json.dump(molecule, filejson, indent=4)
-
-        SD.print_writing(f"{DUCQUEHOME}json/{fname}.json")
+        return nucleobasePdb, transmuteObject, molecule
 
     else:
         SD.print_invalid_argument(transmuteObject.moiety, "--moiety")

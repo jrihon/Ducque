@@ -1,4 +1,4 @@
---pdb ../puckerdata/DNA/G/dna_guanosine_2endo.pdb
+--pdb tests/test-data/pdb/dna_guanosine_2endo.pdb
 --chemistry DNA
 --conformation 2endo
 --moiety nucleoside

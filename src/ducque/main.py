@@ -142,7 +142,10 @@ def main():
     # Convert pdb to json
     if arguments.transmute:
         SD.print_transmute(TRANSMUTE_OBJECT.pdb_fname)
-        transmute.Transmutation(TRANSMUTE_OBJECT)
+        transmute_to_json, transmute_object, molecule = transmute.Transmutation(
+            TRANSMUTE_OBJECT
+        )
+        transmute.transmute_to_library(transmute_to_json, transmute_object, molecule)
         sys.exit(0)
 
     # Convert an xyz coordinate file to a pdb file
