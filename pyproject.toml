@@ -1,6 +1,21 @@
 [project]
 name = "ducque"
 version = "0.9.3"
+description = "Model builder for helical (X)NA structures, with support for user-defined chemistries."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Jérôme Rihon" , email = "jeromerihon@gmail.com"}]
+keywords = ["nucleic acids", "XNA", "molecular modelling", "structure builder", "pdb"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Chem-Informatics",
+    "Topic :: Scientific/Engineering :: Chemistry",
+]
 requires-python = ">=3.13"
 
 
@@ -23,6 +38,13 @@ build-backend = "uv_build"
 
 [project.scripts]
 ducque = "ducque.main:main"
+
+[project.urls]
+Homepage = "https://github.com/jrihon/Ducque"
+Repository = "https://github.com/jrihon/Ducque"
+Documentation = "https://github.com/jrihon/Ducque/tree/main/docs"
+Issues = "https://github.com/jrihon/Ducque/issues"
+Publication = "https://doi.org/10.1093/nar/gkae135"
 
 
 [tool.rumdl.MD013]
