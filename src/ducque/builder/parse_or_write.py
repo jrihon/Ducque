@@ -1,5 +1,4 @@
 import json
-import os
 import sys
 
 import numpy as np
@@ -10,7 +9,6 @@ from ducque.ducquelib.library import (
     TABLE_LINKER_BACKBONE,
     TABLE_NUCLEOTIDES,
 )
-from ducque.refactorlater.systems_ducque import return_DUCQUEHOME
 
 TB = TABLE_BACKBONE
 TLB = TABLE_LINKER_BACKBONE
@@ -165,53 +163,30 @@ def assess_possible_complementary_base(
 
 
 def return_chemistrycode(identifier: str) -> str:
-    """Go through the currently available files in the /Ducque/json/ directory and read them in order to find the prompted identifier variable
+    """Go through the json files referenced in the complementary codex (TC) and read them in order to find the prompted identifier variable
     in the 'identity' list.
 
     Then parse the correct abbreviated chemistry identifier.
-    Example ; find 'Deoxy Ribonucleic Acid' --> returns 'd'"""
+    Example ; find 'Deoxy Ribonucleic Acid' --> returns 'D'
 
-    # Get the directory from the $HOME of Ducque (where it is installed)
-    dH = return_DUCQUEHOME()
-    dirJSON = os.listdir(dH + "json/")
+    Only files in the codex are searched, in the codex's fixed order. Scanning the json/ directory instead depends on the
+    filesystem's file order and can hit a file with the same identity that is not in the codex."""
 
-    # Read all the files in the json/ directory and find the identifier that was prompted, this way we can inambiguously find the abbreviated chemical code
-    for json_file in dirJSON:
-        json_pathname = dH + "json/" + json_file
+    for key, files in TC.items():
+        if not isinstance(files, list):
+            files = [files]
 
-        with open(json_pathname, "r") as jsonf:
-            jsonContent = json.loads(json.load(jsonf)["identity"])[0]
+        for json_pathname in files:
+            with open(json_pathname, "r") as jsonf:
+                jsonContent = json.loads(json.load(jsonf)["identity"])[0]
 
-        # if the identifier has been found, remember the name of the file we found it in
-        if jsonContent == identifier:
-            file_of_chemistry = json_pathname
-            break
+            # Return the chemistry code without the nucleobase appended, so we can add the complementary bases to it later
+            if jsonContent == identifier:
+                return key[:-1]
 
-    # Iterate over the complementary codex. If you find the filename, remember the abbreviated nucleic acid code of the file
-    CHECK = False
-
-    # Iterate over the complementary codex
-    for key, value in TC.items():
-        if isinstance(value, list):
-            for i, item in enumerate(value):
-                if item == file_of_chemistry:
-                    _KEY = key
-                    CHECK = True
-                    break
-
-        else:
-            if item == file_of_chemistry:
-                _KEY = key
-                CHECK = True
-                break
-
-    if not CHECK:
-        sys.exit(
-            f"Could not find the identifier for the prompted chemistry in the repository of the complementary dictionary().\nIdentifier : {identifier}"
-        )
-
-    # Return the chemistry code for the chemistry, without the nucleobase appendend, so we can add the complementary bases to it later
-    return _KEY[:-1]
+    sys.exit(
+        f"Could not find the identifier for the prompted chemistry in the repository of the complementary dictionary().\nIdentifier : {identifier}"
+    )
 
 
 ##-- FUNCTIONS USED TO FILL IN IN THE COLUMNS OF THE PDB FILE TO-BE-WRITTEN

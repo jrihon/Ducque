@@ -1,0 +1,15 @@
+name: Run pytest
+description: Install the project and its dev dependencies with uv, then run the full test suite.
+runs:
+  using: composite
+  steps:
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
+      with:
+        enable-cache: true
+    - name: Install dependencies
+      shell: bash
+      run: uv sync --locked --all-groups
+    - name: Run pytest
+      shell: bash
+      run: uv run pytest tests/
