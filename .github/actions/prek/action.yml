@@ -1,0 +1,15 @@
+name: Run prek
+description: Run every prek hook (linters, formatters, file checks) on all files in the repository.
+runs:
+  using: composite
+  steps:
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
+    - name: Cache prek hook environments
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/prek
+        key: prek-${{ runner.os }}-${{ hashFiles('prek.toml') }}
+    - name: Run prek on all files
+      shell: bash
+      run: uvx prek run --all-files --show-diff-on-failure
