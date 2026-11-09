@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any
 
-from ducque.library.library_handler import LibraryHandler
+from ducque.library.library_handler import LibraryRepository
 
 RESERVED_DIR = ["sugar", "linker", "base"]
 
@@ -26,8 +26,8 @@ class Library:
         Can be easily mocked for testing purposes.
     """
 
-    def __init__(self, handler: LibraryHandler | None = None):
-        self._handler = handler or LibraryHandler()
+    def __init__(self, handler: LibraryRepository | None = None):
+        self._repository = handler or LibraryRepository()
         self.entries: dict[str, Any] = {}
 
     def _fetch_entries(self) -> None:
@@ -41,12 +41,12 @@ class Library:
         Always add residue
         """
         a = Path()
-        self._handler.add_entry(a)
+        self._repository.add_entry(a)
 
     def remove(self, use_force: bool = False):
         """Remove residue to the library."""
         a = Path()
-        self._handler.remove_entry(a)
+        self._repository.remove_entry(a)
 
     def list_entries(self, group_by: str) -> dict[str, Any]:
         """List all entries known by ducque.
@@ -60,10 +60,10 @@ class Library:
         """Return the locations of the library, if they exist."""
 
         return (
-            Path(str(self._handler.ducque_lib)).absolute().as_posix(),
+            Path(str(self._repository.ducque_lib)).absolute().as_posix(),
             (
-                self._handler.user_lib.absolute().as_posix()
-                if self._handler.user_lib.is_dir()
+                self._repository.user_lib.absolute().as_posix()
+                if self._repository.user_lib.is_dir()
                 else None
             ),
         )

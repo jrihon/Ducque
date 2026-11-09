@@ -7,11 +7,11 @@ from platformdirs import user_data_path
 from yaml import safe_load
 
 
-class LibraryHandler:
+class LibraryRepository:
     """Handles IO operations of the library.
 
     This class should be kept simple.
-    LibraryHandler is plumbing at the edge.
+    LibraryRepository is plumbing at the edge.
     It knows how entries are stored (YAML files, which directories, how to read, write and delete them)
     but nothing about what they mean.
     -> It's an implementation detail of Library
