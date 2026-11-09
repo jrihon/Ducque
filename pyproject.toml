@@ -21,7 +21,9 @@ requires-python = ">=3.13"
 
 dependencies = [
     "numpy>=2.5.4",
+    "platformdirs>=4.14.5",
     "scipy>=1.18.1",
+    "typer>=0.29.0",
 ]
 
 [dependency-groups]

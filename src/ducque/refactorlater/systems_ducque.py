@@ -1,4 +1,3 @@
-from importlib.util import find_spec
 from pathlib import Path
 from sys import exit
 
@@ -7,31 +6,6 @@ from sys import exit
 
     This also exists to return error messages from I/O operations.
 """
-
-
-# def version_checker():
-#    """Checks the version of Ducque. Unused """
-#
-#    if (version_info.major == 3) and (version_info.minor <= 10):
-#        print("Python 3.10 or higher is required.")
-#        print(f"Your version : {version_info.major}.{version_info.minor}")
-#        print(f"$PATH to your Python3 interpreter : {executable}")
-#        exit_Ducque()
-#
-
-
-def check_environment():
-    """Check if module exists without importing"""
-
-    imports = ["numpy", "scipy", "tkinter"]
-    for imp in imports:
-        if (
-            find_spec(imp) is None
-        ):  # This means that the module was not found in the PYTHONPATH
-            print(
-                f"Module Not Found : {imp}.\nTry activating the correct Python3 Environment for Ducque"
-            )
-            exit_Ducque()
 
 
 def return_DUCQUEHOME():
