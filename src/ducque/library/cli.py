@@ -19,4 +19,14 @@ def add():
 
 @library_app.command()
 def where() -> None:
-    Library().where()
+
+    void = "⭕"
+    correct = "✅"
+    ducque_lib, user_lib = Library().where()
+
+    print(f"{correct} directory exists at '{ducque_lib}'")
+
+    if user_lib is not None:
+        print(f"{correct} directory created at '{user_lib}'")
+    else:
+        print(f"{void} directory not yet created.")
