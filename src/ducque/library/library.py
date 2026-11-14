@@ -1,18 +1,11 @@
 from pathlib import Path
 from typing import Any
 
+from ducque.library.errors import DucqueLibraryNotFound
 from ducque.library.library_handler import LibraryRepository
+from ducque.library.validator import LibaryValidator
 
 RESERVED_DIR = ["sugar", "linker", "base"]
-
-
-def _mock_entries() -> dict[str, Any]:
-    return {
-        "DA": "DNA adenosine",
-        "DT": "DNA thymidine",
-        "DG": "DNA guanosine",
-        "DC": "DNA cytidine",
-    }
 
 
 class Library:
@@ -31,25 +24,21 @@ class Library:
         self.entries: dict[str, Any] = {}
 
     def _fetch_entries(self) -> None:
-        """Populate ducque's memory with all possible entries."""
+        """Populate the runtime memory with all possible entries."""
         if not self.entries:
-            self.entries = _mock_entries()
+            self.entries = self._repository.fetch_entries()
 
-    def add(self, use_force: bool = False):
-        """Add residue to the library.
+    def add(self, yaml_file: Path, force_push: bool = False):
+        """Add residue to the library."""
+        validator = LibaryValidator(yaml_file)
+        self._repository.add_entry(validator.py_obj)
 
-        Always add residue
-        """
-        a = Path()
-        self._repository.add_entry(a)
-
-    def remove(self, use_force: bool = False):
+    def remove(self, entry: str, force_push: bool = False):
         """Remove residue to the library."""
-        a = Path()
-        self._repository.remove_entry(a)
+        self._repository.remove_entry(entry)
 
-    def list_entries(self, group_by: str) -> dict[str, Any]:
-        """List all entries known by ducque.
+    def list_entries(self, group_by: str | None = None) -> dict[str, Any]:
+        """List all entries within the library.
 
         Allow to filter by group and collect a structured output.
         """
@@ -59,8 +48,13 @@ class Library:
     def where(self) -> tuple[str, str | None]:
         """Return the locations of the library, if they exist."""
 
+        ducque_lib = Path(str(self._repository.ducque_lib)).absolute()
+
+        if not ducque_lib.exists():
+            raise DucqueLibraryNotFound(ducque_lib)
+
         return (
-            Path(str(self._repository.ducque_lib)).absolute().as_posix(),
+            ducque_lib.as_posix(),
             (
                 self._repository.user_lib.absolute().as_posix()
                 if self._repository.user_lib.is_dir()

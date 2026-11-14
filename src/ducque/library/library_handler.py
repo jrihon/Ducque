@@ -1,10 +1,8 @@
 from importlib.abc import Traversable
 from importlib.resources import files
-from pathlib import Path
 from typing import Any
 
 from platformdirs import user_data_path
-from yaml import safe_load
 
 
 class LibraryRepository:
@@ -24,17 +22,26 @@ class LibraryRepository:
 
     def __init__(self):
         self.initialised = ""
-        self.ducque_lib: Traversable = files("ducque") / "assets"
-        self.user_lib = user_data_path("ducque") / "user_assets"
+        self.ducque_lib: Traversable = files("ducque") / "assets" / "ducque_library.yml"
+        self.user_lib = user_data_path("ducque") / "user_assets" / "ducque_library.yml"
 
-    def get_all_entries(self, path: Path) -> dict[str, Any]:
+    def fetch_entries(self) -> dict[str, Any]:
         """Read all entries from the library"""
 
-        d = safe_load(path)
-        return d
+        # Mock entries for now
+        return {
+            "DA": "DNA adenosine",
+            "DT": "DNA thymidine",
+            "DG": "DNA guanosine",
+            "DC": "DNA cytidine",
+        }
+        # d = safe_load(path)
+        # return d
 
-    def add_entry(self, path: Path) -> None:
+    def add_entry(self, py_obj: dict[str, Any]) -> None:
         """Handles writing (addition of entry) to the library"""
+        print(f"Adding {py_obj}")
 
-    def remove_entry(self, path: Path) -> None:
+    def remove_entry(self, entry: str) -> None:
         """Handles writing (removal of entry)to the library"""
+        print(f"Deleting {entry}")
