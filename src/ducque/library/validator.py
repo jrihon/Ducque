@@ -6,7 +6,7 @@ import yaml
 from pydantic import ValidationError
 
 from ducque.library.errors import format_errors
-from ducque.library.models import (
+from ducque.models.library_models import (
     LinkerValidator,
     MoietyType,
     NucleobaseValidator,

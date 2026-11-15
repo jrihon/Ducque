@@ -4,16 +4,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, BeforeValidator, TypeAdapter
 
-
-def _lower(string: str):
-    """Transform string before validation occurs."""
-    return string.strip().lower()
-
-
-def _path_exists(path: Path):
-    """Transform string before validation occurs."""
-    if not path.exists():
-        raise FileNotFoundError(path)
+from ducque.models.utils import enum_lower, path_exists
 
 
 ##
@@ -26,7 +17,7 @@ class MoietyType(StrEnum):
     NUCLEOBASE = "nucleobase"
 
 
-MoietyTypeField = Annotated[MoietyType, BeforeValidator(_lower)]
+MoietyTypeField = Annotated[MoietyType, BeforeValidator(enum_lower)]
 
 moiety_type_field = TypeAdapter(MoietyTypeField)
 
@@ -37,7 +28,7 @@ moiety_type_field = TypeAdapter(MoietyTypeField)
 class MoietyValidatorMixin(BaseModel):
     """Class to use as base to inherit from, for the validator."""
 
-    file_path: Annotated[Path, BeforeValidator(_path_exists)]
+    file_path: Annotated[Path, BeforeValidator(path_exists)]
     moiety_type: MoietyTypeField
 
 
