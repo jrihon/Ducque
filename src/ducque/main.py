@@ -7,6 +7,7 @@
 import typer
 
 from ducque.library import library_app
+from ducque.template import template_app
 
 
 def main():
@@ -16,6 +17,7 @@ def main():
 
     # 2. Add modules and submodules
     app.add_typer(library_app, name="library")
+    app.add_typer(template_app, name="template")
 
     # Call the app explicitly
     app()

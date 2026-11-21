@@ -10,3 +10,4 @@ def path_exists(path: Path):
     """Transform string before validation occurs."""
     if not path.exists():
         raise FileNotFoundError(path)
+    return path

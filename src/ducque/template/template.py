@@ -1,6 +1,7 @@
 from typing import Annotated
 
-from pydantic import BeforeValidator, TypeAdapter
+from pydantic import BaseModel, BeforeValidator, TypeAdapter
+from yaml import safe_dump
 
 from ducque.models.template_models import TemplateType
 from ducque.models.utils import enum_lower
@@ -15,9 +16,19 @@ class Template:
 
     def __init__(self, template_type: str) -> None:
         self.template_type = template_type_argument.validate_strings(template_type)
+        self.template = self._build_template()
 
-    def build_template(self) -> dict[str, str]:
+    def _build_template(self) -> BaseModel:
         """Build the template with the enum variants."""
+        return self.template_type.get_model()
 
-    def print(py_obj: dict[str, str]) -> None:
+    def print_yaml(self) -> None:
         """The output is yaml-formatted."""
+
+        # Difference between
+        # model_dump(mode="json") output a py_dict for json
+        # model_dump_json() outputs a JSON string
+        obj = self.template.model_dump(mode="json")
+
+        yaml_string = safe_dump(obj, sort_keys=False)
+        print(yaml_string, end="")
