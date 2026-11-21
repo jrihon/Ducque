@@ -1,4 +1,5 @@
 import pytest
+from pydantic import ValidationError
 
 from ducque.models.construct_models import ConstructValidator
 from ducque.models.library_models import (
@@ -39,3 +40,9 @@ def test_template_factory_construct(template_type: str) -> None:
     template = Template(template_type)
 
     assert isinstance(template.template, ConstructValidator)
+
+
+@pytest.mark.xfail(raises=ValidationError)
+def test_template_invalid_enum() -> None:
+
+    Template("not-a-valid-enum")

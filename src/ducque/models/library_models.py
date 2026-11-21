@@ -28,6 +28,7 @@ moiety_type_field = TypeAdapter(MoietyTypeField)
 class MoietyValidatorMixin(BaseModel):
     """Class to use as base to inherit from, for the validator."""
 
+    entry_name: str
     file_path: Annotated[Path, BeforeValidator(path_exists)]
     moiety_type: MoietyTypeField
 

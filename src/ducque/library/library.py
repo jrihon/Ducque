@@ -21,34 +21,49 @@ class Library:
 
     def __init__(self, handler: LibraryRepository | None = None):
         self._repository = handler or LibraryRepository()
-        self.entries: dict[str, Any] = {}
+        self.entries: dict[str, Any] = self._repository.fetch_entries()
 
-    def _fetch_entries(self) -> None:
-        """Populate the runtime memory with all possible entries."""
-        if not self.entries:
-            self.entries = self._repository.fetch_entries()
-
-    def add(self, yaml_file: Path, force_push: bool = False):
-        """Add residue to the library."""
-        validator = LibaryValidator(yaml_file)
-        self._repository.add_entry(validator.py_obj)
-
-    def remove(self, entry: str, force_push: bool = False):
-        """Remove residue to the library."""
-        self._repository.remove_entry(entry)
-
-    def list_entries(self, group_by: str | None = None) -> dict[str, Any]:
+    def list_entries(self, _group_by: str | None = None) -> str:
         """List all entries within the library.
 
         Allow to filter by group and collect a structured output.
         """
-        self._fetch_entries()
-        return self.entries
+        collected_keys = list(self.entries.keys())
+
+        return "\n".join(collected_keys)
+
+    def add(self, yaml_file: str, _force_push: bool = False) -> None:
+        """Add residue to the library."""
+        validator = LibaryValidator(yaml_file)
+
+        if validator.model.entry_name not in self.entries:
+            self._repository.add_entry(validator.py_obj, self.entries)
+
+    def remove(self, entry: str, _force_push: bool = False) -> None:
+        """Remove residue from the library."""
+
+        # Filter for entry, to check it exists.
+        try:
+            self.entries[entry]
+            self._repository.remove_entry(entry, self.entries)
+        except KeyError:
+            print(f"Entry {entry} does not exist in the ducque library.")
+
+    def recreate(self, entry: str) -> None:
+        """Recreate residue from the library."""
+
+        # Filter for entry
+        try:
+            self.entries[entry]
+        except KeyError:
+            print(f"Entry {entry} does not exist.")
+
+        # Recreate pdb from library
 
     def where(self) -> tuple[str, str | None]:
         """Return the locations of the library, if they exist."""
 
-        ducque_lib = Path(str(self._repository.ducque_lib)).absolute()
+        ducque_lib = Path(str(self._repository.ducque_db)).absolute()
 
         if not ducque_lib.exists():
             raise DucqueLibraryNotFound(ducque_lib)
@@ -56,8 +71,8 @@ class Library:
         return (
             ducque_lib.as_posix(),
             (
-                self._repository.user_lib.absolute().as_posix()
-                if self._repository.user_lib.is_dir()
+                self._repository.user_db.absolute().as_posix()
+                if self._repository.user_db.is_dir()
                 else None
             ),
         )

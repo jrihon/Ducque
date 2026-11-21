@@ -8,22 +8,28 @@ library_app = typer.Typer(help="Manage the nucleotide library.")
 @library_app.command()
 def list():
     """List all entries currently existing in the library."""
-    a = Library().list_entries()
     print("listing all entries ...")
-    print(a)
+    Library().list_entries()
 
 
 @library_app.command()
-def add():
+def add(yaml_file: str):
     """Add a molecule to the library."""
-    Library()
-    print("molecule added")
+    print(f"Adding {yaml_file}")
+    Library().add(yaml_file)
 
 
 @library_app.command()
-def recreate():
+def remove(yaml_file: str):
+    """Remove a molecule from the library."""
+    print(f"Removing {yaml_file}")
+    Library().remove(yaml_file)
+
+
+@library_app.command()
+def recreate(entry: str):
     """Recreate a molecule, pdb-formatted, from the library."""
-    Library()
+    Library().recreate(entry)
     print("molecule recreated from : ")
 
 

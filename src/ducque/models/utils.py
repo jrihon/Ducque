@@ -8,6 +8,7 @@ def enum_lower(string: str):
 
 def path_exists(path: Path):
     """Transform string before validation occurs."""
+    path = Path(path)
     if not path.exists():
         raise FileNotFoundError(path)
     return path
