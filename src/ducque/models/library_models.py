@@ -39,3 +39,7 @@ class LinkerValidator(MoietyValidatorMixin): ...
 
 
 class NucleobaseValidator(MoietyValidatorMixin): ...
+
+
+# Collect into single type
+type MoleculeValidator = SugarValidator | LinkerValidator | NucleobaseValidator

@@ -1,8 +1,10 @@
 from typing import Annotated
 
-from pydantic import BaseModel, BeforeValidator, TypeAdapter
+from pydantic import BeforeValidator, TypeAdapter
 from yaml import safe_dump
 
+from ducque.models.construct_models import ConstructValidator
+from ducque.models.library_models import MoleculeValidator
 from ducque.models.template_models import TemplateType
 from ducque.models.utils import enum_lower
 
@@ -18,7 +20,7 @@ class Template:
         self.template_type = template_type_argument.validate_strings(template_type)
         self.template = self._build_template()
 
-    def _build_template(self) -> BaseModel:
+    def _build_template(self) -> MoleculeValidator | ConstructValidator:
         """Build the template with the enum variants."""
         return self.template_type.get_model()
 

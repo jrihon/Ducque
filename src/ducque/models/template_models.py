@@ -1,12 +1,11 @@
 from enum import StrEnum
 from pathlib import Path
 
-from pydantic import BaseModel
-
 from ducque.models.construct_models import ConstructValidator
 from ducque.models.library_models import (
     LinkerValidator,
     MoietyType,
+    MoleculeValidator,
     NucleobaseValidator,
     SugarValidator,
 )
@@ -53,7 +52,7 @@ class TemplateType(StrEnum):
             sequence=["foo"], complement=["bar"], output_filename="sugar"
         )
 
-    def get_model(self) -> BaseModel:
+    def get_model(self) -> MoleculeValidator | ConstructValidator:
 
         match self:
             case TemplateType.ADD_SUGAR:
