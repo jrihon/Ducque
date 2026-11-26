@@ -1,10 +1,12 @@
-from importlib.abc import Traversable
-from importlib.resources import files
 from pathlib import Path
 from typing import Any
 
 from platformdirs import user_data_path
-from uaclient.yaml import safe_dump
+from yaml import safe_dump
+
+_DEFAULT_DUCQUE_DB = (
+    Path(__file__).resolve().parent.parent / "assets" / "ducque_library.yml"
+)
 
 
 class LibraryRepository:
@@ -22,9 +24,11 @@ class LibraryRepository:
             https://platformdirs.readthedocs.io/en/latest/platforms.html#user-directories
     """
 
-    def __init__(self):
-        self.ducque_db: Traversable = files("ducque") / "assets" / "ducque_library.yml"
-        self.user_db = user_data_path("ducque") / "user_assets" / "ducque_library.yml"
+    def __init__(self, ducque_db: Path | None = None, user_db: Path | None = None):
+        self.ducque_db: Path = ducque_db or _DEFAULT_DUCQUE_DB
+        self.user_db = (
+            user_db or user_data_path("ducque") / "user_assets" / "ducque_library.yml"
+        )
 
     def fetch_entries(self) -> dict[str, Any]:
         """Read all entries from the library"""
