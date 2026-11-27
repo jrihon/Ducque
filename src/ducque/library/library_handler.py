@@ -1,5 +1,6 @@
+from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any
+from typing import Any, override
 
 from platformdirs import user_data_path
 from yaml import safe_dump
@@ -9,7 +10,21 @@ _DEFAULT_DUCQUE_DB = (
 )
 
 
-class LibraryRepository:
+class AbstractLibraryRepository(ABC):
+    ducque_db: Path
+    user_db: Path
+
+    @abstractmethod
+    def fetch_entries(self) -> dict[str, Any]: ...
+
+    @abstractmethod
+    def add_entry(self, entry: dict[str, Any], all_entries: dict[str, Any]) -> None: ...
+
+    @abstractmethod
+    def remove_entry(self, entry: str, all_entries: dict[str, Any]) -> None: ...
+
+
+class LibraryRepository(AbstractLibraryRepository):
     """Handles IO operations of the library.
 
     This class should be kept simple.
@@ -30,6 +45,7 @@ class LibraryRepository:
             user_db or user_data_path("ducque") / "user_assets" / "ducque_library.yml"
         )
 
+    @override
     def fetch_entries(self) -> dict[str, Any]:
         """Read all entries from the library"""
 
@@ -61,6 +77,7 @@ class LibraryRepository:
         content_yaml = safe_dump(content)
         self._write_to_db(self.user_db, content_yaml)
 
+    @override
     def add_entry(self, entry: dict[str, Any], all_entries: dict[str, Any]) -> None:
         """Handles writing (addition of entry) to the library.
 
@@ -69,6 +86,7 @@ class LibraryRepository:
 
         print(f"Adding {entry}")
 
+    @override
     def remove_entry(self, entry: str, all_entries: dict[str, Any]) -> None:
         """Handles writing (removal of entry)to the library.
 

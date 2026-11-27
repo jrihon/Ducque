@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Any
 
 from ducque.library.errors import DucqueLibraryNotFound
-from ducque.library.library_handler import LibraryRepository
+from ducque.library.library_handler import AbstractLibraryRepository, LibraryRepository
 from ducque.library.validator import LibaryValidator
 
 RESERVED_DIR = ["sugar", "linker", "base"]
@@ -17,9 +17,10 @@ class Library:
 
     handler : the class that is aware of the underlying operating system, file operations etc.
         Can be easily mocked for testing purposes.
+        Defaults to the LibraryRepository class.
     """
 
-    def __init__(self, handler: LibraryRepository | None = None):
+    def __init__(self, handler: AbstractLibraryRepository | None = None):
         self._repository = handler or LibraryRepository()
         self.entries: dict[str, Any] = self._repository.fetch_entries()
 
