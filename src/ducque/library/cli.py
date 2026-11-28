@@ -1,3 +1,5 @@
+from typing import Annotated
+
 import typer
 
 from ducque.library.library import Library
@@ -9,13 +11,21 @@ library_app = typer.Typer(help="Manage the nucleotide library.")
 def list():
     """List all entries currently existing in the library."""
     print("listing all entries ...")
-    Library().list_entries()
+    entries = Library().list_entries()
+    print(entries)
 
 
 @library_app.command()
-def add(yaml_file: str, override: bool):
+def add(
+    yaml_file: str,
+    override: Annotated[
+        bool, typer.Option(help="Override existing keys in the database.")
+    ] = False,
+):
     """Add a molecule to the library."""
     print(f"Adding {yaml_file}")
+    if override:
+        print("Override activated!")
     Library().add(yaml_file, override)
 
 

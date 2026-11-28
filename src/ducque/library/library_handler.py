@@ -52,9 +52,9 @@ class LibraryRepository(AbstractLibraryRepository):
         )
 
     def _fetch_ducque_db(self) -> dict[str, Any]:
-        """Fetch only entries from the ducque db"""
+        """Fetch only entries from the ducque db."""
         with open(self.ducque_db, "r") as db:
-            return safe_load(db.read())
+            return safe_load(db.read()) or {}
 
     def _fetch_user_db(self) -> dict[str, Any]:
         """Fetch only entries from the user-defined db"""
