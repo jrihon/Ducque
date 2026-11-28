@@ -21,9 +21,9 @@ class MoietyTypeValidator:
     A MoleculeValidator is returned.
     """
 
-    def __init__(self, yaml_file: str):
+    def __init__(self, yaml_content: str):
 
-        self.py_obj: dict[str, Any] = yaml.safe_load(yaml_file)
+        self.py_obj: dict[str, Any] = yaml.safe_load(yaml_content)
         validator_cls = self._assert_molecule_type()
 
         try:

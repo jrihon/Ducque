@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Annotated
 
 import typer
@@ -17,16 +18,24 @@ def list():
 
 @library_app.command()
 def add(
-    yaml_file: str,
+    yaml_file: Annotated[
+        Path,
+        typer.Argument(
+            exists=True, help="Input file to add molecule to database, YAML format."
+        ),
+    ],
     override: Annotated[
         bool, typer.Option(help="Override existing keys in the database.")
     ] = False,
 ):
     """Add a molecule to the library."""
+
     print(f"Adding {yaml_file}")
     if override:
         print("Override activated!")
-    Library().add(yaml_file, override)
+
+    with yaml_file.open("r") as yml:
+        Library().add(yml.read(), override)
 
 
 @library_app.command()

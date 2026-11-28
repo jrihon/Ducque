@@ -30,10 +30,10 @@ class Library:
 
         return "\n".join(collected_keys)
 
-    def add(self, yaml_file: str, override: bool) -> None:
+    def add(self, yaml_content: str, override: bool) -> None:
         """Add residue to the library."""
 
-        validated_molecule = MoietyTypeValidator(yaml_file)
+        validated_molecule = MoietyTypeValidator(yaml_content)
         self._repository.add_entry(validated_molecule.py_obj, override)
 
     def remove(self, entry: str) -> None:
