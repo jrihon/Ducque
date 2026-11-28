@@ -15,7 +15,7 @@ from ducque.models.library_models import (
 )
 
 
-class LibaryValidator:
+class MoietyTypeValidator:
     """Factory class to validate the type of input, based on the MoietyType.
 
     A MoleculeValidator is returned.
@@ -27,7 +27,7 @@ class LibaryValidator:
         validator_cls = self._assert_molecule_type()
 
         try:
-            self.model = validator_cls.model_validate(self.py_obj)
+            self.model: MoleculeValidator = validator_cls.model_validate(self.py_obj)
         except ValidationError as err:
             typer.secho(format_errors(err), fg=typer.colors.RED, err=True)
             raise typer.Exit(code=1)

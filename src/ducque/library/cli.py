@@ -13,10 +13,10 @@ def list():
 
 
 @library_app.command()
-def add(yaml_file: str):
+def add(yaml_file: str, override: bool):
     """Add a molecule to the library."""
     print(f"Adding {yaml_file}")
-    Library().add(yaml_file)
+    Library().add(yaml_file, override)
 
 
 @library_app.command()
