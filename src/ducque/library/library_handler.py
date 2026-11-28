@@ -1,3 +1,4 @@
+import os
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any, override
@@ -10,7 +11,9 @@ _DEFAULT_DUCQUE_DB = (
 )
 
 
-_SECRET_DUCQUE_TOGGLE: bool = True
+# Set locally to DUCQUE_SECRET_TOGGLE=foobar, or literaly anything else.
+# Defaults to None
+DUCQUE_SECRET_TOGGLE: str | None = os.getenv("DUCQUE_SECRET_TOGGLE")
 
 
 class AbstractLibraryRepository(ABC):
@@ -100,7 +103,7 @@ class LibraryRepository(AbstractLibraryRepository):
         user_db = self._fetch_user_db()
         ducque_db = self._fetch_ducque_db()
 
-        if _SECRET_DUCQUE_TOGGLE:
+        if DUCQUE_SECRET_TOGGLE is not None:
             if not entry in ducque_db or override:
                 self._write_to_ducque_lib(entry)
             else:
@@ -132,7 +135,7 @@ class LibraryRepository(AbstractLibraryRepository):
 
         # If developers are updating the library, a toggle needs to be active.
         # Users cannot delete entries from the original database.
-        elif entry_key in ducque_db and _SECRET_DUCQUE_TOGGLE:
+        elif entry_key in ducque_db and DUCQUE_SECRET_TOGGLE is not None:
             _ = ducque_db.pop(entry_key)
             self._write_to_user_lib(ducque_db)
             return
